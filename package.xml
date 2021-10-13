@@ -3,7 +3,7 @@
 	xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-	<name>swoole</name>
+	<name>openswoole</name>
 	<channel>pecl.php.net</channel>
 	<summary>Event-driven asynchronous and concurrent networking engine with high performance for PHP.</summary>
 	<description>
@@ -2126,7 +2126,7 @@
             </pearinstaller>
         </required>
     </dependencies>
-    <providesextension>swoole</providesextension>
+    <providesextension>openswoole</providesextension>
     <extsrcrelease>
         <configureoption default="no" name="enable-sockets" prompt="enable sockets supports?" />
         <configureoption default="no" name="enable-openssl" prompt="enable openssl support?" />
