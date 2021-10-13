@@ -1,28 +1,16 @@
-English | [中文](./README-CN.md)
-
 <h1>
 <img width="200" height="120" align=center alt="Swoole Logo" src="https://www.swoole.co.uk/images/swoole-logo.svg" />
 </h1>
 
-[![lib-swoole](https://github.com/swoole/swoole-src/workflows/lib-swoole/badge.svg)](https://github.com/swoole/swoole-src/actions?query=workflow%3Alib-swoole)
-[![ext-swoole](https://github.com/swoole/swoole-src/workflows/ext-swoole/badge.svg)](https://github.com/swoole/swoole-src/actions?query=workflow%3Aext-swoole)
-[![test-linux](https://github.com/swoole/swoole-src/workflows/test-linux/badge.svg)](https://github.com/swoole/swoole-src/actions?query=workflow%3Atest-linux)
+[![lib-swoole](https://github.com/openswoole/swoole-src/workflows/lib-swoole/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Alib-swoole)
+[![ext-swoole](https://github.com/openswoole/swoole-src/workflows/ext-swoole/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Aext-swoole)
+[![test-linux](https://github.com/openswoole/swoole-src/workflows/test-linux/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Atest-linux)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/11654/badge.svg)](https://scan.coverity.com/projects/swoole-swoole-src)
-[![codecov](https://codecov.io/gh/swoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/swoole/swoole-src)
+[![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src)
 
 **Swoole is an event-driven asynchronous & coroutine-based concurrency networking communication engine with high performance written in C++ for PHP.**
 
-## ⚙️ Quick Start
-
-Run Swoole program by [Docker](https://github.com/swoole/docker-swoole)
-
-```bash
-docker run --rm phpswoole/swoole "php --ri swoole"
-```
-
-For details on how to use it, see: [How to Use This Image](https://github.com/swoole/docker-swoole#how-to-use-this-image).
-
-Or code and run the Swoole program on the official website of Swoole. [Coding Online](https://www.swoole.com/coding)
+Open Swoole since release version v4.7.1.
 
 ## ✨ Event-based
 
@@ -460,10 +448,10 @@ pecl install swoole
 
 ### 2. Install from source (recommended)
 
-Please download the source packages from [Releases](https://github.com/swoole/swoole-src/releases) or:
+Please download the source packages from [Releases](https://github.com/openswoole/swoole-src/releases) or:
 
 ```shell
-git clone https://github.com/swoole/swoole-src.git && \
+git clone https://github.com/openswoole/swoole-src.git && \
 cd swoole-src
 ```
 
@@ -477,7 +465,7 @@ make && make install
 
 #### Enable extension in PHP
 
-After compiling and installing to the system successfully, you have to add a new line `extension=swoole.so` to `php.ini` to enable Swoole extension.
+After compiling and installing to the system successfully, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Swoole extension.
 
 #### Extra compiler configurations
 
@@ -494,24 +482,9 @@ After compiling and installing to the system successfully, you have to add a new
 
 >  ⚠️ If you upgrade from source, don't forget to `make clean` before you upgrade your swoole
 
-1. `pecl upgrade swoole`
+1. `pecl upgrade openswoole`
 2. `cd swoole-src && git pull && make clean && make && sudo make install`
 3. if you change your PHP version, please re-run `phpize clean && phpize` then try to compile
-
-### Major change since version 4.3.0
-
-Async clients and API are moved to a separate PHP extension `swoole_async` since version 4.3.0, install `swoole_async`:
-
-```shell
-git clone https://github.com/swoole/ext-async.git
-cd ext-async
-phpize
-./configure
-make -j 4
-sudo make install
-```
-
-Enable it by adding a new line `extension=swoole_async.so` to `php.ini`.
 
 ## 💎 Frameworks & Components
 + [**Hyperf**](https://github.com/hyperf/hyperf) is a coroutine framework that focuses on hyperspeed and flexibility, specifically used for build microservices or middlewares.
@@ -524,11 +497,9 @@ Enable it by adding a new line `extension=swoole_async.so` to `php.ini`.
 
 ## 🛠 Develop & Discussion
 
-+ __中文文档__: <https://wiki.swoole.com>
 + __Documentation__: <https://www.swoole.co.uk/docs>
-+ __IDE Helper & API__: <https://github.com/swoole/ide-helper>
-+ __Debug Tool__: <https://github.com/swoole/yasd>
-+ __中文社区__: <https://wiki.swoole.com/#/other/discussion>
++ __IDE Helper & API__: <https://github.com/openswoole/ide-helper>
++ __Debug Tool__: <https://github.com/openswoole/yasd>
 + __Twitter__: <https://twitter.com/php_swoole>
 + __Slack Group__: <https://swoole.slack.com>
 
@@ -539,7 +510,7 @@ Enable it by adding a new line `extension=swoole_async.so` to `php.ini`.
 
 ## 🔰️ Security issues
 
-Security issues should be reported privately, via email, to the Swoole develop team [team@swoole.com](mailto:team@swoole.com). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
+Security issues should be reported privately, via email, to the Swoole develop team [hello@swoole.co.uk](mailto:hello@swoole.co.uk). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 
 ## 🖊️ Contribution
 
@@ -547,14 +518,14 @@ Your contribution to Swoole development is very welcome!
 
 You may contribute in the following ways:
 
-* [Report issues and feedback](https://github.com/swoole/swoole-src/issues)
+* [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
 * Submit fixes, features via Pull Request
 * Write/polish documentation
 
 ## ❤️ Contributors
 
-This project exists thanks to all the people who contribute. [[Contributors](https://github.com/swoole/swoole-src/graphs/contributors)].
-<a href="https://github.com/swoole/swoole-src/graphs/contributors"><img src="https://opencollective.com/swoole-src/contributors.svg?width=890&button=false" /></a>
+This project exists thanks to all the people who contribute. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
+<a href="https://github.com/openswoole/swoole-src/graphs/contributors"><img src="https://opencollective.com/swoole-src/contributors.svg?width=890&button=false" /></a>
 
 ## 🎙️ Official Evangelist
 

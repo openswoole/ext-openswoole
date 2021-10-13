@@ -39,7 +39,7 @@ modules/*
 /ltmain.sh
 /missing
 /mkinstalldirs
-/swoole.la
+/openswoole.la
 /acinclude.m4
 /aclocal.m4
 /run-tests.php

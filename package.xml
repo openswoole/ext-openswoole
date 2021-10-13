@@ -31,12 +31,6 @@
         <active>yes</active>
     </lead>
     <developer>
-        <name>Twosee</name>
-        <user>twosee</user>
-        <email>twose@qq.com</email>
-        <active>yes</active>
-    </developer>
-    <developer>
         <name>Shen Zhe</name>
         <user>shenzhe</user>
         <email>shenzhe163@gmail.com</email>
@@ -46,6 +40,12 @@
         <name>Lu Fei</name>
         <user>lufei</user>
         <email>lufei@php.net</email>
+        <active>yes</active>
+    </developer>
+    <developer>
+        <name>Twosee</name>
+        <user>twosee</user>
+        <email>twose@qq.com</email>
         <active>yes</active>
     </developer>
     <date>2021-10-13</date>
