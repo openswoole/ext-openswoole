@@ -3,7 +3,7 @@ if (substr(PHP_OS, 0, 3) == 'WIN')
 {
     exit("skip for Windows");
 }
-if (!extension_loaded("swoole"))
+if (!extension_loaded("openswoole"))
 {
-    exit("swoole extension is required");
+    exit("openswoole extension is required");
 }

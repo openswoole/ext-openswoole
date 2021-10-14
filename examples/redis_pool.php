@@ -10,7 +10,7 @@
 
 define("SERVER_RELOAD", 'U0VSVkVSX1JFTE9BRAo=');
 
-if(!extension_loaded('swoole')){
+if(!extension_loaded('openswoole')){
     throw new Exception("install swoole extension, pecl install swoole");
 }
 

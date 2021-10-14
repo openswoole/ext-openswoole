@@ -14,7 +14,7 @@ skip(
 );
 skip(
     'Swoole extension is required',
-    !extension_loaded('swoole'),
+    !extension_loaded('openswoole'),
     SWOOLE_COLOR_RED
 );
 skip(

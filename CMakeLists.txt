@@ -1,4 +1,4 @@
-PROJECT(libswoole)
+PROJECT(libopenswoole)
 
 ENABLE_LANGUAGE(ASM)
 set(SWOOLE_VERSION 4.7.1)
@@ -115,28 +115,28 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     endif()
 endif()
 
-# lib-swoole
+# lib-openswoole
 link_directories(${LIBRARY_OUTPUT_PATH})
-add_library(lib-swoole SHARED ${SRC_LIST})
-set_target_properties(lib-swoole PROPERTIES OUTPUT_NAME "swoole" VERSION ${SWOOLE_VERSION})
-target_link_libraries(lib-swoole ${SWOOLE_LINK_LIBRARIES})
+add_library(lib-openswoole SHARED ${SRC_LIST})
+set_target_properties(lib-openswoole PROPERTIES OUTPUT_NAME "openswoole" VERSION ${SWOOLE_VERSION})
+target_link_libraries(lib-openswoole ${SWOOLE_LINK_LIBRARIES})
 if(CODE_COVERAGE)
-    target_link_libraries(lib-swoole coverage_config gcov)
+    target_link_libraries(lib-openswoole coverage_config gcov)
 endif(CODE_COVERAGE)
 
 # test_server
 set(TEST_SRC_LIST examples/cpp/test_server.cc)
 add_executable(test_server ${TEST_SRC_LIST})
-add_dependencies(test_server lib-swoole)
-target_link_libraries(test_server swoole pthread)
+add_dependencies(test_server lib-openswoole)
+target_link_libraries(test_server openswoole pthread)
 
 # co
 set(TEST_SRC_LIST examples/cpp/co.cc)
 add_executable(co ${TEST_SRC_LIST})
-add_dependencies(co lib-swoole)
-target_link_libraries(co swoole)
+add_dependencies(co lib-openswoole)
+target_link_libraries(co openswoole)
 
-# ext-swoole
+# ext-openswoole
 file(GLOB ext_cxx_files ext-src/*.cc)
 set(ext_src_list  ${ext_cxx_files}
         thirdparty/php/sockets/multicast.cc
@@ -154,17 +154,17 @@ set(ext_src_list  ${ext_cxx_files}
         thirdparty/nghttp2/nghttp2_hd_huffman.c
         thirdparty/nghttp2/nghttp2_hd_huffman_data.c
     )
-add_library(ext-swoole SHARED ${ext_src_list})
-set_target_properties(ext-swoole PROPERTIES PREFIX "")
-set_target_properties(ext-swoole PROPERTIES OUTPUT_NAME "swoole")
-add_dependencies(ext-swoole lib-swoole)
+add_library(ext-openswoole SHARED ${ext_src_list})
+set_target_properties(ext-openswoole PROPERTIES PREFIX "")
+set_target_properties(ext-openswoole PROPERTIES OUTPUT_NAME "openswoole")
+add_dependencies(ext-openswoole lib-openswoole)
 
-target_link_libraries(ext-swoole swoole)
+target_link_libraries(ext-openswoole openswoole)
 
 #install
 INSTALL(CODE "MESSAGE(\"Are you run command using root user?\")")
-INSTALL(TARGETS ext-swoole LIBRARY DESTINATION ${PHP_EXTENSION_DIR})
-INSTALL(TARGETS lib-swoole LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
-INSTALL(FILES ${HEAD_FILES} DESTINATION include/swoole)
-INSTALL(FILES ${HEAD_WAPPER_FILES} DESTINATION include/swoole/wrapper)
-INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/config.h DESTINATION include/swoole)
+INSTALL(TARGETS ext-openswoole LIBRARY DESTINATION ${PHP_EXTENSION_DIR})
+INSTALL(TARGETS lib-openswoole LIBRARY DESTINATION lib ARCHIVE DESTINATION lib)
+INSTALL(FILES ${HEAD_FILES} DESTINATION include/openswoole)
+INSTALL(FILES ${HEAD_WAPPER_FILES} DESTINATION include/openswoole/wrapper)
+INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/config.h DESTINATION include/openswoole)

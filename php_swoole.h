@@ -34,17 +34,17 @@
 #include "config.h"
 #endif
 
-extern zend_module_entry swoole_module_entry;
-#define phpext_swoole_ptr &swoole_module_entry
+extern zend_module_entry openswoole_module_entry;
+#define phpext_swoole_ptr &openswoole_module_entry
 
-PHP_MINIT_FUNCTION(swoole);
-PHP_MSHUTDOWN_FUNCTION(swoole);
-PHP_RINIT_FUNCTION(swoole);
-PHP_RSHUTDOWN_FUNCTION(swoole);
-PHP_MINFO_FUNCTION(swoole);
+PHP_MINIT_FUNCTION(openswoole);
+PHP_MSHUTDOWN_FUNCTION(openswoole);
+PHP_RINIT_FUNCTION(openswoole);
+PHP_RSHUTDOWN_FUNCTION(openswoole);
+PHP_MINFO_FUNCTION(openswoole);
 
 // clang-format off
-ZEND_BEGIN_MODULE_GLOBALS(swoole)
+ZEND_BEGIN_MODULE_GLOBALS(openswoole)
     zend_bool display_errors;
     zend_bool cli;
     zend_bool use_shortname;
@@ -53,15 +53,15 @@ ZEND_BEGIN_MODULE_GLOBALS(swoole)
     zend_bool enable_library;
     long socket_buffer_size;
     int req_status;
-ZEND_END_MODULE_GLOBALS(swoole)
+ZEND_END_MODULE_GLOBALS(openswoole)
 // clang-format on
 
-extern ZEND_DECLARE_MODULE_GLOBALS(swoole);
+extern ZEND_DECLARE_MODULE_GLOBALS(openswoole);
 
 #ifdef ZTS
-#define SWOOLE_G(v) TSRMG(swoole_globals_id, zend_swoole_globals *, v)
+#define SWOOLE_G(v) TSRMG(openswoole_globals_id, zend_openswoole_globals *, v)
 #else
-#define SWOOLE_G(v) (swoole_globals.v)
+#define SWOOLE_G(v) (openswoole_globals.v)
 #endif
 
 #endif /* PHP_SWOOLE_H */
