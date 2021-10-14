@@ -7,7 +7,7 @@ swoole_runtime: library
 require __DIR__ . '/../include/bootstrap.php';
 $useShortName = !in_array(
     strtolower(trim(str_replace('0', '',
-        ini_get_all('swoole')['swoole.use_shortname']['local_value']
+        ini_get_all('openswoole')['swoole.use_shortname']['local_value']
     ))),
     ['', 'off', 'false'],
     true
