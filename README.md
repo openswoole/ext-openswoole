@@ -443,7 +443,7 @@ echo 'use ' . (microtime(true) - $s) . ' s';
 ### 1. Install via PECL (beginners)
 
 ```shell
-pecl install swoole
+pecl install openswoole
 ```
 
 ### 2. Install from source (recommended)

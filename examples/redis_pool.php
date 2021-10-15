@@ -11,7 +11,7 @@
 define("SERVER_RELOAD", 'U0VSVkVSX1JFTE9BRAo=');
 
 if(!extension_loaded('openswoole')){
-    throw new Exception("install swoole extension, pecl install swoole");
+    throw new Exception("install openswoole extension, pecl install openswoole");
 }
 
 if(!extension_loaded('redis')) {
