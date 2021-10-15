@@ -678,7 +678,11 @@ double microtime(void);
 }  // namespace swoole
 
 extern swoole::Global SwooleG;                  // Local Global Variable
+#ifdef __MACH__
+extern thread_local swoole::ThreadGlobal SwooleTG;  // Thread Global Variable
+#else
 extern __thread swoole::ThreadGlobal SwooleTG;  // Thread Global Variable
+#endif
 
 #define SW_CPU_NUM (SwooleG.cpu_num)
 
