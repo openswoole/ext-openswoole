@@ -49,7 +49,7 @@ $pm->parentFunc = function ($pid) use ($pm)
             $_pkg = unserialize(substr($pkg, 4));
             Assert::assert(is_array($_pkg));
             Assert::same($_pkg['i'], $i);
-            Assert::assert($_pkg['data'] <= 256 * 1024);
+            Assert::assert(strlen($_pkg['data']) <= 256 * 1024);
         }
         echo "SUCCESS\n";
         $client->close();
