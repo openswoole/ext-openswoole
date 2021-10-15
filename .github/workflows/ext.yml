@@ -1,4 +1,4 @@
-name: ext-swoole
+name: ext-openswoole
 
 on: [push, pull_request]
 
@@ -113,4 +113,4 @@ jobs:
       - name: build
         run: |
           cp .github/workflows/alpine.Dockerfile alpine.Dockerfile
-          docker build -t swoole . -f alpine.Dockerfile --build-arg PHP_VERSION=${{ matrix.php-version }} --build-arg ALPINE_VERSION=${{ matrix.alpine-version }}
+          docker build -t openswoole . -f alpine.Dockerfile --build-arg PHP_VERSION=${{ matrix.php-version }} --build-arg ALPINE_VERSION=${{ matrix.alpine-version }}

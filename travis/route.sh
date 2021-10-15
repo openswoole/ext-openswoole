@@ -81,8 +81,8 @@ remove_docker_containers(){
 }
 
 run_tests_in_docker(){
-    docker exec swoole touch /.travisenv && \
-    docker exec swoole /swoole-src/travis/docker-route.sh
+    docker exec openswoole touch /.travisenv && \
+    docker exec openswoole /swoole-src/travis/docker-route.sh
     if [ $? -ne 0 ]; then
         echo "\n❌ Run tests failed!"
         exit 1

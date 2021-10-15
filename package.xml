@@ -48,8 +48,8 @@
         <email>twose@qq.com</email>
         <active>yes</active>
     </developer>
-    <date>2021-10-13</date>
-    <time>12:00:00</time>
+    <date>2021-10-14</date>
+    <time>21:00:00</time>
     <version>
         <release>4.7.1</release>
         <api>4.0</api>
@@ -85,12 +85,9 @@
             <file role="src" name="CMakeLists.txt" />
             <file role="doc" name="CODE-STYLE.md" />
             <file role="src" name="CPPLINT.cfg" />
-            <file role="doc" name="CREDITS" />
             <file role="doc" name="LICENSE" />
             <file role="src" name="Makefile.frag" />
-            <file role="doc" name="README-CN.md" />
             <file role="doc" name="README.md" />
-            <file role="doc" name="SUPPORTED.md" />
             <file role="src" name="clear.sh" />
             <file role="src" name="code_format.sh" />
             <file role="src" name="code_stats.sh" />
@@ -1736,6 +1733,7 @@
             <file role="test" name="tests/swoole_server/length/03.phpt" />
             <file role="test" name="tests/swoole_server/length/length_func.phpt" />
             <file role="test" name="tests/swoole_server/listen_fail.phpt" />
+            <file role="test" name="tests/swoole_server/max_concurrency.phpt" />
             <file role="test" name="tests/swoole_server/max_idle_time_1.phpt" />
             <file role="test" name="tests/swoole_server/max_idle_time_2.phpt" />
             <file role="test" name="tests/swoole_server/max_queued_bytes.phpt" />
@@ -2001,6 +1999,7 @@
             <file role="src" name="thirdparty/boost/asm/jump_ppc64_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/jump_ppc64_sysv_macho_gas.S" />
             <file role="src" name="thirdparty/boost/asm/jump_ppc64_sysv_xcoff_gas.S" />
+            <file role="src" name="thirdparty/boost/asm/jump_riscv64_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/jump_sparc64_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/jump_sparc_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/jump_x86_64_ms_pe_gas.asm" />
@@ -2027,6 +2026,7 @@
             <file role="src" name="thirdparty/boost/asm/make_ppc64_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/make_ppc64_sysv_macho_gas.S" />
             <file role="src" name="thirdparty/boost/asm/make_ppc64_sysv_xcoff_gas.S" />
+            <file role="src" name="thirdparty/boost/asm/make_riscv64_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/make_sparc64_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/make_sparc_sysv_elf_gas.S" />
             <file role="src" name="thirdparty/boost/asm/make_x86_64_ms_pe_gas.asm" />

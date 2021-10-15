@@ -2,7 +2,7 @@
 #ifdef HAVE_SWOOLE_DIR
 #include "swoole_async.h"
 #else
-#include "swoole/swoole_async.h"
+#include "openswoole/swoole_async.h"
 #endif
 #include <iostream>
 #include <regex>

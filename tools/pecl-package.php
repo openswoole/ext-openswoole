@@ -220,7 +220,7 @@ if (preg_match('/Warning/i', $package)) {
 }
 
 // check package status
-if (!preg_match('/Package (?<filename>swoole-.+?.tgz) done/', $package, $matches)) {
+if (!preg_match('/Package (?<filename>openswoole-.+?.tgz) done/', $package, $matches)) {
     swoole_error($package);
 } else {
     $file_name = $matches['filename'];

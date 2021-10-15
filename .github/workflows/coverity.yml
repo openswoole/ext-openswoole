@@ -7,7 +7,7 @@ on:
 
 env:
   COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
-  COVERITY_SCAN_EMAIL: team@swoole.com
+  COVERITY_SCAN_EMAIL: hello@swoole.co.uk
   COVERITY_PROJECT: ${{ github.repository }}
   COV_TOOLS_DIR: ${{ github.workspace }}/cov-analysis-linux64
   COV_BUILD_DIR: ${{ github.workspace }}
@@ -16,7 +16,7 @@ env:
 
 jobs:
   coverity-scan:
-    if: github.repository_owner == 'swoole'
+    if: github.repository_owner == 'openswoole'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1

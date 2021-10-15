@@ -57,7 +57,7 @@ END_EXTERN_C()
 using swoole::Server;
 using swoole::network::Socket;
 
-ZEND_DECLARE_MODULE_GLOBALS(swoole)
+ZEND_DECLARE_MODULE_GLOBALS(openswoole)
 
 extern sapi_module_struct sapi_module;
 
@@ -235,17 +235,17 @@ static const zend_module_dep swoole_deps[] = {
     ZEND_MOD_END
 };
 
-zend_module_entry swoole_module_entry = {
+zend_module_entry openswoole_module_entry = {
     STANDARD_MODULE_HEADER_EX,
     nullptr,
     swoole_deps,
     "openswoole",
     swoole_functions,
-    PHP_MINIT(swoole),
-    PHP_MSHUTDOWN(swoole),
-    PHP_RINIT(swoole),     //RINIT
-    PHP_RSHUTDOWN(swoole), //RSHUTDOWN
-    PHP_MINFO(swoole),
+    PHP_MINIT(openswoole),
+    PHP_MSHUTDOWN(openswoole),
+    PHP_RINIT(openswoole),     //RINIT
+    PHP_RSHUTDOWN(openswoole), //RSHUTDOWN
+    PHP_MINFO(openswoole),
     PHP_SWOOLE_VERSION,
     STANDARD_MODULE_PROPERTIES
 };
@@ -257,8 +257,8 @@ zend_object_handlers swoole_exception_handlers;
 zend_class_entry *swoole_error_ce;
 zend_object_handlers swoole_error_handlers;
 
-#ifdef COMPILE_DL_SWOOLE
-ZEND_GET_MODULE(swoole)
+#ifdef COMPILE_DL_OPENSWOOLE
+ZEND_GET_MODULE(openswoole)
 #endif
 
 // clang-format off
@@ -269,34 +269,34 @@ PHP_INI_BEGIN()
 /**
  * enable swoole coroutine
  */
-STD_ZEND_INI_BOOLEAN("swoole.enable_coroutine", "On", PHP_INI_ALL, OnUpdateBool, enable_coroutine, zend_swoole_globals, swoole_globals)
-STD_ZEND_INI_BOOLEAN("swoole.enable_library", "On", PHP_INI_ALL, OnUpdateBool, enable_library, zend_swoole_globals, swoole_globals)
+STD_ZEND_INI_BOOLEAN("swoole.enable_coroutine", "On", PHP_INI_ALL, OnUpdateBool, enable_coroutine, zend_openswoole_globals, openswoole_globals)
+STD_ZEND_INI_BOOLEAN("swoole.enable_library", "On", PHP_INI_ALL, OnUpdateBool, enable_library, zend_openswoole_globals, openswoole_globals)
 /**
  * enable swoole coroutine epreemptive scheduler
  */
-STD_ZEND_INI_BOOLEAN("swoole.enable_preemptive_scheduler", "Off", PHP_INI_ALL, OnUpdateBool, enable_preemptive_scheduler, zend_swoole_globals, swoole_globals)
+STD_ZEND_INI_BOOLEAN("swoole.enable_preemptive_scheduler", "Off", PHP_INI_ALL, OnUpdateBool, enable_preemptive_scheduler, zend_openswoole_globals, openswoole_globals)
 /**
  * display error
  */
-STD_ZEND_INI_BOOLEAN("swoole.display_errors", "On", PHP_INI_ALL, OnUpdateBool, display_errors, zend_swoole_globals, swoole_globals)
+STD_ZEND_INI_BOOLEAN("swoole.display_errors", "On", PHP_INI_ALL, OnUpdateBool, display_errors, zend_openswoole_globals, openswoole_globals)
 /**
  * use short class name
  */
-STD_ZEND_INI_BOOLEAN("swoole.use_shortname", "On", PHP_INI_SYSTEM, OnUpdateBool, use_shortname, zend_swoole_globals, swoole_globals)
+STD_ZEND_INI_BOOLEAN("swoole.use_shortname", "On", PHP_INI_SYSTEM, OnUpdateBool, use_shortname, zend_openswoole_globals, openswoole_globals)
 /**
  * unix socket buffer size
  */
-STD_PHP_INI_ENTRY("swoole.unixsock_buffer_size", ZEND_TOSTR(SW_SOCKET_BUFFER_SIZE), PHP_INI_ALL, OnUpdateLong, socket_buffer_size, zend_swoole_globals, swoole_globals)
+STD_PHP_INI_ENTRY("swoole.unixsock_buffer_size", ZEND_TOSTR(SW_SOCKET_BUFFER_SIZE), PHP_INI_ALL, OnUpdateLong, socket_buffer_size, zend_openswoole_globals, openswoole_globals)
 PHP_INI_END()
 // clang-format on
 
-static void php_swoole_init_globals(zend_swoole_globals *swoole_globals) {
-    swoole_globals->enable_coroutine = 1;
-    swoole_globals->enable_library = 1;
-    swoole_globals->enable_preemptive_scheduler = 0;
-    swoole_globals->socket_buffer_size = SW_SOCKET_BUFFER_SIZE;
-    swoole_globals->display_errors = 1;
-    swoole_globals->use_shortname = 1;
+static void php_swoole_init_globals(zend_openswoole_globals *openswoole_globals) {
+    openswoole_globals->enable_coroutine = 1;
+    openswoole_globals->enable_library = 1;
+    openswoole_globals->enable_preemptive_scheduler = 0;
+    openswoole_globals->socket_buffer_size = SW_SOCKET_BUFFER_SIZE;
+    openswoole_globals->display_errors = 1;
+    openswoole_globals->use_shortname = 1;
 }
 
 void php_swoole_register_shutdown_function(const char *function) {
@@ -427,8 +427,8 @@ static void bug_report_message_init() {
 
 /* {{{ PHP_MINIT_FUNCTION
  */
-PHP_MINIT_FUNCTION(swoole) {
-    ZEND_INIT_MODULE_GLOBALS(swoole, php_swoole_init_globals, nullptr);
+PHP_MINIT_FUNCTION(openswoole) {
+    ZEND_INIT_MODULE_GLOBALS(openswoole, php_swoole_init_globals, nullptr);
     REGISTER_INI_ENTRIES();
 
     // clang-format off
@@ -823,7 +823,7 @@ PHP_MINIT_FUNCTION(swoole) {
 
 /* {{{ PHP_MSHUTDOWN_FUNCTION
  */
-PHP_MSHUTDOWN_FUNCTION(swoole) {
+PHP_MSHUTDOWN_FUNCTION(openswoole) {
     swoole_clean();
     zend::known_strings_dtor();
     php_swoole_runtime_mshutdown();
@@ -834,7 +834,7 @@ PHP_MSHUTDOWN_FUNCTION(swoole) {
 
 /* {{{ PHP_MINFO_FUNCTION
  */
-PHP_MINFO_FUNCTION(swoole) {
+PHP_MINFO_FUNCTION(openswoole) {
     char buf[64];
     php_info_print_table_start();
     php_info_print_table_header(2, "Open Swoole", "enabled");
@@ -1012,7 +1012,7 @@ const swoole::Allocator *sw_zend_string_allocator() {
     return &zend_string_allocator;
 }
 
-PHP_RINIT_FUNCTION(swoole) {
+PHP_RINIT_FUNCTION(openswoole) {
     if (!SWOOLE_G(cli)) {
         return SUCCESS;
     }
@@ -1044,7 +1044,7 @@ PHP_RINIT_FUNCTION(swoole) {
     return SUCCESS;
 }
 
-PHP_RSHUTDOWN_FUNCTION(swoole) {
+PHP_RSHUTDOWN_FUNCTION(openswoole) {
     if (!SWOOLE_G(cli)) {
         return SUCCESS;
     }

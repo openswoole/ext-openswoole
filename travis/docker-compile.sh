@@ -25,7 +25,7 @@ phpize > /dev/null && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
 make install && echo "" && \
-docker-php-ext-enable swoole && \
+docker-php-ext-enable --ini-name zzz-docker-php-ext-openswoole.ini openswoole && \
 php --ri curl && \
-php --ri swoole
+php --ri openswoole
 

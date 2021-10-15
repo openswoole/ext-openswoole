@@ -26,7 +26,7 @@ Coroutine\run(function () {
         'ssl_cafile' => SSL_FILE_DIR . '/mosquitto.org.crt',
         'ssl_verify_peer' => true,
     ]);
-    $ret = $client2->connect('baidu.com', 443);
+    $ret = $client2->connect('www.swoole.co.uk', 443);
     Assert::false($ret);
     Assert::eq($client2->errCode, SWOOLE_ERROR_SSL_VERIFY_FAILED);
 });

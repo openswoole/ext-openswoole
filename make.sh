@@ -28,10 +28,10 @@ if [ "$1" = "clean" ] ;then
 fi
 
 if [ "$1" = "install-module" ] ;then
-  make ext-swoole
+  make ext-openswoole
   __EXT_DIR__=$(php-config --extension-dir)
-  cp lib/swoole.so "${__EXT_DIR__}"
-  echo "cp lib/swoole.so ${__EXT_DIR__}"
+  cp lib/openswoole.so "${__EXT_DIR__}"
+  echo "cp lib/openswoole.so ${__EXT_DIR__}"
   exit 0
 fi
 

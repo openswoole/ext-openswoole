@@ -1,5 +1,5 @@
 dnl $Id$
-dnl config.m4 for extension swoole
+dnl config.m4 for extension openswoole
 
 dnl  +----------------------------------------------------------------------+
 dnl  | Swoole                                                               |
@@ -405,20 +405,20 @@ if test "$PHP_SWOOLE" != "no"; then
     AC_CHECK_LIB(z, gzgets, [
         AC_DEFINE(SW_HAVE_COMPRESSION, 1, [have compression])
         AC_DEFINE(SW_HAVE_ZLIB, 1, [have zlib])
-        PHP_ADD_LIBRARY(z, 1, SWOOLE_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(z, 1, OPENSWOOLE_SHARED_LIBADD)
     ])
 
     AC_CHECK_LIB(brotlienc, BrotliEncoderCreateInstance, [
         AC_CHECK_LIB(brotlidec, BrotliDecoderCreateInstance, [
             AC_DEFINE(SW_HAVE_COMPRESSION, 1, [have compression])
             AC_DEFINE(SW_HAVE_BROTLI, 1, [have brotli encoder])
-            PHP_ADD_LIBRARY(brotlienc, 1, SWOOLE_SHARED_LIBADD)
-            PHP_ADD_LIBRARY(brotlidec, 1, SWOOLE_SHARED_LIBADD)
+            PHP_ADD_LIBRARY(brotlienc, 1, OPENSWOOLE_SHARED_LIBADD)
+            PHP_ADD_LIBRARY(brotlidec, 1, OPENSWOOLE_SHARED_LIBADD)
         ])
     ])
 
     PHP_ADD_LIBRARY(pthread)
-    PHP_SUBST(SWOOLE_SHARED_LIBADD)
+    PHP_SUBST(OPENSWOOLE_SHARED_LIBADD)
 
     AC_ARG_ENABLE(debug,
         [  --enable-debug,         compile with debug symbols],
@@ -455,7 +455,7 @@ if test "$PHP_SWOOLE" != "no"; then
         dnl and php_config.h does not have HAVE_SOCKETS defined.
         AC_DEFINE(HAVE_SOCKETS, 1, [whether sockets extension is enabled])
 
-        PHP_ADD_EXTENSION_DEP(swoole, sockets, true)
+        PHP_ADD_EXTENSION_DEP(openswoole, sockets, true)
     fi
 
     if test "$PHP_THREAD" = "yes"; then
@@ -464,7 +464,7 @@ if test "$PHP_SWOOLE" != "no"; then
     
     if test "$PHP_CARES" = "yes"; then
         AC_DEFINE(SW_USE_CARES, 1, [do we enable c-ares support])
-        PHP_ADD_LIBRARY(cares, 1, SWOOLE_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(cares, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
 
     AC_SWOOLE_CPU_AFFINITY
@@ -491,7 +491,7 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_CHECK_LIB(c, clock_gettime, AC_DEFINE(HAVE_CLOCK_GETTIME, 1, [have clock_gettime]))
     else
         AC_CHECK_LIB(rt, clock_gettime, AC_DEFINE(HAVE_CLOCK_GETTIME, 1, [have clock_gettime]))
-        PHP_ADD_LIBRARY(rt, 1, SWOOLE_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(rt, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
     if test "$SW_OS" = "LINUX"; then
         LDFLAGS="$LDFLAGS -z now"
@@ -507,18 +507,18 @@ if test "$PHP_SWOOLE" != "no"; then
         fi
 
         AC_DEFINE(SW_USE_OPENSSL, 1, [enable openssl support])
-        PHP_ADD_LIBRARY(ssl, 1, SWOOLE_SHARED_LIBADD)
-        PHP_ADD_LIBRARY(crypto, 1, SWOOLE_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(ssl, 1, OPENSWOOLE_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(crypto, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
 
     if test "$PHP_JEMALLOC_DIR" != "no"; then
         AC_DEFINE(SW_USE_JEMALLOC, 1, [use jemalloc])
         PHP_ADD_INCLUDE("${PHP_JEMALLOC_DIR}/include")
         PHP_ADD_LIBRARY_WITH_PATH(jemalloc, "${PHP_JEMALLOC_DIR}/${PHP_LIBDIR}")
-        PHP_ADD_LIBRARY(jemalloc, 1, SWOOLE_SHARED_LIBADD)
+        PHP_ADD_LIBRARY(jemalloc, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
 
-    PHP_ADD_LIBRARY(pthread, 1, SWOOLE_SHARED_LIBADD)
+    PHP_ADD_LIBRARY(pthread, 1, OPENSWOOLE_SHARED_LIBADD)
 
     if test "$PHP_HTTP2" = "yes"; then
         AC_DEFINE(SW_USE_HTTP2, 1, [enable HTTP2 support])
@@ -761,7 +761,7 @@ if test "$PHP_SWOOLE" != "no"; then
     PHP_ADD_INCLUDE([$ext_srcdir/ext-src])
     PHP_ADD_INCLUDE([$ext_srcdir/thirdparty/hiredis])
 
-    AC_MSG_CHECKING([swoole coverage])
+    AC_MSG_CHECKING([openswoole coverage])
     if test "$PHP_SWOOLE_COVERAGE" != "no"; then
         AC_MSG_RESULT([enabled])
 
@@ -770,7 +770,7 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_MSG_RESULT([disabled])
     fi
 
-    PHP_INSTALL_HEADERS([ext/swoole], [ext-src/*.h config.h php_swoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h])
+    PHP_INSTALL_HEADERS([ext/openswoole], [ext-src/*.h config.h php_swoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h])
 
     PHP_REQUIRE_CXX()
 

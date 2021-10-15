@@ -1,7 +1,7 @@
 version: '3.4'
 services:
-  swoole:
-    container_name: "swoole"
+  openswoole:
+    container_name: "openswoole"
     image: "twosee/php:${PHP_VERSION}"
     volumes:
       - "${TRAVIS_BUILD_DIR}:/swoole-src:rw"
