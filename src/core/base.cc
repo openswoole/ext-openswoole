@@ -75,7 +75,11 @@ static ssize_t getrandom(void *buffer, size_t size, unsigned int __flags) {
 #endif
 
 swoole::Global SwooleG = {};
-__thread swoole::ThreadGlobal SwooleTG = {};
+#ifdef __MACH__
+thread_local swoole::ThreadGlobal SwooleTG;
+#else
+__thread swoole::ThreadGlobal SwooleTG;
+#endif
 
 static std::unordered_map<std::string, void *> functions;
 static swoole::Logger *g_logger_instance = nullptr;
