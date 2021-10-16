@@ -317,9 +317,7 @@ void swoole_http_parse_cookie(zval *zarray, const char *at, size_t length, bool 
             memcpy(valbuf, (char *) at + j, vlen);
             valbuf[vlen] = 0;
             _value = http_trim_double_quote(valbuf, &vlen);
-            if (url_decode) {
-                vlen = php_url_decode(_value, vlen);
-            }
+            vlen = php_url_decode(_value, vlen);
             if (klen > 1) {
                 add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);
             }
@@ -356,7 +354,9 @@ void swoole_http_parse_cookie(zval *zarray, const char *at, size_t length, bool 
         memcpy(valbuf, (char *) at + j, vlen);
         valbuf[vlen] = 0;
         _value = http_trim_double_quote(valbuf, &vlen);
-        vlen = php_url_decode(_value, vlen);
+        if (url_decode) {
+            vlen = php_url_decode(_value, vlen);
+        }
         if (klen > 1) {
             add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);
         }
