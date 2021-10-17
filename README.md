@@ -25,7 +25,7 @@ Open Swoole is a fork of orignal Swoole since release version v4.7.1.
 
 ## ⌛️ Installation
 
-> As with any open source project, Swoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
+> As with any open source project, Open Swoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
 
 ### Compiling requirements
 
@@ -79,10 +79,6 @@ After compiling and installing to the system successfully, you have to add a new
 2. `cd swoole-src && git pull && make clean && make && sudo make install`
 3. if you change your PHP version, please re-run `phpize clean && phpize` then try to compile
 
-## 🔰️ Security issues
-
-Security issues should be reported privately, via email, to the Open Swoole develop team [hello@swoole.co.uk](mailto:hello@swoole.co.uk). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
-
 ## 🖊️ Contribution
 
 Your contributions to Open Swoole development are welcome.
@@ -92,12 +88,11 @@ Your contributions to Open Swoole development are welcome.
 
 ## ❤️ Contributors
 
-This project exists thanks to all the people who contribute to the orignal Swoole project. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
-<a href="https://github.com/openswoole/swoole-src/graphs/contributors"><img src="https://opencollective.com/swoole-src/contributors.svg?width=890&button=false" /></a>
+This project exists thanks to all the contributors who contribute to the orignal Swoole project. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
 
-## 🎙️ Official Evangelist
+## 🔰️ Security issues
 
-[Demin](https://deminy.in) has been playing with PHP since 2000, focusing on building high-performance, secure web services. He is an occasional conference speaker on PHP and Swoole, and has been working for companies in the states like eBay, Visa and Glu Mobile for years. You may find Demin on [Twitter](https://twitter.com/deminy) or [GitHub](https://github.com/deminy).
+Security issues should be reported privately, via email, to the Open Swoole develop team [hello@swoole.co.uk](mailto:hello@swoole.co.uk). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 
 ## 📃 License
 
