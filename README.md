@@ -19,7 +19,7 @@ Open Swoole is a fork of orignal Swoole since release version v4.7.1.
 + __Slack Group__: <https://swoole.slack.com>
 + __IDE Helper & API__: <https://github.com/openswoole/ide-helper>
 
-## 💎 Frameworks & Components
+## Frameworks & Components
 
 > PR are welcome if your framework is using openswoole
 
@@ -73,27 +73,27 @@ After compiling and installing to the system successfully, you have to add a new
 
 ### Upgrade
 
->  ⚠️ If you upgrade from source, don't forget to `make clean` before you upgrade your swoole
+>  If you upgrade from source, don't forget to `make clean` before you upgrade your swoole
 
 1. `pecl upgrade openswoole`
 2. `cd swoole-src && git pull && make clean && make && sudo make install`
 3. if you change your PHP version, please re-run `phpize clean && phpize` then try to compile
 
-## 🖊️ Contribution
+## Contribution
 
 Your contributions to Open Swoole development are welcome.
 
 * [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
 * Submit fixes, features via Pull Request
 
-## ❤️ Contributors
+## Contributors
 
 This project exists thanks to all the contributors who contribute to the orignal Swoole project. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
 
-## 🔰️ Security issues
+## Security issues
 
 Security issues should be reported privately, via email, to the Open Swoole develop team [hello@swoole.co.uk](mailto:hello@swoole.co.uk). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 
-## 📃 License
+## License
 
 Apache License Version 2.0 see http://www.apache.org/licenses/LICENSE-2.0.html
