@@ -48,7 +48,7 @@
         <email>twose@qq.com</email>
         <active>yes</active>
     </developer>
-    <date>2021-10-14</date>
+    <date>2021-10-17</date>
     <time>21:00:00</time>
     <version>
         <release>4.7.1</release>
@@ -1280,7 +1280,6 @@
             <file role="test" name="tests/swoole_http_client_coro/websocket/bug_01.phpt" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/bug_02.phpt" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/server_push_first.phpt" />
-            <file role="test" name="tests/swoole_http_client_coro/websocket/ssl_1.phpt" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/ssl_2.phpt" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/timeout.phpt" />
             <file role="test" name="tests/swoole_http_server/0.phpt" />
