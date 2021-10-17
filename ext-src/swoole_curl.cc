@@ -252,6 +252,10 @@ long Multi::select(php_curlm *mh, double timeout) {
         return 0;
     }
 
+    if (curl_multi_socket_all(multi_handle_, &running_handles_) != CURLM_OK) {
+        return CURLE_FAILED_INIT;
+    }
+
     for (zend_llist_element *element = mh->easyh.head; element; element = element->next) {
         zval *z_ch = (zval *) element->data;
         php_curl *ch;
@@ -297,7 +301,7 @@ long Multi::select(php_curlm *mh, double timeout) {
 
     if (selector->timer_callback) {
         selector->timer_callback = false;
-        curl_multi_socket_action(multi_handle_, -1, 0, &running_handles_);
+        curl_multi_socket_action(multi_handle_, CURL_SOCKET_TIMEOUT, 0, &running_handles_);
         swoole_trace_log(SW_TRACE_CO_CURL, "socket_action[timer], running_handles=%d", running_handles_);
     }
 
