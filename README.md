@@ -10,7 +10,18 @@
 
 **Swoole is an event-driven asynchronous & coroutine-based concurrency networking communication engine with high performance written in C++ for PHP.**
 
-Open Swoole since release version v4.7.1.
+Open Swoole is a fork of orignal Swoole since release version v4.7.1.
+
+## 🛠 Documentation & Community
+
++ __Documentation__: <https://www.swoole.co.uk/docs>
++ __Twitter__: <https://twitter.com/openswoole>
++ __Slack Group__: <https://swoole.slack.com>
++ __IDE Helper & API__: <https://github.com/openswoole/ide-helper>
+
+## 💎 Frameworks & Components
+
+> PR are welcome if your framework is using openswoole
 
 ## ✨ Event-based
 
@@ -465,7 +476,7 @@ make && make install
 
 #### Enable extension in PHP
 
-After compiling and installing to the system successfully, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Swoole extension.
+After compiling and installing to the system successfully, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Open Swoole extension.
 
 #### Extra compiler configurations
 
@@ -486,45 +497,20 @@ After compiling and installing to the system successfully, you have to add a new
 2. `cd swoole-src && git pull && make clean && make && sudo make install`
 3. if you change your PHP version, please re-run `phpize clean && phpize` then try to compile
 
-## 💎 Frameworks & Components
-+ [**Hyperf**](https://github.com/hyperf/hyperf) is a coroutine framework that focuses on hyperspeed and flexibility, specifically used for build microservices or middlewares.
-+ [**Swoft**](https://github.com/swoft-cloud/swoft) is a modern, high-performance AOP and coroutine PHP framework.
-+ [**Easyswoole**](https://www.easyswoole.com) is a simple, high-performance PHP framework, based on Swoole, which makes using Swoole as easy as `echo "hello world"`.
-+ [**MixPHP**](https://github.com/mix-php/mix) is a powerful single-threaded coroutine framework with a very small footprint, simple and elegant.
-+ [**imi**](https://github.com/Yurunsoft/imi) is a high-performance coroutine application development framework based on PHP Swoole, which supports the development of HttpApi, WebSocket, TCP, UDP services.
-+ [**Saber**](https://github.com/swlib/saber) is a human-friendly, high-performance HTTP client component that has almost everything you can imagine.
-+ [**One**](https://github.com/lizhichao/one) is a minimalist, high-performance PHP framework that supports the [swoole | php-fpm] environment
-
-## 🛠 Develop & Discussion
-
-+ __Documentation__: <https://www.swoole.co.uk/docs>
-+ __IDE Helper & API__: <https://github.com/openswoole/ide-helper>
-+ __Debug Tool__: <https://github.com/openswoole/yasd>
-+ __Twitter__: <https://twitter.com/php_swoole>
-+ __Slack Group__: <https://swoole.slack.com>
-
-## 🍭 Benchmark
-
-+ On the open source [Techempower Web Framework benchmarks](https://www.techempower.com/benchmarks/#section=data-r17) Swoole used MySQL database benchmark to rank first, and all performance tests ranked in the first echelon.
-+ You can just run [Benchmark Script](https://github.com/swoole/benchmark/blob/master/benchmark.php) to quickly test the maximum QPS of Swoole-HTTP-Server on your machine.
-
 ## 🔰️ Security issues
 
-Security issues should be reported privately, via email, to the Swoole develop team [hello@swoole.co.uk](mailto:hello@swoole.co.uk). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
+Security issues should be reported privately, via email, to the Open Swoole develop team [hello@swoole.co.uk](mailto:hello@swoole.co.uk). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 
 ## 🖊️ Contribution
 
-Your contribution to Swoole development is very welcome!
-
-You may contribute in the following ways:
+Your contributions to Open Swoole development are welcome.
 
 * [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
 * Submit fixes, features via Pull Request
-* Write/polish documentation
 
 ## ❤️ Contributors
 
-This project exists thanks to all the people who contribute. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
+This project exists thanks to all the people who contribute to the orignal Swoole project. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
 <a href="https://github.com/openswoole/swoole-src/graphs/contributors"><img src="https://opencollective.com/swoole-src/contributors.svg?width=890&button=false" /></a>
 
 ## 🎙️ Official Evangelist
