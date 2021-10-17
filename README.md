@@ -12,7 +12,7 @@
 
 Open Swoole is a fork of orignal Swoole since release version v4.7.1.
 
-## 🛠 Documentation & Community
+## Documentation & Community
 
 + __Documentation__: <https://www.swoole.co.uk/docs>
 + __Twitter__: <https://twitter.com/openswoole>
@@ -23,7 +23,7 @@ Open Swoole is a fork of orignal Swoole since release version v4.7.1.
 
 > PR are welcome if your framework is using openswoole
 
-## ⌛️ Installation
+## Installation
 
 > As with any open source project, Open Swoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
 
