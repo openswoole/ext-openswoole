@@ -334,7 +334,7 @@ bool Socket::http_proxy_handshake() {
 #define HTTP_PROXY_FMT                                                                                                 \
     "CONNECT %.*s:%d HTTP/1.1\r\n"                                                                                     \
     "Host: %.*s:%d\r\n"                                                                                                \
-    "User-Agent: Swoole/" SWOOLE_VERSION "\r\n"                                                                        \
+    "User-Agent: OpenSwoole/" SWOOLE_VERSION "\r\n"                                                                        \
     "Proxy-Connection: Keep-Alive\r\n"
 
     // CONNECT
