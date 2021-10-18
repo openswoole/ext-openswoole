@@ -187,7 +187,8 @@ int ReactorSelect::wait(struct timeval *timeo) {
                     handler = reactor_->get_handler(SW_EVENT_READ, event.type);
                     ret = handler(reactor_, &event);
                     if (ret < 0) {
-                        swoole_sys_warning("[Reactor#%d] select event[type=READ, fd=%d] handler fail", reactor_->id, event.fd);
+                        swoole_sys_warning(
+                            "[Reactor#%d] select event[type=READ, fd=%d] handler fail", reactor_->id, event.fd);
                     }
                 }
                 // write
@@ -195,7 +196,8 @@ int ReactorSelect::wait(struct timeval *timeo) {
                     handler = reactor_->get_handler(SW_EVENT_WRITE, event.type);
                     ret = handler(reactor_, &event);
                     if (ret < 0) {
-                        swoole_sys_warning("[Reactor#%d] select event[type=WRITE, fd=%d] handler fail", reactor_->id, event.fd);
+                        swoole_sys_warning(
+                            "[Reactor#%d] select event[type=WRITE, fd=%d] handler fail", reactor_->id, event.fd);
                     }
                 }
                 // error
@@ -203,7 +205,8 @@ int ReactorSelect::wait(struct timeval *timeo) {
                     handler = reactor_->get_handler(SW_EVENT_ERROR, event.type);
                     ret = handler(reactor_, &event);
                     if (ret < 0) {
-                        swoole_sys_warning("[Reactor#%d] select event[type=ERROR, fd=%d] handler fail", reactor_->id, event.fd);
+                        swoole_sys_warning(
+                            "[Reactor#%d] select event[type=ERROR, fd=%d] handler fail", reactor_->id, event.fd);
                     }
                 }
                 if (!event.socket->removed && (event.socket->events & SW_EVENT_ONCE)) {

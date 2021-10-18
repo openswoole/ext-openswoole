@@ -115,10 +115,10 @@ int Server::accept_connection(Reactor *reactor, Event *event) {
         }
 
         swoole_trace("[Master] Accept new connection. maxfd=%d|minfd=%d|reactor_id=%d|conn=%d",
-                serv->get_maxfd(),
-                serv->get_minfd(),
-                reactor->id,
-                sock->fd);
+                     serv->get_maxfd(),
+                     serv->get_minfd(),
+                     reactor->id,
+                     sock->fd);
 
         // too many connection
         if (sock->fd >= (int) serv->max_connection) {
@@ -700,13 +700,14 @@ int Server::create() {
     }
     if (max_connection < minimum_connection) {
         max_connection = SwooleG.max_sockets;
-        swoole_warning("max_connection must be bigger than %u, it's reset to %u", minimum_connection, SwooleG.max_sockets);
+        swoole_warning(
+            "max_connection must be bigger than %u, it's reset to %u", minimum_connection, SwooleG.max_sockets);
     }
     // Reactor Thread Num
     if (reactor_num > SW_CPU_NUM * SW_MAX_THREAD_NCPU) {
         swoole_warning("serv->reactor_num == %d, Too many threads, reset to max value %d",
-               reactor_num,
-               SW_CPU_NUM * SW_MAX_THREAD_NCPU);
+                       reactor_num,
+                       SW_CPU_NUM * SW_MAX_THREAD_NCPU);
         reactor_num = SW_CPU_NUM * SW_MAX_THREAD_NCPU;
     } else if (reactor_num == 0) {
         reactor_num = SW_CPU_NUM;
@@ -727,8 +728,8 @@ int Server::create() {
     if (task_worker_num > 0) {
         if (task_worker_num > SW_CPU_NUM * SW_MAX_WORKER_NCPU) {
             swoole_warning("serv->task_worker_num == %d, Too many processes, reset to max value %d",
-                   task_worker_num,
-                   SW_CPU_NUM * SW_MAX_WORKER_NCPU);
+                           task_worker_num,
+                           SW_CPU_NUM * SW_MAX_WORKER_NCPU);
             task_worker_num = SW_CPU_NUM * SW_MAX_WORKER_NCPU;
         }
     }
@@ -1235,7 +1236,7 @@ bool Server::sendfile(SessionId session_id, const char *file, uint32_t l_file, o
                          "sendfile name[%.8s...] length %u is exceed the max name len %u",
                          file,
                          l_file,
-                         (uint32_t)(SW_IPC_BUFFER_SIZE - sizeof(SendfileTask) - 1));
+                         (uint32_t) (SW_IPC_BUFFER_SIZE - sizeof(SendfileTask) - 1));
         return false;
     }
     // string must be zero termination (for `state` system call)
@@ -1483,7 +1484,7 @@ ListenPort *Server::add_port(SocketType type, const char *host, int port) {
 
 #ifdef SW_USE_OPENSSL
     if (type & SW_SOCK_SSL) {
-        type = (SocketType)(type & (~SW_SOCK_SSL));
+        type = (SocketType) (type & (~SW_SOCK_SSL));
         ls->type = type;
         ls->ssl = 1;
         ls->ssl_context = new SSLContext();
@@ -1553,8 +1554,8 @@ static void Server_signal_handler(int sig) {
         pid = waitpid(-1, &status, WNOHANG);
         if (pid > 0 && pid == serv->gs->manager_pid) {
             swoole_warning("Fatal Error: manager process exit. status=%d, signal=[%s]",
-                   WEXITSTATUS(status),
-                   swoole_signal_to_str(WTERMSIG(status)));
+                           WEXITSTATUS(status),
+                           swoole_signal_to_str(WTERMSIG(status)));
         }
         break;
         /**

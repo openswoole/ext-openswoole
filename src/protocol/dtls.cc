@@ -41,7 +41,8 @@ long BIO_ctrl(BIO *b, int cmd, long lval, void *ptrval) {
     long retval = 0;
     Session *session = (Session *) BIO_get_data(b);
 
-    swoole_trace_log(SW_TRACE_SSL, "BIO_ctrl(BIO[0x%016lX], cmd[%d], lval[%ld], ptrval[0x%016lX])", b, cmd, lval, ptrval);
+    swoole_trace_log(
+        SW_TRACE_SSL, "BIO_ctrl(BIO[0x%016lX], cmd[%d], lval[%ld], ptrval[0x%016lX])", b, cmd, lval, ptrval);
 
     switch (cmd) {
     case BIO_CTRL_EOF:
@@ -171,10 +172,10 @@ bool Session::listen() {
     } else if (retval < 0) {
         int reason = ERR_GET_REASON(ERR_peek_error());
         swoole_warning("DTLSv1_listen() failed, client[%s:%d], reason=%d, error_string=%s",
-               socket->info.get_ip(),
-               socket->info.get_port(),
-               reason,
-               swoole_ssl_get_error());
+                       socket->info.get_ip(),
+                       socket->info.get_port(),
+                       reason,
+                       swoole_ssl_get_error());
         return false;
     } else {
         listened = true;

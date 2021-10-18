@@ -61,6 +61,7 @@ class Context {
     inline bool is_end() {
         return end_;
     }
+
   protected:
     CoroutineFunc fn_;
 #ifdef SW_USE_THREAD_CONTEXT

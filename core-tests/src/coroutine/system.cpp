@@ -44,20 +44,19 @@ TEST(coroutine_system, file) {
 }
 
 TEST(coroutine_system, flock) {
-
     std::shared_ptr<String> buf = std::make_shared<String>(65536);
     ASSERT_EQ(swoole_random_bytes(buf->str, buf->size - 1), buf->size - 1);
     buf->str[buf->size - 1] = 0;
 
     swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
 
-    Coroutine::create([&buf](void*) {
+    Coroutine::create([&buf](void *) {
         int fd = swoole_coroutine_open(test_file, File::WRITE | File::CREATE, 0666);
         ASSERT_TRUE(fd > 0);
         swoole_coroutine_flock_ex(test_file, fd, LOCK_EX);
 
         for (int i = 0; i < 4; i++) {
-            Coroutine::create([&buf](void*) {
+            Coroutine::create([&buf](void *) {
                 int fd = swoole_coroutine_open(test_file, File::READ, 0);
                 ASSERT_TRUE(fd > 0);
                 swoole_coroutine_flock_ex(test_file, fd, LOCK_SH);
@@ -84,7 +83,7 @@ TEST(coroutine_system, flock) {
 TEST(coroutine_system, cancel_sleep) {
     test::coroutine::run([](void *arg) {
         auto co = Coroutine::get_current_safe();
-        Coroutine::create([co](void *){
+        Coroutine::create([co](void *) {
             System::sleep(0.002);
             co->cancel();
         });

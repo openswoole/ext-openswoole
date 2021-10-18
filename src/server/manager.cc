@@ -204,12 +204,12 @@ int Server::start_manager_process() {
 void Server::check_worker_exit_status(int worker_id, const ExitStatus &exit_status) {
     if (exit_status.get_status() != 0) {
         swoole_warning("worker(pid=%d, id=%d) abnormal exit, status=%d, signal=%d"
-               "%s",
-               exit_status.get_pid(),
-               worker_id,
-               exit_status.get_code(),
-               exit_status.get_signal(),
-               exit_status.get_signal() == SIGSEGV ? SwooleG.bug_report_message.c_str() : "");
+                       "%s",
+                       exit_status.get_pid(),
+                       worker_id,
+                       exit_status.get_code(),
+                       exit_status.get_signal(),
+                       exit_status.get_signal() == SIGSEGV ? SwooleG.bug_report_message.c_str() : "");
         if (onWorkerError != nullptr) {
             onWorkerError(this, worker_id, exit_status);
         }
@@ -415,7 +415,8 @@ void Manager::start(Server *_server) {
                     reload_worker_i++;
                     goto _kill_worker;
                 }
-                swoole_sys_warning("swKill(%d, SIGTERM) [%d] failed", reload_workers[reload_worker_i].pid, reload_worker_i);
+                swoole_sys_warning(
+                    "swKill(%d, SIGTERM) [%d] failed", reload_workers[reload_worker_i].pid, reload_worker_i);
             }
         }
     }

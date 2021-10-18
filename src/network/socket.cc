@@ -73,7 +73,7 @@ void IOVector::update_iterator(ssize_t __n) {
                 return;
             }
             iov_iterator += _index;
-            iov_iterator->iov_base = reinterpret_cast<char *> (iov_iterator->iov_base) + _offset_bytes;
+            iov_iterator->iov_base = reinterpret_cast<char *>(iov_iterator->iov_base) + _offset_bytes;
             iov_iterator->iov_len = iov_iterator->iov_len - _offset_bytes;
 
             return;
@@ -562,7 +562,8 @@ int Socket::handle_sendfile() {
     if (ret <= 0) {
         switch (catch_error(errno)) {
         case SW_ERROR:
-            swoole_sys_warning("sendfile(%s, %ld, %zu) failed", task->file.get_path().c_str(), (long) task->offset, sendn);
+            swoole_sys_warning(
+                "sendfile(%s, %ld, %zu) failed", task->file.get_path().c_str(), (long) task->offset, sendn);
             buffer->pop();
             return SW_OK;
         case SW_CLOSE:
@@ -781,7 +782,6 @@ ssize_t Socket::writev(IOVector *io_vector) {
     ssize_t retval;
 
     do {
-
 #ifdef SW_USE_OPENSSL
         if (ssl) {
             retval = ssl_writev(io_vector);
@@ -822,7 +822,7 @@ static int ssl_check_name(const char *name, ASN1_STRING *pattern) {
     char *s, *end;
     size_t slen, plen;
 
-    s = (char *)name;
+    s = (char *) name;
     slen = strlen(name);
 
     uchar *p = ASN1_STRING_data(pattern);
@@ -978,7 +978,7 @@ X509 *Socket::ssl_get_peer_certificate() {
     return SSL_get_peer_certificate(ssl);
 }
 
-STACK_OF(X509) *Socket::ssl_get_peer_cert_chain() {
+STACK_OF(X509) * Socket::ssl_get_peer_cert_chain() {
     if (!ssl) {
         return NULL;
     }
@@ -1149,8 +1149,13 @@ int Socket::ssl_connect() {
 
     long err_code = ERR_get_error();
     char *msg = ERR_error_string(err_code, sw_tg_buffer()->str);
-    swoole_notice("Socket::ssl_connect(fd=%d) to server[%s:%d] failed. Error: %s[%ld|%d]", fd, info.get_ip(), info.get_port(), msg,
-           err, ERR_GET_REASON(err_code));
+    swoole_notice("Socket::ssl_connect(fd=%d) to server[%s:%d] failed. Error: %s[%ld|%d]",
+                  fd,
+                  info.get_ip(),
+                  info.get_port(),
+                  msg,
+                  err,
+                  ERR_GET_REASON(err_code));
 
     return SW_ERR;
 }

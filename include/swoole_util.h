@@ -65,15 +65,16 @@ static inline long time(bool steady = false) {
 }
 
 class DeferTask {
- private:
+  private:
     std::stack<Callback> list_;
- public:
+
+  public:
     void add(Callback fn) {
         list_.push(fn);
     }
 
     ~DeferTask() {
-        while(!list_.empty()) {
+        while (!list_.empty()) {
             auto fn = list_.top();
             fn(nullptr);
             list_.pop();
@@ -116,7 +117,7 @@ template <typename Fun>
 inline ScopeGuard<Fun> operator+(ScopeGuardOnExit, Fun &&fn) {
     return ScopeGuard<Fun>(std::forward<Fun>(fn));
 }
-}
+}  // namespace detail
 
 // Helper macro
 #define ON_SCOPE_EXIT                                                                                                  \

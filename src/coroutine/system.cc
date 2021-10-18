@@ -644,7 +644,7 @@ bool async(async::Handler handler, AsyncEvent &event, double timeout) {
         return false;
     } else {
         event.canceled = _ev->canceled;
-        event.error =  errno = _ev->error;
+        event.error = errno = _ev->error;
         event.retval = _ev->retval;
         return true;
     }

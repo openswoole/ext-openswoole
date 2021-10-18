@@ -95,5 +95,5 @@ class StaticHandler {
     }
 };
 
-};  // namespace http
+};  // namespace http_server
 };  // namespace swoole

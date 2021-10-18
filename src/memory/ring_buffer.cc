@@ -74,7 +74,7 @@ RingBuffer::RingBuffer(uint32_t size, bool shared) {
 
 void RingBufferImpl::collect() {
     for (uint32_t i = 0; i < free_count; i++) {
-        RingBufferItem *item = (RingBufferItem*) ((char*) memory + collect_offset);
+        RingBufferItem *item = (RingBufferItem *) ((char *) memory + collect_offset);
         if (item->lock == 0) {
             uint32_t n_size = item->length + sizeof(RingBufferItem);
             collect_offset += n_size;
@@ -166,4 +166,4 @@ RingBuffer::~RingBuffer() {
     }
 }
 
-}
+}  // namespace swoole

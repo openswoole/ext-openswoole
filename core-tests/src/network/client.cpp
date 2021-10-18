@@ -5,11 +5,11 @@
 #define GREETER "Hello Swoole"
 #define GREETER_SIZE sizeof(GREETER)
 
+using swoole::Pipe;
 using swoole::network::AsyncClient;
 using swoole::network::Client;
 using swoole::test::Process;
 using swoole::test::Server;
-using swoole::Pipe;
 
 TEST(client, tcp) {
     int ret;
@@ -220,21 +220,19 @@ TEST(client, ssl_1) {
     client.enable_ssl_encrypt();
     client.onConnect = [&connected](Client *cli) {
         connected = true;
-        cli->send(cli, SW_STRL("GET / HTTP/1.1\r\n"
-                "Host: www.baidu.com\r\n"
-                "Connection: close\r\n"
-                "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36"
-                "\r\n\r\n"), 0);
+        cli->send(cli,
+                  SW_STRL("GET / HTTP/1.1\r\n"
+                          "Host: www.baidu.com\r\n"
+                          "Connection: close\r\n"
+                          "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/51.0.2704.106 Safari/537.36"
+                          "\r\n\r\n"),
+                  0);
     };
 
-    client.onError = [](Client *cli) {
-    };
-    client.onClose = [&closed](Client *cli) {
-        closed = true;
-    };
-    client.onReceive = [&buf](Client *cli, const char *data, size_t length) {
-        buf.append(data, length);
-    };
+    client.onError = [](Client *cli) {};
+    client.onClose = [&closed](Client *cli) { closed = true; };
+    client.onReceive = [&buf](Client *cli, const char *data, size_t length) { buf.append(data, length); };
     ret = client.connect(&client, "www.baidu.com", 443, -1, 0);
     ASSERT_EQ(ret, 0);
 
@@ -265,21 +263,19 @@ TEST(client, http_proxy) {
 
     client.onConnect = [&connected](Client *cli) {
         connected = true;
-        cli->send(cli, SW_STRL("GET / HTTP/1.1\r\n"
-                "Host: www.baidu.com\r\n"
-                "Connection: close\r\n"
-                "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36"
-                "\r\n\r\n"), 0);
+        cli->send(cli,
+                  SW_STRL("GET / HTTP/1.1\r\n"
+                          "Host: www.baidu.com\r\n"
+                          "Connection: close\r\n"
+                          "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                          "Chrome/51.0.2704.106 Safari/537.36"
+                          "\r\n\r\n"),
+                  0);
     };
 
-    client.onError = [](Client *cli) {
-    };
-    client.onClose = [&closed](Client *cli) {
-        closed = true;
-    };
-    client.onReceive = [&buf](Client *cli, const char *data, size_t length) {
-        buf.append(data, length);
-    };
+    client.onError = [](Client *cli) {};
+    client.onClose = [&closed](Client *cli) { closed = true; };
+    client.onReceive = [&buf](Client *cli, const char *data, size_t length) { buf.append(data, length); };
     ret = client.connect(&client, "www.baidu.com", 443, -1, 0);
     ASSERT_EQ(ret, 0);
 
@@ -290,4 +286,3 @@ TEST(client, http_proxy) {
     ASSERT_TRUE(buf.contains("Baidu"));
 }
 #endif
-

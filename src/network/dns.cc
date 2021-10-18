@@ -285,7 +285,7 @@ std::vector<std::string> dns_lookup_impl_with_socket(const char *domain, int fam
         temp = &packet[steps];
         j = 0;
         while (*temp != 0) {
-            if ((uchar)(*temp) == 0xc0) {
+            if ((uchar) (*temp) == 0xc0) {
                 ++temp;
                 temp = &packet[(uint8_t) *temp];
             } else {
@@ -314,7 +314,7 @@ std::vector<std::string> dns_lookup_impl_with_socket(const char *domain, int fam
             temp = &packet[steps];
             j = 0;
             while (*temp != 0) {
-                if ((uchar)(*temp) == 0xc0) {
+                if ((uchar) (*temp) == 0xc0) {
                     ++temp;
                     temp = &packet[(uint8_t) *temp];
                 } else {

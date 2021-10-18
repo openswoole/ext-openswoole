@@ -191,7 +191,7 @@ class String {
         while (align_size < _new_size) {
             align_size *= 2;
         }
-        return reserve(align_size) ;
+        return reserve(align_size);
     }
 
     bool reserve(size_t new_size);

@@ -52,7 +52,8 @@ void ProcessPool::kill_timeout_worker(Timer *timer, TimerNode *tnode) {
                 continue;
             }
             if (swoole_kill(reload_worker_pid, SIGKILL) < 0) {
-                swoole_sys_warning("failed to force kill worker process(pid=%d, id=%d)", pool->reload_workers[i].pid, i);
+                swoole_sys_warning(
+                    "failed to force kill worker process(pid=%d, id=%d)", pool->reload_workers[i].pid, i);
             } else {
                 swoole_warning("force kill worker process(pid=%d, id=%d)", pool->reload_workers[i].pid, i);
             }
@@ -463,10 +464,10 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
             continue;
         }
 
-        if (n != (ssize_t)(out.buf.info.len + sizeof(out.buf.info))) {
+        if (n != (ssize_t) (out.buf.info.len + sizeof(out.buf.info))) {
             swoole_warning("bad task packet, The received data-length[%ld] is inconsistent with the packet-length[%ld]",
-                   n,
-                   out.buf.info.len + sizeof(out.buf.info));
+                           n,
+                           out.buf.info.len + sizeof(out.buf.info));
             continue;
         }
 
@@ -700,11 +701,11 @@ int ProcessPool::wait() {
 
             if (!exit_status.is_normal_exit()) {
                 swoole_warning("worker#%d abnormal exit, status=%d, signal=%d"
-                       "%s",
-                       exit_worker->id,
-                       exit_status.get_code(),
-                       exit_status.get_signal(),
-                       exit_status.get_signal() == SIGSEGV ? SwooleG.bug_report_message.c_str() : "");
+                               "%s",
+                               exit_worker->id,
+                               exit_status.get_code(),
+                               exit_status.get_signal(),
+                               exit_status.get_signal() == SIGSEGV ? SwooleG.bug_report_message.c_str() : "");
             }
             new_pid = spawn(exit_worker);
             if (new_pid < 0) {

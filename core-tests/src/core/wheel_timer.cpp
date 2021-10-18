@@ -4,20 +4,15 @@
 using namespace swoole;
 using namespace std;
 
-
 TEST(wheel_timer, next) {
     constexpr int size = 5;
     WheelTimer wt(size);
 
-    auto t1 = wt.add([&](WheelTimerNode *){
-        ASSERT_EQ(wt.get_round(), 6);
-    });
+    auto t1 = wt.add([&](WheelTimerNode *) { ASSERT_EQ(wt.get_round(), 6); });
     ASSERT_EQ(t1->index_, size - 1);
     wt.next();
 
-    auto t2 = wt.add([&](WheelTimerNode *){
-        ASSERT_EQ(wt.get_round(), 9);
-    });
+    auto t2 = wt.add([&](WheelTimerNode *) { ASSERT_EQ(wt.get_round(), 9); });
     ASSERT_EQ(t2->index_, 0);
     wt.update(t1);
 
@@ -28,4 +23,3 @@ TEST(wheel_timer, next) {
         wt.next();
     }
 }
-

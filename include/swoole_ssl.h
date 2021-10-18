@@ -161,7 +161,7 @@ struct SSLContext {
     bool set_dhparam();
     ~SSLContext();
 };
-}
+}  // namespace swoole
 
 void swoole_ssl_init(void);
 void swoole_ssl_init_thread_safety();

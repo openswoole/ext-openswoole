@@ -94,21 +94,21 @@ enum swHttp2_stream_flag {
         ((flags & SW_HTTP2_FLAG_PRIORITY) ? "\nEND_PRIORITY |" : "")
 
 #define swHttp2FrameTraceLog(recv, str, ...)                                                                           \
-    swoole_trace_log(SW_TRACE_HTTP2,                                                                                         \
-               "\nrecv ["                                                                                              \
-               "\e[3"                                                                                                  \
-               "%d"                                                                                                    \
-               "m"                                                                                                     \
-               "%s"                                                                                                    \
-               "\e[0m"                                                                                                 \
-               "] frame <length=%jd, flags=%d, stream_id=%d> " str "%s%s%s%s%s",                                       \
-               swoole::http2::get_type_color(type),                                                                    \
-               swoole::http2::get_type(type),                                                                          \
-               length,                                                                                                 \
-               flags,                                                                                                  \
-               stream_id,                                                                                              \
-               ##__VA_ARGS__,                                                                                          \
-               swHttp2FrameTraceLogFlags);
+    swoole_trace_log(SW_TRACE_HTTP2,                                                                                   \
+                     "\nrecv ["                                                                                        \
+                     "\e[3"                                                                                            \
+                     "%d"                                                                                              \
+                     "m"                                                                                               \
+                     "%s"                                                                                              \
+                     "\e[0m"                                                                                           \
+                     "] frame <length=%jd, flags=%d, stream_id=%d> " str "%s%s%s%s%s",                                 \
+                     swoole::http2::get_type_color(type),                                                              \
+                     swoole::http2::get_type(type),                                                                    \
+                     length,                                                                                           \
+                     flags,                                                                                            \
+                     stream_id,                                                                                        \
+                     ##__VA_ARGS__,                                                                                    \
+                     swHttp2FrameTraceLogFlags);
 
 namespace swoole {
 namespace http2 {

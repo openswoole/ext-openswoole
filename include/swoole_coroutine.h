@@ -61,7 +61,7 @@ class Coroutine {
 
     typedef void (*SwapCallback)(void *);
     typedef void (*BailoutCallback)();
-    typedef std::function<bool(swoole::Coroutine*)> CancelFunc;
+    typedef std::function<bool(swoole::Coroutine *)> CancelFunc;
 
     void resume();
     void yield();
@@ -74,7 +74,7 @@ class Coroutine {
         return state;
     }
 
-    inline long get_init_msec() const  {
+    inline long get_init_msec() const {
         return init_msec;
     }
 
@@ -129,7 +129,7 @@ class Coroutine {
 #ifdef SW_USE_THREAD_CONTEXT
         try {
             return (new Coroutine(fn, args))->run();
-        } catch (const std::system_error& e) {
+        } catch (const std::system_error &e) {
             swoole_set_last_error(e.code().value());
             swoole_warning("failed to create coroutine, Error: %s[%d]", e.what(), swoole_get_last_error());
             return -1;
@@ -203,9 +203,9 @@ class Coroutine {
     static long last_cid;
     static uint64_t peak_num;
     static size_t stack_size;
-    static SwapCallback on_yield;   /* before yield */
-    static SwapCallback on_resume;  /* before resume */
-    static SwapCallback on_close;   /* before close */
+    static SwapCallback on_yield;      /* before yield */
+    static SwapCallback on_resume;     /* before resume */
+    static SwapCallback on_close;      /* before close */
     static BailoutCallback on_bailout; /* when bailout */
     static bool activated;
 
@@ -217,7 +217,7 @@ class Coroutine {
     coroutine::Context ctx;
     Coroutine *origin = nullptr;
     CancelFunc *cancel_fn_ = nullptr;
-    
+
     Coroutine(const CoroutineFunc &fn, void *private_data) : ctx(stack_size, fn, private_data) {
         cid = ++last_cid;
         coroutines[cid] = this;

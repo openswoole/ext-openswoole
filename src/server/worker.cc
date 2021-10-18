@@ -683,9 +683,9 @@ _read_from_pipe:
              */
             if (recv_chunk_count >= SW_WORKER_MAX_RECV_CHUNK_COUNT) {
                 swoole_trace_log(SW_TRACE_WORKER,
-                           "worker process[%u] receives the chunk data to the maximum[%d], return to event loop",
-                           SwooleG.process_id,
-                           recv_chunk_count);
+                                 "worker process[%u] receives the chunk data to the maximum[%d], return to event loop",
+                                 SwooleG.process_id,
+                                 recv_chunk_count);
                 return SW_OK;
             }
             goto _read_from_pipe;

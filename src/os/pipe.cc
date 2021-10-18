@@ -97,4 +97,4 @@ SocketPair::~SocketPair() {
     }
 }
 
-}
+}  // namespace swoole

@@ -70,7 +70,7 @@ TEST(timer, async) {
     int timer2_count = 0;
 
     swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
-    
+
     uint64_t ms1 = swoole::time<std::chrono::milliseconds>();
     swoole_timer_after(
         20, [&](Timer *, TimerNode *) { timer1_count++; }, nullptr);

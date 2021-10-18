@@ -80,12 +80,13 @@ class SocketPair {
 };
 
 class Pipe : public SocketPair {
- public:
+  public:
     Pipe(bool blocking);
 };
 
 class UnixSocket : public SocketPair {
     int protocol_;
+
   public:
     UnixSocket(bool blocking, int _protocol);
     bool set_buffer_size(size_t _size);

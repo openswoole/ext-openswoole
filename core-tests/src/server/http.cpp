@@ -120,8 +120,11 @@ static void test_run_server(function<void(swServer *)> fn) {
         if (conn->websocket_status == swoole::websocket::STATUS_ACTIVE) {
             sw_tg_buffer()->clear();
             std::string resp = "Swoole: " + string(req->data, req->info.len);
-            swoole::websocket::encode(
-                sw_tg_buffer(), resp.c_str(), resp.length(), swoole::websocket::OPCODE_TEXT, swoole::websocket::FLAG_FIN);
+            swoole::websocket::encode(sw_tg_buffer(),
+                                      resp.c_str(),
+                                      resp.length(),
+                                      swoole::websocket::OPCODE_TEXT,
+                                      swoole::websocket::FLAG_FIN);
             serv->send(session_id, sw_tg_buffer()->str, sw_tg_buffer()->length);
             return SW_OK;
         }

@@ -166,8 +166,8 @@
 #define SW_USE_EVENTFD                                                                                                 \
     1  // Whether to use eventfd for message notification, Linux 2.6.22 or later is required to support
 
-#define SW_TASK_TMP_PATH_SIZE  256
-#define SW_TASK_TMP_DIR  "/tmp"
+#define SW_TASK_TMP_PATH_SIZE 256
+#define SW_TASK_TMP_DIR "/tmp"
 #define SW_TASK_TMP_FILE "swoole.task.XXXXXX"
 
 #define SW_FILE_CHUNK_SIZE 65536
@@ -194,10 +194,10 @@
 #define SW_DNS_RESOLV_CONF "/etc/resolv.conf"
 
 #define SW_Z_BEST_SPEED 1
-#define SW_COMPRESSION_MIN_LENGTH_DEFAULT  20
+#define SW_COMPRESSION_MIN_LENGTH_DEFAULT 20
 
 #ifndef IOV_MAX
-#define IOV_MAX   16
+#define IOV_MAX 16
 #endif
 
 #define IOV_MAX_ERROR_MSG "The maximum of iov count is %d"

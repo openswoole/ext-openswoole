@@ -235,10 +235,8 @@ TEST(coroutine_hook, read_dir) {
 
         swoole_coroutine_closedir(fp);
     };
-    
-    coroutine::run([&](void *arg) {
-        fn();
-    });
+
+    coroutine::run([&](void *arg) { fn(); });
     fn();
 }
 
@@ -254,9 +252,7 @@ TEST(coroutine_hook, readlink) {
         ASSERT_STREQ(buf1, buf2);
     };
 
-    coroutine::run([&](void *arg) {
-        fn();
-    });
+    coroutine::run([&](void *arg) { fn(); });
     fn();
 }
 
@@ -278,9 +274,7 @@ TEST(coroutine_hook, stdio_1) {
         unlink(test_file);
     };
 
-    coroutine::run([&](void *arg) {
-        fn();
-    });
+    coroutine::run([&](void *arg) { fn(); });
     fn();
 }
 
@@ -311,8 +305,6 @@ TEST(coroutine_hook, stdio_2) {
         unlink(test_file);
     };
 
-    coroutine::run([&](void *arg) {
-        fn();
-    });
+    coroutine::run([&](void *arg) { fn(); });
     fn();
 }

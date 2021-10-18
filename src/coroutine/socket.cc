@@ -145,18 +145,18 @@ bool Socket::wait_event(const EventType event, const void **__buf, size_t __n) {
         return false;
     }
     swoole_trace_log(SW_TRACE_SOCKET,
-               "socket#%d blongs to cid#%ld is waiting for %s event",
-               sock_fd,
-               co->get_cid(),
+                     "socket#%d blongs to cid#%ld is waiting for %s event",
+                     sock_fd,
+                     co->get_cid(),
 #ifdef SW_USE_OPENSSL
-               socket->ssl_want_read ? "SSL READ"
-                                     : socket->ssl_want_write ? "SSL WRITE" :
+                     socket->ssl_want_read    ? "SSL READ"
+                     : socket->ssl_want_write ? "SSL WRITE"
+                     :
 #endif
-                                                              event == SW_EVENT_READ ? "READ" : "WRITE");
+                     event == SW_EVENT_READ ? "READ"
+                                            : "WRITE");
 
-    Coroutine::CancelFunc cancel_fn = [this, event](Coroutine *co){
-        return cancel(event);
-    };
+    Coroutine::CancelFunc cancel_fn = [this, event](Coroutine *co) { return cancel(event); };
 
     if (sw_likely(event == SW_EVENT_READ)) {
         read_co = co;
@@ -195,12 +195,13 @@ _failed:
     want_event = SW_EVENT_NULL;
 #endif
     swoole_trace_log(SW_TRACE_SOCKET,
-               "socket#%d blongs to cid#%ld trigger %s event",
-               sock_fd,
-               co->get_cid(),
-               closed ? "CLOSE"
-                      : errCode ? errCode == ETIMEDOUT ? "TIMEOUT" : "ERROR"
-                                : added_event == SW_EVENT_READ ? "READ" : "WRITE");
+                     "socket#%d blongs to cid#%ld trigger %s event",
+                     sock_fd,
+                     co->get_cid(),
+                     closed                         ? "CLOSE"
+                     : errCode                      ? errCode == ETIMEDOUT ? "TIMEOUT" : "ERROR"
+                     : added_event == SW_EVENT_READ ? "READ"
+                                                    : "WRITE");
     return !closed && !errCode;
 }
 
@@ -702,7 +703,7 @@ bool Socket::connect(std::string _host, int _port, int flags) {
             }
             socket->info.addr.un.sun_family = AF_UNIX;
             memcpy(&socket->info.addr.un.sun_path, connect_host.c_str(), connect_host.size());
-            socket->info.len = (socklen_t)(offsetof(struct sockaddr_un, sun_path) + connect_host.size());
+            socket->info.len = (socklen_t) (offsetof(struct sockaddr_un, sun_path) + connect_host.size());
             _target_addr = (struct sockaddr *) &socket->info.addr.un;
             break;
         } else {
@@ -1487,11 +1488,11 @@ _get_length:
     } else if (packet_len > protocol.package_max_length) {
         read_buffer->clear();
         swoole_error_log(SW_LOG_WARNING,
-                            SW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
-                            "packet length is too big, remote_addr=%s:%d, length=%zu",
-                            socket->info.get_ip(),
-                            socket->info.get_port(),
-                            packet_len);
+                         SW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
+                         "packet length is too big, remote_addr=%s:%d, length=%zu",
+                         socket->info.get_ip(),
+                         socket->info.get_port(),
+                         packet_len);
         set_err(SW_ERROR_PACKAGE_LENGTH_TOO_LARGE, sw_error);
         return -1;
     }
