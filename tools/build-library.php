@@ -95,6 +95,7 @@ $files = [
     'functions.php',
     'alias.php',
     'alias_ns.php',
+    'vendor_init.php',
 ];
 
 $diff_files = array_diff(swoole_library_files(), $files);
