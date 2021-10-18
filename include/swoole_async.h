@@ -82,6 +82,7 @@ class AsyncThreads {
     void notify_one();
 
     static int callback(Reactor *reactor, Event *event);
+
   private:
     std::mutex init_lock;
 };

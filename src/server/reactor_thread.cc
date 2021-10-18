@@ -172,7 +172,7 @@ _do_recvfrom:
             ev.type = SW_SERVER_EVENT_INCOMING;
             ev.fd = conn->session_id;
             ev.reactor_id = conn->reactor_id;
-            if (serv->send_to_reactor_thread((EventData*) &ev, sizeof(ev), conn->session_id) < 0) {
+            if (serv->send_to_reactor_thread((EventData *) &ev, sizeof(ev), conn->session_id) < 0) {
                 reactor->close(reactor, session->socket);
                 return SW_OK;
             }
@@ -626,11 +626,11 @@ static int ReactorThread_onWrite(Reactor *reactor, Event *ev) {
     }
 
     swoole_trace_log(SW_TRACE_REACTOR,
-               "fd=%d, conn->close_notify=%d, serv->disable_notify=%d, conn->close_force=%d",
-               fd,
-               conn->close_notify,
-               serv->disable_notify,
-               conn->close_force);
+                     "fd=%d, conn->close_notify=%d, serv->disable_notify=%d, conn->close_force=%d",
+                     fd,
+                     conn->close_notify,
+                     serv->disable_notify,
+                     conn->close_force);
 
     if (conn->close_notify) {
 #ifdef SW_USE_OPENSSL

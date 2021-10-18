@@ -296,8 +296,8 @@ int ReactorKqueue::wait(struct timeval *timeo) {
                                                     event.type);
                     if (sw_unlikely(handler(reactor_, &event) < 0)) {
                         swoole_sys_warning("kqueue event %s socket#%d handler failed",
-                                  kevent->filter == EVFILT_READ ? "read" : "write",
-                                  event.fd);
+                                           kevent->filter == EVFILT_READ ? "read" : "write",
+                                           event.fd);
                     }
                     del_once_socket(event.socket);
                 }

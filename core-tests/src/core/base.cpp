@@ -76,7 +76,7 @@ TEST(base, file_get_size) {
     f.write(buf, sizeof(buf) - 1);
     f.close();
 
-    ASSERT_EQ(file_get_size(TEST_TMP_FILE), sizeof(buf) -1);
+    ASSERT_EQ(file_get_size(TEST_TMP_FILE), sizeof(buf) - 1);
 }
 
 TEST(base, version_compare) {
@@ -122,12 +122,12 @@ TEST(base, file_size) {
 }
 
 TEST(base, eventdata_pack) {
-    swEventData ed1 { };
+    swEventData ed1{};
 
     ASSERT_TRUE(ed1.pack(test_data.c_str(), test_data.length()));
     ASSERT_EQ(string(ed1.data, ed1.info.len), test_data);
 
-    swEventData ed2 { };
+    swEventData ed2{};
     ASSERT_EQ(swoole_random_bytes(sw_tg_buffer()->str, SW_BUFFER_SIZE_BIG), SW_BUFFER_SIZE_BIG);
     ASSERT_TRUE(ed2.pack(sw_tg_buffer()->str, SW_BUFFER_SIZE_BIG));
 
@@ -203,10 +203,13 @@ TEST(base, add_function) {
 
 TEST(base, hook) {
     int count = 0;
-    swoole_add_hook(SW_GLOBAL_HOOK_END, [](void *data) -> void {
-        int *_count = (int *) data;
-        *_count = 9999;
-    }, 1);
+    swoole_add_hook(
+        SW_GLOBAL_HOOK_END,
+        [](void *data) -> void {
+            int *_count = (int *) data;
+            *_count = 9999;
+        },
+        1);
     ASSERT_TRUE(swoole_isset_hook(SW_GLOBAL_HOOK_END));
     swoole_call_hook(SW_GLOBAL_HOOK_END, &count);
     ASSERT_EQ(count, 9999);
@@ -215,10 +218,10 @@ TEST(base, hook) {
 TEST(base, intersection) {
     std::vector<std::string> vec1{"index.php", "index.html", "default.html"};
 
-    std::set<std::string> vec2 {".", "..", "default.html", "index.php", "test.html", "a.json", "index.php"};
+    std::set<std::string> vec2{".", "..", "default.html", "index.php", "test.html", "a.json", "index.php"};
     ASSERT_EQ("index.php", swoole::intersection(vec1, vec2));
 
-    std::set<std::string> vec3 {"a", "zh中", "、r\n"};
+    std::set<std::string> vec3{"a", "zh中", "、r\n"};
     ASSERT_EQ("", swoole::intersection(vec1, vec3));
 }
 

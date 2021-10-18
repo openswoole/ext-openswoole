@@ -52,11 +52,11 @@ TEST(buffer, append_iov) {
 
     buf.append(v, iovcnt, 0);
 
-    ASSERT_EQ(buf.length(), v[0].iov_len + v[1].iov_len + v[2].iov_len+ v[3].iov_len);
+    ASSERT_EQ(buf.length(), v[0].iov_len + v[1].iov_len + v[2].iov_len + v[3].iov_len);
 
     String str(buf.length());
-    
-    while(!buf.empty()) {
+
+    while (!buf.empty()) {
         auto chunk = buf.front();
         str.append(chunk->value.ptr, chunk->length);
         buf.pop();
@@ -64,7 +64,7 @@ TEST(buffer, append_iov) {
 
     size_t offset = 0;
 
-    SW_LOOP_N (iovcnt) {
+    SW_LOOP_N(iovcnt) {
         ASSERT_EQ(memcmp(str.str + offset, v[i].iov_base, v[i].iov_len), 0);
         offset += v[i].iov_len;
     }

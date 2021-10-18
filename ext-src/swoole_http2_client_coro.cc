@@ -1125,8 +1125,8 @@ bool Client::send_data(uint32_t stream_id, const char *p, size_t len, int flag) 
     uint32_t send_len;
     char header[SW_HTTP2_FRAME_HEADER_SIZE];
     while (len > 0) {
-        if (len > remote_settings.max_frame_size) {
-            send_len = remote_settings.max_frame_size;
+        if (len > local_settings.max_frame_size) {
+            send_len = local_settings.max_frame_size;
             send_flag = 0;
         } else {
             send_len = len;

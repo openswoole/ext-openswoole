@@ -46,10 +46,10 @@ ssize_t Protocol::default_length_func(Protocol *protocol, network::Socket *socke
     // Protocol length is not legitimate, out of bounds or exceed the allocated length
     if (body_length < 0) {
         swoole_warning("invalid package (size=%d) from socket#%u<%s:%d>",
-               size,
-               socket->fd,
-               socket->info.get_ip(),
-               socket->info.get_port());
+                       size,
+                       socket->fd,
+                       socket->info.get_ip(),
+                       socket->info.get_port());
         return SW_ERR;
     }
     swoole_debug("length=%d", protocol->package_body_offset + body_length);

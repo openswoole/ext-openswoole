@@ -100,7 +100,7 @@ ssize_t get_package_length(Protocol *protocol, Socket *conn, const char *buf, ui
 
 static sw_inline void mask(char *data, size_t len, const char *mask_key) {
     size_t n = len / 8;
-    uint64_t mask_key64 = ((uint64_t)(*((uint32_t *) mask_key)) << 32) | *((uint32_t *) mask_key);
+    uint64_t mask_key64 = ((uint64_t) (*((uint32_t *) mask_key)) << 32) | *((uint32_t *) mask_key);
     size_t i;
 
     for (i = 0; i < n; i++) {
@@ -181,10 +181,10 @@ bool decode(Frame *frame, char *data, size_t length) {
     }
 
     swoole_trace_log(SW_TRACE_WEBSOCKET,
-               "decode frame, payload_length=%ld, mask=%d, opcode=%d",
-               payload_length,
-               frame->header.MASK,
-               frame->header.OPCODE);
+                     "decode frame, payload_length=%ld, mask=%d, opcode=%d",
+                     payload_length,
+                     frame->header.MASK,
+                     frame->header.OPCODE);
 
     if (payload_length == 0) {
         frame->header_length = header_length;
@@ -291,8 +291,8 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
         if (!ws.header.FIN) {
             if (conn->websocket_buffer) {
                 swoole_warning("merging incomplete frame, bad request. remote_addr=%s:%d",
-                       conn->info.get_ip(),
-                       conn->info.get_port());
+                               conn->info.get_ip(),
+                               conn->info.get_port());
                 return SW_ERR;
             }
             conn->websocket_buffer = new swoole::String(data + offset, length - offset);
@@ -306,9 +306,9 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
     case OPCODE_PONG:
         if (length >= (sizeof(buf) - SW_WEBSOCKET_HEADER_LEN)) {
             swoole_warning("%s frame application data is too big. remote_addr=%s:%d",
-                   ws.header.OPCODE == OPCODE_PING ? "ping" : "pong",
-                   conn->info.get_ip(),
-                   conn->info.get_port());
+                           ws.header.OPCODE == OPCODE_PING ? "ping" : "pong",
+                           conn->info.get_ip(),
+                           conn->info.get_port());
             return SW_ERR;
         } else if (length == SW_WEBSOCKET_HEADER_LEN) {
             data = nullptr;

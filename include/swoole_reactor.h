@@ -334,7 +334,7 @@ class Reactor {
     void activate_future_task();
 
     static FdType get_fd_type(int flags) {
-        return (FdType)(flags & (~SW_EVENT_READ) & (~SW_EVENT_WRITE) & (~SW_EVENT_ERROR) & (~SW_EVENT_ONCE));
+        return (FdType) (flags & (~SW_EVENT_READ) & (~SW_EVENT_WRITE) & (~SW_EVENT_ERROR) & (~SW_EVENT_ONCE));
     }
 
     static bool isset_read_event(int events) {

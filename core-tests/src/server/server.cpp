@@ -55,18 +55,18 @@ TEST(server, schedule) {
     std::set<int> _worker_id_set;
 
     for (uint32_t i = 0; i < serv.worker_num; i++) {
-        auto worker_id = serv.schedule_worker(i*13, nullptr);
+        auto worker_id = serv.schedule_worker(i * 13, nullptr);
         _worker_id_set.insert(worker_id);
     }
     ASSERT_EQ(_worker_id_set.size(), serv.worker_num);
-   
+
     for (uint32_t i = 1; i < serv.worker_num - 1; i++) {
         serv.workers[i].status = SW_WORKER_IDLE;
     }
 
     _worker_id_set.clear();
     for (uint32_t i = 0; i < serv.worker_num; i++) {
-        auto worker_id = serv.schedule_worker(i*13, nullptr);
+        auto worker_id = serv.schedule_worker(i * 13, nullptr);
         _worker_id_set.insert(worker_id);
     }
     ASSERT_EQ(_worker_id_set.size(), serv.worker_num - 2);
@@ -185,7 +185,7 @@ TEST(server, ssl) {
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
-    ListenPort *port = serv.add_port((enum swSocketType )(SW_SOCK_TCP | SW_SOCK_SSL), TEST_HOST, 0);
+    ListenPort *port = serv.add_port((enum swSocketType)(SW_SOCK_TCP | SW_SOCK_SSL), TEST_HOST, 0);
     if (!port) {
         swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
         exit(2);
@@ -248,7 +248,7 @@ TEST(server, dtls) {
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
-    ListenPort *port = serv.add_port((enum swSocketType )(SW_SOCK_UDP | SW_SOCK_SSL), TEST_HOST, 0);
+    ListenPort *port = serv.add_port((enum swSocketType)(SW_SOCK_UDP | SW_SOCK_SSL), TEST_HOST, 0);
     if (!port) {
         swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
         exit(2);

@@ -174,7 +174,7 @@ TEST(coroutine_base, get_elapsed) {
 }
 
 TEST(coroutine_base, run) {
-    long cid = coroutine::run([](void *ptr){
+    long cid = coroutine::run([](void *ptr) {
 
     });
     ASSERT_GE(cid, 1);
@@ -183,7 +183,7 @@ TEST(coroutine_base, run) {
 TEST(coroutine_base, cancel) {
     coroutine::run([](void *arg) {
         auto co = Coroutine::get_current_safe();
-        Coroutine::create([co](void *){
+        Coroutine::create([co](void *) {
             System::sleep(0.002);
             co->cancel();
         });

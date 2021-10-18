@@ -188,4 +188,4 @@ class Exception {
 
     Exception(int code);
 };
-}
+}  // namespace swoole

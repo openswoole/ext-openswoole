@@ -491,7 +491,7 @@ int Request::get_protocol() {
             if (isspace(*p)) {
                 continue;
             }
-            if ((size_t)(pe - p) < (sizeof("HTTP/1.x") - 1)) {
+            if ((size_t) (pe - p) < (sizeof("HTTP/1.x") - 1)) {
                 return SW_ERR;
             }
             if (memcmp(p, SW_STRL("HTTP/1.1")) == 0) {
@@ -615,7 +615,7 @@ int Request::get_chunked_body_length() {
     char *pe = buffer_->str + buffer_->length;
 
     while (1) {
-        if ((size_t)(pe - p) < (1 + (sizeof("\r\n") - 1))) {
+        if ((size_t) (pe - p) < (1 + (sizeof("\r\n") - 1))) {
             /* need the next chunk */
             return SW_ERR;
         }

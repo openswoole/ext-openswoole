@@ -384,7 +384,7 @@ char *swoole_coroutine_fgets(char *s, int size, FILE *stream) {
 
     char *retval = nullptr;
     swoole::coroutine::async([&]() { retval = fgets(s, size, stream); });
-    return retval; 
+    return retval;
 }
 
 int swoole_coroutine_fputs(const char *s, FILE *stream) {
@@ -394,7 +394,7 @@ int swoole_coroutine_fputs(const char *s, FILE *stream) {
 
     int retval = -1;
     swoole::coroutine::async([&]() { retval = fputs(s, stream); });
-    return retval; 
+    return retval;
 }
 
 int swoole_coroutine_feof(FILE *stream) {
@@ -444,9 +444,7 @@ struct dirent *swoole_coroutine_readdir(DIR *dirp) {
 
     struct dirent *retval;
 
-    swoole::coroutine::async([&retval, dirp]() {
-        retval = readdir(dirp);
-    });
+    swoole::coroutine::async([&retval, dirp]() { retval = readdir(dirp); });
 
     return retval;
 }

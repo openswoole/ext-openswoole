@@ -54,7 +54,7 @@ static void test_func(swLock &lock) {
 
 TEST(lock, mutex) {
     Mutex lock(0);
-    test_func( reinterpret_cast<swLock &>(lock));
+    test_func(reinterpret_cast<swLock &>(lock));
 }
 
 TEST(lock, lockwait) {
@@ -94,7 +94,7 @@ TEST(lock, shared) {
     int *_num = (int *) sw_mem_pool()->alloc(sizeof(int));
     *_num = 0;
 
-    pid_t pid = fork() ;
+    pid_t pid = fork();
 
     if (pid == 0) {
         lock.lock();
@@ -106,7 +106,7 @@ TEST(lock, shared) {
         lock.unlock();
         int status;
         pid_t _pid = waitpid(pid, &status, 0);
-        if (_pid != pid ) {
+        if (_pid != pid) {
             swoole_warning("error pid=%d", _pid);
         }
         ASSERT_EQ(*_num, magic_num);

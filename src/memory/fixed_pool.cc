@@ -76,8 +76,8 @@ FixedPool::FixedPool(uint32_t slice_num, uint32_t slice_size, bool shared) {
  * create new FixedPool, Using the given memory
  */
 FixedPool::FixedPool(uint32_t slice_size, void *memory, size_t size, bool shared) {
-    impl = (FixedPoolImpl*) memory;
-    memory = (char*) memory + sizeof(*impl);
+    impl = (FixedPoolImpl *) memory;
+    memory = (char *) memory + sizeof(*impl);
     sw_memset_zero(impl, sizeof(*impl));
 
     impl->shared = shared;
@@ -224,4 +224,4 @@ void FixedPool::debug() {
     }
 }
 
-}
+}  // namespace swoole

@@ -176,7 +176,8 @@ ssize_t String::split(const char *delimiter, size_t delimiter_length, const Stri
     off_t _offset = offset;
     size_t ret;
 
-    swoole_trace_log(SW_TRACE_EOF_PROTOCOL, "#[0] count=%d, length=%ld, size=%ld, offset=%ld", count, length, size, offset);
+    swoole_trace_log(
+        SW_TRACE_EOF_PROTOCOL, "#[0] count=%d, length=%ld, size=%ld, offset=%ld", count, length, size, offset);
 
     while (delimiter_addr) {
         size_t _length = delimiter_addr - start_addr + delimiter_length;
