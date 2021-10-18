@@ -233,14 +233,8 @@ class Session {
     nghttp2_hd_inflater *inflater = nullptr;
     nghttp2_hd_deflater *deflater = nullptr;
 
-//    uint32_t header_table_size;
-//    uint32_t send_window;
-//    uint32_t recv_window;
-//    uint32_t max_concurrent_streams;
-//    uint32_t max_frame_size;
     http2::Settings local_settings = {};
     http2::Settings remote_settings = {};
-
 
     uint32_t last_stream_id;
     bool shutting_down;

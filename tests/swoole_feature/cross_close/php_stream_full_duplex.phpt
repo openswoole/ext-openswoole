@@ -24,6 +24,7 @@ $pm->parentFunc = function () use ($pm) {
             echo "SEND\n";
             $size = 64 * 1024 * 1024;
             Assert::true(@fwrite($cli, str_repeat('S', $size)) < $size);
+            error_reporting(0); // php8
             Assert::true(!@fclose($cli));
             echo "SEND CLOSED\n";
         });
