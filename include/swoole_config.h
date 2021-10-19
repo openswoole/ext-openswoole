@@ -168,7 +168,7 @@
 
 #define SW_TASK_TMP_PATH_SIZE 256
 #define SW_TASK_TMP_DIR "/tmp"
-#define SW_TASK_TMP_FILE "swoole.task.XXXXXX"
+#define SW_TASK_TMP_FILE "openswoole.task.XXXXXX"
 
 #define SW_FILE_CHUNK_SIZE 65536
 
@@ -205,7 +205,7 @@
 /**
  * HTTP Protocol
  */
-#define SW_HTTP_SERVER_SOFTWARE "swoole-http-server"
+#define SW_HTTP_SERVER_SOFTWARE "OpenSwoole"
 #define SW_HTTP_PARAM_MAX_NUM 128
 #define SW_HTTP_FORM_KEYLEN 512
 #define SW_HTTP_COOKIE_KEYLEN 128
@@ -226,8 +226,8 @@
 #define SW_HTTP_BAD_REQUEST_PACKET "HTTP/1.1 400 Bad Request\r\n\r\n"
 #define SW_HTTP_REQUEST_ENTITY_TOO_LARGE_PACKET "HTTP/1.1 413 Request Entity Too Large\r\n\r\n"
 #define SW_HTTP_SERVICE_UNAVAILABLE_PACKET "HTTP/1.1 503 Service Unavailable\r\n\r\n"
-#define SW_HTTP_PAGE_400 "<html><body><h2>HTTP 400 Bad Request</h2><hr><i>Powered by Swoole</i></body></html>"
-#define SW_HTTP_PAGE_404 "<html><body><h2>HTTP 404 Not Found</h2><hr><i>Powered by Swoole</i></body></html>"
+#define SW_HTTP_PAGE_400 "<html><body><h2>HTTP 400 Bad Request</h2><hr><i>Powered by OpenSwoole</i></body></html>"
+#define SW_HTTP_PAGE_404 "<html><body><h2>HTTP 404 Not Found</h2><hr><i>Powered by OpenSwoole</i></body></html>"
 
 /**
  * HTTP2 Protocol
@@ -241,8 +241,8 @@
 #define SW_HTTP2_DEFAULT_MAX_HEADER_LIST_SIZE (1 << 12)
 #define SW_HTTP2_MAX_MAX_HEADER_LIST_SIZE UINT32_MAX
 
-#define SW_HTTP_CLIENT_USERAGENT "swoole-http-client"
-#define SW_HTTP_CLIENT_BOUNDARY_PREKEY "----SwooleBoundary"
+#define SW_HTTP_CLIENT_USERAGENT "OpenSwoole"
+#define SW_HTTP_CLIENT_BOUNDARY_PREKEY "----OpenSwooleBoundary"
 #define SW_HTTP_CLIENT_BOUNDARY_TOTAL_SIZE 39
 #define SW_HTTP_FORM_RAW_DATA_FMT "--%.*s\r\nContent-Disposition: form-data; name=\"%.*s\"\r\n\r\n"
 #define SW_HTTP_FORM_RAW_DATA_FMT_LEN 8
@@ -261,11 +261,6 @@
 #define SW_MYSQL_DEFAULT_HOST "127.0.0.1"
 #define SW_MYSQL_DEFAULT_PORT 3306
 #define SW_MYSQL_DEFAULT_CHARSET 33  // 0x21, utf8_general_ci
-
-/**
- * PGSQL Client
- */
-#define SW_PGSQL_CONNECT_TIMEOUT 3.0
 
 /**
  * Coroutine
