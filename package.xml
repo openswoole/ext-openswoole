@@ -5,24 +5,9 @@
 	xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
 	<name>openswoole</name>
 	<channel>pecl.php.net</channel>
-	<summary>Event-driven asynchronous and concurrent networking engine with high performance for PHP.</summary>
+	<summary>High Performance Programmatic Server for PHP with Async IO, Coroutines and Fibers</summary>
 	<description>
-        Event-driven asynchronous and concurrent networking engine with high performance for PHP.
-        - event-driven
-        - coroutine
-        - asynchronous non-blocking
-        - multi-thread reactor
-        - multi-process worker
-        - multi-protocol
-        - millisecond timer
-        - built-in tcp/http/websocket/http2 server
-        - coroutine tcp/http/websocket client
-        - coroutine mysql client
-        - coroutine redis client
-        - coroutine read/write file system
-        - coroutine dns lookup
-        - support IPv4/IPv6/UnixSocket/TCP/UDP
-        - support SSL/TLS encrypted transmission
+        Build high-performance, scalable, concurrent TCP, UDP, Unix Socket, HTTP, WebSocket services with PHP and easy to use coroutine, fibers API.
     </description>
     <lead>
         <name>Bruce Dou</name>
@@ -1101,12 +1086,14 @@
             <file role="test" name="tests/swoole_curl/multi/curl_multi_close_basic001.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_close_reference.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_errno_strerror_001.phpt" />
+            <file role="test" name="tests/swoole_curl/multi/curl_multi_errno_strerror_001_php7.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_getcontent_basic3.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_info_read.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_init_basic.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_segfault.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_select_basic1.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_setopt_basic001.phpt" />
+            <file role="test" name="tests/swoole_curl/multi/curl_multi_setopt_basic001_php7.phpt" />
             <file role="test" name="tests/swoole_curl/multi_1.phpt" />
             <file role="test" name="tests/swoole_curl/multi_2.phpt" />
             <file role="test" name="tests/swoole_curl/multi_3.phpt" />

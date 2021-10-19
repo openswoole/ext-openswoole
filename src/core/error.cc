@@ -27,7 +27,8 @@ const char *swoole_strerror(int code) {
         return strerror(code);
     }
     /* swstrerror {{{*/
-    switch (code) {
+    switch(code)
+    {
     case SW_ERROR_MALLOC_FAIL:
         return "Malloc fail";
     case SW_ERROR_SYSTEM_CALL_FAIL:
@@ -162,6 +163,8 @@ const char *swoole_strerror(int code) {
         return "Websocket unconnected";
     case SW_ERROR_WEBSOCKET_HANDSHAKE_FAILED:
         return "Websocket handshake failed";
+    case SW_ERROR_WEBSOCKET_PACK_FAILED:
+        return "Websocket pack failed";
     case SW_ERROR_SERVER_MUST_CREATED_BEFORE_CLIENT:
         return "Server must created before client";
     case SW_ERROR_SERVER_TOO_MANY_SOCKET:
@@ -235,7 +238,7 @@ const char *swoole_strerror(int code) {
 #endif
         return buffer;
     }
-    /*}}}*/
+/*}}}*/
 }
 
 void swoole_throw_error(int code) {

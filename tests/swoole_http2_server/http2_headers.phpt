@@ -44,7 +44,7 @@ test-value: d5678
 test-value: e
 test-value: 5678
 test-value: 3.1415926
-server: swoole-http-server
+server: OpenSwoole %s
 date: %s
 content-type: text/html
 content-length: 22

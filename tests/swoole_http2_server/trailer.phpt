@@ -26,7 +26,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
                     Assert::same($headers, [
                         'content-type' => 'application/srpc',
                         'trailer' => 'srpc-status, srpc-message',
-                        'server' => 'swoole-http-server',
+                        'server' => 'OpenSwoole '. swoole_version(),
                         'content-length' => '32',
                         'srpc-status' => '0',
                         'srpc-message' => '',

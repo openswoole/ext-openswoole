@@ -67,11 +67,6 @@ Http2Session::Session(SessionId _fd) {
     fd = _fd;
     Http2::init_settings(&local_settings);
     Http2::init_settings(&remote_settings);
-//    header_table_size = SW_HTTP2_DEFAULT_HEADER_TABLE_SIZE;
-//    send_window = SW_HTTP2_DEFAULT_WINDOW_SIZE;
-//    recv_window = SW_HTTP2_DEFAULT_WINDOW_SIZE;
-//    max_concurrent_streams = SW_HTTP2_MAX_MAX_CONCURRENT_STREAMS;
-//    max_frame_size = SW_HTTP2_MAX_MAX_FRAME_SIZE;
     last_stream_id = 0;
     shutting_down = false;
     is_coro = false;

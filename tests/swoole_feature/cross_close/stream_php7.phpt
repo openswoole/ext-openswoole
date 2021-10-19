@@ -2,7 +2,7 @@
 swoole_feature/cross_close: stream
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID < 80000) die("Skipped: php version < 8."); ?>
+<?php if (PHP_VERSION_ID >= 80000) die("Skipped: php version >= 8."); ?>
 --FILE--
 <?php
 require __DIR__ . '/../../include/bootstrap.php';
@@ -30,8 +30,5 @@ READ
 CLOSE
 CLOSED
 
-Fatal error: Uncaught TypeError: fclose(): supplied resource is not a valid stream resource in %s/tests/swoole_feature/cross_close/stream.php:%d
-Stack trace:
-#0 %s/tests/swoole_feature/cross_close/stream.php(%d): fclose(Resource id #%d)
-#1 {main}
-  thrown in %s/tests/swoole_feature/cross_close/stream.php on line %d
+Warning: fclose(): supplied resource is not a valid stream resource in %s/tests/swoole_feature/cross_close/stream_php7.php on line %d
+DONE

@@ -1,8 +1,8 @@
 --TEST--
-swoole_curl/multi: curl_multi_errno and curl_multi_strerror basic test
+swoole_curl/multi: curl_multi_setopt basic test
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID < 80000) die("Skipped: php version < 8."); ?>
+<?php if (PHP_VERSION_ID >= 80000) die("Skipped: php version >= 8."); ?>
 <?php
 if (!extension_loaded("curl")) {
         exit("skip curl extension not loaded");
@@ -18,25 +18,17 @@ use function Swoole\Coroutine\run;
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 run(function () {
     $mh = curl_multi_init();
-    $errno = curl_multi_errno($mh);
-    echo $errno . PHP_EOL;
-    echo curl_multi_strerror($errno) . PHP_EOL;
+    var_dump(curl_multi_setopt($mh, CURLMOPT_PIPELINING, 0));
 
     try {
-        curl_multi_setopt($mh, -1, -1);
+        curl_multi_setopt($mh, -1, 0);
     } catch (ValueError $exception) {
         echo $exception->getMessage() . "\n";
     }
-
-    $errno = curl_multi_errno($mh);
-    echo $errno . PHP_EOL;
-    echo curl_multi_strerror($errno) . PHP_EOL;
+    curl_multi_close($mh);
 });
 ?>
 --EXPECTF--
-0
-No error
+bool(true)
 
-curl_multi_setopt(): Argument #2 ($option) is not a valid cURL multi option
-6
-Unknown option
+Warning: curl_multi_setopt(): Invalid curl multi configuration option in %s on line %d

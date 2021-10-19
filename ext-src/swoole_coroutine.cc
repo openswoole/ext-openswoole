@@ -823,9 +823,13 @@ void PHPCoroutine::main_func(void *arg) {
         }
         zval_ptr_dtor(retval);
 
-        // TODO: exceptions will only cause the coroutine to exit
         if (UNEXPECTED(EG(exception))) {
             zend_exception_error(EG(exception), E_ERROR);
+            // TODO: php8 don't exit on exceptions, but no reason to continue, fix this in the future
+            // Keep the behavior the same as php7
+#if PHP_VERSION_ID >= 80000
+            zend_bailout(); // exit for php8
+#endif
         }
 
 #ifdef SW_CORO_SUPPORT_BAILOUT

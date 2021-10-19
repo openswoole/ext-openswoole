@@ -36,8 +36,8 @@ for ($i = 1000; $i--;) {
         $frame->opcode = $opcode;
         $frame->finish = $finish;
         if (!mt_rand(0, 4)) {
-            unset($frame->data);
-            unset($frame->reason);
+            $frame->data = '';
+            $frame->reason = '';
             $data = '';
         }
         if (mt_rand(0, 1)) {

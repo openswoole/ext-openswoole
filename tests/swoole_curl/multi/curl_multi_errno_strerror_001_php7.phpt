@@ -2,7 +2,7 @@
 swoole_curl/multi: curl_multi_errno and curl_multi_strerror basic test
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID < 80000) die("Skipped: php version < 8."); ?>
+<?php if (PHP_VERSION_ID >= 80000) die("Skipped: php version >= 8."); ?>
 <?php
 if (!extension_loaded("curl")) {
         exit("skip curl extension not loaded");
@@ -37,6 +37,6 @@ run(function () {
 0
 No error
 
-curl_multi_setopt(): Argument #2 ($option) is not a valid cURL multi option
+Warning: curl_multi_setopt(): Invalid curl multi configuration option in %s on line %d
 6
 Unknown option

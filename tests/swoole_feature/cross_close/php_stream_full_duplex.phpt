@@ -15,8 +15,6 @@ $pm->parentFunc = function () use ($pm) {
             Co::sleep(0.001);
             echo "CLOSE\n";
             Assert::true(fclose($cli));
-            // double close
-            Assert::true(!@fclose($cli));
             $pm->kill();
             echo "DONE\n";
         });
@@ -24,13 +22,11 @@ $pm->parentFunc = function () use ($pm) {
             echo "SEND\n";
             $size = 64 * 1024 * 1024;
             Assert::true(@fwrite($cli, str_repeat('S', $size)) < $size);
-            Assert::true(!@fclose($cli));
             echo "SEND CLOSED\n";
         });
         go(function () use ($cli) {
             echo "RECV\n";
             Assert::true(empty(fread($cli, 8192)));
-            Assert::true(!@fclose($cli));
             echo "RECV CLOSED\n";
         });
     });

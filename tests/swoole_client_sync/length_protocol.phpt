@@ -13,13 +13,14 @@ $pm->parentFunc = function ($pid) use ($port)
     $client->set([
         'open_length_check' => true,
         'package_max_length' => 1024 * 1024,
+        'socket_buffer_size' => 2 * 1024 * 1024,
         'package_length_type' => 'N',
         'package_length_offset' => 0,
         'package_body_offset' => 4,
     ]);
     if (!$client->connect('127.0.0.1', $port, 0.5, 0))
     {
-        echo "Over flow. errno=" . $client->errCode;
+        echo "Overflow. errno=" . $client->errCode;
         die("\n");
     }
 
@@ -31,6 +32,7 @@ $pm->parentFunc = function ($pid) use ($port)
         $pkg = $client->recv();
         Assert::assert($pkg and strlen($pkg) <= 2048);
     }
+
     echo "SUCCESS\n";
     //慢速发送
     for ($i = 0; $i < 100; $i++)
@@ -38,6 +40,7 @@ $pm->parentFunc = function ($pid) use ($port)
         $pkg = $client->recv();
         Assert::assert($pkg and strlen($pkg) <= 8192);
     }
+
     echo "SUCCESS\n";
     //大包
     for ($i = 0; $i < 1000; $i++)
@@ -47,8 +50,9 @@ $pm->parentFunc = function ($pid) use ($port)
         $_pkg = unserialize(substr($pkg, 4));
         Assert::assert(is_array($_pkg));
         Assert::same($_pkg['i'], $i);
-        Assert::assert($_pkg['data'] <= 256 * 1024);
+        Assert::assert(strlen($_pkg['data']) <= 256 * 1024);
     }
+
     echo "SUCCESS\n";
     $client->close();
 
@@ -60,9 +64,9 @@ $pm->childFunc = function () use ($pm, $port)
     $serv = new swoole_server('127.0.0.1', $port, SWOOLE_BASE);
     $serv->set(array(
       'package_max_length' => 1024 * 1024 * 2, //2M
-      'socket_buffer_size' => 256 * 1024 * 1024,
+      'socket_buffer_size' => 2 * 1024 * 1024,
       "worker_num" => 1,
-      'log_file' => '/tmp/swoole.log',
+      'log_level' => 0,
     ));
     $serv->on("WorkerStart", function (\swoole_server $serv)  use ($pm)
     {

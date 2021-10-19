@@ -14,7 +14,7 @@ $pm->parentFunc = function ($pid) use ($port)
     $client->set(['open_eof_check' => true, "package_eof" => "\r\n\r\n"]);
     if (!$client->connect('127.0.0.1', $port, 5, 0))
     {
-        echo "Over flow. errno=" . $client->errCode;
+        echo "Overflow. errno=" . $client->errCode;
         die("\n");
     }
 
@@ -42,7 +42,7 @@ $pm->parentFunc = function ($pid) use ($port)
         $_pkg = unserialize($pkg);
         Assert::assert(is_array($_pkg));
         Assert::same($_pkg['i'], $i);
-        Assert::assert($_pkg['data'] <= 256 * 1024);
+        Assert::assert(strlen($_pkg['data']) <= 256 * 1024);
     }
     echo "SUCCESS\n";
     $client->close();
@@ -58,7 +58,7 @@ $pm->childFunc = function () use ($pm, $port)
         'open_eof_check' => true,
         'open_eof_split' => true,
         'package_max_length' => 1024 * 1024 * 2, //2M
-        'socket_buffer_size' => 256 * 1024 * 1024,
+        'socket_buffer_size' => 2 * 1024 * 1024,
         "worker_num" => 1,
         'log_file' => '/tmp/swoole.log',
     ));
