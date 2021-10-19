@@ -28,27 +28,27 @@ swoole_fork_exec(function () {
 --EXPECTF--
 Fatal error: Uncaught TypeError: Argument 2 passed to Swoole\Timer::after() must be callable, array given in %s/tests/swoole_timer/call_private_php7.php:%d
 Stack trace:
-#0 %s/tests/swoole_timer/call_private.php(%d): Swoole\Timer::after(1, Array)
+#0 %s/tests/swoole_timer/call_private_php7.php(%d): Swoole\Timer::after(1, Array)
 #1 [internal function]: {closure}(Object(Swoole\Process))
 #2 %s/tests/include/functions.php(%d): Swoole\Process->start()
-#3 %s/tests/swoole_timer/call_private.php(%d): swoole_fork_exec(Object(Closure))
+#3 %s/tests/swoole_timer/call_private_php7.php(%d): swoole_fork_exec(Object(Closure))
 #4 {main}
-  thrown in %s/tests/swoole_timer/call_private.php on line %d
+  thrown in %s/tests/swoole_timer/call_private_php7.php on line %d
 
 Fatal error: Uncaught TypeError: Argument 2 passed to Swoole\Timer::after() must be callable, array given in %s/tests/swoole_timer/call_private_php7.php:%d
 Stack trace:
-#0 %s/tests/swoole_timer/call_private.php(%d): Swoole\Timer::after(1, Array)
+#0 %s/tests/swoole_timer/call_private_php7.php(%d): Swoole\Timer::after(1, Array)
 #1 [internal function]: {closure}(Object(Swoole\Process))
 #2 %s/tests/include/functions.php(%d): Swoole\Process->start()
-#3 %s/tests/swoole_timer/call_private.php(%d): swoole_fork_exec(Object(Closure))
+#3 %s/tests/swoole_timer/call_private_php7.php(%d): swoole_fork_exec(Object(Closure))
 #4 {main}
-  thrown in %s/tests/swoole_timer/call_private.php on line %d
+  thrown in %s/tests/swoole_timer/call_private_php7.php on line %d
 
 Fatal error: Uncaught TypeError: Argument 2 passed to Swoole\Timer::after() must be callable, array given in %s/tests/swoole_timer/call_private_php7.php:%d
 Stack trace:
-#0 %s/tests/swoole_timer/call_private.php(%d): Swoole\Timer::after(1, Array)
+#0 %s/tests/swoole_timer/call_private_php7.php(%d): Swoole\Timer::after(1, Array)
 #1 [internal function]: {closure}(Object(Swoole\Process))
 #2 %s/tests/include/functions.php(%d): Swoole\Process->start()
-#3 %s/tests/swoole_timer/call_private.php(%d): swoole_fork_exec(Object(Closure))
+#3 %s/tests/swoole_timer/call_private_php7.php(%d): swoole_fork_exec(Object(Closure))
 #4 {main}
-  thrown in %s/tests/swoole_timer/call_private.php on line %d
+  thrown in %s/tests/swoole_timer/call_private_php7.php on line %d
