@@ -1030,7 +1030,7 @@ static PHP_METHOD(swoole_client, recv) {
             ret = cli->recv(cli, buf, buf_len, 0);
             if (ret < 0) {
                 swoole_set_last_error(errno);
-                php_swoole_sys_error(E_WARNING, "recv() failed");
+                php_swoole_sys_error(E_WARNING, "recv() failed1");
                 zend_update_property_long(
                     swoole_client_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("errCode"), swoole_get_last_error());
                 buffer->length = 0;
@@ -1087,6 +1087,7 @@ static PHP_METHOD(swoole_client, recv) {
         buffer->length = 0;
         RETURN_FALSE;
     } else if (cli->open_length_check) {
+
         if (cli->buffer == nullptr) {
             cli->buffer = new String(SW_BUFFER_SIZE_STD);
         } else {
@@ -1122,8 +1123,8 @@ static PHP_METHOD(swoole_client, recv) {
         } else if (buf_len > protocol->package_max_length) {
             swoole_error_log(SW_LOG_WARNING,
                              SW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
-                             "Package is too big. package_length=%d",
-                             (int) buf_len);
+                             "Package is too big. package_length=%d, package_max_length=%d, ",
+                             (int) buf_len, (int) protocol->package_max_length);
             RETURN_EMPTY_STRING();
         } else if (buf_len == (zend_long) buffer->length) {
             RETURN_STRINGL(buffer->str, buffer->length);
@@ -1144,6 +1145,7 @@ static PHP_METHOD(swoole_client, recv) {
                 ret = 0;
             }
         }
+
     } else {
         if (!(flags & MSG_WAITALL) && buf_len > SW_PHP_CLIENT_BUFFER_SIZE) {
             buf_len = SW_PHP_CLIENT_BUFFER_SIZE;
@@ -1155,7 +1157,7 @@ static PHP_METHOD(swoole_client, recv) {
 
     if (ret < 0) {
         swoole_set_last_error(errno);
-        php_swoole_sys_error(E_WARNING, "recv() failed");
+        php_swoole_sys_error(E_WARNING, "recv() failed2");
         zend_update_property_long(
             swoole_client_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("errCode"), swoole_get_last_error());
         if (strbuf) {
