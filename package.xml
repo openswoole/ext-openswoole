@@ -1086,12 +1086,14 @@
             <file role="test" name="tests/swoole_curl/multi/curl_multi_close_basic001.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_close_reference.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_errno_strerror_001.phpt" />
+            <file role="test" name="tests/swoole_curl/multi/curl_multi_errno_strerror_001_php7.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_getcontent_basic3.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_info_read.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_init_basic.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_segfault.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_select_basic1.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_setopt_basic001.phpt" />
+            <file role="test" name="tests/swoole_curl/multi/curl_multi_setopt_basic001_php7.phpt" />
             <file role="test" name="tests/swoole_curl/multi_1.phpt" />
             <file role="test" name="tests/swoole_curl/multi_2.phpt" />
             <file role="test" name="tests/swoole_curl/multi_3.phpt" />
