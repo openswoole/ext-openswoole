@@ -205,7 +205,7 @@
 /**
  * HTTP Protocol
  */
-#define SW_HTTP_SERVER_SOFTWARE "OpenSwoole"
+#define SW_HTTP_SERVER_SOFTWARE "OpenSwoole " SWOOLE_VERSION
 #define SW_HTTP_PARAM_MAX_NUM 128
 #define SW_HTTP_FORM_KEYLEN 512
 #define SW_HTTP_COOKIE_KEYLEN 128
@@ -241,7 +241,7 @@
 #define SW_HTTP2_DEFAULT_MAX_HEADER_LIST_SIZE (1 << 12)
 #define SW_HTTP2_MAX_MAX_HEADER_LIST_SIZE UINT32_MAX
 
-#define SW_HTTP_CLIENT_USERAGENT "OpenSwoole"
+#define SW_HTTP_CLIENT_USERAGENT "OpenSwoole " SWOOLE_VERSION
 #define SW_HTTP_CLIENT_BOUNDARY_PREKEY "----OpenSwooleBoundary"
 #define SW_HTTP_CLIENT_BOUNDARY_TOTAL_SIZE 39
 #define SW_HTTP_FORM_RAW_DATA_FMT "--%.*s\r\nContent-Disposition: form-data; name=\"%.*s\"\r\n\r\n"
