@@ -15,7 +15,6 @@ go(function () {
         go(function () use ($fp) {
             co::sleep(0.001);
             echo "CLOSE\n";
-            var_dump($fp);
             fclose($fp);
             echo "DONE\n";
         });
@@ -31,5 +30,5 @@ READ
 CLOSE
 CLOSED
 
-Warning: fclose(): supplied resource is not a valid stream resource in %s/tests/swoole_feature/cross_close/stream_php7.php on line 18
+Warning: fclose(): supplied resource is not a valid stream resource in %s/tests/swoole_feature/cross_close/stream_php7.php on line %d
 DONE
