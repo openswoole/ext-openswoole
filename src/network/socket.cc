@@ -423,7 +423,6 @@ bool Socket::set_recv_buffer_size(uint32_t _buffer_size) {
     return true;
 }
 
-
 bool Socket::set_send_buffer_size(uint32_t _buffer_size) {
     if (set_option(SOL_SOCKET, SO_SNDBUF, _buffer_size) != 0) {
         swoole_sys_warning("setsockopt(%d, SOL_SOCKET, SO_RCVBUF, %d) failed", fd, _buffer_size);
