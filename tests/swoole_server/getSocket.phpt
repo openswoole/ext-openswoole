@@ -41,7 +41,11 @@ $pm->childFunc = function () use ($pm) {
             $serv->shutdown();
             return;
         } else {
-            $serv->send($fd, get_resource_type($socket));
+            if(PHP_VERSION_ID >= 80000) { // php8
+                $serv->send($fd, get_class($socket));
+            } else {
+                $serv->send($fd, get_resource_type($socket));
+            }
         }
     });
     $serv->start();

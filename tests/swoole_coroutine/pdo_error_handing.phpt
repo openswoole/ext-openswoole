@@ -23,4 +23,4 @@ Swoole\Event::wait();
 
 ?>
 --EXPECTF--
-Warning: fopen(%s): failed to open stream: No such file or directory in %s on line %d
+Warning: fopen(%s): %sailed to open stream: No such file or directory in %s on line %d
