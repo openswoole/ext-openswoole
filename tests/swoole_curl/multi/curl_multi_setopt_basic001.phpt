@@ -30,5 +30,4 @@ run(function () {
 ?>
 --EXPECTF--
 bool(true)
-
 curl_multi_setopt(): Argument #2 ($option) is not a valid cURL multi option
