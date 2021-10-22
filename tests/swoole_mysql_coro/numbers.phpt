@@ -5,6 +5,7 @@ swoole_mysql_coro: floating point value precision and unsigned big int overflow
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
+ini_set('serialize_precision', 14);
 go(function () {
     $db = new Swoole\Coroutine\Mysql;
     $server = [

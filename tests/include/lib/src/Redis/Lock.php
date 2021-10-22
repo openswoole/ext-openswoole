@@ -38,6 +38,7 @@ class Lock
                 if ($this->keyMap[$key] < microtime(true) - $this->expires) {
                     return; // have already expired
                 } else {
+                    error_reporting(0);
                     @Redis::main()->del($key);
                 }
                 unset($this->keyMap[$key]);

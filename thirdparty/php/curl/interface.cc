@@ -312,16 +312,19 @@ static inline int build_mime_structure_from_hash(php_curl *ch, zval *zpostfields
 SW_EXTERN_C_END
 
 void swoole_native_curl_minit(int module_number) {
+
 #if PHP_VERSION_ID >= 80000
-    SW_INIT_CLASS_ENTRY(
-        swoole_coroutine_curl_handle, "Swoole\\Coroutine\\Curl\\Handle", nullptr, "Co\\Curl\\Handle", nullptr);
-    SW_SET_CLASS_NOT_SERIALIZABLE(swoole_coroutine_curl_handle);
-    SW_SET_CLASS_CUSTOM_OBJECT(swoole_coroutine_curl_handle, curl_create_object, curl_free_obj, php_curl, std);
-    swoole_coroutine_curl_handle_ce->ce_flags |= ZEND_ACC_FINAL | ZEND_ACC_NO_DYNAMIC_PROPERTIES;
+    swoole_coroutine_curl_handle_ce = curl_ce;
+    swoole_coroutine_curl_handle_ce->create_object = curl_create_object;
+    // TODO: fix this duplicate, init handlers
+    memcpy(&swoole_coroutine_curl_handle_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
+    swoole_coroutine_curl_handle_handlers.offset = XtOffsetOf(php_curl, std);
+    swoole_coroutine_curl_handle_handlers.free_obj = curl_free_obj;
     swoole_coroutine_curl_handle_handlers.get_gc = curl_get_gc;
     swoole_coroutine_curl_handle_handlers.get_constructor = curl_get_constructor;
     swoole_coroutine_curl_handle_handlers.clone_obj = curl_clone_obj;
     swoole_coroutine_curl_handle_handlers.cast_object = curl_cast_object;
+    swoole_coroutine_curl_handle_handlers.compare = zend_objects_not_comparable;
 
     curl_multi_register_class(nullptr);
 
