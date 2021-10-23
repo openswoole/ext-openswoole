@@ -47,8 +47,7 @@ SQL;
         Assert::true($stmt->execute(['hello mysql!']));
         do {
             $res = $stmt->fetchAll();
-            error_reporting(0);
-            Assert::same(@current($res[0]), array_shift($_map));
+            isset($res[0]) && Assert::same(@current($res[0]), array_shift($_map));
         } while ($ret = $stmt->nextResult());
         Assert::same($stmt->affected_rows, 1);
         Assert::assert(empty($_map), 'there are some results lost!');
@@ -66,8 +65,7 @@ SQL;
                 Assert::true($stmt->execute(['hello mysql!']));
                 do {
                     $res = $stmt->fetchAll();
-                    error_reporting(0);
-                    Assert::same(@current($res[0]), array_shift($_map));
+                    isset($res[0]) && Assert::same(@current($res[0]), array_shift($_map));
                 } while ($ret = $stmt->nextRowset());
                 Assert::same($stmt->rowCount(), 1, 'get the affected rows failed!');
                 Assert::assert(empty($_map), 'there are some results lost!');
@@ -76,8 +74,8 @@ SQL;
             }
         }
     }
-    echo "DONE\n";
 });
+echo "DONE\n";
 ?>
 --EXPECT--
 DONE
