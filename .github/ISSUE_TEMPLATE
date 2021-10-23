@@ -12,7 +12,7 @@ Please answer these questions before submitting your issue. Thanks!
 
 
 
-4. What version of Swoole are you using (show your `php --ri swoole`)?
+4. What version of Open Swoole are you using (show your `php --ri openswoole`)?
 
 
 
