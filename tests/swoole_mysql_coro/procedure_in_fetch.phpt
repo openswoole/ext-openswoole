@@ -5,7 +5,7 @@ swoole_mysql_coro: procedure in fetch mode
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+Co\run(function () {
     $db = new Swoole\Coroutine\Mysql;
     $server = [
         'host' => MYSQL_SERVER_HOST,
@@ -76,9 +76,8 @@ SQL;
             }
         }
     }
+    echo "DONE\n";
 });
-Swoole\Event::wait();
-echo "DONE\n";
 ?>
 --EXPECT--
 DONE
