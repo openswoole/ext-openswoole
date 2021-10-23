@@ -662,6 +662,7 @@ void curl_multi_free_obj(zend_object *object) {
         zend_object_std_dtor(&mh->std);
         return;
     }
+
     _php_curl_multi_free(mh);
     zend_object_std_dtor(&mh->std);
 }
@@ -718,19 +719,34 @@ void swoole_curl_multi_close(zend_resource *rsrc) /* {{{ */
 #endif
 
 static void _php_curl_multi_free(php_curlm *mh) {
-    for (zend_llist_element *element = mh->easyh.head; element; element = element->next) {
-        zval *z_ch = (zval *) element->data;
-        php_curl *ch;
+
+    zval    *pz_ch;
+    zend_llist_position pos;
+
+    for (pz_ch = (zval *) zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
+         pz_ch = (zval *) zend_llist_get_next_ex(&mh->easyh, &pos)) {
 #if PHP_VERSION_ID < 80000
-        if (!Z_RES_P(z_ch)->ptr) {
+        if (!Z_RES_P(pz_ch)->ptr) {
             continue;
         }
-#endif
-        if ((ch = swoole_curl_get_handle(z_ch, true, false))) {
+        php_curl *ch = Z_CURL_P(pz_ch);
+        if (!ch) {
+            continue;
+        }
+        swoole_curl_verify_handlers(ch, 0);
+        mh->multi->remove_handle(ch->cp);
+#else
+        if (!(OBJ_FLAGS(Z_OBJ_P(pz_ch)) & IS_OBJ_FREE_CALLED)) {
+            php_curl *ch = Z_CURL_P(pz_ch);
+            if (!ch) {
+                continue;
+            }
             swoole_curl_verify_handlers(ch, 0);
             mh->multi->remove_handle(ch->cp);
         }
+#endif
     }
+
     zend_llist_clean(&mh->easyh);
     if (mh->handlers->server_push) {
         zval_ptr_dtor(&mh->handlers->server_push->func_name);

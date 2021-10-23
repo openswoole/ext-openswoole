@@ -5,7 +5,7 @@ swoole_mysql_coro: procedure in fetch mode
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+Co\run(function () {
     $db = new Swoole\Coroutine\Mysql;
     $server = [
         'host' => MYSQL_SERVER_HOST,
@@ -47,8 +47,7 @@ SQL;
         Assert::true($stmt->execute(['hello mysql!']));
         do {
             $res = $stmt->fetchAll();
-            error_reporting(0);
-            Assert::same(@current($res[0]), array_shift($_map));
+            isset($res[0]) && Assert::same(@current($res[0]), array_shift($_map));
         } while ($ret = $stmt->nextResult());
         Assert::same($stmt->affected_rows, 1);
         Assert::assert(empty($_map), 'there are some results lost!');
@@ -66,8 +65,7 @@ SQL;
                 Assert::true($stmt->execute(['hello mysql!']));
                 do {
                     $res = $stmt->fetchAll();
-                    error_reporting(0);
-                    Assert::same(@current($res[0]), array_shift($_map));
+                    isset($res[0]) && Assert::same(@current($res[0]), array_shift($_map));
                 } while ($ret = $stmt->nextRowset());
                 Assert::same($stmt->rowCount(), 1, 'get the affected rows failed!');
                 Assert::assert(empty($_map), 'there are some results lost!');
@@ -77,7 +75,6 @@ SQL;
         }
     }
 });
-Swoole\Event::wait();
 echo "DONE\n";
 ?>
 --EXPECT--

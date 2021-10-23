@@ -8,12 +8,9 @@ if (!extension_loaded('curl')) print 'skip';
 --FILE--
 <?php
 require __DIR__ . '/../../include/bootstrap.php';
-use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
-
-Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
+Co\run(function () {
     $mh = curl_multi_init();
     $array = array($mh);
     $array[] = &$array;

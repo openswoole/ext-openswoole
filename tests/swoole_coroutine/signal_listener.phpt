@@ -27,10 +27,10 @@ $pm->childFunc = function () use ($pm) {
             return Coroutine::stats()['signal_listener_num'] === 0;
         }
     ]);
-    Process::signal(SIGINT, function () {
-        echo 'SIGINT' . PHP_EOL;
-        exit(123);
-    });
+    // Process::signal(SIGINT, function () {
+    //     echo 'SIGINT' . PHP_EOL;
+    //     exit(123);
+    // });
     Process::signal(SIGTERM, function () {
         echo 'SIGTERM' . PHP_EOL;
         exit(123);

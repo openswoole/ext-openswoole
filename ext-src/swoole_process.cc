@@ -665,6 +665,7 @@ static void php_swoole_onSignal(int signo) {
                 E_WARNING, "%s: signal [%d] handler error", ZSTR_VAL(swoole_process_ce->name), signo);
         }
     }
+    SwooleTG.signal_listener_num--;
 }
 
 zend_bool php_swoole_signal_isset_handler(int signo) {
