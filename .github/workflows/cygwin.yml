@@ -42,7 +42,7 @@ jobs:
           ./configure --enable-openssl --with-openssl_dir=/usr --enable-http2 --enable-mysqlnd
           make -j6
           cp modules/openswoole.dll /usr/lib/php/20180731
-          echo 'extension=openswoole.dll' > /etc/php.d/openswoole.ini
+          echo 'extension=openswoole.dll' > /etc/php.d/zz_openswoole.ini
           php -v
           php -m
           php --ri openswoole
@@ -71,6 +71,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.swoole_info.outputs.upload_url }}
-          asset_path: .\openswoole-cygwin\openswoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
-          asset_name: openswoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
+          asset_path: .\openswoole-cygwin\swoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
+          asset_name: swoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
           asset_content_type: application/zip
