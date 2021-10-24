@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<package packagerversion="1.9.4" version="2.0"
-	xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
+<package xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" packagerversion="1.9.4" version="2.0" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
 	<name>openswoole</name>
 	<channel>pecl.php.net</channel>
 	<summary>High Performance Programmatic Server for PHP with Async IO, Coroutines and Fibers</summary>
@@ -27,43 +24,27 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <developer>
-        <name>Twosee</name>
-        <user>twosee</user>
-        <email>twose@qq.com</email>
-        <active>yes</active>
-    </developer>
-    <date>2021-10-14</date>
-    <time>21:00:00</time>
+    <date>2021-10-25</date>
+    <time>02:00:00</time>
     <version>
-        <release>4.7.1</release>
+        <release>4.7.2</release>
         <api>4.0</api>
     </version>
     <stability>
         <release>stable</release>
         <api>stable</api>
     </stability>
-    <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache2.0</license>
+    <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        New feature
-        ---
-        * Introduce a new concurrency mode (#4330) (@doubaokun)
-
-        Enhancement
-        ---
-        * Supported query /etc/hosts for System::dnsLookup (#4341) (#4349) (@zmyWL) (@NathanFreeman)
-        * Supported boost context support for mips64 (#4358) (@dixyes)
-        * Supported CURLOPT_RESOLVE option for SWOOLE_HOOK_CURL (swoole/library#107) (@sy-records)
-        * Supported CURLOPT_NOPROGRESS for SWOOLE_HOOK_CURL (swoole/library#117) (@sy-records)
-        * Supported boost context support for riscv64 (#4375) (@dixyes)
-
-        Fixed
-        ---
-        * Fixed memory error on shutdown (PHP-8.1) (#4325) (@twose)
-        * Fixed not serializable classes for 8.1.0beta1 (#4335) (@remicollet)
-        * Fixed multiple coroutines recursively creating directories (#4337) (@NathanFreeman)
-        * Fixed native curl bugs (#4360) (@matyhtf)
-        * Fixed PDOStatement::bindParam() expects parameter 1 to be string (swoole/library#116) (@sy-records)
+        1. Extension name changed to be openswoole
+        2. Bug fixed: PHP8.0 compatible issues
+        3. Bug fixed: PHP8.0 and Symfony HTTP client compatible issues
+        4. Added SW_ERROR_WEBSOCKET_PACK_FAILED error code
+        5. Updated Server id to be OpenSwoole-v4.x.x, Client id to be OpenSwoole/v4.x.x
+        6. Bug fixed: HTTP2 flow control bugs
+        7. Support ssl_ciphers in Swoole Client
+        8. Bug fixed: curl_multi_select CURL_SOCKET_TIMEOUT bug
+        9. Bug fixed: openswoole_postgresql compile issues on MacOS
     </notes>
     <contents>
         <dir name="/">
@@ -71,6 +52,7 @@
             <file role="doc" name="CODE-STYLE.md" />
             <file role="src" name="CPPLINT.cfg" />
             <file role="doc" name="LICENSE" />
+            <file role="src" name="LICENSE.prev-v4.7.1" />
             <file role="src" name="Makefile.frag" />
             <file role="doc" name="README.md" />
             <file role="src" name="clear.sh" />
@@ -591,7 +573,6 @@
             <file role="src" name="include/swoole_websocket.h" />
             <file role="src" name="include/swoole_wheel_timer.h" />
             <file role="src" name="make.sh" />
-            <file role="src" name="mascot.png" />
             <file role="src" name="php_swoole.h" />
             <file role="src" name="src/core/base.cc" />
             <file role="src" name="src/core/channel.cc" />
@@ -1120,6 +1101,7 @@
             <file role="test" name="tests/swoole_curl/timer_coredump.phpt" />
             <file role="test" name="tests/swoole_curl/upload/1.phpt" />
             <file role="test" name="tests/swoole_curl/upload/2.phpt" />
+            <file role="test" name="tests/swoole_curl/upload/3.phpt" />
             <file role="test" name="tests/swoole_curl/upload/curl_testdata1.txt" />
             <file role="test" name="tests/swoole_curl/upload/curl_testdata2.txt" />
             <file role="test" name="tests/swoole_curl/yield_in_callback.phpt" />
@@ -1151,6 +1133,7 @@
             <file role="test" name="tests/swoole_feature/cross_close/redis_by_server.phpt" />
             <file role="test" name="tests/swoole_feature/cross_close/stream.phpt" />
             <file role="test" name="tests/swoole_feature/cross_close/stream_by_server.phpt" />
+            <file role="test" name="tests/swoole_feature/cross_close/stream_php7.phpt" />
             <file role="test" name="tests/swoole_feature/full_duplex/client.phpt" />
             <file role="test" name="tests/swoole_feature/full_duplex/socket.phpt" />
             <file role="test" name="tests/swoole_feature/full_duplex/socket_ssl.phpt" />
@@ -1267,7 +1250,7 @@
             <file role="test" name="tests/swoole_http_client_coro/websocket/bug_01.phpt" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/bug_02.phpt" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/server_push_first.phpt" />
-            <file role="test" name="tests/swoole_http_client_coro/websocket/ssl_1.phpt" />
+            <file role="test" name="tests/swoole_http_client_coro/websocket/ssl_1.phpt.skip" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/ssl_2.phpt" />
             <file role="test" name="tests/swoole_http_client_coro/websocket/timeout.phpt" />
             <file role="test" name="tests/swoole_http_server/0.phpt" />
@@ -1346,6 +1329,7 @@
             <file role="test" name="tests/swoole_http_server/unixsocket2.phpt" />
             <file role="test" name="tests/swoole_http_server/unset_response_header.phpt" />
             <file role="test" name="tests/swoole_http_server/upload.phpt" />
+            <file role="test" name="tests/swoole_http_server/upload4.phpt" />
             <file role="test" name="tests/swoole_http_server/uploadFile.phpt" />
             <file role="test" name="tests/swoole_http_server/upload_02.phpt" />
             <file role="test" name="tests/swoole_http_server/upload_03.phpt" />
@@ -1918,6 +1902,7 @@
             <file role="test" name="tests/swoole_timer/after_fork.phpt" />
             <file role="test" name="tests/swoole_timer/bug_2342.phpt" />
             <file role="test" name="tests/swoole_timer/call_private.phpt" />
+            <file role="test" name="tests/swoole_timer/call_private_php7.phpt" />
             <file role="test" name="tests/swoole_timer/callback_bug_with_array.phpt" />
             <file role="test" name="tests/swoole_timer/clearAll.phpt" />
             <file role="test" name="tests/swoole_timer/enable_coroutine.phpt" />
@@ -2115,11 +2100,11 @@
     </dependencies>
     <providesextension>openswoole</providesextension>
     <extsrcrelease>
-        <configureoption default="no" name="enable-sockets" prompt="enable sockets supports?" />
-        <configureoption default="no" name="enable-openssl" prompt="enable openssl support?" />
-        <configureoption default="no" name="enable-http2" prompt="enable http2 support?" />
-        <configureoption default="no" name="enable-mysqlnd" prompt="enable mysqlnd support?" />
-        <configureoption default="no" name="enable-swoole-json" prompt="enable json support?" />
-        <configureoption default="no" name="enable-swoole-curl" prompt="enable curl support?" />
+        <configureoption default="no" name="enable-sockets" prompt="enable sockets supports?"/>
+        <configureoption default="no" name="enable-openssl" prompt="enable openssl support?"/>
+        <configureoption default="no" name="enable-http2" prompt="enable http2 support?"/>
+        <configureoption default="no" name="enable-mysqlnd" prompt="enable mysqlnd support?"/>
+        <configureoption default="no" name="enable-swoole-json" prompt="enable json support?"/>
+        <configureoption default="no" name="enable-swoole-curl" prompt="enable curl support?"/>
     </extsrcrelease>
 </package>
