@@ -220,6 +220,7 @@ const zend_function_entry swoole_functions[] = {
 };
 
 static const zend_module_dep swoole_deps[] = {
+    ZEND_MOD_CONFLICTS("swoole")
 #ifdef SW_USE_JSON
     ZEND_MOD_REQUIRED("json")
 #endif
