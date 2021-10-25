@@ -333,7 +333,7 @@ static PHP_METHOD(swoole_table, set) {
     TableRow *row = table->set(key, keylen, &_rowlock, &out_flags);
     if (!row) {
         _rowlock->unlock();
-        php_swoole_error(E_ERROR, "failed to set('%*s'), unable to allocate memory", (int) keylen, key);
+        php_swoole_error(E_ERROR, "failed to set('%*s'), try to increase the table_size", (int) keylen, key);
         RETURN_FALSE;
     }
 
