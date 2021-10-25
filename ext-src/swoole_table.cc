@@ -17,6 +17,7 @@
 #include "php_swoole_cxx.h"
 
 #include "swoole_table.h"
+#include "zend_exceptions.h"
 
 using namespace swoole;
 
@@ -333,7 +334,7 @@ static PHP_METHOD(swoole_table, set) {
     TableRow *row = table->set(key, keylen, &_rowlock, &out_flags);
     if (!row) {
         _rowlock->unlock();
-        php_swoole_error(E_ERROR, "failed to set('%*s'), try to increase the table_size", (int) keylen, key);
+        zend_throw_exception(swoole_exception_ce, "failed to set key value, try to increase the table_size", SW_ERROR_MALLOC_FAIL);
         RETURN_FALSE;
     }
 
