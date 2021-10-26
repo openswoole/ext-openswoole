@@ -99,6 +99,7 @@ core-tests/samples/bin/
 core-tests/samples/CMakeFiles/
 /out
 /gcov_result
+tools/PHP-Parser-*/
 
 # coverage
 *.gcno
