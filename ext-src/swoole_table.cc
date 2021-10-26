@@ -18,7 +18,9 @@
 
 #include "swoole_table.h"
 #include "zend_exceptions.h"
-
+#if PHP_VERSION_ID >= 80000
+#include "swoole_table_arginfo.h"
+#endif
 using namespace swoole;
 
 static inline void php_swoole_table_row2array(Table *table, TableRow *row, zval *return_value) {
@@ -123,49 +125,63 @@ static inline zend_object *php_swoole_table_create_object(zend_class_entry *ce) 
 }
 
 // clang-format off
+#if PHP_VERSION_ID < 80000
 ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_void, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_construct, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table___construct, 0, 0, 1)
     ZEND_ARG_INFO(0, table_size)
     ZEND_ARG_INFO(0, conflict_proportion)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_column, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_column, 0, 0, 2)
     ZEND_ARG_INFO(0, name)
     ZEND_ARG_INFO(0, type)
     ZEND_ARG_INFO(0, size)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_set, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_set, 0, 0, 2)
     ZEND_ARG_INFO(0, key)
     ZEND_ARG_ARRAY_INFO(0, value, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_get, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_get, 0, 0, 1)
     ZEND_ARG_INFO(0, key)
     ZEND_ARG_INFO(0, field)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_exists, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_exists, 0, 0, 1)
     ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_del, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_del, 0, 0, 1)
     ZEND_ARG_INFO(0, key)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_incr, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_incr, 0, 0, 2)
     ZEND_ARG_INFO(0, key)
     ZEND_ARG_INFO(0, column)
     ZEND_ARG_INFO(0, incrby)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_decr, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_decr, 0, 0, 2)
     ZEND_ARG_INFO(0, key)
     ZEND_ARG_INFO(0, column)
     ZEND_ARG_INFO(0, decrby)
 ZEND_END_ARG_INFO()
+
+#define arginfo_class_swoole_table_create arginfo_swoole_table_void
+#define arginfo_class_swoole_table_destroy arginfo_swoole_table_void
+#define arginfo_class_swoole_table_exists arginfo_class_swoole_table_del
+#define arginfo_class_swoole_table_getSize arginfo_swoole_table_void
+#define arginfo_class_swoole_table_getMemorySize arginfo_swoole_table_void
+#define arginfo_class_swoole_table_valid arginfo_swoole_table_void
+#define arginfo_class_swoole_table_current arginfo_swoole_table_void
+#define arginfo_class_swoole_table_count arginfo_swoole_table_void
+#define arginfo_class_swoole_table_rewind arginfo_swoole_table_void
+#define arginfo_class_swoole_table_next arginfo_swoole_table_void
+#define arginfo_class_swoole_table_key arginfo_swoole_table_void
+#endif
 // clang-format on
 
 SW_EXTERN_C_BEGIN
@@ -194,27 +210,27 @@ SW_EXTERN_C_END
 // clang-format off
 static const zend_function_entry swoole_table_methods[] =
 {
-    PHP_ME(swoole_table, __construct, arginfo_swoole_table_construct, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, column,      arginfo_swoole_table_column, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, create,      arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, destroy,     arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, set,         arginfo_swoole_table_set, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, get,         arginfo_swoole_table_get, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, count,       arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, del,         arginfo_swoole_table_del, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, exists,      arginfo_swoole_table_exists, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, incr,        arginfo_swoole_table_incr, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, decr,        arginfo_swoole_table_decr, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, getSize,    arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, getMemorySize,    arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, __construct, arginfo_class_swoole_table___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, column,      arginfo_class_swoole_table_column, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, create,      arginfo_class_swoole_table_create, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, destroy,     arginfo_class_swoole_table_destroy, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, set,         arginfo_class_swoole_table_set, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, get,         arginfo_class_swoole_table_get, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, count,       arginfo_class_swoole_table_count, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, del,         arginfo_class_swoole_table_del, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, exists,      arginfo_class_swoole_table_exists, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, incr,        arginfo_class_swoole_table_incr, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, decr,        arginfo_class_swoole_table_decr, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, getSize,    arginfo_class_swoole_table_getSize, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, getMemorySize,    arginfo_class_swoole_table_getMemorySize, ZEND_ACC_PUBLIC)
     // implement Iterator
-    PHP_ME(swoole_table, rewind,      arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, valid,       arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, next,        arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, current,     arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_table, key,         arginfo_swoole_table_void, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_table, delete, del, arginfo_swoole_table_del, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_table, exist, exists, arginfo_swoole_table_exists, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, rewind,      arginfo_class_swoole_table_rewind, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, valid,       arginfo_class_swoole_table_valid, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, next,        arginfo_class_swoole_table_next, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, current,     arginfo_class_swoole_table_current, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_table, key,         arginfo_class_swoole_table_key, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_table, delete, del, arginfo_class_swoole_table_del, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_table, exist, exists, arginfo_class_swoole_table_exists, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 // clang-format on
