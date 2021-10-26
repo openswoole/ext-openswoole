@@ -531,21 +531,21 @@ static PHP_METHOD(swoole_table, get) {
     Table *table = php_swoole_table_get_and_check_ptr2(ZEND_THIS);
     char *key;
     size_t keylen;
-    char *field = nullptr;
-    size_t field_len = 0;
+    char *column = nullptr;
+    size_t column_len = 0;
 
     ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 2)
     Z_PARAM_STRING(key, keylen)
     Z_PARAM_OPTIONAL
-    Z_PARAM_STRING(field, field_len)
+    Z_PARAM_STRING(column, column_len)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
     TableRow *_rowlock = nullptr;
     TableRow *row = table->get(key, keylen, &_rowlock);
     if (!row) {
         RETVAL_FALSE;
-    } else if (field && field_len > 0) {
-        php_swoole_table_get_field_value(table, row, return_value, field, (uint16_t) field_len);
+    } else if (column && column_len > 0) {
+        php_swoole_table_get_field_value(table, row, return_value, column, (uint16_t) column_len);
     } else {
         php_swoole_table_row2array(table, row, return_value);
     }

@@ -6,13 +6,13 @@ class swoole_table {
 	public function column(string $name, string $type, ?int $size): void {}
 	public function create(): bool {}
 	public function destroy(): bool {}
-	public function set(mixed $key, array $value): bool {}
-	public function get(mixed $key, string $field): array|bool {}
+	public function set(string $key, array $value): bool {}
+	public function get(string $key, string $field): array|bool {}
 	public function count(): int {}
-	public function del(mixed $key): bool {}
-	public function exists(mixed $key): bool {}
-	public function incr(mixed $key, string $column, int $incrby): int {}
-	public function decr(mixed $key, string $column, int $decrby): int {}
+	public function del(string $key): bool {}
+	public function exists(string $key): bool {}
+	public function incr(string $key, string $column, int $incrby): int {}
+	public function decr(string $key, string $column, int $decrby): int {}
 	public function getSize(): int {}
 	public function getMemorySize(): int {}
 	public function rewind(): void {}
