@@ -7,7 +7,7 @@ class swoole_table {
 	public function create(): bool {}
 	public function destroy(): bool {}
 	public function set(string $key, array $value): bool {}
-	public function get(string $key, string $field): array|bool {}
+	public function get(string $key, string $column): array|bool {}
 	public function count(): int {}
 	public function del(string $key): bool {}
 	public function exists(string $key): bool {}

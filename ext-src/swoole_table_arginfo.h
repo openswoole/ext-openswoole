@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 6ca89d2bb6b12b87d847230fbca11a67a629f839 */
+ * Stub hash: 6736c80912bc4e84def1ec4e1a4c9cf5ec2f206a */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, table_size, IS_LONG, 0)
@@ -24,7 +24,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_swoole_table_get, 0, 2, MAY_BE_ARRAY|MAY_BE_BOOL)
 	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, field, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, column, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_swoole_table_count, 0, 0, IS_LONG, 0)
