@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 6736c80912bc4e84def1ec4e1a4c9cf5ec2f206a */
+ * Stub hash: 8ed7da7b6067488b4b556920bade0109b86f1103 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, table_size, IS_LONG, 0)
@@ -8,7 +8,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_swoole_table_column, 0, 3, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, type, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, size, IS_LONG, 1)
 ZEND_END_ARG_INFO()
 
@@ -36,16 +36,16 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_swoole_table_exists arginfo_class_swoole_table_del
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_swoole_table_incr, 0, 3, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_swoole_table_incr, 0, 2, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, column, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, incrby, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, incrby, IS_LONG, 1, "1")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_swoole_table_decr, 0, 3, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_swoole_table_decr, 0, 2, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, column, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, decrby, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, decrby, IS_LONG, 1, "1")
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_swoole_table_getSize arginfo_class_swoole_table_count
