@@ -17,11 +17,11 @@
  */
 
 #include "php_swoole_cxx.h"
-
 #include "swoole_server.h"
-
 #include "ext/spl/spl_array.h"
-
+#if PHP_VERSION_ID >= 80000
+#include "swoole_timer_arginfo.h"
+#endif
 using swoole::Timer;
 using swoole::TimerNode;
 using zend::Function;
@@ -44,49 +44,55 @@ static PHP_FUNCTION(swoole_timer_clear_all);
 SW_EXTERN_C_END
 
 // clang-format off
+#if PHP_VERSION_ID < 80000
 ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_void, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_timer_set, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_set, 0, 0, 1)
     ZEND_ARG_ARRAY_INFO(0, settings, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_timer_after, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_after, 0, 0, 2)
     ZEND_ARG_INFO(0, ms)
     ZEND_ARG_CALLABLE_INFO(0, callback, 0)
     ZEND_ARG_VARIADIC_INFO(0, params)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_timer_tick, 0, 0, 2)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_tick, 0, 0, 2)
     ZEND_ARG_INFO(0, ms)
     ZEND_ARG_CALLABLE_INFO(0, callback, 0)
     ZEND_ARG_VARIADIC_INFO(0, params)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_timer_exists, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_exists, 0, 0, 1)
     ZEND_ARG_INFO(0, timer_id)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_timer_info, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_info, 0, 0, 1)
     ZEND_ARG_INFO(0, timer_id)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_timer_clear, 0, 0, 1)
     ZEND_ARG_INFO(0, timer_id)
 ZEND_END_ARG_INFO()
+#define arginfo_class_Swoole_Timer_stats arginfo_swoole_void
+#define arginfo_class_Swoole_Timer_list arginfo_swoole_void
+#define arginfo_class_Swoole_Timer_clear arginfo_swoole_void
+#define arginfo_class_Swoole_Timer_clearAll arginfo_swoole_void
+#endif
 
 static const zend_function_entry swoole_timer_methods[] =
 {
-    ZEND_FENTRY(set, ZEND_FN(swoole_timer_set), arginfo_swoole_timer_set,
+    ZEND_FENTRY(set, ZEND_FN(swoole_timer_set), arginfo_class_Swoole_Timer_set,
                 ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_DEPRECATED)
-    ZEND_FENTRY(tick, ZEND_FN(swoole_timer_tick), arginfo_swoole_timer_tick, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(after, ZEND_FN(swoole_timer_after), arginfo_swoole_timer_after, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(exists, ZEND_FN(swoole_timer_exists), arginfo_swoole_timer_exists, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(info, ZEND_FN(swoole_timer_info), arginfo_swoole_timer_info, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(stats, ZEND_FN(swoole_timer_stats), arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(list, ZEND_FN(swoole_timer_list), arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(clear, ZEND_FN(swoole_timer_clear), arginfo_swoole_timer_clear, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(clearAll, ZEND_FN(swoole_timer_clear_all), arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(after, ZEND_FN(swoole_timer_after), arginfo_class_Swoole_Timer_after, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(tick, ZEND_FN(swoole_timer_tick), arginfo_class_Swoole_Timer_tick, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(exists, ZEND_FN(swoole_timer_exists), arginfo_class_Swoole_Timer_exists, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(info, ZEND_FN(swoole_timer_info), arginfo_class_Swoole_Timer_info, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(stats, ZEND_FN(swoole_timer_stats), arginfo_class_Swoole_Timer_stats, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(list, ZEND_FN(swoole_timer_list), arginfo_class_Swoole_Timer_list, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(clear, ZEND_FN(swoole_timer_clear), arginfo_class_Swoole_Timer_clear, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    ZEND_FENTRY(clearAll, ZEND_FN(swoole_timer_clear_all), arginfo_class_Swoole_Timer_clearAll, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
 // clang-format on
@@ -214,14 +220,14 @@ static void timer_add(INTERNAL_FUNCTION_PARAMETERS, bool persistent) {
 }
 
 static PHP_FUNCTION(swoole_timer_set) {
-    zval *zset = nullptr;
+    zval *settings = nullptr;
     zval *ztmp;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_ARRAY(zset)
+    Z_PARAM_ARRAY(settings)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
-    HashTable *vht = Z_ARRVAL_P(zset);
+    HashTable *vht = Z_ARRVAL_P(settings);
 
     if (php_swoole_array_get_value(vht, "enable_coroutine", ztmp)) {
         SWOOLE_G(enable_coroutine) = zval_is_true(ztmp);
@@ -265,7 +271,7 @@ static PHP_FUNCTION(swoole_timer_info) {
 
         tnode = swoole_timer_get(id);
         if (UNEXPECTED(!tnode)) {
-            RETURN_NULL();
+            RETURN_FALSE;
         }
         array_init(return_value);
         add_assoc_long(return_value, "exec_msec", tnode->exec_msec);
