@@ -13,9 +13,6 @@ require __DIR__ . '/../../include/bootstrap.php';
 $cm = new \SwooleTest\CurlManager();
 $cm->disableNativeCurl();
 $cm->run(function ($host) {
-
-    Co::set(['hook_flags' => SWOOLE_HOOK_NATIVE_CURL]);
-
     // start testing
     echo "*** curl_setopt() call with CURLOPT_HTTPHEADER\n";
 
@@ -48,6 +45,10 @@ $cm->run(function ($host) {
 --EXPECTF--
 *** curl_setopt() call with CURLOPT_HTTPHEADER
 
+Deprecated: Use SWOOLE_HOOK_NATIVE_CURL instead of SWOOLE_HOOK_CURL in @swoole-src/library/ext/curl.php on line %d
+
 Warning: swoole_curl_setopt(): You must pass either an object or an array with the CURLOPT_HTTPHEADER argument in %s on line %d
 bool(false)
+
+Deprecated: Use SWOOLE_HOOK_NATIVE_CURL instead of SWOOLE_HOOK_CURL in @swoole-src/library/ext/curl.php on line %d
 bool(true)
