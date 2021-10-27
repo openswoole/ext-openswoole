@@ -21,4 +21,5 @@ $cm->run(function ($host) {
 ?>
 ===DONE===
 --EXPECT--
+Deprecated: Use SWOOLE_HOOK_NATIVE_CURL instead of SWOOLE_HOOK_CURL in @swoole-src/library/ext/curl.php on line 16
 ===DONE===

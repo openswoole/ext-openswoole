@@ -24,5 +24,6 @@ $cm->run(function ($host) {
 }, false);
 ?>
 --EXPECTREGEX--
+Deprecated: (.*)
 string\(\d+\) ".+URL.+"
 int\(\d\)

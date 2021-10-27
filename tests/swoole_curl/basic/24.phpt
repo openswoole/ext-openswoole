@@ -18,7 +18,6 @@ require __DIR__ . '/../../include/bootstrap.php';
 $cm = new \SwooleTest\CurlManager();
 $cm->disableNativeCurl();
 $cm->run(function ($host) {
-
     // start testing
     echo '*** Testing curl setting auto referer ***' . "\n";
 
@@ -42,4 +41,6 @@ $cm->run(function ($host) {
 ===DONE===
 --EXPECTF--
 *** Testing curl setting auto referer ***
+
+Deprecated: Use SWOOLE_HOOK_NATIVE_CURL instead of SWOOLE_HOOK_CURL in @swoole-src/library/ext/curl.php on line %d
 ===DONE===
