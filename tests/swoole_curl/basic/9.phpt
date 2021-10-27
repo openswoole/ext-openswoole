@@ -12,6 +12,8 @@ require __DIR__ . '/../../include/bootstrap.php';
 $cm = new \SwooleTest\CurlManager();
 $cm->disableNativeCurl();
 $cm->run(function ($host) {
+
+    Co::set(['hook_flags' => SWOOLE_HOOK_NATIVE_CURL]);
     $url = uniqid()."://www.".uniqid().".".uniqid();
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);

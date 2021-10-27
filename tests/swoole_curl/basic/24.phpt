@@ -19,6 +19,8 @@ $cm = new \SwooleTest\CurlManager();
 $cm->disableNativeCurl();
 $cm->run(function ($host) {
 
+    Co::set(['hook_flags' => SWOOLE_HOOK_NATIVE_CURL]);
+
     // start testing
     echo '*** Testing curl setting auto referer ***' . "\n";
 
