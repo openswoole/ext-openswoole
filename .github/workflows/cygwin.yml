@@ -56,7 +56,7 @@ jobs:
         run: |
           C:\tools\php\php.exe -v
           C:\tools\php\php.exe -m
-          wget https://github.com/lufei/cygwin/archive/refs/heads/master.tar.gz -O cygwin.tar.gz
+          wget https://github.com/openswoole/cygwin-build/archive/refs/heads/main.tar.gz -O cygwin.tar.gz
           mkdir -p openswoole-cygwin
           tar -xf cygwin.tar.gz -C openswoole-cygwin --strip-components=1
           rm cygwin.tar.gz
@@ -71,6 +71,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.swoole_info.outputs.upload_url }}
-          asset_path: .\openswoole-cygwin\swoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
-          asset_name: swoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
+          asset_path: .\openswoole-cygwin\openswoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
+          asset_name: openswoole-cygwin-${{ steps.swoole_info.outputs.version }}.zip
           asset_content_type: application/zip
