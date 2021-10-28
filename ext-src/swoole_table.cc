@@ -18,9 +18,13 @@
 
 #include "swoole_table.h"
 #include "zend_exceptions.h"
+
 #if PHP_VERSION_ID >= 80000
 #include "swoole_table_arginfo.h"
+#else
+#include "swoole_table_legacy_arginfo.h"
 #endif
+
 using namespace swoole;
 
 static inline void php_swoole_table_row2array(Table *table, TableRow *row, zval *return_value) {
@@ -123,66 +127,6 @@ static inline zend_object *php_swoole_table_create_object(zend_class_entry *ce) 
     table->std.handlers = &swoole_table_handlers;
     return &table->std;
 }
-
-// clang-format off
-#if PHP_VERSION_ID < 80000
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_table_void, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table___construct, 0, 0, 1)
-    ZEND_ARG_INFO(0, table_size)
-    ZEND_ARG_INFO(0, conflict_proportion)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_column, 0, 0, 2)
-    ZEND_ARG_INFO(0, name)
-    ZEND_ARG_INFO(0, type)
-    ZEND_ARG_INFO(0, size)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_set, 0, 0, 2)
-    ZEND_ARG_INFO(0, key)
-    ZEND_ARG_ARRAY_INFO(0, value, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_get, 0, 0, 1)
-    ZEND_ARG_INFO(0, key)
-    ZEND_ARG_INFO(0, field)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_exists, 0, 0, 1)
-    ZEND_ARG_INFO(0, key)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_del, 0, 0, 1)
-    ZEND_ARG_INFO(0, key)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_incr, 0, 0, 2)
-    ZEND_ARG_INFO(0, key)
-    ZEND_ARG_INFO(0, column)
-    ZEND_ARG_INFO(0, incrby)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_swoole_table_decr, 0, 0, 2)
-    ZEND_ARG_INFO(0, key)
-    ZEND_ARG_INFO(0, column)
-    ZEND_ARG_INFO(0, decrby)
-ZEND_END_ARG_INFO()
-
-#define arginfo_class_swoole_table_create arginfo_swoole_table_void
-#define arginfo_class_swoole_table_destroy arginfo_swoole_table_void
-#define arginfo_class_swoole_table_exists arginfo_class_swoole_table_del
-#define arginfo_class_swoole_table_getSize arginfo_swoole_table_void
-#define arginfo_class_swoole_table_getMemorySize arginfo_swoole_table_void
-#define arginfo_class_swoole_table_valid arginfo_swoole_table_void
-#define arginfo_class_swoole_table_current arginfo_swoole_table_void
-#define arginfo_class_swoole_table_count arginfo_swoole_table_void
-#define arginfo_class_swoole_table_rewind arginfo_swoole_table_void
-#define arginfo_class_swoole_table_next arginfo_swoole_table_void
-#define arginfo_class_swoole_table_key arginfo_swoole_table_void
-#endif
-// clang-format on
 
 SW_EXTERN_C_BEGIN
 static PHP_METHOD(swoole_table, __construct);
