@@ -1,4 +1,3 @@
-#include "php_swoole_private.h"
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_void, 0, 0, 0)
 ZEND_END_ARG_INFO()

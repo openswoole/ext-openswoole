@@ -18,6 +18,8 @@
 #include "swoole_memory.h"
 #include "swoole_lock.h"
 
+#include "swoole_lock_legacy_arginfo.h"
+
 using swoole::Lock;
 using swoole::Mutex;
 #ifdef HAVE_SPINLOCK
@@ -84,17 +86,6 @@ static PHP_METHOD(swoole_lock, destroy);
 SW_EXTERN_C_END
 
 // clang-format off
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_void, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_lock_construct, 0, 0, 0)
-    ZEND_ARG_INFO(0, type)
-    ZEND_ARG_INFO(0, filename)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_lock_lockwait, 0, 0, 0)
-    ZEND_ARG_INFO(0, timeout)
-ZEND_END_ARG_INFO()
 
 static const zend_function_entry swoole_lock_methods[] =
 {

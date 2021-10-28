@@ -20,6 +20,8 @@
 
 #include <queue>
 
+#include "swoole_coroutine_scheduler_legacy_arginfo.h"
+
 using swoole::Reactor;
 using swoole::Coroutine;
 using swoole::PHPCoroutine;
@@ -76,23 +78,6 @@ static void scheduler_free_object(zend_object *object) {
 }
 
 // clang-format off
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_void, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_coroutine_scheduler_add, 0, 0, 1)
-    ZEND_ARG_CALLABLE_INFO(0, func, 0)
-    ZEND_ARG_VARIADIC_INFO(0, params)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_coroutine_scheduler_parallel, 0, 0, 1)
-    ZEND_ARG_INFO(0, n)
-    ZEND_ARG_CALLABLE_INFO(0, func, 0)
-    ZEND_ARG_VARIADIC_INFO(0, params)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_coroutine_scheduler_set, 0, 0, 1)
-    ZEND_ARG_ARRAY_INFO(0, settings, 0)
-ZEND_END_ARG_INFO()
 
 static const zend_function_entry swoole_coroutine_scheduler_methods[] = {
     PHP_ME(swoole_coroutine_scheduler, add, arginfo_swoole_coroutine_scheduler_add, ZEND_ACC_PUBLIC)

@@ -22,6 +22,8 @@
 #include "thirdparty/php/curl/curl_interface.h"
 #endif
 
+#include "swoole_runtime_legacy_arginfo.h"
+
 #include <unordered_map>
 
 /* openssl */
@@ -66,18 +68,6 @@ static int socket_stat(php_stream *stream, php_stream_statbuf *ssb);
 static int socket_cast(php_stream *stream, int castas, void **ret);
 static bool socket_ssl_set_options(Socket *sock, php_stream_context *context);
 // clang-format off
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_void, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_runtime_enableCoroutine, 0, 0, 0)
-    ZEND_ARG_INFO(0, enable)
-    ZEND_ARG_INFO(0, flags)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_runtime_setHookFlags, 0, 0, 1)
-    ZEND_ARG_INFO(0, flags)
-ZEND_END_ARG_INFO()
 
 static zend_class_entry *swoole_runtime_ce;
 
