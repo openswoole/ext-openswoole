@@ -30,6 +30,8 @@ SW_EXTERN_C_END
 #include <brotli/encode.h>
 #endif
 
+#include "swoole_http_request_legacy_arginfo.h"
+
 enum http_upload_errno {
     HTTP_UPLOAD_ERR_OK = 0,
     HTTP_UPLOAD_ERR_INI_SIZE,
@@ -197,16 +199,6 @@ static PHP_METHOD(swoole_http_request, __destruct);
 SW_EXTERN_C_END
 
 // clang-format off
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_http_void, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_http_create, 0, 0, 0)
-ZEND_ARG_INFO(0, options)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_http_parse, 0, 0, 1)
-ZEND_ARG_INFO(0, data)
-ZEND_END_ARG_INFO()
 
 const zend_function_entry swoole_http_request_methods[] =
 {
