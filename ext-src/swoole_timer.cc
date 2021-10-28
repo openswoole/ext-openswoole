@@ -19,9 +19,13 @@
 #include "php_swoole_cxx.h"
 #include "swoole_server.h"
 #include "ext/spl/spl_array.h"
+
 #if PHP_VERSION_ID >= 80000
 #include "swoole_timer_arginfo.h"
+#else
+#include "swoole_timer_legacy_arginfo.h"
 #endif
+
 using swoole::Timer;
 using swoole::TimerNode;
 using zend::Function;
@@ -44,43 +48,6 @@ static PHP_FUNCTION(swoole_timer_clear_all);
 SW_EXTERN_C_END
 
 // clang-format off
-#if PHP_VERSION_ID < 80000
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_void, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_set, 0, 0, 1)
-    ZEND_ARG_ARRAY_INFO(0, settings, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_after, 0, 0, 2)
-    ZEND_ARG_INFO(0, ms)
-    ZEND_ARG_CALLABLE_INFO(0, callback, 0)
-    ZEND_ARG_VARIADIC_INFO(0, params)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_tick, 0, 0, 2)
-    ZEND_ARG_INFO(0, ms)
-    ZEND_ARG_CALLABLE_INFO(0, callback, 0)
-    ZEND_ARG_VARIADIC_INFO(0, params)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_exists, 0, 0, 1)
-    ZEND_ARG_INFO(0, timer_id)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Timer_info, 0, 0, 1)
-    ZEND_ARG_INFO(0, timer_id)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_timer_clear, 0, 0, 1)
-    ZEND_ARG_INFO(0, timer_id)
-ZEND_END_ARG_INFO()
-#define arginfo_class_Swoole_Timer_stats arginfo_swoole_void
-#define arginfo_class_Swoole_Timer_list arginfo_swoole_void
-#define arginfo_class_Swoole_Timer_clear arginfo_swoole_void
-#define arginfo_class_Swoole_Timer_clearAll arginfo_swoole_void
-#endif
-
 static const zend_function_entry swoole_timer_methods[] =
 {
     ZEND_FENTRY(set, ZEND_FN(swoole_timer_set), arginfo_class_Swoole_Timer_set,
