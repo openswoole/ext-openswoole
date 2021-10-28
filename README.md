@@ -23,7 +23,7 @@ Open Swoole is a fork of orignal Swoole since release version v4.7.1.
 
 > PR are welcome if your framework is using openswoole
 
- - [PHP Runtime](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Swoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
+ - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Swoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
 
 ## Installation
 
