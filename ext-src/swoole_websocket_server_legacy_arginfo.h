@@ -30,3 +30,5 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_websocket_frame_void, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_WebSocket_Frame___toString arginfo_swoole_websocket_frame_void
+#define arginfo_class_Swoole_WebSocket_Frame_pack arginfo_class_Swoole_WebSocket_Server_pack
+#define arginfo_class_Swoole_WebSocket_Frame_unpack arginfo_class_Swoole_WebSocket_Server_unpack
