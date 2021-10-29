@@ -48,6 +48,7 @@ Please download the source packages from [Releases](https://github.com/openswool
 ```shell
 git clone https://github.com/openswoole/swoole-src.git && \
 cd swoole-src
+git checkout v4.7.2
 ```
 
 Compile and install at the source folder:
