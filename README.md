@@ -8,9 +8,7 @@
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/23970/badge.svg)](https://scan.coverity.com/projects/open-swoole-src)
 [![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src)
 
-**Swoole is an event-driven asynchronous & coroutine-based concurrency networking communication engine with high performance written in C++ for PHP.**
-
-Open Swoole is a fork of orignal Swoole since release version v4.7.1.
+**Open Swoole is an event-driven asynchronous & coroutine-based concurrency networking communication engine with high performance written in C++ for PHP.**
 
 ## Documentation & Community
 
@@ -23,7 +21,7 @@ Open Swoole is a fork of orignal Swoole since release version v4.7.1.
 
 > PR are welcome if your framework is using openswoole
 
- - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Swoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
+ - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
 
 ## Installation
 
@@ -61,7 +59,7 @@ make && make install
 
 #### Enable extension in PHP
 
-After compiling and installing to the system successfully, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Open Swoole extension.
+After compiling and installing to the system successfully, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Open Swoole extension. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
 
 #### Extra compiler configurations
 
