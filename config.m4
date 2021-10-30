@@ -497,10 +497,12 @@ if test "$PHP_SWOOLE" != "no"; then
         LDFLAGS="$LDFLAGS -z now"
     fi
 
-    if test "$PHP_OPENSSL_DIR" = "no"; then
-        if test "$SW_OS" = "MAC"; then
-            CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
-            LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
+    if test "$PHP_OPENSSL" != "no"; then
+        if test "$PHP_OPENSSL_DIR" = "no"; then
+            if test "$SW_OS" = "MAC"; then
+                CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
+                LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
+            fi
         fi
     fi
 
