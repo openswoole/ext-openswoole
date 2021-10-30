@@ -497,12 +497,14 @@ if test "$PHP_SWOOLE" != "no"; then
         LDFLAGS="$LDFLAGS -z now"
     fi
 
-    if test "$PHP_OPENSSL" != "no"; then
-        if test "$PHP_OPENSSL_DIR" = "no"; then
-            if test "$SW_OS" = "MAC"; then
-                CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
-                LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
-            fi
+    AC_MSG_CHECKING([openssl fallback dir])
+    if test "$PHP_OPENSSL" != "no" && test "$SW_OS" = "MAC" && test "$PHP_OPENSSL_DIR" = "no"; then
+        if test -d "/usr/local/opt/openssl/include"; then
+            CPPFLAGS="$CPPFLAGS -I/usr/local/opt/openssl/include"
+            LDFLAGS="$LDFLAGS -L/usr/local/opt/openssl/lib"
+            AC_MSG_RESULT([yes])
+        else
+            AC_MSG_RESULT([no])
         fi
     fi
 
