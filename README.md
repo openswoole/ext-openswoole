@@ -17,12 +17,6 @@
 + __Slack Group__: <https://swoole.slack.com>
 + __IDE Helper & API__: <https://github.com/openswoole/ide-helper>
 
-## Frameworks & Components
-
-> PR are welcome if your framework is using openswoole
-
- - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
-
 ## Installation
 
 > As with any open source project, Open Swoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
@@ -94,6 +88,12 @@ This project exists thanks to all the contributors who contribute to the orignal
 ## Security issues
 
 Security issues should be reported privately, via email, to the Open Swoole develop team [hello@swoole.co.uk](mailto:hello@swoole.co.uk). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
+
+## Frameworks & Components
+
+> PR are welcome if your framework is using openswoole
+
+ - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
 
 ## License
 
