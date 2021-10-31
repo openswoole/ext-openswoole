@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 8a20600fbc5e4f768efcc0a8a36fdcfbb9f27252 */
+ * Stub hash: 5e86cdaa80e2bd155791532deff4570f93c4b58d */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Table___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, table_size, IS_LONG, 0)

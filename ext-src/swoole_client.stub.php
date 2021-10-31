@@ -17,26 +17,23 @@
 
 /** @not-serializable */
 namespace Swoole {
-	final class Atomic {
-		public function __construct(?int $value = 0) {}
-		public function add(?int $value = 1): int {}
-		public function sub(?int $value = 1): int {}
-		public function get(): int {}
-		public function set(int $value): bool|void {}
-		public function wait(?float $timeout = 1.0): bool {}
-		public function wakeup(?int $count = 1): int {}
-		public function cmpset(int $cmp_val = 0, int $new_val = 0): int {}
+	final class Client {
+		public function __construct(int $type, ?bool $async = false, ?string $id = null) {}
+		public function set(array $settings): bool {}
+		public function connect(string $host, ?int $port = 0, float $timeout = 0.5, int $sock_flag = 0): bool {}
+		public function send(string $data, ?int $flags = 0): bool|int {}
+		public function sendto(string $ip, int $port, string $data): bool {}
+		public function sendfile(string $filename, ?int $offset = 0, ?int $length = 0): bool {}
+		public function recv(?int $length = 65535, ?int $flags = 0): bool|string {}
+		public function close(?bool $force = false): void|bool {}
+		public function shutdown(int $how): bool {}
+		public function isConnected(): bool {}
+		public function getsockname(): bool|array {}
+		public function getSocket(): mixed {}
+		public function getpeername(): bool|array {}
+		public function enableSSL(): bool {}
+		public function getPeerCert(): bool|string {}
+		public function verifyPeerCert(): bool {}
+		public function __destruct() {}
 	}
-}
-
-/** @not-serializable */
-namespace Swoole\Atomic {
-    final class Long {
-        public function __construct(?int $value = 0) {}
-		public function add(?int $value = 1): int {}
-		public function sub(?int $value = 1): int {}
-		public function get(): int {}
-		public function set(int $value): bool|void {}
-		public function cmpset(int $cmp_val = 0, int $new_val = 0): int {}
-    }
 }

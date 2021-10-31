@@ -18,7 +18,11 @@
 #include "php_swoole_client.h"
 #include "swoole_mqtt.h"
 
+#if PHP_VERSION_ID >= 80000
+#include "swoole_client_arginfo.h"
+#else
 #include "swoole_client_legacy_arginfo.h"
+#endif
 
 #include <string>
 #include <queue>
@@ -166,26 +170,26 @@ static sw_inline Client *client_get_ptr(zval *zobject) {
 
 static const zend_function_entry swoole_client_methods[] =
 {
-    PHP_ME(swoole_client, __construct, arginfo_swoole_client_construct, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, __destruct, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, set, arginfo_swoole_client_set, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, connect, arginfo_swoole_client_connect, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, recv, arginfo_swoole_client_recv, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, send, arginfo_swoole_client_send, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, sendfile, arginfo_swoole_client_sendfile, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, sendto, arginfo_swoole_client_sendto, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, shutdown, arginfo_swoole_client_shutdown, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, __construct, arginfo_class_Swoole_Client___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, __destruct, arginfo_class_Swoole_Client___destruct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, set, arginfo_class_Swoole_Client_set, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, connect, arginfo_class_Swoole_Client_connect, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, recv, arginfo_class_Swoole_Client_recv, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, send, arginfo_class_Swoole_Client_send, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, sendfile, arginfo_class_Swoole_Client_sendfile, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, sendto, arginfo_class_Swoole_Client_sendto, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, shutdown, arginfo_class_Swoole_Client_shutdown, ZEND_ACC_PUBLIC)
 #ifdef SW_USE_OPENSSL
-    PHP_ME(swoole_client, enableSSL, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, getPeerCert, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, verifyPeerCert, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, enableSSL, arginfo_class_Swoole_Client_enableSSL, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, getPeerCert, arginfo_class_Swoole_Client_getPeerCert, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, verifyPeerCert, arginfo_class_Swoole_Client_verifyPeerCert, ZEND_ACC_PUBLIC)
 #endif
-    PHP_ME(swoole_client, isConnected, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, getsockname, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, getpeername, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_client, close, arginfo_swoole_client_close, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, isConnected, arginfo_class_Swoole_Client_isConnected, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, getsockname, arginfo_class_Swoole_Client_getsockname, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, getpeername, arginfo_class_Swoole_Client_getpeername, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, close, arginfo_class_Swoole_Client_close, ZEND_ACC_PUBLIC)
 #ifdef SWOOLE_SOCKETS_SUPPORT
-    PHP_ME(swoole_client, getSocket, arginfo_swoole_client_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, getSocket, arginfo_class_Swoole_Client_getSocket, ZEND_ACC_PUBLIC)
 #endif
     PHP_FE_END
 };
@@ -667,7 +671,7 @@ static PHP_METHOD(swoole_client, __construct) {
     }
 
     if (async) {
-        php_swoole_fatal_error(E_ERROR, "please install the ext-async extension, using Swoole\\Async\\Client");
+        php_swoole_fatal_error(E_ERROR, "async field should always be false.");
     }
 
     int client_type = php_swoole_socktype(type);
@@ -1348,6 +1352,7 @@ static PHP_METHOD(swoole_client, shutdown) {
     SW_CHECK_RETURN(cli->shutdown(__how));
 }
 
+// TODO: add stub or expose to class
 PHP_FUNCTION(swoole_client_select) {
 #ifdef PHP_SWOOLE_CLIENT_USE_POLL
     zval *r_array, *w_array, *e_array;
