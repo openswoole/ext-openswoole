@@ -26,7 +26,7 @@ namespace Swoole {
 		public function trylock_read(): bool {}
 		public function unlock(): bool {}
 		public function destroy(): void {}
-		public function __destruct(): void|null {}
+		public function __destruct() {}
 
 	}
 }

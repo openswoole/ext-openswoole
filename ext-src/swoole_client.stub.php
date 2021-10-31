@@ -34,6 +34,6 @@ namespace Swoole {
 		public function enableSSL(): bool {}
 		public function getPeerCert(): bool|string {}
 		public function verifyPeerCert(): bool {}
-		public function __destruct(): void|null {}
+		public function __destruct() {}
 	}
 }
