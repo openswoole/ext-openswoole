@@ -5,8 +5,6 @@ FROM php:${PHP_VERSION}-cli-alpine${ALPINE_VERSION}
 
 LABEL maintainer="Open Swoole Group <hello@swoole.co.uk>" version="1.0" license="MIT"
 
-ARG PHP_VERSION
-
 COPY . /opt/www
 
 WORKDIR /opt/www

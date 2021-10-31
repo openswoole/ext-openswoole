@@ -104,8 +104,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php-version: [ '7.4', '8.0', '8.1.0RC5' ]
-        alpine-version: [ '3.11', '3.12', '3.13', '3.14' ]
+        php-version: [ '7.4.25', '8.0.12', '8.1.0RC5' ]
+        alpine-version: [ '3.13', '3.14' ]
       max-parallel: 8
       fail-fast: false
     steps:
