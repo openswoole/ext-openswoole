@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 313be94894c4894bc58f500617dd1f5bcb812720 */
+ * Stub hash: 14ed094a5819560c1bbceba87910a3b00cf39ba5 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Client___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
@@ -66,5 +66,5 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Client_verifyPeerCert arginfo_class_Swoole_Client_isConnected
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Client___destruct, 0, 0, IS_VOID, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Client___destruct, 0, 0, IS_VOID, 1)
 ZEND_END_ARG_INFO()
