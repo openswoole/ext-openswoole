@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 85342b08f5452072e6afead83450c39149bc435b */
+ * Stub hash: 7277f47073e7f754d0c4d83604855f185a3d37be */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_WebSocket_Server_push, 0, 3, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, fd, IS_LONG, 0)

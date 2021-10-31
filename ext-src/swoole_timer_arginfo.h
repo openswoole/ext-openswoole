@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 2e8eae243a2cc6e43012b240cb76029327d10269 */
+ * Stub hash: 9f0d7e2dd1d97c74ac4edfffad9b085a85ef1460 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Timer_set, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, settings, IS_ARRAY, 0)
