@@ -95,10 +95,16 @@ $files = [
     'functions.php',
     'alias.php',
     'alias_ns.php',
-    'vendor_init.php',
 ];
 
+$ignore_files = ['vendor_init.php',];
+
 $diff_files = array_diff(swoole_library_files(), $files);
+foreach ($diff_files as $k => $f) {
+    if (in_array($f, $ignore_files)) {
+        unset($diff_files[$k]);
+    }
+}
 if (!empty($diff_files)) {
     swoole_error('Some files are not loaded: ', ...$diff_files);
 }
