@@ -315,6 +315,8 @@ void swoole_native_curl_minit(int module_number) {
 
 #if PHP_VERSION_ID >= 80000
     swoole_coroutine_curl_handle_ce = curl_ce;
+
+#if PHP_VERSION_ID < 80100
     swoole_coroutine_curl_handle_ce->create_object = curl_create_object;
     // TODO: fix this duplicate, init handlers
     memcpy(&swoole_coroutine_curl_handle_handlers, zend_get_std_object_handlers(), sizeof(zend_object_handlers));
@@ -325,7 +327,7 @@ void swoole_native_curl_minit(int module_number) {
     swoole_coroutine_curl_handle_handlers.clone_obj = curl_clone_obj;
     swoole_coroutine_curl_handle_handlers.cast_object = curl_cast_object;
     swoole_coroutine_curl_handle_handlers.compare = zend_objects_not_comparable;
-
+#endif
     curl_multi_register_class(nullptr);
 
     zend_unregister_functions(swoole_native_curl_functions, -1, CG(function_table));
