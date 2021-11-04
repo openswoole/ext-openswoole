@@ -36,14 +36,14 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Client_sendfile, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Client_sendto, 0, 0, 3)
-    ZEND_ARG_INFO(0, address)
+    ZEND_ARG_INFO(0, host)
     ZEND_ARG_INFO(0, port)
     ZEND_ARG_INFO(0, data)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Client_recvfrom, 0, 0, 2)
     ZEND_ARG_INFO(0, length)
-    ZEND_ARG_INFO(1, address)
+    ZEND_ARG_INFO(1, host)
     ZEND_ARG_INFO(1, port)
 ZEND_END_ARG_INFO()
 

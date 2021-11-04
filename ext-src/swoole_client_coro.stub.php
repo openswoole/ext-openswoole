@@ -20,12 +20,12 @@ namespace Swoole\Coroutine {
 	final class Client {
 		public function __construct(int $type, ?bool $async = false, ?string $id = null) {}
 		public function set(array $settings): bool {}
-		public function connect(string $host, ?int $port = 0, float $timeout = 0.5, int $sock_flag = 0): bool {}
-		public function send(string $data, ?int $flags = 0): bool|int {}
-		public function sendto(string $ip, int $port, string $data): bool {}
+		public function connect(string $host, ?int $port = 0, ?float $timeout = 0.5, ?int $sock_flag = 0): bool {}		
+		public function send(string $data, ?float $timeout = 1.0): bool|int {}
+		public function sendto(string $host, int $port, string $data): bool {}
 		public function sendfile(string $filename, ?int $offset = 0, ?int $length = 0): bool {}
-		public function recv(?float $timeout = 0): bool|string {}
-		public function recvfrom(int $length, string $address, ?int $port = 0): bool|string {}
+		public function recv(?float $timeout = 1.0): bool|string {}
+		public function recvfrom(int $length, string &$host, ?int &$port = 0): bool|string {}
 		public function peek(?int $length = 65535): bool|string {}
 		public function close(): bool {}
 		public function isConnected(): bool {}
