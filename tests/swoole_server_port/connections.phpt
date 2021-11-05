@@ -1,7 +1,7 @@
 --TEST--
 swoole_server_port: connections
 --SKIPIF--
-<?php require  __DIR__ . '/../include/skipif.inc'; ?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
@@ -37,7 +37,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             $c->upgrade('/');
             $c->push('all');
             $frame = $c->recv();
-            Assert::assert($frame);
+            Assert::assert(is_object($frame));
             $json = json_decode($frame->data);
             Assert::eq($json->count, 8);
             Assert::eq($json->list, range(1, 8));
@@ -51,7 +51,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             $c->upgrade('/');
             $c->push('port-0');
             $frame = $c->recv();
-            Assert::assert($frame);
+            Assert::assert(is_object($frame));
             $json = json_decode($frame->data);
             Assert::eq($json->count, 5);
             Assert::eq($json->list, [1,2,3,6,7]);
@@ -65,7 +65,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             $c->upgrade('/');
             $c->push('port-1');
             $frame = $c->recv();
-            Assert::assert($frame);
+            Assert::assert(is_object($frame));
             $json = json_decode($frame->data);
             Assert::eq($json->count, 3);
             Assert::eq($json->list, [4,5,8]);
