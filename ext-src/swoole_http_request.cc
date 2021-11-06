@@ -202,14 +202,14 @@ SW_EXTERN_C_END
 
 const zend_function_entry swoole_http_request_methods[] =
 {
-    PHP_ME(swoole_http_request, rawContent, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_http_request, getContent, rawContent, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http_request, getData, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http_request, create, arginfo_swoole_http_create, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    PHP_ME(swoole_http_request, parse, arginfo_swoole_http_parse, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http_request, isCompleted, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http_request, getMethod, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http_request, __destruct, arginfo_swoole_http_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, rawContent, arginfo_class_Swoole_Http_Request_rawContent, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_http_request, getContent, rawContent, arginfo_class_Swoole_Http_Request_getContent, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, getData, arginfo_class_Swoole_Http_Request_getData, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, create, arginfo_class_Swoole_Http_Request_create, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_http_request, parse, arginfo_class_Swoole_Http_Request_parse, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, isCompleted, arginfo_class_Swoole_Http_Request_isCompleted, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, getMethod, arginfo_class_Swoole_Http_Request_getMethod, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http_request, __destruct, arginfo_class_Swoole_Http_Request___destruct, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 // clang-format on

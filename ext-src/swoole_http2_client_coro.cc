@@ -257,19 +257,19 @@ SW_EXTERN_C_END
 
 static const zend_function_entry swoole_http2_client_methods[] =
 {
-    PHP_ME(swoole_http2_client_coro, __construct,   arginfo_swoole_http2_client_coro_construct, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, __destruct,    arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, set,           arginfo_swoole_http2_client_coro_set, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, connect,       arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, stats,         arginfo_swoole_http2_client_coro_stats, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, isStreamExist, arginfo_swoole_http2_client_coro_isStreamExist, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, send,          arginfo_swoole_http2_client_coro_send, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, write,         arginfo_swoole_http2_client_coro_write, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, recv,          arginfo_swoole_http2_client_coro_recv, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, read,          arginfo_swoole_http2_client_coro_recv, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, goaway,        arginfo_swoole_http2_client_coro_goaway, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, ping,          arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_http2_client_coro, close,         arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, __construct,   arginfo_class_Swoole_Coroutine_Http2_Client___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, __destruct,    arginfo_class_Swoole_Coroutine_Http2_Client___destruct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, set,           arginfo_class_Swoole_Coroutine_Http2_Client_set, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, connect,       arginfo_class_Swoole_Coroutine_Http2_Client_connect, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, stats,         arginfo_class_Swoole_Coroutine_Http2_Client_stats, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, isStreamExist, arginfo_class_Swoole_Coroutine_Http2_Client_isStreamExist, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, send,          arginfo_class_Swoole_Coroutine_Http2_Client_send, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, write,         arginfo_class_Swoole_Coroutine_Http2_Client_write, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, recv,          arginfo_class_Swoole_Coroutine_Http2_Client_recv, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, read,          arginfo_class_Swoole_Coroutine_Http2_Client_read, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, goaway,        arginfo_class_Swoole_Coroutine_Http2_Client_goaway, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, ping,          arginfo_class_Swoole_Coroutine_Http2_Client_ping, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_http2_client_coro, close,         arginfo_class_Swoole_Coroutine_Http2_Client_close, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 // clang-format on
