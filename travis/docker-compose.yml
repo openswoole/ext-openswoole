@@ -40,6 +40,9 @@ services:
   httpbin:
     container_name: "httpbin"
     image: "kennethreitz/httpbin"
+  h2demo:
+    container_name: "h2demo"
+    image: "openswoole/h2demo"
   tinyproxy:
     container_name: "tinyproxy"
     image: "vimagick/tinyproxy"
