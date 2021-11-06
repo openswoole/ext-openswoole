@@ -33,5 +33,5 @@ CLOSED
 Fatal error: Uncaught TypeError: fclose(): supplied resource is not a valid stream resource in %s/tests/swoole_feature/cross_close/stream.php:%d
 Stack trace:
 #0 %s/tests/swoole_feature/cross_close/stream.php(%d): fclose(Resource id #%d)
-#1 {main}
+%A
   thrown in %s/tests/swoole_feature/cross_close/stream.php on line %d

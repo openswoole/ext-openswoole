@@ -19,5 +19,5 @@ echo "DONE\n";
 --EXPECTF--
 Fatal error: Uncaught Error: Call to undefined function test_not_found() in %s:%d
 Stack trace:
-#0 {main}
+%A
   thrown in %s on line %d

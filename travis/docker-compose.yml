@@ -20,7 +20,7 @@ services:
     command: tail -f /etc/group
   mysql:
     container_name: "mysql"
-    image: "twosee/swoole:mysql5"
+    image: "openswoole/mysql5"
     volumes:
       - ./data/mysql:/var/lib/mysql:rw
       - ./data/run/mysqld:/var/run/mysqld:rw
@@ -31,7 +31,7 @@ services:
       MYSQL_PASSWORD: swoole
   redis:
     container_name: "redis"
-    image: "twosee/swoole:redis"
+    image: "openswoole/redis"
     volumes:
       - ./data/redis:/var/lib/redis:rw
       - ./data/run/redis:/var/run/redis:rw
