@@ -5,6 +5,7 @@ swoole_http_server_coro: upload 01
 require __DIR__ . '/../include/skipif.inc';
 skip_if_function_not_exist('curl_init');
 ?>
+<?php die('Deprecated.'); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';

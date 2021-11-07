@@ -44,4 +44,5 @@ Co\run(function () {
     Assert::eq($data, DATA);
 });
 ?>
---EXPECT--
+--EXPECTF--
+Deprecated: Use Swoole\Server instead of Swoole\Coroutine\Server in @swoole-src/library/core/Coroutine/Server.php on line %d

@@ -2,7 +2,6 @@
 swoole_socket_coro: recv line
 --SKIPIF--
 <?php
-require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
 <?php
@@ -39,4 +38,5 @@ Co\run(function () {
 });
 
 ?>
---EXPECT--
+--EXPECTF--
+Deprecated: Use Swoole\Server instead of Swoole\Coroutine\Server in @swoole-src/library/core/Coroutine/Server.php on line %d
