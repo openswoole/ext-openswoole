@@ -2,6 +2,7 @@
 swoole_http_server_coro: bug 3025 getData
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php die('Deprecated.'); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';

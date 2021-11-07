@@ -4,6 +4,7 @@ swoole_runtime/file_hook: bug #4372
 <?php
 require __DIR__ . '/../../include/skipif.inc';
 ?>
+<?php die('Deprecated.'); ?>
 --FILE--
 <?php
 

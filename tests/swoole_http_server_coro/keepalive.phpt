@@ -4,6 +4,7 @@ swoole_http_server_coro: keepalive
 <?php
 require __DIR__ . '/../include/skipif.inc';
 ?>
+<?php die('Deprecated.'); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
