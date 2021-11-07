@@ -2,7 +2,7 @@
 swoole_coroutine: all asleep
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID >= 80100) die("Skipped: php version < 8.1"); ?>
+<?php if (PHP_VERSION_ID < 80100) die("Skipped: php version >= 8.1"); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
@@ -42,14 +42,16 @@ echo "DONE\n";
 
  [Coroutine-3]
 --------------------------------------------------------------------
-#0  Swoole\Coroutine::yield() called at [%s:%d]
-#1  test2() called at [%s:%d]
+#0 %s(%d): Swoole\Coroutine::yield()
+#1 %s(%d): test2()
+#2 [internal function]: {closure}()
 
 
  [Coroutine-2]
 --------------------------------------------------------------------
-#0  Swoole\Coroutine::yield() called at [%s:%d]
-#1  {closure}() called at [%s:%d]
-#2  test1() called at [%s:%d]
+#0 %s(%d): Swoole\Coroutine::yield()
+#1 %s(%d): {closure}()
+#2 %s(%d): test1()
+#3 [internal function]: {closure}()
 
 DONE
