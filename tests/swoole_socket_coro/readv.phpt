@@ -52,5 +52,6 @@ $pm->childFunc = function () use ($pm) {
 $pm->childFirst();
 $pm->run();
 ?>
---EXPECT--
+--EXPECTF--
+Deprecated: Use Swoole\Server instead of Swoole\Coroutine\Server in @swoole-src/library/core/Coroutine/Server.php on line %d
 DONE
