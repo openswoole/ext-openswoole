@@ -50,7 +50,12 @@ PHP_ARG_ENABLE([mysqlnd],
   [enable mysqlnd support],
   [AS_HELP_STRING([--enable-mysqlnd],
     [Enable mysqlnd])], [no], [no])
-    
+
+PHP_ARG_WITH([postgres],
+  [enable postgreSQL support],
+  [AS_HELP_STRING([[--with-postgres[=DIR]]],
+    [Enable postgres])], [no], [no])
+
 PHP_ARG_ENABLE([cares],
   [enable c-ares support],
   [AS_HELP_STRING([--enable-cares],
@@ -540,6 +545,66 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_DEFINE(SW_USE_MYSQLND, 1, [use mysqlnd])
     fi
 
+    if test "$PHP_POSTGRES" != "no"; then
+        PHP_EXPAND_PATH($PGSQL_INCLUDE, PGSQL_INCLUDE)
+
+        AC_MSG_CHECKING(for pg_config)
+        for i in $PHP_POSTGRES $PHP_POSTGRES/bin /usr/local/pgsql/bin /usr/local/bin /usr/bin ""; do
+            if test -x $i/pg_config; then
+              PG_CONFIG="$i/pg_config"
+              break;
+            fi
+        done
+        if test -n "$PG_CONFIG"; then
+            AC_MSG_RESULT([$PG_CONFIG])
+            PGSQL_INCLUDE=`$PG_CONFIG --includedir`
+            PGSQL_LIBDIR=`$PG_CONFIG --libdir`
+            else
+            AC_MSG_RESULT(not found)
+            if test "$PHP_POSTGRES" = "yes"; then
+              PGSQL_SEARCH_PATHS="/usr /usr/local /usr/local/pgsql"
+            else
+              PGSQL_SEARCH_PATHS=$PHP_POSTGRES
+            fi
+
+            for i in $PGSQL_SEARCH_PATHS; do
+              for j in include include/pgsql include/postgres include/postgresql ""; do
+                if test -r "$i/$j/libpq-fe.h"; then
+                  PGSQL_INC_BASE=$i
+                  PGSQL_INCLUDE=$i/$j
+                fi
+              done
+
+              for j in lib $PHP_LIBDIR/pgsql $PHP_LIBDIR/postgres $PHP_LIBDIR/postgresql ""; do
+                if test -f "$i/$j/libpq.so" || test -f "$i/$j/libpq.a"; then
+                  PGSQL_LIBDIR=$i/$j
+                fi
+              done
+            done
+        fi
+        if test -z "$PGSQL_INCLUDE"; then
+            AC_MSG_ERROR(Cannot find libpq-fe.h. Please specify correct PostgreSQL installation path)
+        fi
+
+        if test -z "$PGSQL_LIBDIR"; then
+            AC_MSG_ERROR(Cannot find libpq.so. Please specify correct PostgreSQL installation path)
+        fi
+
+        if test -z "$PGSQL_INCLUDE" -a -z "$PGSQL_LIBDIR" ; then
+            AC_MSG_ERROR([Unable to find libpq anywhere under $PGSQL_SEARCH_PATHS])
+        fi
+
+        LDFLAGS="$LDFLAGS -L$PGSQL_LIBDIR"
+        AC_CHECK_LIB(pq, PQlibVersion,, AC_MSG_ERROR([Unable to build with PostgreSQL: at least libpq 9.1 is required]))
+
+        PHP_ADD_LIBRARY_WITH_PATH(pq, $PGSQL_LIBDIR, OPENSWOOLE_SHARED_LIBADD)
+        PHP_SUBST(OPENSWOOLE_SHARED_LIBADD)
+
+        PHP_ADD_INCLUDE($PGSQL_INCLUDE)
+
+        AC_DEFINE(SW_USE_POSTGRES, 1, [use postgres])
+    fi
+
     swoole_source_file=" \
         ext-src/php_swoole.cc \
         ext-src/php_swoole_cxx.cc \
@@ -563,6 +628,7 @@ if test "$PHP_SWOOLE" != "no"; then
         ext-src/swoole_lock.cc \
         ext-src/swoole_mysql_coro.cc \
         ext-src/swoole_mysql_proto.cc \
+        ext-src/swoole_postgres_coro.cc \
         ext-src/swoole_process.cc \
         ext-src/swoole_process_pool.cc \
         ext-src/swoole_redis_coro.cc \
