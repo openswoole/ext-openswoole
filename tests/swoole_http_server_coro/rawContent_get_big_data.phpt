@@ -2,6 +2,7 @@
 swoole_http_server_coro: rawContent get big data
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php die('Deprecated.'); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';

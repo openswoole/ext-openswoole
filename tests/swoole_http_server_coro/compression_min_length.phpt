@@ -2,6 +2,7 @@
 swoole_http_server_coro: compression_min_length
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php die('Deprecated.'); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';

@@ -9,7 +9,7 @@ require __DIR__ . '/../include/skipif.inc';
 require __DIR__ . '/../include/bootstrap.php';
 require_once TESTS_LIB_PATH . '/vendor/autoload.php';
 
-use Swoole\Coroutine\Barrier;
+use Swoole\Coroutine\WaitGroup;
 use Swoole\Runtime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
@@ -22,9 +22,10 @@ Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 const N = 4;
 
 run(function () {
-    $barrier = Barrier::make();
+    $wg = new WaitGroup();
     $result = [];
-    go(function () use ($barrier, &$result) {
+    go(function () use ($wg, &$result) {
+        $wg->add();
         $client = new Client();
         $promises = [
             'baidu' => $client->getAsync('http://www.baidu.com/'),
@@ -36,9 +37,11 @@ run(function () {
         Assert::contains(iconv('gbk', 'utf-8', $responses['qq']->getBody()), '腾讯');
         Assert::contains($responses['gov']->getBody(), '中华人民共和国');
         $result['task_1'] = 'OK';
+        $wg->done();
     });
 
-    go(function () use ($barrier, &$result) {
+    go(function () use ($wg, &$result) {
+        $wg->add();
         $client = new Client(['base_uri' => 'http://httpbin.org/']);
         $n = N;
         $data = $promises = [];
@@ -55,9 +58,10 @@ run(function () {
             Assert::eq($responses[$key]->getBody(), $data[$key]);
         }
         $result['task_2'] = 'OK';
+        $wg->done();
     });
 
-    Barrier::wait($barrier);
+    $wg->wait();
     Assert::eq($result['task_1'], 'OK');
     Assert::eq($result['task_2'], 'OK');
     echo 'Done' . PHP_EOL;
