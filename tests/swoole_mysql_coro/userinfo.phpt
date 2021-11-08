@@ -23,9 +23,6 @@ go(function () {
         MYSQL_SERVER_USER, MYSQL_SERVER_PWD
     );
     $pdo_result = $pdo->query('SELECT * FROM `userinfo`')->fetchAll(PDO::FETCH_ASSOC);
-
-    var_dump($result);
-    var_dump($pdo_result);
     
     Assert::same($result, $pdo_result);
 
@@ -34,9 +31,6 @@ go(function () {
     $pdo_stmt = $pdo->prepare('SELECT * FROM `userinfo`');
     $pdo_stmt->execute();
     $pdo_result =$pdo_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    var_dump($result);
-    var_dump($pdo_result);
 
     Assert::same($result, $pdo_result);
 });
