@@ -43,6 +43,8 @@ services:
   h2demo:
     container_name: "h2demo"
     image: "openswoole/h2demo"
+    ports:
+      - "4430:4430"
   tinyproxy:
     container_name: "tinyproxy"
     image: "vimagick/tinyproxy"

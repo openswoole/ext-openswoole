@@ -2,6 +2,7 @@
 swoole_mysql_coro: floating point value precision and unsigned big int overflow
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php if (PHP_VERSION_ID >= 80100) die("Skipped: php version >= 8.1 TODO: FIX"); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';

@@ -4,6 +4,7 @@ swoole_mysql_coro: mysql prepare dtor
 <?php
 require __DIR__ . '/../include/skipif.inc';
 skip_if_pdo_not_support_mysql8();
+die('Swoole\Coroutine\MySQL will be removed in future versions.');
 ?>
 --FILE--
 <?php
@@ -23,6 +24,7 @@ go(function () {
         MYSQL_SERVER_USER, MYSQL_SERVER_PWD
     );
     $pdo_result = $pdo->query('SELECT * FROM `userinfo`')->fetchAll(PDO::FETCH_ASSOC);
+    
     Assert::same($result, $pdo_result);
 
     $result = $mysql->prepare('SELECT * FROM `userinfo`')->execute();
