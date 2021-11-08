@@ -2,7 +2,7 @@
 swoole_coroutine: getBackTrace form listCoroutines
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID >= 80100) die("Skipped: php version < 8.1"); ?>
+<?php if (PHP_VERSION_ID < 80100) die("Skipped: php version >= 8.1"); ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
@@ -40,55 +40,71 @@ swoole_event_wait();
 ?>
 --EXPECTF--
 int(1)
-array(1) {
+array(2) {
   [0]=>
   array(4) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(31)
+    int(%d)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#%d (0) {
+      object(Closure)#2 (0) {
       }
+    }
+  }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
     }
   }
 }
 int(2)
-array(1) {
+array(2) {
   [0]=>
   array(4) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(30)
+    int(%d)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#%d (0) {
+      object(Closure)#4 (0) {
       }
+    }
+  }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
     }
   }
 }
 int(3)
-array(1) {
+array(2) {
   [0]=>
   array(4) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(29)
+    int(%d)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#%d (1) {
+      object(Closure)#6 (1) {
         ["static"]=>
         array(1) {
           ["main"]=>
@@ -97,15 +113,23 @@ array(1) {
       }
     }
   }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
+    }
+  }
 }
 int(4)
-array(1) {
+array(2) {
   [0]=>
   array(6) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(13)
+    int(%d)
     ["function"]=>
     string(12) "getBackTrace"
     ["class"]=>
@@ -118,21 +142,29 @@ array(1) {
       int(4)
     }
   }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
+    }
+  }
 }
 int(5)
-array(1) {
+array(2) {
   [0]=>
   array(4) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(28)
+    int(%d)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#%d (1) {
+      object(Closure)#10 (1) {
         ["static"]=>
         array(1) {
           ["main"]=>
@@ -141,15 +173,23 @@ array(1) {
       }
     }
   }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
+    }
+  }
 }
 int(6)
-array(1) {
+array(2) {
   [0]=>
   array(6) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(18)
+    int(%d)
     ["function"]=>
     string(5) "sleep"
     ["class"]=>
@@ -162,15 +202,23 @@ array(1) {
       float(0.001)
     }
   }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
+    }
+  }
 }
 int(7)
-array(1) {
+array(2) {
   [0]=>
   array(6) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(21)
+    int(%d)
     ["function"]=>
     string(8) "readFile"
     ["class"]=>
@@ -183,15 +231,23 @@ array(1) {
       string(%d) "%s"
     }
   }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
+    }
+  }
 }
 int(8)
-array(1) {
+array(2) {
   [0]=>
   array(6) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(24)
+    int(%d)
     ["function"]=>
     string(11) "getaddrinfo"
     ["class"]=>
@@ -201,18 +257,26 @@ array(1) {
     ["args"]=>
     array(1) {
       [0]=>
-      string(9) "localhost"
+      string(%d) "%s"
+    }
+  }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
     }
   }
 }
 int(9)
-array(1) {
+array(2) {
   [0]=>
   array(6) {
     ["file"]=>
     string(%d) "%s"
     ["line"]=>
-    int(27)
+    int(%d)
     ["function"]=>
     string(6) "resume"
     ["class"]=>
@@ -223,6 +287,14 @@ array(1) {
     array(1) {
       [0]=>
       int(4)
+    }
+  }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
     }
   }
 }
