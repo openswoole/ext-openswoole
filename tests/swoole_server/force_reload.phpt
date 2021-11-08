@@ -44,6 +44,7 @@ $pm->childFunc = function () use ($pm, $atomic) {
         'enable_coroutine' => false,
     ]);
     $server->on('workerStart', function (Swoole\Server $server, $worker_id) use ($pm, $atomic) {
+        $worker_id++;
         echo "$worker_id [" . $server->worker_pid . "] start\n";
         $atomic->add(1);
         if ($atomic->get() === WORKER_NUM) {
