@@ -22,6 +22,7 @@ phpize > /dev/null && \
 --enable-swoole-json \
 --enable-swoole-curl \
 --enable-cares \
+--with-postgres \
 > /dev/null && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \

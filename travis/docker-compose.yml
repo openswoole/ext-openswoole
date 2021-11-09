@@ -29,6 +29,12 @@ services:
       MYSQL_DATABASE: test
       MYSQL_USER: swoole
       MYSQL_PASSWORD: swoole
+  postgres:
+    image: postgres
+    env:
+      POSTGRES_PASSWORD: postgres
+    ports:
+        - 5432:5432
   redis:
     container_name: "redis"
     image: "openswoole/redis"
