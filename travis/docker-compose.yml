@@ -12,6 +12,8 @@ services:
     depends_on:
       - mysql
       - redis
+      - postgres
+      - h2demo
     dns:
       - 8.8.8.8
       - 1.1.1.1
@@ -34,8 +36,6 @@ services:
     image: postgres
     environment:
       POSTGRES_PASSWORD: postgres
-    ports:
-        - "5432:5432"
   redis:
     container_name: "redis"
     image: "openswoole/redis"
@@ -50,8 +50,6 @@ services:
   h2demo:
     container_name: "h2demo"
     image: "openswoole/h2demo"
-    ports:
-      - "4430:4430"
   tinyproxy:
     container_name: "tinyproxy"
     image: "vimagick/tinyproxy"
