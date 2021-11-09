@@ -46,6 +46,7 @@ $pm->childFunc = function () use ($pm, $atomic) {
     ]);
     $server->on('workerStart', function (Swoole\Server $server, $worker_id) use ($pm, $atomic) {
         $worker_id++;
+        sleep(1);
         echo "$worker_id [" . $server->worker_pid . "] start\n";
         $atomic->add(1);
         if ($atomic->get() === WORKER_NUM) {
