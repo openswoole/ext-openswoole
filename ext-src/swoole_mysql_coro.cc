@@ -480,35 +480,35 @@ SW_EXTERN_C_END
 
 static const zend_function_entry swoole_mysql_coro_methods[] =
 {
-    PHP_ME(swoole_mysql_coro, __construct, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, __destruct, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, getDefer, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, setDefer, arginfo_swoole_mysql_coro_setDefer, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, connect, arginfo_swoole_mysql_coro_connect, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, query, arginfo_swoole_mysql_coro_query, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, fetch, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, fetchAll, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, nextResult, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, prepare, arginfo_swoole_mysql_coro_prepare, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, recv, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, begin, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, commit, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro, rollback, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_mysql_coro, __construct, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, __destruct, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, getDefer, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, setDefer, arginfo_swoole_mysql_coro_setDefer, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, connect, arginfo_swoole_mysql_coro_connect, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, query, arginfo_swoole_mysql_coro_query, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, fetch, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, fetchAll, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, nextResult, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, prepare, arginfo_swoole_mysql_coro_prepare, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, recv, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, begin, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, commit, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro, rollback, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
 #ifdef SW_USE_MYSQLND
-    PHP_ME(swoole_mysql_coro, escape, arginfo_swoole_mysql_coro_escape, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_mysql_coro, escape, arginfo_swoole_mysql_coro_escape, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
 #endif
-    PHP_ME(swoole_mysql_coro, close, arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_mysql_coro, close, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
     PHP_FE_END
 };
 
 static const zend_function_entry swoole_mysql_coro_statement_methods[] =
 {
-    PHP_ME(swoole_mysql_coro_statement, execute, arginfo_swoole_mysql_coro_statement_execute, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro_statement, fetch, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro_statement, fetchAll, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro_statement, nextResult, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro_statement, recv, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_mysql_coro_statement, close, arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_mysql_coro_statement, execute, arginfo_swoole_mysql_coro_statement_execute, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro_statement, fetch, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro_statement, fetchAll, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro_statement, nextResult, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro_statement, recv, arginfo_swoole_optional_timeout, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_mysql_coro_statement, close, arginfo_swoole_void, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
     PHP_FE_END
 };
 // clang-format on
