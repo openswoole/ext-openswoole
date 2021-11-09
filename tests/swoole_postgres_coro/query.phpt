@@ -18,7 +18,7 @@ Co\run(function() {
     Assert::false($pg->execute('', []));
     Assert::false($pg->metaData(''));
 
-    $conn = $pg->connect('host=postgres;port=5432;dbname=test;user=postgres;password=postgres');
+    $conn = $pg->connect(PG_CONN);
     Assert::assert($conn);
     Assert::same((string)$pg->error, '');
     $result = $pg->escape("' or 1=1 & 2");
