@@ -31,10 +31,10 @@ services:
       MYSQL_PASSWORD: swoole
   postgres:
     image: postgres
-    env:
+    environment:
       POSTGRES_PASSWORD: postgres
     ports:
-        - 5432:5432
+        - "5432:5432"
   redis:
     container_name: "redis"
     image: "openswoole/redis"
