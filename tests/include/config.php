@@ -60,7 +60,7 @@ define('MYSQL_SERVER_PWD', getenv('MYSQL_SERVER_PWD') ?: 'root');
 define('MYSQL_SERVER_DB', getenv('MYSQL_SERVER_DB') ?: 'test');
 
 /** ============== Postgres ============== */
-define('PG_CONN', getenv('PG_CONN') ?: 'host=127.0.0.1;port=5432;dbname=test;user=postgres;password=postgres');
+define('PG_CONN', getenv('PG_CONN') ?: 'host=postgres;port=5432;dbname=test;user=postgres;password=postgres');
 
 /** ============== Redis ============== */
 define('REDIS_SERVER_PATH', getenv('REDIS_SERVER_PATH') ?:
