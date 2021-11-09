@@ -28,6 +28,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         $client->send('hello world');
         $clients[] = $client;
     }
+    sleep(1);
     switch_process();
     //reload
     echo "[-1] start to reload\n";
@@ -45,6 +46,7 @@ $pm->childFunc = function () use ($pm, $atomic) {
     ]);
     $server->on('workerStart', function (Swoole\Server $server, $worker_id) use ($pm, $atomic) {
         $worker_id++;
+        sleep(1);
         echo "$worker_id [" . $server->worker_pid . "] start\n";
         $atomic->add(1);
         if ($atomic->get() === WORKER_NUM) {
@@ -75,8 +77,8 @@ $pm->run();
 [%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
 [%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
 [%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
-%d [%d] start
-%d [%d] start
-%d [%d] start
-%d [%d] start
 [%s]	INFO	Server is shutdown now
+%d [%d] start
+%d [%d] start
+%d [%d] start
+%d [%d] start

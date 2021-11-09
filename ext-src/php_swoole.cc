@@ -458,6 +458,9 @@ PHP_MINIT_FUNCTION(openswoole) {
 #ifdef SW_USE_HTTP2
     SW_REGISTER_BOOL_CONSTANT("SWOOLE_USE_HTTP2", 1);
 #endif
+#ifdef SW_USE_POSTGRES
+    SW_REGISTER_BOOL_CONSTANT("SWOOLE_USE_POSTGRES", 1);
+#endif
 
     SW_REGISTER_BOOL_CONSTANT("SWOOLE_USE_SHORTNAME", SWOOLE_G(use_shortname));
 
@@ -806,6 +809,9 @@ PHP_MINIT_FUNCTION(openswoole) {
     php_swoole_http_server_coro_minit(module_number);
     php_swoole_websocket_server_minit(module_number);
     php_swoole_redis_server_minit(module_number);
+#ifdef SW_USE_POSTGRES
+    php_swoole_postgresql_coro_minit(module_number);
+#endif
 
     SwooleG.fatal_error = fatal_error;
     Socket::default_buffer_size = SWOOLE_G(socket_buffer_size);
@@ -939,8 +945,8 @@ PHP_MINFO_FUNCTION(openswoole) {
     php_info_print_table_row(2, "tcmalloc", "enabled");
 #endif
     php_info_print_table_row(2, "async_redis", "enabled");
-#ifdef SW_USE_POSTGRESQL
-    php_info_print_table_row(2, "coroutine_postgresql", "enabled");
+#ifdef SW_USE_POSTGRES
+    php_info_print_table_row(2, "postgresql", "enabled");
 #endif
     php_info_print_table_end();
 
