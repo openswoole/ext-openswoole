@@ -28,6 +28,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         $client->send('hello world');
         $clients[] = $client;
     }
+    sleep(1);
     switch_process();
     //reload
     echo "[-1] start to reload\n";

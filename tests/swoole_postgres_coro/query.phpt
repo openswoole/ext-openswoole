@@ -33,9 +33,11 @@ $pm->childFunc = function () use ($pm)
     {
         $pg = new Swoole\Coroutine\PostgreSQL();
         $conn = $pg->connect(PG_CONN, 5);
+        var_dump($conn);
         Assert::assert($conn);
         $result = $pg->escape("' or 1=1 & 2");
-        Assert::same("'' or 1=1 & 2", $result);
+        var_dump($result);
+        Assert::same($result, "'' or 1=1 & 2");
         $response->end("OK\n");
     });
     $http->start();
