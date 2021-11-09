@@ -77,8 +77,8 @@ $pm->run();
 [%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
 [%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
 [%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
+[%s]    INFO    Server is shutdown now
 %d [%d] start
 %d [%d] start
 %d [%d] start
 %d [%d] start
-[%s]	INFO	Server is shutdown now
