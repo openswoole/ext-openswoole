@@ -14,7 +14,7 @@
 
 + __Documentation__: <https://www.swoole.co.uk/docs>
 + __Twitter__: <https://twitter.com/openswoole>
-+ __Slack Group__: <https://swoole.slack.com>
++ __Join Slack Group__: <https://goo.gl/forms/wooTTDmhbu30x4qC3>
 + __IDE Helper & API__: <https://github.com/openswoole/ide-helper>
 
 ## Installation
