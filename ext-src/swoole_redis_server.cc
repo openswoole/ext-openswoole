@@ -24,7 +24,11 @@ BEGIN_EXTERN_C()
 #include "ext/standard/php_string.h"
 END_EXTERN_C()
 
+#if PHP_VERSION_ID >= 80000
+#include "swoole_redis_server_arginfo.h"
+#else
 #include "swoole_redis_server_legacy_arginfo.h"
+#endif
 
 using swoole::Server;
 using swoole::RecvData;
