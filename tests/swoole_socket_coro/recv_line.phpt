@@ -1,6 +1,7 @@
 --TEST--
 swoole_socket_coro: recv line
 --SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php
 ?>
 --FILE--
