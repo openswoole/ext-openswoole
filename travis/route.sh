@@ -9,7 +9,7 @@ export DOCKER_COMPOSE_VERSION="1.21.0"
 if [ ${PHP_VERSION_ID} -lt 80100 ]; then
     export PHP_VERSION="`php -r "echo PHP_MAJOR_VERSION;"`.`php -r "echo PHP_MINOR_VERSION;"`"
 else
-    export PHP_VERSION="8.1.0RC5"
+    export PHP_VERSION="8.1.0RC6"
 fi
 if [ "${TRAVIS_BRANCH}" = "alpine" ]; then
     export PHP_VERSION="${PHP_VERSION}-alpine"
