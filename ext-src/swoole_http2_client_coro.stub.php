@@ -18,7 +18,7 @@
 /** @not-serializable */
 namespace Swoole\Coroutine\Http2 {
 	final class Client {
-		public function __construct(string $host, int $port, bool $openSSL = false): mixed {}
+		public function __construct(string $host, int $port, bool $openSSL = false) {}
 		public function set(array $options): void {}
 		public function connect(): bool {}
 		public function stats(string $key = null): bool|array {}

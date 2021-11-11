@@ -25,7 +25,7 @@ namespace Swoole\Http {
 		public function rawContent(): bool|string {}
 		public function getContent(): bool|string {}
 		public function getData(): mixed {}
-		public function __destruct(): void {}
+		public function __destruct() {}
 
 	}
 }
