@@ -25,7 +25,11 @@
 #include "zend_builtin_functions.h"
 #include "ext/spl/spl_array.h"
 
-#include "swoole_coroutine_legacy_arginfo.h"
+#if PHP_VERSION_ID >= 80000
+#include "swoole_coroutine_arginfo.h"
+#else
+#include "swoole_coroutine_arginfo_legacy.h"
+#endif
 
 #include <unordered_map>
 #include <chrono>

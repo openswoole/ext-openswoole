@@ -23,7 +23,7 @@
 #if PHP_VERSION_ID >= 80000
 #include "swoole_process_pool_arginfo.h"
 #else
-#include "swoole_process_pool_legacy_arginfo.h"
+#include "swoole_process_pool_arginfo_legacy.h"
 #endif
 
 using namespace swoole;

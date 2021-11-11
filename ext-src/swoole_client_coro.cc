@@ -23,7 +23,7 @@
 #if PHP_VERSION_ID >= 80000
 #include "swoole_client_coro_arginfo.h"
 #else
-#include "swoole_client_coro_legacy_arginfo.h"
+#include "swoole_client_coro_arginfo_legacy.h"
 #endif
 
 using swoole::coroutine::Socket;

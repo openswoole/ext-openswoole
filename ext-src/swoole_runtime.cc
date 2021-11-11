@@ -22,7 +22,7 @@
 #include "thirdparty/php/curl/curl_interface.h"
 #endif
 
-#include "swoole_runtime_legacy_arginfo.h"
+#include "swoole_runtime_arginfo_legacy.h"
 
 #include <unordered_map>
 

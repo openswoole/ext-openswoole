@@ -25,7 +25,7 @@ SW_EXTERN_C_END
 #if PHP_VERSION_ID >= 80000
 #include "swoole_websocket_server_arginfo.h"
 #else
-#include "swoole_websocket_server_legacy_arginfo.h"
+#include "swoole_websocket_server_arginfo_legacy.h"
 #endif
 
 using swoole::Connection;

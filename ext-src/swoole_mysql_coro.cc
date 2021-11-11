@@ -35,7 +35,7 @@ SW_EXTERN_C_BEGIN
 #endif
 SW_EXTERN_C_END
 
-#include "swoole_mysql_coro_legacy_arginfo.h"
+#include "swoole_mysql_coro_arginfo_legacy.h"
 
 #include <unordered_map>
 

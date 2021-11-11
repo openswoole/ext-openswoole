@@ -19,7 +19,7 @@
 #if PHP_VERSION_ID >= 80000
 #include "swoole_server_port_arginfo.h"
 #else
-#include "swoole_server_port_legacy_arginfo.h"
+#include "swoole_server_port_arginfo_legacy.h"
 #endif
 
 using namespace swoole;

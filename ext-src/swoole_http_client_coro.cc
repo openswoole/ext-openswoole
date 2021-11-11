@@ -29,7 +29,7 @@
 #include "swoole_base64.h"
 #include "swoole_socket.h"
 
-#include "swoole_http_client_coro_legacy_arginfo.h"
+#include "swoole_http_client_coro_arginfo_legacy.h"
 
 SW_EXTERN_C_BEGIN
 

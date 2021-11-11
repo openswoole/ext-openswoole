@@ -22,7 +22,7 @@
 #include "ext/standard/php_var.h"
 #include "zend_smart_str.h"
 
-#include "swoole_server_legacy_arginfo.h"
+#include "swoole_server_arginfo_legacy.h"
 
 #ifdef SW_HAVE_ZLIB
 #include <zlib.h>

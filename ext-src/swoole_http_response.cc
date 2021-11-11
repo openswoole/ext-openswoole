@@ -26,7 +26,11 @@
 #include <brotli/encode.h>
 #endif
 
-#include "swoole_http_response_legacy_arginfo.h"
+#if PHP_VERSION_ID >= 80000
+#include "swoole_http_response_arginfo.h"
+#else
+#include "swoole_http_response_arginfo_legacy.h"
+#endif
 
 using swoole::Connection;
 using swoole::Server;

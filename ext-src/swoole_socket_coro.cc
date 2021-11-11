@@ -25,7 +25,7 @@
 
 #include "thirdparty/php/sockets/php_sockets_cxx.h"
 
-#include "swoole_socket_coro_legacy_arginfo.h"
+#include "swoole_socket_coro_arginfo_legacy.h"
 
 #include <string>
 

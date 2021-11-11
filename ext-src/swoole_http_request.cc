@@ -33,7 +33,7 @@ SW_EXTERN_C_END
 #if PHP_VERSION_ID >= 80000
 #include "swoole_http_request_arginfo.h"
 #else
-#include "swoole_http_request_legacy_arginfo.h"
+#include "swoole_http_request_arginfo_legacy.h"
 #endif
 
 enum http_upload_errno {
