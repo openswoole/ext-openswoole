@@ -18,6 +18,22 @@ using swoole::String;
 
 static zend_class_entry *swoole_coroutine_system_ce;
 
+SW_EXTERN_C_BEGIN
+PHP_METHOD(swoole_coroutine_system, exec);
+PHP_METHOD(swoole_coroutine_system, sleep);
+PHP_METHOD(swoole_coroutine_system, fread);
+PHP_METHOD(swoole_coroutine_system, fgets);
+PHP_METHOD(swoole_coroutine_system, fwrite);
+PHP_METHOD(swoole_coroutine_system, statvfs);
+PHP_METHOD(swoole_coroutine_system, getaddrinfo);
+PHP_METHOD(swoole_coroutine_system, readFile);
+PHP_METHOD(swoole_coroutine_system, writeFile);
+PHP_METHOD(swoole_coroutine_system, wait);
+PHP_METHOD(swoole_coroutine_system, waitPid);
+PHP_METHOD(swoole_coroutine_system, waitSignal);
+PHP_METHOD(swoole_coroutine_system, waitEvent);
+SW_EXTERN_C_END
+
 // clang-format off
 
 static const zend_function_entry swoole_coroutine_system_methods[] =
