@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 7e7cefe156702af7ce6589361647151d9185dab3 */
+ * Stub hash: 4e4a634354c2fc510343459ecaa0a9792f1735e3 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Response_write, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
@@ -45,7 +45,8 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Http_Response_detach arginfo_class_Swoole_Http_Response_initHeader
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_Swoole_Http_Response_create, 0, 1, Swoole\\Http\\Response, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_Swoole_Http_Response_create, 0, 2, Swoole\\Http\\Response, 0)
+	ZEND_ARG_TYPE_INFO(0, server, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, fd, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 

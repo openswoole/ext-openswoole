@@ -50,7 +50,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Http_Response_redirect, 0, 0, 1)
     ZEND_ARG_INFO(0, http_code)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_http_response_create, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Http_Response_create, 0, 0, 1)
     ZEND_ARG_INFO(0, server)
     ZEND_ARG_INFO(0, fd)
 ZEND_END_ARG_INFO()

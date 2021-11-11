@@ -28,7 +28,7 @@ namespace Swoole\Http {
 		public function initHeader(): bool {}
 		public function isWritable(): bool {}
 		public function detach(): bool {}
-		public function create(int $fd): \Swoole\Http\Response {}
+		public function create(mixed $server, int $fd): \Swoole\Http\Response {}
 		public function upgrade(): bool {}
 		public function push(int $fd, string $data, int $opcode = 1, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
 		public function recv(?float $timeout): mixed {}
