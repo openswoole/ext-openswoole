@@ -19,12 +19,7 @@
 #include <string>
 #include <map>
 
-
-#if PHP_VERSION_ID >= 80000
-#include "swoole_http_server_coro_arginfo.h"
-#else
 #include "swoole_http_server_coro_arginfo_legacy.h"
-#endif
 
 using swoole::microtime;
 using swoole::PHPCoroutine;
