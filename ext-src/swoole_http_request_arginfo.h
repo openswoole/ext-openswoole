@@ -1,11 +1,11 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 7c8a4ad460565584c5bdf53fba5ee5d26bf3ca99 */
+ * Stub hash: e64d23c3151718ac5a71130a6472cb05fc6b26eb */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Request_create, 0, 1, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, options, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Request_parse, 0, 1, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Http_Request_parse, 0, 1, MAY_BE_LONG|MAY_BE_FALSE)
 	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 

@@ -30,7 +30,11 @@ SW_EXTERN_C_END
 #include <brotli/encode.h>
 #endif
 
+#if PHP_VERSION_ID >= 80000
+#include "swoole_http_request_arginfo.h"
+#else
 #include "swoole_http_request_legacy_arginfo.h"
+#endif
 
 enum http_upload_errno {
     HTTP_UPLOAD_ERR_OK = 0,
