@@ -25,11 +25,7 @@
 
 #include "thirdparty/php/sockets/php_sockets_cxx.h"
 
-#if PHP_VERSION_ID >= 80000
-#include "swoole_socket_coro_arginfo.h"
-#else
 #include "swoole_socket_coro_arginfo_legacy.h"
-#endif
 
 #include <string>
 
