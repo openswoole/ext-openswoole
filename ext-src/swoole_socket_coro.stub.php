@@ -37,7 +37,7 @@ namespace Swoole\Coroutine {
         public function writeVectorAll(array $io_vector, float $timeout = 0): bool|int {}
         public function sendFile(string $filename, int $offset = 0, int $length = 0): bool {}
         public function sendAll(string $data, float $timeout = 0): bool|int {}
-        public function recvfrom(mixed $peername, float $timeout = 0): bool|string {}
+        public function recvfrom(mixed &$peername, float $timeout = 0): bool|string {}
         public function sendto(string $addr, int $port, string $data): int|bool {}
         public function getOption(int $level, int $opt_name): mixed {}
         public function setProtocol(array $settings): bool {}
