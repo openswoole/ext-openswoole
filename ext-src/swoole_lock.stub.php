@@ -18,9 +18,9 @@
 /** @not-serializable */
 namespace Swoole {
 	final class Lock {
-		public function __construct(?long $type = 0, ?string $filename = null) {}
+		public function __construct(long $type = 0, ?string $filename) {}
 		public function lock(): bool {}
-		public function lockwait(?float $timeout = 1.0): bool {}
+		public function lockwait(float $timeout = 1.0): bool {}
 		public function trylock(): bool {}
 		public function lock_read(): bool {}
 		public function trylock_read(): bool {}

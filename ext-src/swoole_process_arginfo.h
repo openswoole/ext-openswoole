@@ -1,20 +1,20 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 5588953e7927182a2ab4455c10696a7e266d741c */
+ * Stub hash: 3bec307a2580c09f5fd8442afe856db7a783b202 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
-	ZEND_ARG_OBJ_INFO_WITH_DEFAULT_VALUE(0, redirect_stdin_and_stdout, Swoole\\boolean, 1, "false")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, pipe_type, IS_LONG, 1, "2")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, enable_coroutine, _IS_BOOL, 1, "false")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, redirect_stdin_and_stdout, _IS_BOOL, 0, "false")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, pipe_type, IS_LONG, 0, "2")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, enable_coroutine, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process___destruct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_useQueue, 0, 0, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, key, IS_LONG, 1, "0")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mode, IS_LONG, 1, "2")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, capacity, IS_LONG, 1, "-1")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, key, IS_LONG, 0, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mode, IS_LONG, 0, "2")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, capacity, IS_LONG, 0, "-1")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_statQueue, 0, 0, MAY_BE_BOOL|MAY_BE_ARRAY)
@@ -25,7 +25,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_kill, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, pid, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, signo, IS_LONG, 1, "SIGTERM")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, signo, IS_LONG, 0, "SIGTERM")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_signal, 0, 2, _IS_BOOL, 0)
@@ -41,7 +41,7 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_Swoole_Process_start arginfo_class_Swoole_Process_freeQueue
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_read, 0, 0, MAY_BE_BOOL|MAY_BE_STRING)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, buffer_size, IS_LONG, 1, "8192")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, buffer_size, IS_LONG, 0, "8192")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_write, 0, 1, MAY_BE_BOOL|MAY_BE_LONG)
@@ -56,7 +56,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_push, 0, 1,
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_pop, 0, 0, MAY_BE_BOOL|MAY_BE_STRING)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, maxsize, IS_LONG, 1, "8192")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, maxsize, IS_LONG, 0, "8192")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_exec, 0, 2, _IS_BOOL, 0)
@@ -64,10 +64,10 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_exec, 0, 2,
 	ZEND_ARG_TYPE_INFO(0, args, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_daemon, 0, 0, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, nochdir, _IS_BOOL, 1, "true")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, noclose, _IS_BOOL, 1, "true")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, pipes, IS_ARRAY, 1, "null")
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_daemon, 0, 3, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, nochdir, _IS_BOOL, 0, "true")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, noclose, _IS_BOOL, 0, "true")
+	ZEND_ARG_TYPE_INFO(0, pipes, IS_ARRAY, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_setAffinity, 0, 1, _IS_BOOL, 0)
@@ -75,11 +75,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_setAffinity
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_exit, 0, 0, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, status, IS_LONG, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, status, IS_LONG, 0, "0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_close, 0, 0, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, reason, IS_LONG, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, reason, IS_LONG, 0, "0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_set, 0, 1, IS_VOID, 0)
@@ -104,10 +104,5 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_getPriority
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_wait, 0, 0, MAY_BE_BOOL|MAY_BE_ARRAY)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, blocking, _IS_BOOL, 1, "1")
-ZEND_END_ARG_INFO()
-
-// FIX:
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_process_name, 0, 0, 1)
-    ZEND_ARG_INFO(0, process_name)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, blocking, _IS_BOOL, 0, "1")
 ZEND_END_ARG_INFO()

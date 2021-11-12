@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 8f22d9696d0766b3e75a49c3e8d7c537818a44c2 */
+ * Stub hash: 7f625c8c285d5e185ced0584af6769d4313a26bc */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_exec, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, command, IS_STRING, 0)
@@ -26,28 +26,28 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_wr
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_wait, 0, 0, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 1, "-1")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "-1")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_waitPid, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, pid, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 1, "-1")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "-1")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_waitSignal, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, signalNum, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 1, "-1")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "-1")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_System_waitEvent, 0, 2, MAY_BE_BOOL|MAY_BE_LONG)
 	ZEND_ARG_TYPE_INFO(0, fd, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, events, IS_LONG, 1)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 1, "-1")
+	ZEND_ARG_TYPE_INFO(0, events, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "-1")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_fread, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, handle, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 0, "0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_System_fgets, 0, 1, MAY_BE_BOOL|MAY_BE_STRING)
@@ -57,7 +57,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_fwrite, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, handle, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 0, "0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_System_gethostbyname, 0, 1, MAY_BE_STRING|MAY_BE_FALSE)

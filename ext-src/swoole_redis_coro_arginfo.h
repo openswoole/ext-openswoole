@@ -1,8 +1,8 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: a0698e43813348e5db4d4b4db198f6fe9e91ad5d */
+ * Stub hash: 416563618ddcf9603a83942365278c4fb58b4105 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Redis___construct, 0, 0, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, setting, IS_ARRAY, 1, "[]")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, setting, IS_ARRAY, 0, "[]")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Redis___destruct, 0, 0, 0)
@@ -11,7 +11,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Redis_connect, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, host, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, port, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, serialize, _IS_BOOL, 1, "false")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, serialize, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Redis_getAuth, 0, 0, IS_MIXED, 0)
@@ -31,7 +31,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Redis_get
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Redis_setDefer, 0, 0, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, defer, _IS_BOOL, 1, "true")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, defer, _IS_BOOL, 0, "true")
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Coroutine_Redis_recv arginfo_class_Swoole_Coroutine_Redis_getAuth

@@ -18,15 +18,15 @@
 /** @not-serializable */
 namespace Swoole\Coroutine {
     class Redis {
-	    public function __construct(?array $setting = []) {}
+	    public function __construct(array $setting = []) {}
 	    public function __destruct() {}
-	    public function connect(string $host, int $port, ?bool $serialize = false): bool {}
+	    public function connect(string $host, int $port, bool $serialize = false): bool {}
 	    public function getAuth(): mixed {}
 	    public function getDBNum(): bool|int {}
 	    public function getOptions(): array {}
 	    public function setOptions(array $options): bool {}
 	    public function getDefer(): bool {}
-	    public function setDefer(?bool $defer = true): bool {}
+	    public function setDefer(bool $defer = true): bool {}
 	    public function recv(): mixed {}
 	    public function request(array $params): void {}
 	    public function close(): bool {}

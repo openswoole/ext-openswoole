@@ -17,7 +17,7 @@
  
 namespace Swoole {
     final class Server {
-        public function __construct(string $host, ?int $port = 0, ?int $mode = SWOOLE_PROCESS, ?int $sock_type = SWOOLE_SOCK_TCP) {}
+        public function __construct(string $host, int $port = 0, int $mode = SWOOLE_PROCESS, int $sock_type = SWOOLE_SOCK_TCP) {}
         public function __destruct() {}
         public function listen(string $host, int $port, int $sock_type): mixed {}
         public function addlistener(string $host, int $port, int $sock_type): mixed {}
@@ -28,18 +28,18 @@ namespace Swoole {
         public function start(): bool {}
 
         // TODO: FIX OPENSWOOLE
-        public function send(int $fd, mixed $data, ?int $server_socket = -1): bool {}
-        public function sendto(string $ip, int $port, string $data, ?int $server_socket = -1): bool {}
+        public function send(int $fd, mixed $data, int $server_socket = -1): bool {}
+        public function sendto(string $ip, int $port, string $data, int $server_socket = -1): bool {}
 
         public function sendwait(int $fd, string $data): bool {}
 
         public function exists(int $fd): bool {}
         public function exist(int $fd): bool {}
-        public function protect(int $fd, ?bool $is_protected = true): bool {}
+        public function protect(int $fd, bool $is_protected = true): bool {}
 
-        public function sendfile(int $fd, string $filename, ?int $offset = 0, ?int $length = 0): bool {}
+        public function sendfile(int $fd, string $filename, int $offset = 0, int $length = 0): bool {}
 
-        public function close(int $fd, ?bool $reset = false): bool {}
+        public function close(int $fd, bool $reset = false): bool {}
 
         public function confirm(int $fd): bool {}
         public function pause(int $fd): bool {}
@@ -47,29 +47,29 @@ namespace Swoole {
         public function reload(): bool {}
         public function shutdown(): bool {}
 
-        public function task(mixed $data, ?int $worker_id = -1, ?callable $finish_callback): bool {}
-        public function taskwait(mixed $data, ?float $timeout = 0.5, ?int $worker_id = -1): bool {}
-        public function taskWaitMulti(array $tasks, ?float $timeout = 0.5): bool {}
-        public function taskCo(array $tasks, ?float $timeout = 0.5): bool {}
+        public function task(mixed $data, int $worker_id = -1, ?callable $finish_callback): bool {}
+        public function taskwait(mixed $data, float $timeout = 0.5, int $worker_id = -1): bool {}
+        public function taskWaitMulti(array $tasks, float $timeout = 0.5): bool {}
+        public function taskCo(array $tasks, float $timeout = 0.5): bool {}
 
         public function finish(mixed $data): bool {}
         
-        public function stop(?int $worker_id, ?bool $wait_reactor = false): bool {}
+        public function stop(int $worker_id, bool $wait_reactor = false): bool {}
         public function getLastError(): mixed {}
-        public function heartbeat(?bool $close_connection = false): bool {}
+        public function heartbeat(bool $close_connection = false): bool {}
 
-        public function getClientInfo(int $fd, ?int $reactor_id = -1, ?bool $dont_check_connection = false): bool|array {}
+        public function getClientInfo(int $fd, int $reactor_id = -1, bool $dont_check_connection = false): bool|array {}
 
-        public function getClientList(?int $start_fd = 0, ?int $total = 10): bool|array {}
+        public function getClientList(int $start_fd = 0, int $total = 10): bool|array {}
 
         public function getWorkerId(): int {}
         public function getWorkerPid(): int {}
-        public function getWorkerStatus(?int $worker_id = -1): bool|int {}
+        public function getWorkerStatus(int $worker_id = -1): bool|int {}
         public function getManagerPid(): int {}
         public function getMasterPid(): int {}
 
-        public function connection_info(int $fd, ?int $reactor_id = -1, ?bool $dont_check_connection = false): bool|array {}
-        public function connection_list(?int $start_fd = 0, ?int $total = 10): bool|array {}
+        public function connection_info(int $fd, int $reactor_id = -1, bool $dont_check_connection = false): bool|array {}
+        public function connection_list(int $start_fd = 0, int $total = 10): bool|array {}
         public function sendMessage(mixed $message, int $worker_id = -1): bool {}
 
         public function addProcess(\Swoole\Process $process): bool|int {}

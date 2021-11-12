@@ -30,12 +30,12 @@ namespace Swoole {
 		public static function isCanceled(): bool {}
 		public static function stats(): array {}
 		public static function getCid(): int {}
-		public static function getPcid(?int $cid = 0): int {}
-		public static function getContext(?int $cid = 0): mixed {}
-		public static function getBackTrace(?int $cid = 0, ?int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, ?int $limit = 0): array {}
-		public static function printBackTrace(?int $cid = 0, ?int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, ?int $limit = 0): array {}
-		public static function getElapsed(?int $cid = 0): float {}
-		public static function getStackUsage(?int $cid = 0): int {}
+		public static function getPcid(int $cid = 0): int {}
+		public static function getContext(int $cid = 0): mixed {}
+		public static function getBackTrace(int $cid = 0, int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, int $limit = 0): array {}
+		public static function printBackTrace(int $cid = 0, int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, int $limit = 0): array {}
+		public static function getElapsed(int $cid = 0): float {}
+		public static function getStackUsage(int $cid = 0): int {}
 		public static function list(): array {}
 		public static function enableScheduler(): bool {}
 		public static function disableScheduler(): bool {}
@@ -45,13 +45,13 @@ namespace Swoole {
 		public static function statvfs(string $path): bool|array {}
 		public static function readFile(string $filename, ?int $flags): false|string {}
 		public static function writeFile(string $filename, string $data, ?int $flags): bool {}
-		public static function wait(?float $timeout = -1): bool {}
-		public static function waitPid(int $pid, ?float $timeout = -1): bool {}
-		public static function waitSignal(int $signalNum,  ?float $timeout = -1): bool {}
-		public static function waitEvent(mixed $fd, ?int $events, ?float $timeout = -1): bool|int {}
-		public static function fread(mixed $handle, ?int $length = 0): bool {}
+		public static function wait(float $timeout = -1): bool {}
+		public static function waitPid(int $pid, float $timeout = -1): bool {}
+		public static function waitSignal(int $signalNum,  float $timeout = -1): bool {}
+		public static function waitEvent(mixed $fd, int $events, float $timeout = -1): bool|int {}
+		public static function fread(mixed $handle, int $length = 0): bool {}
 		public static function fgets(mixed $handle): bool|string {}
-		public static function fwrite(mixed $handle, string $data, ?int $length = 0): bool {}
+		public static function fwrite(mixed $handle, string $data, int $length = 0): bool {}
 		public static function gethostbyname(string $domain, int $family = AF_INET, float $timeout = -1): string|false {}
 		public static function dnsLookup(string $domain, float $timeout = 5): string|false {}
 		public static function getaddrinfo(string $domain, int $family = AF_INET, int $sockType = SOCK_STREAM, int $protocol = STREAM_IPPROTO_TCP, string $service = null, float $timeout = -1): array|false{}

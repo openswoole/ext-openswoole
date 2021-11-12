@@ -23,10 +23,10 @@ namespace Swoole\Coroutine\Http2 {
 		public function connect(): bool {}
 		public function stats(string $key = null): bool|array {}
 		public function isStreamExist(int $streamId): bool {}
-		public function send(Swoole\Http2\Request $request): bool|int {}
+		public function send(\Swoole\Http2\Request $request): bool|int {}
 		public function write(int $streamId, mixed $data, bool $end = false): bool {}
-		public function recv(float $timeout): Swoole\Http2\Response|bool {}
-		public function read(float $timeout): Swoole\Http2\Response {}
+		public function recv(float $timeout): \Swoole\Http2\Response|bool {}
+		public function read(float $timeout): \Swoole\Http2\Response {}
 		public function goaway(int $errorCode = SWOOLE_HTTP2_ERROR_NO_ERROR, string $debugData): bool {}
 		public function ping(): bool {}
 		public function close(): bool {}

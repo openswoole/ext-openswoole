@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: a6e8df731a3c25928b93118e83acea6fd64cf22d */
+ * Stub hash: 7328e873c40b8d47a2178c18ca47ff114786a51c */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_add, 0, 4, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
@@ -28,7 +28,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_cycle, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, before, _IS_BOOL, 1, "false")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, before, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_write, 0, 2, _IS_BOOL, 0)

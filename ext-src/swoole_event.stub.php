@@ -24,7 +24,7 @@ namespace Swoole {
 		public function isset(mixed $sock, ?int $flags): bool {}
 		public function dispatch(): bool {}
 		public function defer(callable $callback): bool {}
-		public function cycle(callable $callback, ?bool $before = false): bool {}
+		public function cycle(callable $callback, bool $before = false): bool {}
 		public function write(mixed $sock, string $data): bool {}
 		public function wait(): void {}
 		public function rshutdown(): void {}

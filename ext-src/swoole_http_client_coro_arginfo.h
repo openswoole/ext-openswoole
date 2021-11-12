@@ -1,10 +1,10 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 850e62bf98f7de2aa94ded2f3982dd9356bceba7 */
+ * Stub hash: f6314b9b8c791846693a54c20ac48e0e3a9f9d2a */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Client___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, host, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, port, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, ssl, _IS_BOOL, 1, "false")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, ssl, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Client___destruct, 0, 0, 0)
@@ -47,8 +47,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Clie
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mimeType, IS_STRING, 0, "null")
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, fileName, IS_STRING, 0, "null")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, offset, IS_LONG, 1, "0")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, offset, IS_LONG, 0, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, length, IS_LONG, 0, "0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Client_addData, 0, 2, IS_VOID, 0)
@@ -79,7 +79,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Client_download, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, filename, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, offset, IS_LONG, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, offset, IS_LONG, 0, "0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Http_Client_getBody, 0, 0, MAY_BE_STRING|MAY_BE_BOOL)
@@ -104,12 +104,12 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Client_push, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, data, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, opcode, IS_LONG, 1, "WEBSOCKET_OPCODE_TEXT")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 1, "SWOOLE_WEBSOCKET_FLAG_FIN")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, opcode, IS_LONG, 0, "WEBSOCKET_OPCODE_TEXT")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 0, "SWOOLE_WEBSOCKET_FLAG_FIN")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Http_Client_recv, 0, 0, Swoole\\WebSocket\\Frame, MAY_BE_BOOL)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "0")
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Coroutine_Http_Client_close arginfo_class_Swoole_Coroutine_Http_Client_getDefer

@@ -17,7 +17,7 @@
 
 namespace Swoole\Coroutine\Http {
 	final class Client {
-	    public function __construct(string $host, int $port, ?bool $ssl = false) {}
+	    public function __construct(string $host, int $port, bool $ssl = false) {}
 	    public function __destruct() {}
 	    public function set(array $settings): bool {}
 	    public function getDefer(): bool {}
@@ -27,14 +27,14 @@ namespace Swoole\Coroutine\Http {
 	    public function setBasicAuth(string $username, string $password): void {}
 	    public function setCookies(array $cookies): void {}
 	    public function setData(string|array $data): void {}
-	    public function addFile(string $path, string $name, string $mimeType = null, string $fileName = null, ?int $offset = 0, ?int $length = 0): void {}
+	    public function addFile(string $path, string $name, string $mimeType = null, string $fileName = null, int $offset = 0, int $length = 0): void {}
 	    public function addData(string $data, string $name, string $mimeType = null, string $filename = null): void {}
 	    public function execute(string $path): int|bool {}
 	    public function getpeername(): array|false {}
 	    public function getsockname(): array|false {}
 	    public function get(string $path): void {}
 	    public function post(string $path, mixed $data): void {}
-	    public function download(string $path, string $filename,  ?int $offset = 0): bool {}
+	    public function download(string $path, string $filename,  int $offset = 0): bool {}
 	    public function getBody(): string|bool {}
 	    public function getHeaders(): array|bool {}
 	    public function getCookies(): array|bool {}
@@ -42,8 +42,8 @@ namespace Swoole\Coroutine\Http {
 	    public function getHeaderOut(): string|bool {}
 	    public function getPeerCert(): string|false {}
 	    public function upgrade(string $path): bool {}
-	    public function push(mixed $data, ?int $opcode = WEBSOCKET_OPCODE_TEXT, ?int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
-	    public function recv(?float $timeout = 0): bool|\Swoole\WebSocket\Frame {}
+	    public function push(mixed $data, int $opcode = WEBSOCKET_OPCODE_TEXT, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
+	    public function recv(float $timeout = 0): bool|\Swoole\WebSocket\Frame {}
 	    public function close(): bool {}
 	}
 }
