@@ -22,6 +22,8 @@ go(function () {
     $redis->setOptions(['timeout' => 1]);
     $ret = $redis->set('foo', 'bar');
     Assert::assert($ret);
+    var_dump($redis->errCode);
+    var_dump($redis->errMsg);
     Assert::same($redis->errCode, 0);
     Assert::same($redis->errMsg, '');
     $redis->close();
