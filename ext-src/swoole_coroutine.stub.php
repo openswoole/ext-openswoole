@@ -36,7 +36,7 @@ namespace Swoole {
 		public static function printBackTrace(int $cid = 0, int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, int $limit = 0): array {}
 		public static function getElapsed(int $cid = 0): float {}
 		public static function getStackUsage(int $cid = 0): int {}
-		public static function list(): array {}
+		public static function list(): \Swoole\Coroutine\Iterator {}
 		public static function enableScheduler(): bool {}
 		public static function disableScheduler(): bool {}
 
