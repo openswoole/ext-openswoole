@@ -106,3 +106,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_wait, 0, 0, MAY_BE_BOOL|MAY_BE_ARRAY)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, blocking, _IS_BOOL, 0, "1")
 ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_process_name, 0, 0, 1)
+    ZEND_ARG_INFO(0, process_name)
+ZEND_END_ARG_INFO()
