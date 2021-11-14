@@ -439,7 +439,7 @@ static const zend_function_entry swoole_connection_iterator_methods[] =
 static const zend_function_entry swoole_server_task_methods[] =
 {
     PHP_ME(swoole_server_task, finish, arginfo_class_Swoole_Server_finish, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server_task, pack, arginfo_swoole_server_task_pack, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_server_task, pack, arginfo_class_Swoole_Server_Task_pack, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
 // clang-format on

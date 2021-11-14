@@ -84,6 +84,13 @@ namespace Swoole {
     }
 }
 
+namespace Swoole\Server {
+    final class Task {
+        public function finish(mixed $data): bool {}
+        public function pack(mixed $data): bool {}
+    }
+}
+
 namespace Swoole\Connection {
     final class Iterator {
         public function __construct() {}
