@@ -421,18 +421,18 @@ static zend_function_entry swoole_server_methods[] = {
 
 static const zend_function_entry swoole_connection_iterator_methods[] =
 {
-    PHP_ME(swoole_connection_iterator, __construct,  arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, __destruct,  arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, rewind,      arginfo_swoole_connection_iterator_rewind, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, next,        arginfo_swoole_connection_iterator_next, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, current,     arginfo_swoole_connection_iterator_current, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, key,         arginfo_swoole_connection_iterator_key, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, valid,       arginfo_swoole_connection_iterator_valid, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, count,       arginfo_swoole_connection_iterator_count, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetExists,    arginfo_swoole_connection_iterator_offsetExists, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetGet,       arginfo_swoole_connection_iterator_offsetGet, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetSet,       arginfo_swoole_connection_iterator_offsetSet, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetUnset,     arginfo_swoole_connection_iterator_offsetUnset, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, __construct,  arginfo_class_Swoole_Connection_Iterator___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, __destruct,  arginfo_class_Swoole_Connection_Iterator___destruct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, rewind,      arginfo_class_Swoole_Connection_Iterator_rewind, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, next,        arginfo_class_Swoole_Connection_Iterator_next, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, current,     arginfo_class_Swoole_Connection_Iterator_current, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, key,         arginfo_class_Swoole_Connection_Iterator_key, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, valid,       arginfo_class_Swoole_Connection_Iterator_valid, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, count,       arginfo_class_Swoole_Connection_Iterator_count, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetExists,    arginfo_class_Swoole_Connection_Iterator_offsetExists, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetGet,       arginfo_class_Swoole_Connection_Iterator_offsetGet, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetSet,       arginfo_class_Swoole_Connection_Iterator_offsetSet, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetUnset,     arginfo_class_Swoole_Connection_Iterator_offsetUnset, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 

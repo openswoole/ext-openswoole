@@ -22,8 +22,8 @@ namespace Swoole\Http {
 		public function end(string $data): bool {}
 		public function sendfile(string $filename, int $offset = 0, int $length = 0): bool {}
 		public function redirect(string $url, int $httpStatusCode = 302): void {}
-		public function cookie(string $key, string $value = '', int $expire = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false, string $samesite = '', string $priority = ''): false|void {}
-		public function rawcookie(string $key, string $value = '', int $expire = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false, string $samesite = '', string $priority = ''): false|void {}
+		public function cookie(string $key, ?string $value = null, int $expire = 0, ?string $path = null, ?string $domain = null, bool $secure = false, bool $httponly = false, ?string $samesite = null, ?string $priority = null): false|void {}
+		public function rawcookie(string $key, ?string $value = null, int $expire = 0, ?string $path = null, ?string $domain = null, bool $secure = false, bool $httponly = false, ?string $samesite = null, ?string $priority = null): false|void {}
 		public function header(string $key, string $value, bool $format = true): false|void {}
 		public function initHeader(): bool {}
 		public function isWritable(): bool {}

@@ -83,3 +83,30 @@ namespace Swoole {
         public function defer(callable $callback): void {}
     }
 }
+
+namespace Swoole\Connection {
+    final class Iterator {
+        public function __construct() {}
+        public function __destruct() {}
+        /** @tentative-return-type */
+        public function rewind(): void {}
+        /** @tentative-return-type */
+        public function valid(): bool {}
+        /** @tentative-return-type */
+        public function key(): mixed {}
+        /** @tentative-return-type */
+        public function current(): mixed {}
+        /** @tentative-return-type */
+        public function next(): void {}
+        /** @tentative-return-type */
+        public function offsetGet(mixed $key): mixed {}
+        /** @tentative-return-type */
+        public function offsetSet(mixed $key, mixed $value): void {}
+        /** @tentative-return-type */
+        public function offsetUnset(mixed $key): void {}
+        /** @tentative-return-type */
+        public function offsetExists(mixed $key): bool {}
+        /** @tentative-return-type */
+        public function count(): int {}
+    }
+}
