@@ -152,7 +152,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Connection_Iterator_current, 0, 0, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_Swoole_Connection_Iterator_key arginfo_swoole_connection_iterator_current
+#define arginfo_class_Swoole_Connection_Iterator_key arginfo_class_Swoole_Connection_Iterator_current
 
 ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Connection_Iterator_valid, 0, 0, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
