@@ -22,7 +22,11 @@
 #include "ext/standard/php_var.h"
 #include "zend_smart_str.h"
 
+#if PHP_VERSION_ID >= 80000
+#include "swoole_server_arginfo.h"
+#else
 #include "swoole_server_arginfo_legacy.h"
+#endif
 
 #ifdef SW_HAVE_ZLIB
 #include <zlib.h>
