@@ -195,4 +195,5 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_Swoole_Server_getManagerPid arginfo_swoole_void
 #define arginfo_class_Swoole_Server_getMasterPid arginfo_swoole_void
 #define arginfo_class_Swoole_Server_stats arginfo_swoole_void
-
+#define arginfo_class_Swoole_Connection_Iterator___destruct arginfo_swoole_void
+#define arginfo_class_Swoole_Connection_Iterator___construct arginfo_swoole_void
