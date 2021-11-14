@@ -269,9 +269,9 @@ void php_swoole_postgresql_coro_minit(int module_number) {
     zend_declare_property_null(swoole_postgresql_coro_ce, ZEND_STRL("resultDiag"), ZEND_ACC_PUBLIC);
     zend_declare_property_null(swoole_postgresql_coro_ce, ZEND_STRL("notices"), ZEND_ACC_PUBLIC);
 
-    SW_REGISTER_LONG_CONSTANT("SW_PGSQL_ASSOC", PGSQL_ASSOC);
-    SW_REGISTER_LONG_CONSTANT("SW_PGSQL_NUM", PGSQL_NUM);
-    SW_REGISTER_LONG_CONSTANT("SW_PGSQL_BOTH", PGSQL_BOTH);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_ASSOC", PGSQL_ASSOC);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_NUM", PGSQL_NUM);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_BOTH", PGSQL_BOTH);
 }
 
 static char *_php_pgsql_trim_message(const char *message, size_t *len) {
