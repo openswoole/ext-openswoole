@@ -220,7 +220,3 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_TENTATIVE_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Connection_Iterator_count, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_process_name, 0, 0, 1)
-    ZEND_ARG_INFO(0, process_name)
-ZEND_END_ARG_INFO()
