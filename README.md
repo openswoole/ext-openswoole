@@ -95,6 +95,7 @@ Security issues should be reported privately, via email, to the Open Swoole deve
  
  - [**Laravel Octane**](https://laravel.com/docs/8.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
  - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
+ - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on Open Swoole.
 
 ## License
 
