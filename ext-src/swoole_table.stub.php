@@ -23,7 +23,7 @@ namespace Swoole {
 		public function create(): bool {}
 		public function destroy(): bool {}
 		public function set(string $key, array $value): bool {}
-		public function get(string $key, ?string $column): array|bool|string {}
+		public function get(string $key, string $column = ""): array|bool|string {}
 		public function count(): int {}
 		public function del(string $key): bool {}
 		public function exists(string $key): bool {}

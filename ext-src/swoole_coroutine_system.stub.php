@@ -21,8 +21,8 @@ namespace Swoole\Coroutine {
 		public function exec(string $command, bool $get_error_stream): bool {}
 		public function sleep(float $seconds): bool {}
 		public function statvfs(string $path): bool|array {}
-		public function readFile(string $filename, ?int $flags): false|string {}
-		public function writeFile(string $filename, string $data, ?int $flags): bool {}
+		public function readFile(string $filename, int $flags = 0): false|string {}
+		public function writeFile(string $filename, string $data, int $flags = 0): bool {}
 		public function wait(float $timeout = -1): bool {}
 		public function waitPid(int $pid, float $timeout = -1): bool {}
 		public function waitSignal(int $signalNum,  float $timeout = -1): bool {}

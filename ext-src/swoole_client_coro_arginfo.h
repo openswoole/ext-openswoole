@@ -1,10 +1,10 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 89b8afc8d475a3c273edf133492dc36314b6f382 */
+ * Stub hash: c402b6c642f9ca88bfd6374b1c45dded624b97c8 */
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Client___construct, 0, 0, 3)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Client___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, async, _IS_BOOL, 0, "false")
-	ZEND_ARG_TYPE_INFO(0, id, IS_STRING, 1)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, id, IS_STRING, 0, "\"\"")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Client_set, 0, 1, _IS_BOOL, 0)

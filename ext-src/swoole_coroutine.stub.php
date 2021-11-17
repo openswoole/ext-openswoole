@@ -43,8 +43,8 @@ namespace Swoole {
 		public static function exec(string $command, bool $get_error_stream): bool {}
 		public static function sleep(float $seconds): bool {}
 		public static function statvfs(string $path): bool|array {}
-		public static function readFile(string $filename, ?int $flags): false|string {}
-		public static function writeFile(string $filename, string $data, ?int $flags): bool {}
+		public static function readFile(string $filename, int $flags = 0): false|string {}
+		public static function writeFile(string $filename, string $data, int $flags = 0): bool {}
 		public static function wait(float $timeout = -1): bool {}
 		public static function waitPid(int $pid, float $timeout = -1): bool {}
 		public static function waitSignal(int $signalNum,  float $timeout = -1): bool {}

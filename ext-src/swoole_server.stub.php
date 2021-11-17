@@ -47,7 +47,7 @@ namespace Swoole {
         public function reload(): bool {}
         public function shutdown(): bool {}
 
-        public function task(mixed $data, int $worker_id = -1, ?callable $finish_callback): bool {}
+        public function task(mixed $data, int $worker_id = -1, ?callable $finish_callback = null): bool {}
         public function taskwait(mixed $data, float $timeout = 0.5, int $worker_id = -1): bool {}
         public function taskWaitMulti(array $tasks, float $timeout = 0.5): bool {}
         public function taskCo(array $tasks, float $timeout = 0.5): bool {}

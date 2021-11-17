@@ -24,7 +24,7 @@ namespace Swoole {
         public function statQueue(): bool|array {}
         public function freeQueue(): bool {}
         public function kill(int $pid, int $signo = SIGTERM): bool {}
-        public function signal(int $signo, ?callable $callback): bool {}
+        public function signal(int $signo, ?callable $callback = null): bool {}
         public function alarm(int $interval_usec, int $type = ITIMER_REAL): bool {}
         public function start(): bool {}
         public function read(int $buffer_size = 8192): bool|string {}
@@ -33,7 +33,7 @@ namespace Swoole {
         public function push(string $data): bool {}
         public function pop(int $maxsize = 8192): bool|string {}
         public function exec(string $exec_file , array $args): bool {}
-        public function daemon(bool $nochdir = true, bool $noclose = true, ?array $pipes): bool {}
+        public function daemon(bool $nochdir = true, bool $noclose = true, ?array $pipes = null): bool {}
         public function setAffinity(array $cpu_set): bool {}
         public function exit(int $status = 0): int {}
         public function close(int $reason = 0): bool {}

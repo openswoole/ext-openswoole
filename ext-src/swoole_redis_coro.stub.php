@@ -30,7 +30,7 @@ namespace Swoole\Coroutine {
 	    public function recv(): mixed {}
 	    public function request(array $params): void {}
 	    public function close(): bool {}
-	    public function set(string $key, mixed $value, mixed $opt = NULL): bool|Redis {}
+	    public function set(string $key, mixed $value, mixed $opt = null): bool|Redis {}
 	    public function setBit(string $key, int $idx, bool $value): int|Redis {}
 	    public function setEx(string $key, int $expire, mixed $value): bool|Redis {}
 	    public function psetEx(string $key, int $expire, mixed $value): bool|Redis {}

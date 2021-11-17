@@ -1,11 +1,11 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 7328e873c40b8d47a2178c18ca47ff114786a51c */
+ * Stub hash: 7df6d93a362640340a95187ec553befdf9f7fe15 */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_add, 0, 4, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_add, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, read_callback, IS_CALLABLE, 1)
-	ZEND_ARG_TYPE_INFO(0, write_callback, IS_CALLABLE, 1)
-	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, read_callback, IS_CALLABLE, 0, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, write_callback, IS_CALLABLE, 0, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 0, "SWOOLE_EVENT_READ")
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Event_set arginfo_class_Swoole_Event_add
@@ -14,9 +14,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_del, 0, 1, _I
 	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_isset, 0, 2, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_isset, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 0, "SWOOLE_EVENT_READ | SWOOLE_EVENT_WRITE")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_dispatch, 0, 0, _IS_BOOL, 0)
