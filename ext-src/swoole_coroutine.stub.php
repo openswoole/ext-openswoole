@@ -20,7 +20,7 @@ namespace Swoole {
 	final class Coroutine {
 		public static function create(callable $callback): mixed {}
 		public static function set(array $options): mixed {}
-		public static function getOptions(): array {}
+		public static function getOptions(): array|null {}
 		public static function exists(int $cid): bool {}
 		public static function resume(int $cid): bool {}
 		public static function defer(callable $callback): void {}
