@@ -22,13 +22,12 @@ namespace Swoole {
         public function listen(string $host, int $port, int $sock_type): mixed {}
         public function addlistener(string $host, int $port, int $sock_type): mixed {}
 
-        public function on(string $event_name, callable $callback): bool {}
-        public function getCallback(string $event_name): mixed {}
+        public function on(string $event, callable $callback): bool {}
+        public function getCallback(string $event): mixed {}
         public function set(array $settings): bool {}
         public function start(): bool {}
 
-        // TODO: FIX OPENSWOOLE
-        public function send(int $fd, mixed $data, int $server_socket = -1): bool {}
+        public function send(string|int $fd, mixed $data, int $server_socket = -1): bool {}
         public function sendto(string $ip, int $port, string $data, int $server_socket = -1): bool {}
 
         public function sendwait(int $fd, string $data): bool {}
@@ -50,7 +49,7 @@ namespace Swoole {
         public function task(mixed $data, int $worker_id = -1, ?callable $finish_callback = null): bool {}
         public function taskwait(mixed $data, float $timeout = 0.5, int $worker_id = -1): bool {}
         public function taskWaitMulti(array $tasks, float $timeout = 0.5): bool {}
-        public function taskCo(array $tasks, float $timeout = 0.5): bool {}
+        public function taskCo(array $tasks, float $timeout = 0.5): bool|array {}
 
         public function finish(mixed $data): bool {}
         
@@ -58,7 +57,7 @@ namespace Swoole {
         public function getLastError(): mixed {}
         public function heartbeat(bool $close_connection = false): bool {}
 
-        public function getClientInfo(int $fd, int $reactor_id = -1, bool $dont_check_connection = false): bool|array {}
+        public function getClientInfo(int $fd, int $reactor_id = -1, bool $donot_check_connection = false): bool|array {}
 
         public function getClientList(int $start_fd = 0, int $total = 10): bool|array {}
 
@@ -68,7 +67,7 @@ namespace Swoole {
         public function getManagerPid(): int {}
         public function getMasterPid(): int {}
 
-        public function connection_info(int $fd, int $reactor_id = -1, bool $dont_check_connection = false): bool|array {}
+        public function connection_info(int $fd, int $reactor_id = -1, bool $donot_check_connection = false): bool|array {}
         public function connection_list(int $start_fd = 0, int $total = 10): bool|array {}
         public function sendMessage(mixed $message, int $worker_id = -1): bool {}
 
