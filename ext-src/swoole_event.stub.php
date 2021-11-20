@@ -18,16 +18,16 @@
 /** @not-serializable */
 namespace Swoole {
 	final class Event {
-		public function add(mixed $sock, callable $read_callback = null, callable $write_callback = null, int $flags = SWOOLE_EVENT_READ): bool {}
-		public function set(mixed $sock, callable $read_callback = null, callable $write_callback = null, int $flags = SWOOLE_EVENT_READ): bool {}
-		public function del(mixed $sock): bool {}
-		public function isset(mixed $sock, int $flags = SWOOLE_EVENT_READ|SWOOLE_EVENT_WRITE): bool {}
-		public function dispatch(): bool {}
-		public function defer(callable $callback): bool {}
-		public function cycle(callable $callback, bool $before = false): bool {}
-		public function write(mixed $sock, string $data): bool {}
-		public function wait(): void {}
-		public function rshutdown(): void {}
-		public function exit(): void {}
+		public static function add(mixed $sock, ?callable $read_callback = null, ?callable $write_callback = null, int $flags = SWOOLE_EVENT_READ): bool {}
+		public static function set(mixed $sock, ?callable $read_callback = null, ?callable $write_callback = null, int $flags = SWOOLE_EVENT_READ): bool {}
+		public static function del(mixed $sock): bool {}
+		public static function isset(mixed $sock, int $flags = SWOOLE_EVENT_READ|SWOOLE_EVENT_WRITE): bool {}
+		public static function dispatch(): bool {}
+		public static function defer(callable $callback): bool {}
+		public static function cycle(callable $callback, bool $before = false): bool {}
+		public static function write(mixed $sock, string $data): bool {}
+		public static function wait(): void {}
+		public static function rshutdown(): void {}
+		public static function exit(): void {}
 	}
 }

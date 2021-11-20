@@ -12,15 +12,13 @@
   | to obtain it through the world-wide-web, please send a note to       |
   | hello@swoole.co.uk so we can mail you a copy immediately.            |
   +----------------------------------------------------------------------+
-  | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
-  +----------------------------------------------------------------------+
  */
 
 define('T', '    ');
 define('N', PHP_EOL);
 
 $functions = array();
-$classes = array('Swoole\Atomic');
+$classes = array('Swoole\Event');
 $constant_prefix = 'X_';
 
 $php = '<?php' . N;
