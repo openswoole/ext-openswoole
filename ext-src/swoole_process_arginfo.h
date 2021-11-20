@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 3fa9ac394e3298be42604aa931afec75a8c0f58b */
+ * Stub hash: 3439bd2036ed0cac8eecfddb903bb269ad68a65d */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
@@ -38,7 +38,8 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_alarm, 0, 1
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "ITIMER_REAL")
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_Swoole_Process_start arginfo_class_Swoole_Process_freeQueue
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_start, 0, 0, MAY_BE_BOOL|MAY_BE_LONG)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_read, 0, 0, MAY_BE_BOOL|MAY_BE_STRING)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, buffer_size, IS_LONG, 0, "8192")
@@ -109,4 +110,4 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_process_name, 0, 0, 1)
     ZEND_ARG_INFO(0, process_name)
-ZEND_END_ARG_INFO() 
+ZEND_END_ARG_INFO()

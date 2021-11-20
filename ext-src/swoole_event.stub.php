@@ -18,7 +18,7 @@
 /** @not-serializable */
 namespace Swoole {
 	final class Event {
-		public function add(mixed $sock, callable $read_callback = null, callable $write_callback = null, int $flags = SWOOLE_EVENT_READ): bool {}
+		public function add(mixed $sock, callable $read_callback = null, callable $write_callback = null, int $flags = SWOOLE_EVENT_READ): bool|int {}
 		public function set(mixed $sock, callable $read_callback = null, callable $write_callback = null, int $flags = SWOOLE_EVENT_READ): bool {}
 		public function del(mixed $sock): bool {}
 		public function isset(mixed $sock, int $flags = SWOOLE_EVENT_READ|SWOOLE_EVENT_WRITE): bool {}
