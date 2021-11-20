@@ -54,12 +54,12 @@ namespace Swoole {
         public function finish(mixed $data): bool {}
         
         public function stop(int $worker_id, bool $wait_reactor = false): bool {}
-        public function getLastError(): mixed {}
+        public function getLastError(): int {}
         public function heartbeat(bool $close_connection = false): bool {}
 
         public function getClientInfo(int $fd, int $reactor_id = -1, bool $donot_check_connection = false): bool|array {}
 
-        public function getClientList(int $start_fd = 0, int $total = 10): bool|array {}
+        public function getClientList(int $start_fd = 0, int $page_size = 10): bool|array {}
 
         public function getWorkerId(): int {}
         public function getWorkerPid(): int {}
@@ -76,8 +76,8 @@ namespace Swoole {
         public function getSocket(int $port = -1): mixed {}
         public function bind(int $fd, int $uid): bool {}
 
-        public function after(int $ms, callable $callback): void {}
-        public function tick(int $ms, callable $callback) : void{}
+        public function after(int $milliseconds, callable $callback): void {}
+        public function tick(int $milliseconds, callable $callback) : void{}
         public function clearTimer(): void {}
         public function defer(callable $callback): void {}
     }

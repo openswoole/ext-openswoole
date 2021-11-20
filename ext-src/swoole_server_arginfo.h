@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 4dda9e90d569aff45c1f72dfc53737f5b97554a9 */
+ * Stub hash: 3bbcb787eddad9049e411403763b83dbb74a8fa2 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, host, IS_STRING, 0)
@@ -117,7 +117,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_stop, 0, 1, 
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, wait_reactor, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_getLastError, 0, 0, IS_MIXED, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_getLastError, 0, 0, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_heartbeat, 0, 0, _IS_BOOL, 0)
@@ -132,25 +132,27 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Server_getClientList, 0, 0, MAY_BE_BOOL|MAY_BE_ARRAY)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, start_fd, IS_LONG, 0, "0")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, total, IS_LONG, 0, "10")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, page_size, IS_LONG, 0, "10")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_getWorkerId, 0, 0, IS_LONG, 0)
-ZEND_END_ARG_INFO()
+#define arginfo_class_Swoole_Server_getWorkerId arginfo_class_Swoole_Server_getLastError
 
-#define arginfo_class_Swoole_Server_getWorkerPid arginfo_class_Swoole_Server_getWorkerId
+#define arginfo_class_Swoole_Server_getWorkerPid arginfo_class_Swoole_Server_getLastError
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Server_getWorkerStatus, 0, 0, MAY_BE_BOOL|MAY_BE_LONG)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, worker_id, IS_LONG, 0, "-1")
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_Swoole_Server_getManagerPid arginfo_class_Swoole_Server_getWorkerId
+#define arginfo_class_Swoole_Server_getManagerPid arginfo_class_Swoole_Server_getLastError
 
-#define arginfo_class_Swoole_Server_getMasterPid arginfo_class_Swoole_Server_getWorkerId
+#define arginfo_class_Swoole_Server_getMasterPid arginfo_class_Swoole_Server_getLastError
 
 #define arginfo_class_Swoole_Server_connection_info arginfo_class_Swoole_Server_getClientInfo
 
-#define arginfo_class_Swoole_Server_connection_list arginfo_class_Swoole_Server_getClientList
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Server_connection_list, 0, 0, MAY_BE_BOOL|MAY_BE_ARRAY)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, start_fd, IS_LONG, 0, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, total, IS_LONG, 0, "10")
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_sendMessage, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, message, IS_MIXED, 0)
@@ -174,7 +176,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_bind, 0, 2, 
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_after, 0, 2, IS_VOID, 0)
-	ZEND_ARG_TYPE_INFO(0, ms, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, milliseconds, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
 ZEND_END_ARG_INFO()
 
