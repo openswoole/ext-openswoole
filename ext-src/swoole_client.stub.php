@@ -18,7 +18,7 @@
 /** @not-serializable */
 namespace Swoole {
 	final class Client {
-		public function __construct(int $type, bool $async = false, ?string $id) {}
+		public function __construct(int $type, bool $async = false, string $id = null) {}
 		public function set(array $settings): bool {}
 		public function connect(string $host, int $port = 0, float $timeout = 0.5, int $sock_flag = 0): bool {}
 		public function send(string $data, int $flags = 0): bool|int {}
