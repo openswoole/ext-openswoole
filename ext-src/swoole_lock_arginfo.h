@@ -1,9 +1,9 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 27391408d4d190012d274984c6d9335dc2811ad1 */
+ * Stub hash: 1359641ac5d7f066b74b72da47038ecf648d9320 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Lock___construct, 0, 0, 0)
-	ZEND_ARG_OBJ_INFO_WITH_DEFAULT_VALUE(0, type, Swoole\\long, 0, "0")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, filename, IS_STRING, 0, "\"\"")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "SWOOLE_MUTEX")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, lockfile, IS_STRING, 0, "\"\"")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Lock_lock, 0, 0, _IS_BOOL, 0)

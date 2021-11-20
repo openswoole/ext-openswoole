@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 2950c33f5b716228235e2160e778648a80f30874 */
+ * Stub hash: babcd856e4d46ea9e3616c9f2a7707c7e878a37d */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Response_write, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
@@ -15,7 +15,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Response_redirect, 0, 1, IS_VOID, 0)
 	ZEND_ARG_TYPE_INFO(0, url, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, statusCode, IS_LONG, 0, "302")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, status_code, IS_LONG, 0, "302")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Http_Response_cookie, 0, 1, MAY_BE_FALSE|MAY_BE_VOID)
@@ -45,8 +45,7 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Http_Response_detach arginfo_class_Swoole_Http_Response_initHeader
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_Swoole_Http_Response_create, 0, 2, Swoole\\Http\\Response, 0)
-	ZEND_ARG_TYPE_INFO(0, server, IS_MIXED, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_INFO_EX(arginfo_class_Swoole_Http_Response_create, 0, 1, Swoole\\Http\\Response, 0)
 	ZEND_ARG_TYPE_INFO(0, fd, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
@@ -72,10 +71,13 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Http_Response_ping arginfo_class_Swoole_Http_Response_initHeader
 
-#define arginfo_class_Swoole_Http_Response_goaway arginfo_class_Swoole_Http_Response_initHeader
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Response_goaway, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, error_code, IS_LONG, 0, "SWOOLE_HTTP2_ERROR_NO_ERROR")
+	ZEND_ARG_TYPE_INFO(0, debug_data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Response_status, 0, 1, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, status, IS_LONG, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Http_Response_status, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, status_code, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, reason, IS_STRING, 0, "\"\"")
 ZEND_END_ARG_INFO()
 

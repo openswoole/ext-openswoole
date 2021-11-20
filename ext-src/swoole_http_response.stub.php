@@ -21,22 +21,22 @@ namespace Swoole\Http {
 		public function write(string $data): bool {}
 		public function end(string $data): bool {}
 		public function sendfile(string $filename, int $offset = 0, int $length = 0): bool {}
-		public function redirect(string $url, int $statusCode = 302): void {}
+		public function redirect(string $url, int $status_code = 302): void {}
 		public function cookie(string $key, string $value = "", int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httponly = false, string $samesite = "", string $priority = ""): false|void {}
 		public function rawcookie(string $key, string $value = "", int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httponly = false, string $samesite = "", string $priority = ""): false|void {}
 		public function header(string $key, string $value, bool $format = true): false|void {}
 		public function initHeader(): bool {}
 		public function isWritable(): bool {}
 		public function detach(): bool {}
-		public function create(mixed $server, int $fd): \Swoole\Http\Response {}
+		public function create(int $fd): \Swoole\Http\Response {}
 		public function upgrade(): bool {}
 		public function push(int $fd, string $data, int $opcode = SWOOLE_WEBSOCKET_OPCODE_TEXT, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
 		public function recv(float $timeout = 0): mixed {}
 		public function close(): bool {}
 		public function trailer(string $key, string $value): bool {}
 		public function ping(): bool {}
-		public function goaway(): bool {}
-		public function status(int $status, string $reason = ""): mixed {}
+		public function goaway(int $error_code = SWOOLE_HTTP2_ERROR_NO_ERROR, string $debug_data): bool {}
+		public function status(int $status_code, string $reason = ""): bool {}
 		public function __destruct() {}
 	}
 }
