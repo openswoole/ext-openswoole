@@ -25,12 +25,12 @@ namespace Swoole\Coroutine {
 		public function sendto(string $host, int $port, string $data): bool {}
 		public function sendfile(string $filename, int $offset = 0, int $length = 0): bool {}
 		public function recv(float $timeout = 1.0): bool|string {}
-		public function recvfrom(int $length, string &$host, int &$port = 0): bool|string {}
+		public function recvfrom(int $length, mixed &$host, mixed &$port = 0): bool|string {}
 		public function peek(int $length = 65535): bool|string {}
 		public function close(): bool {}
 		public function isConnected(): bool {}
 		public function getsockname(): bool|array {}
-		public function exportSocket(): mixed {}
+		public function exportSocket(): \Swoole\Coroutine\Socket|bool {}
 		public function getpeername(): bool|array {}
 		public function enableSSL(): bool {}
 		public function getPeerCert(): bool|string {}

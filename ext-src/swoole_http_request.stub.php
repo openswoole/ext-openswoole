@@ -18,13 +18,13 @@
 /** @not-serializable */
 namespace Swoole\Http {
 	final class Request {
-		public static function create(?array $options): mixed {}
+		public static function create(?array $options): Request|bool {}
 		public function parse(string $data): int|false {}
 		public function isCompleted(): bool {}
 		public function getMethod(): bool|string {}
 		public function rawContent(): bool|string {}
 		public function getContent(): bool|string {}
-		public function getData(): mixed {}
+		public function getData(): bool|string {}
 		public function __destruct() {}
 
 	}

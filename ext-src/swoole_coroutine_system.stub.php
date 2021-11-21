@@ -18,7 +18,7 @@
 /** @not-serializable */
 namespace Swoole\Coroutine {
 	final class System {
-		public function exec(string $command, bool $get_error_stream): bool {}
+		public function exec(string $command, bool $get_error_stream = false): bool|array {}
 		public function sleep(float $seconds): bool {}
 		public function statvfs(string $path): bool|array {}
 		public function readFile(string $filename, int $flags = 0): false|string {}
@@ -32,6 +32,6 @@ namespace Swoole\Coroutine {
 		public function fwrite(mixed $handle, string $data, int $length = 0): bool {}
 		public function gethostbyname(string $domain, int $family = AF_INET, float $timeout = -1): string|false {}
 		public function dnsLookup(string $domain, float $timeout = 5): string|false {}
-		public function getaddrinfo(string $domain, int $family = AF_INET, int $sockType = SOCK_STREAM, int $protocol = STREAM_IPPROTO_TCP, string $service = null, float $timeout = -1): array|false{}
+		public function getaddrinfo(string $domain, int $family = AF_INET, int $sockType = SOCK_STREAM, int $protocol = STREAM_IPPROTO_TCP, ?string $service = null, float $timeout = -1): array|false{}
 	}
 }

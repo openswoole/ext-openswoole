@@ -21,19 +21,19 @@ namespace Swoole\Coroutine\Http {
 	    public function __destruct() {}
 	    public function set(array $settings): bool {}
 	    public function getDefer(): bool {}
-	    public function setDefer(bool $defer = false): void {}
-	    public function setMethod(string $method): void {}
-	    public function setHeaders(array $headers): void {}
-	    public function setBasicAuth(string $username, string $password): void {}
-	    public function setCookies(array $cookies): void {}
-	    public function setData(string|array $data): void {}
-	    public function addFile(string $path, string $name, string $mimeType = "", string $fileName = "", int $offset = 0, int $length = 0): void {}
-	    public function addData(string $data, string $name, string $mimeType = "", string $filename = ""): void {}
+	    public function setDefer(bool $defer = false): bool {}
+	    public function setMethod(string $method): bool {}
+	    public function setHeaders(array $headers): bool {}
+	    public function setBasicAuth(string $username, string $password): bool|void {}
+	    public function setCookies(array $cookies): bool {}
+	    public function setData(string|array $data): bool {}
+	    public function addFile(string $path, string $name, string $mimeType = "", string $fileName = "", int $offset = 0, int $length = 0): bool {}
+	    public function addData(string $data, string $name, string $mimeType = "", string $filename = ""): bool {}
 	    public function execute(string $path): int|bool {}
 	    public function getpeername(): array|false {}
 	    public function getsockname(): array|false {}
-	    public function get(string $path): void {}
-	    public function post(string $path, mixed $data): void {}
+	    public function get(string $path): bool {}
+	    public function post(string $path, mixed $data): bool {}
 	    public function download(string $path, string $filename,  int $offset = 0): bool {}
 	    public function getBody(): string|bool {}
 	    public function getHeaders(): array|bool {}

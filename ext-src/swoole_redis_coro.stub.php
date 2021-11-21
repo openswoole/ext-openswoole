@@ -90,7 +90,7 @@ namespace Swoole\Coroutine {
 	    public function pfadd(string $key, array $elements): int {}
 	    public function pfcount(string $key): int {}
 	    public function pfmerge(string $dst, array $keys): bool {}
-	    public function ping(string $key = NULL): string|Redis {}
+	    public function ping(?string $key = null): string|Redis {}
 	    public function auth(mixed $credentials): bool {}
 	    public function unwatch(): bool|Redis {}
 	    public function watch(array|string $key, string ...$other_keys): bool|Redis {}
@@ -124,8 +124,8 @@ namespace Swoole\Coroutine {
 	    public function publish(string $channel, string $message): int {}
 	    public function zIncrBy(string $key, float $value, mixed $member): float {}
 	    public function zAdd(string $key, int $score, string $value): int {}
-	    public function zPopMin(string $key, int $value = null): array {}
-	    public function zPopMax(string $key, int $value = null): array {}
+	    public function zPopMin(string $key, ?int $value = null): array {}
+	    public function zPopMax(string $key, ?int $value = null): array {}
 	    public function bzPopMin(string|array $key, string|int $timeout_or_key, mixed ...$extra_args): array {}
 	    public function bzPopMax(string|array $key, string|int $timeout_or_key, mixed ...$extra_args): array {}
 	    public function zDeleteRangeByScore(string $key, string $start, string $end): int {}

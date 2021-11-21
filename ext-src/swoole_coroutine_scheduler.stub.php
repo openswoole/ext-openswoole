@@ -21,7 +21,7 @@ namespace Swoole\Coroutine {
 		public function add(callable $callback, mixed ...$params): false|void {}
 		public function parallel(int $count, callable $callback, mixed ...$params): void {}
 		public function set(array $settings): void {}
-		public function getOptions(): array {}
+		public function getOptions(): array|void {}
 		public function start(): bool {}
 	}
 }

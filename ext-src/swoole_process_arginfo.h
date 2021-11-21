@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: dea15c1bb9a86d59b0da9a4aeb14b9e2b05274c1 */
+ * Stub hash: 12c44c2a4e92a3280b834c9239895b84b363aaf3 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
@@ -108,6 +108,6 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_wait, 0, 0,
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, blocking, _IS_BOOL, 0, "1")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_process_name, 0, 0, 1)
-    ZEND_ARG_INFO(0, process_name)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_name, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, process_name, IS_STRING, 0)
 ZEND_END_ARG_INFO()

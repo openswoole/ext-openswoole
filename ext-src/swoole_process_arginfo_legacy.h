@@ -92,7 +92,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process_exec, 0, 0, 2)
     ZEND_ARG_INFO(0, args)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_process_name, 0, 0, 1)
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process_name, 0, 0, 1)
     ZEND_ARG_INFO(0, process_name)
 ZEND_END_ARG_INFO()
 
