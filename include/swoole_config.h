@@ -228,6 +228,7 @@
 #define SW_HTTP_SERVICE_UNAVAILABLE_PACKET "HTTP/1.1 503 Service Unavailable\r\n\r\n"
 #define SW_HTTP_PAGE_400 "<html><body><h2>HTTP 400 Bad Request</h2><hr><i>Powered by OpenSwoole</i></body></html>"
 #define SW_HTTP_PAGE_404 "<html><body><h2>HTTP 404 Not Found</h2><hr><i>Powered by OpenSwoole</i></body></html>"
+#define SW_HTTP_REQUEST_TIMEOUT_PACKET "HTTP/1.1 408 Request Timeout\r\n\r\n"
 
 /**
  * HTTP2 Protocol

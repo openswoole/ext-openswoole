@@ -27,7 +27,7 @@ $pm->parentFunc = function ($pid) use ($pm, $table) {
             go(function () use ($pm, $table) {
                 $client = new Client(SWOOLE_SOCK_TCP);
                 if (!$client->connect('127.0.0.1', $pm->getFreePort(), 0.5, 0)) {
-                    echo "Over flow. errno=" . $client->errCode;
+                    echo "Overflow. errno=" . $client->errCode;
                     die("\n");
                 }
 

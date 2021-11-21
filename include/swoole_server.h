@@ -560,6 +560,7 @@ class Server {
      */
     uint32_t max_request = 0;
     uint32_t max_request_grace = 0;
+    uint32_t max_request_execution_time = 0;
 
     network::Socket *udp_socket_ipv4 = nullptr;
     network::Socket *udp_socket_ipv6 = nullptr;

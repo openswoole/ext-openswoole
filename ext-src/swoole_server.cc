@@ -2107,6 +2107,13 @@ static PHP_METHOD(swoole_server, set) {
             serv->max_request_grace = serv->max_request / 2;
         }
     }
+    // max_request_execution_time
+    if (php_swoole_array_get_value(vht, "max_request_execution_time", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        if(v > 0) {
+            serv->max_request_execution_time = SW_MAX(0, SW_MIN(v, UINT16_MAX));
+        }
+    }
     // reload async
     if (php_swoole_array_get_value(vht, "reload_async", ztmp)) {
         serv->reload_async = zval_is_true(ztmp);
