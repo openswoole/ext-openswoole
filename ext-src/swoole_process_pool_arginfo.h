@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: b4aa820bcf68c47f24389b544f57be819fb4e79e */
+ * Stub hash: eb52bcaed3888e93bd485b90fdbd7f06d081387a */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process_Pool___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, worker_num, IS_LONG, 0)
@@ -8,7 +8,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process_Pool___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, enable_coroutine, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_Pool_set, 0, 1, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Process_Pool_set, 0, 1, MAY_BE_VOID|MAY_BE_BOOL)
 	ZEND_ARG_TYPE_INFO(0, settings, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 

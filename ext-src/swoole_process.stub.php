@@ -26,7 +26,7 @@ namespace Swoole {
         public function kill(int $pid, int $signo = SIGTERM): bool {}
         public function signal(int $signo, ?callable $callback = null): bool {}
         public function alarm(int $interval_usec, int $type = ITIMER_REAL): bool {}
-        public function start(): bool {}
+        public function start(): bool|int {}
         public function read(int $buffer_size = 8192): bool|string {}
         public function write(string $data): bool|int {}
         public function exportSocket(): mixed {}
