@@ -39,6 +39,15 @@ static bool http_context_send_data(HttpContext *ctx, const char *data, size_t le
 static bool http_context_sendfile(HttpContext *ctx, const char *file, uint32_t l_file, off_t offset, size_t length);
 static bool http_context_disconnect(HttpContext *ctx);
 
+void php_swoole_http_request_onTimeout(Timer *timer, TimerNode *tnode) {
+    HttpContext *ctx = (HttpContext*) tnode->data;
+    if (!ctx || (ctx->end_ || ctx->detached) || !ctx->response.zobject) {
+        return;
+    }
+    ctx->send(ctx, SW_STRL(SW_HTTP_REQUEST_TIMEOUT_PACKET));
+    ctx->close(ctx);
+}
+
 int php_swoole_http_server_onReceive(Server *serv, RecvData *req) {
     SessionId session_id = req->info.fd;
     int server_fd = req->info.server_fd;
@@ -127,7 +136,11 @@ int php_swoole_http_server_onReceive(Server *serv, RecvData *req) {
                 goto _dtor_and_return;
             }
         }
-// TODO: FIX timeout
+
+        if(serv->max_request_execution_time > 0) {
+            swoole_timer_add((long) (serv->max_request_execution_time * 1000), false, php_swoole_http_request_onTimeout, (HttpContext*) ctx);
+        }
+
         if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, serv->is_enable_coroutine()))) {
             php_swoole_error(E_WARNING, "%s->onRequest handler error", ZSTR_VAL(swoole_http_server_ce->name));
 #ifdef SW_HTTP_SERVICE_UNAVAILABLE_PACKET
