@@ -1,6 +1,7 @@
 --TEST--
 swoole_http_server: max_request_execution_time
 --SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php
 require __DIR__ . '/../include/bootstrap.php';
