@@ -1,22 +1,27 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: a6e8df731a3c25928b93118e83acea6fd64cf22d */
+ * Stub hash: 57e9fcd45d1571eb5d5a23fb1b85d7b2fcc465ca */
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_add, 0, 4, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Event_add, 0, 1, MAY_BE_BOOL|MAY_BE_LONG)
 	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, read_callback, IS_CALLABLE, 1)
-	ZEND_ARG_TYPE_INFO(0, write_callback, IS_CALLABLE, 1)
-	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, read_callback, IS_CALLABLE, 1, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, write_callback, IS_CALLABLE, 1, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 0, "SWOOLE_EVENT_READ")
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_Swoole_Event_set arginfo_class_Swoole_Event_add
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_set, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, read_callback, IS_CALLABLE, 1, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, write_callback, IS_CALLABLE, 1, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 0, "SWOOLE_EVENT_READ")
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_del, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_isset, 0, 2, _IS_BOOL, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_isset, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, sock, IS_MIXED, 0)
-	ZEND_ARG_TYPE_INFO(0, flags, IS_LONG, 1)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, flags, IS_LONG, 0, "SWOOLE_EVENT_READ | SWOOLE_EVENT_WRITE")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_dispatch, 0, 0, _IS_BOOL, 0)
@@ -28,7 +33,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_cycle, 0, 1, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, before, _IS_BOOL, 1, "false")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, before, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_write, 0, 2, _IS_BOOL, 0)

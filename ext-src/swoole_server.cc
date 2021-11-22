@@ -22,7 +22,11 @@
 #include "ext/standard/php_var.h"
 #include "zend_smart_str.h"
 
-#include "swoole_server_legacy_arginfo.h"
+#if PHP_VERSION_ID >= 80000
+#include "swoole_server_arginfo.h"
+#else
+#include "swoole_server_arginfo_legacy.h"
+#endif
 
 #ifdef SW_HAVE_ZLIB
 #include <zlib.h>
@@ -365,77 +369,77 @@ SW_EXTERN_C_END
 // clang-format off
 
 static zend_function_entry swoole_server_methods[] = {
-    PHP_ME(swoole_server, __construct, arginfo_swoole_server__construct, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, __destruct, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, listen, arginfo_swoole_server_listen, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_server, addlistener, listen, arginfo_swoole_server_listen, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, on, arginfo_swoole_server_on, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getCallback, arginfo_swoole_server_getCallback, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, set, arginfo_swoole_server_set, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, start, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, send, arginfo_swoole_server_send, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, sendto, arginfo_swoole_server_sendto, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, sendwait, arginfo_swoole_server_sendwait, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, exists, arginfo_swoole_server_exists, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_server, exist, exists, arginfo_swoole_server_exists, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, protect, arginfo_swoole_server_protect, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, sendfile, arginfo_swoole_server_sendfile, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, close, arginfo_swoole_server_close, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_server, confirm, resume, arginfo_swoole_server_resume, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, pause, arginfo_swoole_server_pause, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, resume, arginfo_swoole_server_resume, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, task, arginfo_swoole_server_task, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, taskwait, arginfo_swoole_server_taskwait, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, taskWaitMulti, arginfo_swoole_server_taskWaitMulti, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, taskCo, arginfo_swoole_server_taskCo, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, finish, arginfo_swoole_server_finish, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, reload, arginfo_swoole_server_reload, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, shutdown, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, stop, arginfo_swoole_server_stop, ZEND_ACC_PUBLIC)
-    PHP_FALIAS(getLastError, swoole_last_error, arginfo_swoole_void)
-    PHP_ME(swoole_server, heartbeat, arginfo_swoole_server_heartbeat, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getClientInfo, arginfo_swoole_server_getClientInfo, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getClientList, arginfo_swoole_server_getClientList, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getWorkerId, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getWorkerPid, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getWorkerStatus, arginfo_swoole_server_getWorkerStatus, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getManagerPid, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, getMasterPid, arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, __construct, arginfo_class_Swoole_Server___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, __destruct, arginfo_class_Swoole_Server___destruct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, listen, arginfo_class_Swoole_Server_listen, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_server, addlistener, listen, arginfo_class_Swoole_Server_listen, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, on, arginfo_class_Swoole_Server_on, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getCallback, arginfo_class_Swoole_Server_getCallback, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, set, arginfo_class_Swoole_Server_set, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, start, arginfo_class_Swoole_Server_start, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, send, arginfo_class_Swoole_Server_send, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, sendto, arginfo_class_Swoole_Server_sendto, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, sendwait, arginfo_class_Swoole_Server_sendwait, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, exists, arginfo_class_Swoole_Server_exists, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_server, exist, exists, arginfo_class_Swoole_Server_exists, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, protect, arginfo_class_Swoole_Server_protect, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, sendfile, arginfo_class_Swoole_Server_sendfile, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, close, arginfo_class_Swoole_Server_close, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_server, confirm, resume, arginfo_class_Swoole_Server_confirm, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, pause, arginfo_class_Swoole_Server_pause, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, resume, arginfo_class_Swoole_Server_resume, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, task, arginfo_class_Swoole_Server_task, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, taskwait, arginfo_class_Swoole_Server_taskwait, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, taskWaitMulti, arginfo_class_Swoole_Server_taskWaitMulti, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, taskCo, arginfo_class_Swoole_Server_taskCo, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, finish, arginfo_class_Swoole_Server_finish, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, reload, arginfo_class_Swoole_Server_reload, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, shutdown, arginfo_class_Swoole_Server_shutdown, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, stop, arginfo_class_Swoole_Server_stop, ZEND_ACC_PUBLIC)
+    PHP_FALIAS(getLastError, swoole_last_error, arginfo_class_Swoole_Server_getLastError)
+    PHP_ME(swoole_server, heartbeat, arginfo_class_Swoole_Server_heartbeat, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getClientInfo, arginfo_class_Swoole_Server_getClientInfo, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getClientList, arginfo_class_Swoole_Server_getClientList, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getWorkerId, arginfo_class_Swoole_Server_getWorkerId, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getWorkerPid, arginfo_class_Swoole_Server_getWorkerPid, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getWorkerStatus, arginfo_class_Swoole_Server_getWorkerStatus, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getManagerPid, arginfo_class_Swoole_Server_getManagerPid, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getMasterPid, arginfo_class_Swoole_Server_getMasterPid, ZEND_ACC_PUBLIC)
     //psr-0 style
-    PHP_MALIAS(swoole_server, connection_info, getClientInfo, arginfo_swoole_server_getClientInfo, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_server, connection_list, getClientList, arginfo_swoole_server_getClientList, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_server, connection_info, getClientInfo, arginfo_class_Swoole_Server_getClientInfo, ZEND_ACC_PUBLIC)
+    PHP_MALIAS(swoole_server, connection_list, getClientList, arginfo_class_Swoole_Server_getClientList, ZEND_ACC_PUBLIC)
     //process
-    PHP_ME(swoole_server, sendMessage, arginfo_swoole_server_sendMessage, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, addProcess, arginfo_swoole_server_addProcess, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server, stats, arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, sendMessage, arginfo_class_Swoole_Server_sendMessage, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, addProcess, arginfo_class_Swoole_Server_addProcess, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, stats, arginfo_class_Swoole_Server_stats, ZEND_ACC_PUBLIC)
 #ifdef SWOOLE_SOCKETS_SUPPORT
-    PHP_ME(swoole_server, getSocket, arginfo_swoole_server_getSocket, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, getSocket, arginfo_class_Swoole_Server_getSocket, ZEND_ACC_PUBLIC)
 #endif
-    PHP_ME(swoole_server, bind, arginfo_swoole_server_bind, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, bind, arginfo_class_Swoole_Server_bind, ZEND_ACC_PUBLIC)
     {nullptr, nullptr, nullptr}
 };
 
 static const zend_function_entry swoole_connection_iterator_methods[] =
 {
-    PHP_ME(swoole_connection_iterator, __construct,  arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, __destruct,  arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, rewind,      arginfo_swoole_connection_iterator_rewind, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, next,        arginfo_swoole_connection_iterator_next, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, current,     arginfo_swoole_connection_iterator_current, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, key,         arginfo_swoole_connection_iterator_key, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, valid,       arginfo_swoole_connection_iterator_valid, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, count,       arginfo_swoole_connection_iterator_count, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetExists,    arginfo_swoole_connection_iterator_offsetExists, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetGet,       arginfo_swoole_connection_iterator_offsetGet, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetSet,       arginfo_swoole_connection_iterator_offsetSet, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_connection_iterator, offsetUnset,     arginfo_swoole_connection_iterator_offsetUnset, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, __construct,  arginfo_class_Swoole_Connection_Iterator___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, __destruct,  arginfo_class_Swoole_Connection_Iterator___destruct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, rewind,      arginfo_class_Swoole_Connection_Iterator_rewind, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, next,        arginfo_class_Swoole_Connection_Iterator_next, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, current,     arginfo_class_Swoole_Connection_Iterator_current, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, key,         arginfo_class_Swoole_Connection_Iterator_key, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, valid,       arginfo_class_Swoole_Connection_Iterator_valid, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, count,       arginfo_class_Swoole_Connection_Iterator_count, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetExists,    arginfo_class_Swoole_Connection_Iterator_offsetExists, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetGet,       arginfo_class_Swoole_Connection_Iterator_offsetGet, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetSet,       arginfo_class_Swoole_Connection_Iterator_offsetSet, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_connection_iterator, offsetUnset,     arginfo_class_Swoole_Connection_Iterator_offsetUnset, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
 static const zend_function_entry swoole_server_task_methods[] =
 {
-    PHP_ME(swoole_server_task, finish, arginfo_swoole_server_finish, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server_task, pack, arginfo_swoole_server_task_pack, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_server_task, finish, arginfo_class_Swoole_Server_finish, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server_task, pack, arginfo_class_Swoole_Server_Task_pack, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
 // clang-format on

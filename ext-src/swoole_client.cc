@@ -21,7 +21,7 @@
 #if PHP_VERSION_ID >= 80000
 #include "swoole_client_arginfo.h"
 #else
-#include "swoole_client_legacy_arginfo.h"
+#include "swoole_client_arginfo_legacy.h"
 #endif
 
 #include <string>

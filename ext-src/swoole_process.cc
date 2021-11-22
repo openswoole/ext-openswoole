@@ -24,7 +24,11 @@
 #include <sys/ipc.h>
 #include <sys/resource.h>
 
-#include "swoole_process_legacy_arginfo.h"
+#if PHP_VERSION_ID >= 80000
+#include "swoole_process_arginfo.h"
+#else
+#include "swoole_process_arginfo_legacy.h"
+#endif
 
 using namespace swoole;
 
@@ -129,34 +133,34 @@ static void php_swoole_onSignal(int signo);
 
 static const zend_function_entry swoole_process_methods[] =
 {
-    PHP_ME(swoole_process, __construct, arginfo_swoole_process_construct, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, __destruct, arginfo_swoole_process_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, wait, arginfo_swoole_process_wait, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    PHP_ME(swoole_process, signal, arginfo_swoole_process_signal, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    PHP_ME(swoole_process, alarm, arginfo_swoole_process_alarm, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    PHP_ME(swoole_process, kill, arginfo_swoole_process_kill, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    PHP_ME(swoole_process, daemon, arginfo_swoole_process_daemon, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_process, __construct, arginfo_class_Swoole_Process___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, __destruct, arginfo_class_Swoole_Process___destruct, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, wait, arginfo_class_Swoole_Process_wait, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_process, signal, arginfo_class_Swoole_Process_signal, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_process, alarm, arginfo_class_Swoole_Process_alarm, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_process, kill, arginfo_class_Swoole_Process_kill, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_process, daemon, arginfo_class_Swoole_Process_daemon, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 #ifdef HAVE_CPU_AFFINITY
-    PHP_ME(swoole_process, setAffinity, arginfo_swoole_process_setAffinity, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_process, setAffinity, arginfo_class_Swoole_Process_setAffinity, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 #endif
-    PHP_ME(swoole_process, setPriority, arginfo_swoole_process_setPriority, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, getPriority, arginfo_swoole_process_getPriority, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, set, arginfo_swoole_process_set, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, setTimeout, arginfo_swoole_process_setTimeout, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, setBlocking, arginfo_swoole_process_setBlocking, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, useQueue, arginfo_swoole_process_useQueue, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, statQueue, arginfo_swoole_process_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, freeQueue, arginfo_swoole_process_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, start, arginfo_swoole_process_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, write, arginfo_swoole_process_write, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, close, arginfo_swoole_process_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, read, arginfo_swoole_process_read, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, push, arginfo_swoole_process_push, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, pop, arginfo_swoole_process_pop, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, exit, arginfo_swoole_process_exit, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, exec, arginfo_swoole_process_exec, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_process, exportSocket, arginfo_swoole_process_void, ZEND_ACC_PUBLIC)
-    PHP_FALIAS(name, swoole_set_process_name, arginfo_swoole_process_name)
+    PHP_ME(swoole_process, setPriority, arginfo_class_Swoole_Process_setPriority, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, getPriority, arginfo_class_Swoole_Process_getPriority, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, set, arginfo_class_Swoole_Process_set, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, setTimeout, arginfo_class_Swoole_Process_setTimeout, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, setBlocking, arginfo_class_Swoole_Process_setBlocking, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, useQueue, arginfo_class_Swoole_Process_useQueue, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, statQueue, arginfo_class_Swoole_Process_statQueue, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, freeQueue, arginfo_class_Swoole_Process_freeQueue, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, start, arginfo_class_Swoole_Process_start, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, write, arginfo_class_Swoole_Process_write, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, close, arginfo_class_Swoole_Process_close, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, read, arginfo_class_Swoole_Process_read, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, push, arginfo_class_Swoole_Process_push, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, pop, arginfo_class_Swoole_Process_pop, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, exit, arginfo_class_Swoole_Process_exit, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, exec, arginfo_class_Swoole_Process_exec, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_process, exportSocket, arginfo_class_Swoole_Process_exportSocket, ZEND_ACC_PUBLIC)
+    PHP_FALIAS(name, swoole_set_process_name, arginfo_class_Swoole_Process_name)
     PHP_FE_END
 };
 // clang-format on
@@ -1062,6 +1066,7 @@ static PHP_METHOD(swoole_process, setBlocking) {
     }
 }
 
+// -20,20
 static PHP_METHOD(swoole_process, setPriority) {
     zend_long which, priority;
     ZEND_PARSE_PARAMETERS_START(2, 2)

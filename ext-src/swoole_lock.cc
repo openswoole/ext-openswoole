@@ -21,7 +21,7 @@
 #if PHP_VERSION_ID >= 80000
 #include "swoole_lock_arginfo.h"
 #else
-#include "swoole_lock_legacy_arginfo.h"
+#include "swoole_lock_arginfo_legacy.h"
 #endif
 
 using swoole::Lock;

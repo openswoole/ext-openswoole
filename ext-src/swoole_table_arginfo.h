@@ -1,15 +1,15 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 5e86cdaa80e2bd155791532deff4570f93c4b58d */
+ * Stub hash: 1149b104c0a39ceeaf9d4d0ccaed2fcc51ed9793 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Table___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, table_size, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, conflict_proportion, IS_DOUBLE, 1, "1.0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, conflict_proportion, IS_DOUBLE, 0, "1.0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Table_column, 0, 2, _IS_BOOL, 0)
 	ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, type, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, size, IS_LONG, 1, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, size, IS_LONG, 0, "0")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Table_create, 0, 0, _IS_BOOL, 0)
@@ -24,7 +24,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Table_get, 0, 1, MAY_BE_ARRAY|MAY_BE_BOOL|MAY_BE_STRING)
 	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, column, IS_STRING, 1, "null")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, column, IS_STRING, 0, "\"\"")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Table_count, 0, 0, IS_LONG, 0)
@@ -39,13 +39,13 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Table_incr, 0, 2, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, column, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, incrby, IS_LONG, 1, "1")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, incrby, IS_LONG, 0, "1")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Table_decr, 0, 2, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, column, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, decrby, IS_LONG, 1, "1")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, decrby, IS_LONG, 0, "1")
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Table_getSize arginfo_class_Swoole_Table_count

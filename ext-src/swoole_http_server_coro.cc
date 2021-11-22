@@ -19,7 +19,7 @@
 #include <string>
 #include <map>
 
-#include "swoole_http_server_coro_legacy_arginfo.h"
+#include "swoole_http_server_coro_arginfo_legacy.h"
 
 using swoole::microtime;
 using swoole::PHPCoroutine;

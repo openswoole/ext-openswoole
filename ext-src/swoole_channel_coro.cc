@@ -24,7 +24,7 @@
 #if PHP_VERSION_ID >= 80000
 #include "swoole_channel_coro_arginfo.h"
 #else
-#include "swoole_channel_coro_legacy_arginfo.h"
+#include "swoole_channel_coro_arginfo_legacy.h"
 #endif
 
 using swoole::coroutine::Channel;
@@ -141,7 +141,8 @@ static PHP_METHOD(swoole_channel_coro, __construct) {
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
     if (capacity <= 0) {
-        capacity = 1;
+        php_swoole_fatal_error(E_ERROR, "capacity is invalid");
+        RETURN_FALSE;
     }
 
     ChannelObject *chan_t = php_swoole_channel_coro_fetch_object(Z_OBJ_P(ZEND_THIS));

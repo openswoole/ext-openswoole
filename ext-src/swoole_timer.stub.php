@@ -20,14 +20,14 @@ namespace Swoole {
 	/** @not-serializable */
 	final class Timer
     {
-    	public function set(array $settings): bool {}
-		public function after(int $ms, callable $callback, mixed ...$params): bool|int {}
-		public function tick(int $ms, callable $callback, mixed ...$params): bool|int {}
-		public function exists(): bool {}
-		public function info(): array|bool {}
-		public function stats(): array {}
-		public function list(): mixed {}
-		public function clear(): bool {}
-		public function clearAll(): bool {}
+    	public static function set(array $settings): bool {}
+		public static function after(int $ms, callable $callback, mixed ...$params): bool|int {}
+		public static function tick(int $ms, callable $callback, mixed ...$params): bool|int {}
+		public static function exists(): bool {}
+		public static function info(): array|bool {}
+		public static function stats(): array {}
+		public static function list(): \Swoole\Timer\Iterator {}
+		public static function clear(): bool {}
+		public static function clearAll(): bool {}
     }
 }

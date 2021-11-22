@@ -20,7 +20,11 @@
 
 #include <queue>
 
-#include "swoole_coroutine_scheduler_legacy_arginfo.h"
+#if PHP_VERSION_ID >= 80000
+#include "swoole_coroutine_scheduler_arginfo.h"
+#else
+#include "swoole_coroutine_scheduler_arginfo_legacy.h"
+#endif
 
 using swoole::Reactor;
 using swoole::Coroutine;
@@ -80,11 +84,11 @@ static void scheduler_free_object(zend_object *object) {
 // clang-format off
 
 static const zend_function_entry swoole_coroutine_scheduler_methods[] = {
-    PHP_ME(swoole_coroutine_scheduler, add, arginfo_swoole_coroutine_scheduler_add, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_coroutine_scheduler, parallel, arginfo_swoole_coroutine_scheduler_parallel, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_coroutine_scheduler, set, arginfo_swoole_coroutine_scheduler_set, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_coroutine_scheduler, getOptions, arginfo_swoole_void, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_coroutine_scheduler, start, arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_coroutine_scheduler, add, arginfo_class_Swoole_Coroutine_Scheduler_add, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_coroutine_scheduler, parallel, arginfo_class_Swoole_Coroutine_Scheduler_parallel, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_coroutine_scheduler, set, arginfo_class_Swoole_Coroutine_Scheduler_set, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_coroutine_scheduler, getOptions, arginfo_class_Swoole_Coroutine_Scheduler_getOptions, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_coroutine_scheduler, start, arginfo_class_Swoole_Coroutine_Scheduler_start, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 
