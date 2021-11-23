@@ -12,7 +12,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Setup PHP
-      uses: shivammathur/setup-php@v2
+      uses: shivammathur/setup-php@verbose
       with:
         php-version: "${{ matrix.php }}"
     - name: Show machine information
@@ -27,6 +27,8 @@ jobs:
         pwd
         echo "`git log -20 --pretty --oneline`"
         echo "`git log -10 --stat --pretty --oneline`"
+        sudo apt-get upgrade -y && sudo apt-get update -y
+        sudo apt-get install -y libcurl4-openssl-dev 
     - name: Run pecl-install.sh
       run: |
         sudo ${{runner.workspace}}/swoole-src/travis/pecl-install.sh
