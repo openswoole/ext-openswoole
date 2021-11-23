@@ -23,28 +23,28 @@ go(function () {
         return $cli;
     }
 
-    $baidu = createDeferCli('www.baidu.com', true);
-    $qq = createDeferCli('www.qq.com', true);
+    $swoole = createDeferCli('www.swoole.co.uk', true);
+    $google = createDeferCli('www.google.com', true);
 
     //first
-    $baidu->get('/');
-    $qq->get('/');
-    $baidu->recv(10);
-    $qq->recv(10);
-    Assert::same($baidu->statusCode, 200);
-    Assert::assert(stripos($baidu->body, 'baidu') !== false);
-    Assert::same($qq->statusCode, 200);
-    Assert::assert(stripos($qq->body, 'tencent') !== false);
+    $swoole->get('/');
+    $google->get('/');
+    $swoole->recv(10);
+    $google->recv(10);
+    Assert::same($swoole->statusCode, 200);
+    Assert::assert(stripos($swoole->body, 'Swoole') !== false);
+    Assert::same($google->statusCode, 200);
+    Assert::assert(stripos($google->body, 'google') !== false);
 
     //reuse
-    $baidu->get('/duty/');
-    $qq->get('/contract.shtml');
-    $baidu->recv(10);
-    $qq->recv(10);
-    Assert::same($baidu->statusCode, 200);
-    Assert::assert(stripos($baidu->body, 'baidu') !== false);
-    Assert::same($qq->statusCode, 200);
-    Assert::assert(stripos($qq->body, 'tencent') !== false);
+    $swoole->get('/docs/');
+    $google->get('/help');
+    $swoole->recv(10);
+    $google->recv(10);
+    Assert::same($swoole->statusCode, 200);
+    Assert::assert(stripos($swoole->body, 'Swoole') !== false);
+    Assert::same($google->statusCode, 404);
+    Assert::assert(stripos($google->body, 'google') !== false);
 });
 ?>
 --EXPECT--
