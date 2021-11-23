@@ -11,7 +11,7 @@ if [ "${GITHUB_ACTIONS}" = true ]; then
 fi
 
 sudo apt-get update -y
-sudo apt-get install -y libcurl4-openssl-dev libc-ares-dev
+sudo apt-get install -y libc-ares-dev
 
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
