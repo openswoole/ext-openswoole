@@ -36,15 +36,17 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        1. Extension name changed to be openswoole
-        2. Bug fixed: PHP8.0 compatible issues
-        3. Bug fixed: PHP8.0 and Symfony HTTP client compatible issues
-        4. Added SW_ERROR_WEBSOCKET_PACK_FAILED error code
-        5. Updated Server id to be OpenSwoole-v4.x.x, Client id to be OpenSwoole/v4.x.x
-        6. Bug fixed: HTTP2 flow control bugs
-        7. Support ssl_ciphers in Swoole Client
-        8. Bug fixed: curl_multi_select CURL_SOCKET_TIMEOUT bug
-        9. Bug fixed: openswoole_postgresql compile issues on MacOS
+        - PHP 8.1 support
+        - Native support for postgres coroutine client, enable --with-postgres[=DIR]
+        - New HTTP server option: max_request_execution_time
+        - Support strict type hinting and fix the type of arguments, return value
+        - Bug fixed: data loss bug in Swoole table
+        - Bug fixed: compile issues when enable openssl on MacOS
+        - Throw \Swoole\Exception when Swoole table is too small to avoid data loss
+        - Deprecation warning added: Swoole\Coroutine\Server
+        - Deprecation warning added: Swoole\Coroutine\Barrier
+        - Deprecation warning added: Swoole\Coroutine\Http\Server
+        - Deprecation warning added: SWOOLE_HOOK_CURL, use SWOOLE_HOOK_NATIVE_CURL
     </notes>
     <contents>
         <dir name="/">
