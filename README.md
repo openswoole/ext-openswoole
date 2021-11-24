@@ -81,9 +81,13 @@ Your contributions to Open Swoole development are welcome.
 * [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
 * Submit fixes, features via Pull Request
 
+## Call for Contributors
+
+If you like to involve the maintenance of this repo, it is better to get started by submitting PR, you will be invited to the dev group once there are significant contributions. Or join Slack group firstly, the team will provide mentoring and internal support to help you get started.
+
 ## Contributors
 
-This project exists thanks to all the contributors who contribute to the orignal Swoole project. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
+This project exists thanks to all the historical [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
 
 ## Security issues
 
