@@ -25,7 +25,7 @@ namespace Swoole {
 		public function sendto(string $ip, int $port, string $data): bool {}
 		public function sendfile(string $filename, int $offset = 0, int $length = 0): bool {}
 		public function recv(int $length = 65535, int $flags = 0): bool|string {}
-		public function close(bool $force = false): void|bool {}
+		public function close(bool $force = false): bool {}
 		public function shutdown(int $how): bool {}
 		public function isConnected(): bool {}
 		public function getsockname(): bool|array {}
