@@ -8,7 +8,7 @@
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/23970/badge.svg)](https://scan.coverity.com/projects/open-swoole-src)
 [![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src)
 
-**Open Swoole is a Programmatic Server for PHP with Async IO, Coroutines and Fibers: Secure, Reliable, High performance**
+**Open Swoole (since 2017) is a programmatic server for PHP with async IO, coroutines and fibers: secure, reliable, high performance**
 
 ## Documentation & Community
 
