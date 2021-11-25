@@ -49,7 +49,7 @@ namespace Swoole {
 		public static function waitPid(int $pid, float $timeout = -1): bool {}
 		public static function waitSignal(int $signalNum,  float $timeout = -1): bool {}
 		public static function waitEvent(mixed $fd, int $events, float $timeout = -1): bool|int {}
-		public static function fread(mixed $handle, int $length = 0): bool {}
+		public static function fread(mixed $handle, int $length = 0): string|false {}
 		public static function fgets(mixed $handle): bool|string {}
 		public static function fwrite(mixed $handle, string $data, int $length = 0): bool {}
 		public static function gethostbyname(string $domain, int $family = AF_INET, float $timeout = -1): string|false {}
