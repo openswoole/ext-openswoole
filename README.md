@@ -65,6 +65,7 @@ After compiling and installing to the system successfully, you have to add a new
 + `--enable-mysqlnd` (need mysqlnd, it just for supporting `$mysql->escape` method)
 + `--enable-swoole-json`
 + `--enable-swoole-curl`
++ `--with-postgres[=DIR]`
 
 ### Upgrade
 
