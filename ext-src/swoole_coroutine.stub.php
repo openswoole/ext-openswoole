@@ -51,7 +51,7 @@ namespace Swoole {
 		public static function waitEvent(mixed $fd, int $events, float $timeout = -1): bool|int {}
 		public static function fread(mixed $handle, int $length = 0): string|false {}
 		public static function fgets(mixed $handle): bool|string {}
-		public static function fwrite(mixed $handle, string $data, int $length = 0): bool {}
+		public static function fwrite(mixed $handle, string $data, int $length = 0): int|false {}
 		public static function gethostbyname(string $domain, int $family = AF_INET, float $timeout = -1): string|false {}
 		public static function dnsLookup(string $domain, float $timeout = 5): string|false {}
 		public static function getaddrinfo(string $domain, int $family = AF_INET, int $sockType = SOCK_STREAM, int $protocol = STREAM_IPPROTO_TCP, string $service = null, float $timeout = -1): array|false{}
