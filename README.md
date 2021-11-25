@@ -8,7 +8,7 @@
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/23970/badge.svg)](https://scan.coverity.com/projects/open-swoole-src)
 [![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src)
 
-**Open Swoole is an event-driven asynchronous & coroutine-based concurrency networking communication engine with high performance written in C++ for PHP.**
+**Open Swoole is a Programmatic Server for PHP with Async IO, Coroutines and Fibers: Secure, Reliable, High performance**
 
 ## Documentation & Community
 
@@ -65,6 +65,7 @@ After compiling and installing to the system successfully, you have to add a new
 + `--enable-mysqlnd` (need mysqlnd, it just for supporting `$mysql->escape` method)
 + `--enable-swoole-json`
 + `--enable-swoole-curl`
++ `--with-postgres[=DIR]`
 
 ### Upgrade
 
@@ -81,9 +82,13 @@ Your contributions to Open Swoole development are welcome.
 * [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
 * Submit fixes, features via Pull Request
 
+## Call for Contributors
+
+If you like to involve the maintenance of this repo, it is better to get started by submitting PR, you will be invited to the dev group once there are significant contributions. Or join Slack group firstly, the team will provide mentoring and internal support to help you get started.
+
 ## Contributors
 
-This project exists thanks to all the contributors who contribute to the orignal Swoole project. [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
+This project exists thanks to all the historical [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
 
 ## Security issues
 
