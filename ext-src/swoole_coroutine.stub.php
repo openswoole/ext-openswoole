@@ -25,7 +25,7 @@ namespace Swoole {
 		public static function resume(int $cid): bool {}
 		public static function defer(callable $callback): void {}
 		public static function yield(): bool {}
-		public static function suspend(): void {}
+		public static function suspend(): bool {}
 		public static function cancel(int $cid): bool {}
 		public static function isCanceled(): bool {}
 		public static function stats(): array {}
