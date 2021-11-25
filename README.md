@@ -8,7 +8,7 @@
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/23970/badge.svg)](https://scan.coverity.com/projects/open-swoole-src)
 [![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src)
 
-**Open Swoole is an event-driven asynchronous & coroutine-based concurrency networking communication engine with high performance written in C++ for PHP.**
+**Open Swoole is a Programmatic Server for PHP with Async IO, Coroutines and Fibers: Secure, Reliable, High performance**
 
 ## Documentation & Community
 
