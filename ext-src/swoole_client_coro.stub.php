@@ -20,10 +20,10 @@ namespace Swoole\Coroutine {
 	final class Client {
 		public function __construct(int $type) {}
 		public function set(array $settings): bool {}
-		public function connect(string $host, int $port = 0, float $timeout = 0.5, int $sock_flag = 0): bool {}		
+		public function connect(string $host, int $port = 0, float $timeout = 0.5, int $sockFlag = 0): bool {}		
 		public function send(string $data, float $timeout = 1.0): bool|int {}
 		public function sendto(string $host, int $port, string $data): bool {}
-		public function sendfile(string $filename, int $offset = 0, int $length = 0): bool {}
+		public function sendfile(string $fileName, int $offset = 0, int $length = 0): bool {}
 		public function recv(float $timeout = 1.0): bool|string {}
 		public function recvfrom(int $length, mixed &$host, mixed &$port = 0): bool|string {}
 		public function peek(int $length = 65535): bool|string {}
@@ -34,7 +34,7 @@ namespace Swoole\Coroutine {
 		public function getpeername(): bool|array {}
 		public function enableSSL(): bool {}
 		public function getPeerCert(): bool|string {}
-		public function verifyPeerCert(): bool {}
+		public function verifyPeerCert(bool $allowSelfSigned = false): bool {}
 		public function __destruct() {}
 	}
 }

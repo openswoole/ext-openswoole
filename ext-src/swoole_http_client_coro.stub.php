@@ -21,7 +21,7 @@ namespace Swoole\Coroutine\Http {
 	    public function __destruct() {}
 	    public function set(array $settings): bool {}
 	    public function getDefer(): bool {}
-	    public function setDefer(bool $defer = false): bool {}
+	    public function setDefer(bool $defer = true): bool {}
 	    public function setMethod(string $method): bool {}
 	    public function setHeaders(array $headers): bool {}
 	    public function setBasicAuth(string $username, string $password): bool|void {}
@@ -42,7 +42,7 @@ namespace Swoole\Coroutine\Http {
 	    public function getHeaderOut(): string|bool {}
 	    public function getPeerCert(): string|false {}
 	    public function upgrade(string $path): bool {}
-	    public function push(mixed $data, int $opcode = WEBSOCKET_OPCODE_TEXT, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
+	    public function push(mixed $data, int $opcode = SWOOLE_WEBSOCKET_OPCODE_TEXT, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
 	    public function recv(float $timeout = 0): bool|\Swoole\WebSocket\Frame {}
 	    public function close(): bool {}
 	}

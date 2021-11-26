@@ -21,7 +21,7 @@ namespace Swoole\Server {
 		private function __construct() {}
 		public function set(array $settings): bool|void {}
 		public function on(string $event, callable $callback): bool {}
-		public function getCallback(string $event): mixed {}
+		public function getCallback(string $event): callable|null {}
 		public function getSocket(): mixed {}
 		public function __destruct() {}
 	}
