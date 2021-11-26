@@ -67,14 +67,14 @@
  *******************************************************/
 
 .text
-.globl make_fcontext
+.globl make_fcontext_v1
 .align 2
-.type make_fcontext,@function
-make_fcontext:
+.type make_fcontext_v1,@function
+make_fcontext_v1:
     # save return address into R6
     mflr  %r6
 
-    # first arg of make_fcontext() == top address of context-function
+    # first arg of make_fcontext_v1() == top address of context-function
     # shift address in R3 to lower 16 byte boundary
     clrrwi  %r3, %r3, 4
 
@@ -82,7 +82,7 @@ make_fcontext:
     # including 64 byte of linkage + parameter area (R1 % 16 == 0)
     subi  %r3, %r3, 304
 
-    # third arg of make_fcontext() == address of context-function
+    # third arg of make_fcontext_v1() == address of context-function
     stw  %r5, 236(%r3)
 
     # load LR
@@ -117,7 +117,7 @@ finish:
     li  %r3, 0
     # exit application
     bl  _exit@plt
-.size make_fcontext, .-make_fcontext
+.size make_fcontext_v1, .-make_fcontext_v1
 
 #ifndef __NetBSD__
 /* Mark that we don't need executable stack.  */

@@ -18,10 +18,10 @@
  ****************************************************************************************/
 
 .text
-.globl _make_fcontext
+.globl _make_fcontext_v1
 .align 2
-_make_fcontext:
-    /* first arg of make_fcontext() == top of context-stack */
+_make_fcontext_v1:
+    /* first arg of make_fcontext_v1() == top of context-stack */
     movl  0x4(%esp), %eax
 
     /* reserve space for first argument of context-function
@@ -36,7 +36,7 @@ _make_fcontext:
     /* on context-function entry: (ESP -0x4) % 8 == 0 */
     leal  -0x20(%eax), %eax
 
-    /* thrid arg of make_fcontext() == address of context-function */
+    /* thrid arg of make_fcontext_v1() == address of context-function */
     movl  0xc(%esp), %edx
     movl  %edx, 0x18(%eax)
 

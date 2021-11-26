@@ -50,11 +50,11 @@
  * *****************************************************/
 
 .text
-.globl jump_fcontext
+.globl jump_fcontext_v1
 .align 3
-.type jump_fcontext,@function
-.ent jump_fcontext
-jump_fcontext:
+.type jump_fcontext_v1,@function
+.ent jump_fcontext_v1
+jump_fcontext_v1:
     # reserve space on stack
     daddiu $sp, $sp, -160
 
@@ -131,8 +131,8 @@ jump_fcontext:
 
     # jump to context
     jr  $t9
-.end jump_fcontext
-.size jump_fcontext, .-jump_fcontext
+.end jump_fcontext_v1
+.size jump_fcontext_v1, .-jump_fcontext_v1
 
 /* Mark that we don't need executable stack.  */
 .section .note.GNU-stack,"",%progbits

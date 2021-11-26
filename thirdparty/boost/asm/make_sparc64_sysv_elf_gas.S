@@ -45,12 +45,12 @@
 	.register %g6,#ignore
 
 .text
-.globl make_fcontext
+.globl make_fcontext_v1
 .align 4
-.type make_fcontext,@function
+.type make_fcontext_v1,@function
 // fcontext_t *
-// make_fcontext( void * sp, std::size_t size, void (* fn)( intptr_t) )
-make_fcontext:
+// make_fcontext_v1( void * sp, std::size_t size, void (* fn)( intptr_t) )
+make_fcontext_v1:
     save %sp, -CCFSZ, %sp
     // %i0 initial stack pointer
     // %i1 stack size limit
@@ -83,7 +83,7 @@ finish:
     call _exit
      nop
 
-.size make_fcontext,.-make_fcontext
+.size make_fcontext_v1,.-make_fcontext_v1
 
 /* Mark that we don't need executable stack.  */
 .section .note.GNU-stack,"",%progbits

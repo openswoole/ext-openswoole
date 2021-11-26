@@ -39,17 +39,17 @@
  *******************************************************/
 
 .text
-.globl make_fcontext
+.globl make_fcontext_v1
 .align 2
-.type make_fcontext,%function
-make_fcontext:
+.type make_fcontext_v1,%function
+make_fcontext_v1:
     @ shift address in A1 to lower 16 byte boundary
     bic  a1, a1, #15
 
     @ reserve space for context-data on context-stack
     sub  a1, a1, #104
 
-    @ third arg of make_fcontext() == address of context-function
+    @ third arg of make_fcontext_v1() == address of context-function
     str  a3, [a1,#100]
 
     @ compute abs address of label finish
@@ -65,7 +65,7 @@ finish:
     mov  a1, #0
     @ exit application
     bl  _exit@PLT
-.size make_fcontext,.-make_fcontext
+.size make_fcontext_v1,.-make_fcontext_v1
 
 #ifndef __NetBSD__
 @ Mark that we don't need executable stack.

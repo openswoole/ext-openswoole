@@ -68,7 +68,7 @@ Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
     ctx_.uc_link = nullptr;
     makecontext(&ctx_, (void (*)(void)) & context_func, 1, this);
 #else
-    ctx_ = make_fcontext(sp, stack_size_, (void (*)(intptr_t)) & context_func);
+    ctx_ = make_fcontext_v1(sp, stack_size_, (void (*)(intptr_t)) & context_func);
     swap_ctx_ = nullptr;
 #endif
 
@@ -123,7 +123,7 @@ bool Context::swap_in() {
 #if USE_UCONTEXT
     return 0 == swapcontext(&swap_ctx_, &ctx_);
 #else
-    jump_fcontext(&swap_ctx_, ctx_, (intptr_t) this, true);
+    jump_fcontext_v1(&swap_ctx_, ctx_, (intptr_t) this, true);
     return true;
 #endif
 }
@@ -132,7 +132,7 @@ bool Context::swap_out() {
 #if USE_UCONTEXT
     return 0 == swapcontext(&ctx_, &swap_ctx_);
 #else
-    jump_fcontext(&ctx_, swap_ctx_, (intptr_t) this, true);
+    jump_fcontext_v1(&ctx_, swap_ctx_, (intptr_t) this, true);
     return true;
 #endif
 }
