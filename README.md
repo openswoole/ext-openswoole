@@ -28,7 +28,7 @@
 + PHP 7.2.0 or later (The higher the version, the better the performance.)
 + GCC 4.8 or later
 
-### 1. Install via PECL (beginners)
+### 1. Install with PECL (beginners)
 
 ```shell
 pecl install openswoole
@@ -41,7 +41,7 @@ Please download the source packages from [Releases](https://github.com/openswool
 ```shell
 git clone https://github.com/openswoole/swoole-src.git && \
 cd swoole-src
-git checkout v4.7.2
+git checkout v4.8.0
 ```
 
 Compile and install at the source folder:
@@ -56,7 +56,7 @@ make && make install
 
 After compiling and installing to the system successfully, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Open Swoole extension. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
 
-#### Extra compiler configurations
+#### Extra compile configurations
 
 > for example: `./configure --enable-openssl --enable-sockets`
 
@@ -74,20 +74,14 @@ After compiling and installing to the system successfully, you have to add a new
 
 1. `pecl upgrade openswoole`
 2. `cd swoole-src && git pull && make clean && make && sudo make install`
-3. if you change your PHP version, please re-run `phpize clean && phpize` then try to compile
-
-## Contribution
-
-Your contributions to Open Swoole development are welcome.
-
-* [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
-* Submit fixes, features via Pull Request
+3. if you have changed PHP version, please re-run `phpize clean && phpize` then try to compile
 
 ## Call for Contributors
 
 If you like to involve the maintenance of this repo, it is better to get started by submitting PR, you will be invited to the dev group once there are significant contributions. Or join Slack group firstly, the team will provide mentoring and internal support to help you get started.
 
-## Contributors
+* [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
+* Submit fixes, features via Pull Request
 
 This project exists thanks to all the historical [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
 
