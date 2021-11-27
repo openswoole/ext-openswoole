@@ -40,7 +40,7 @@ unlink(FILE);
 ?>
 --EXPECTF--
 [1] LOCK
-[2] LOCK yield
 [1] UNLOCK
+[2] LOCK yield
 [2] LOCK resume
 [2] UNLOCK
