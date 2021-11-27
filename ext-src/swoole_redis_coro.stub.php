@@ -131,8 +131,8 @@ namespace Swoole\Coroutine {
 	    public function zDeleteRangeByScore(string $key, string $start, string $end): int {}
 	    public function zRemRangeByScore(string $key, string $start, string $end): int {}
 	    public function zCount(string $key, string $start , string $end): int {}
-	    public function zRange(string $key, string $start, string $end, mixed $scores = null): array {}
-	    public function zRevRange(string $key, string $start, string $end, mixed $scores = null): array {}
+	    public function zRange(string $key, int $start, int $end, mixed $scores = null): array {}
+	    public function zRevRange(string $key, int $start, int $end, mixed $scores = null): array {}
 	    public function zRangeByScore(string $key, string $start, string $end, array $options = []): array {}
 	    public function zRevRangeByScore(string $key, string $start, string $end, array $options = []): array {}
 	    public function zRangeByLex(string $key, string $min, string $max, int $offset = -1, int $count = -1): array {}

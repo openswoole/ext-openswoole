@@ -90,6 +90,8 @@ SQL;
             $result = $mysql->prepare("SELECT * FROM {$table_name}")->execute();
             Assert::same(array_reverse($data_list), $result);
         } catch (Throwable $e) {
+            var_dump($e->getMessage());
+            var_dump($e->getTrace());
             Assert::assert(0);
         } finally {
             Assert::assert($mysql->query("DROP TABLE {$table_name}"));

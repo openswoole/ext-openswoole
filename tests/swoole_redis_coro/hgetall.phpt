@@ -29,9 +29,9 @@ go(function() {
     echo "-----hmGet---\n";
     var_dump($redis->hmGet('hkey', [3, 5]));
     echo "-----zRange---\n";
-    var_dump($redis->zRange('zkey', '0', '99', true));
+    var_dump($redis->zRange('zkey', 0, 99, true));
     echo "-----zRevRange---\n";
-    var_dump($redis->zRevRange('zkey', '0', '99', true));
+    var_dump($redis->zRevRange('zkey', 0, 99, true));
     echo "-----zRangeByScore---\n";
     var_dump($redis->zRangeByScore('zkey', '0', '99', ['withscores' => true]));
     echo "-----zRevRangeByScore---\n";
