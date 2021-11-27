@@ -21,7 +21,7 @@ class T {
         go(function(){
             echo "__destruct\n";
             $ret = $this->c->pop(0.5);
-            echo "pop ret:".var_export($ret,1)." error:".$this->c->errCode."\n";
+            echo "pop ret:".var_export($ret,true)." error:".$this->c->errCode."\n";
         });
 
     }

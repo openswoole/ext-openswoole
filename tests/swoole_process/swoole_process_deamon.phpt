@@ -10,7 +10,7 @@ $proc = new \swoole_process(function(\swoole_process $proc) {
     $r = \swoole_process::daemon();
     Assert::assert($r);
 
-    $proc->push(posix_getpid());
+    $proc->push((string)posix_getpid());
 });
 $proc->useQueue();
 $forkPid = $proc->start();

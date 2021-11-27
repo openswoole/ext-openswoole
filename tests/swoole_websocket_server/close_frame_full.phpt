@@ -15,7 +15,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
                 $ret = $cli->upgrade('/');
                 Assert::assert($ret);
                 $code = mt_rand(0, 5000);
-                $reason = md5($code);
+                $reason = md5((string)$code);
                 $close_frame = new swoole_websocket_closeframe;
                 $close_frame->code = $code;
                 $close_frame->reason = $reason;
@@ -24,7 +24,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
                 $frame = $cli->recv();
                 Assert::isInstanceOf($frame, swoole_websocket_closeframe::class);
                 Assert::same($frame->opcode, WEBSOCKET_OPCODE_CLOSE);
-                Assert::same(md5($frame->code), $frame->reason);
+                Assert::same(md5((string)$frame->code), $frame->reason);
                 // connection closed
                 Assert::false($cli->recv());
                 Assert::false($cli->connected);

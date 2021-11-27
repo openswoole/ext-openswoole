@@ -16,7 +16,7 @@ go(function () {
         $w_array = $e_array = null;
         $s = microtime(true);
         $timeout = ms_random(0.1, 0.5);
-        $n = stream_select($r_array, $w_array, $e_array, 0, $timeout * 1000000);
+        $n = stream_select($r_array, $w_array, $e_array, 0, (int)$timeout * 1000000);
         Assert::same($n, 0);
         time_approximate($timeout, microtime(true) - $s);
         echo "SUCCESS\n";

@@ -11,7 +11,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 $max_msec = 10;
 co::set(['enable_preemptive_scheduler' => true]);
 $default = 10;
-$start = microtime(1);
+$start = microtime(true);
 echo "start\n";
 $flag = 1;
 
@@ -24,7 +24,7 @@ go(function () use (&$flag, $max_msec) {
     echo "coro 1 can exit\n";
 });
 
-$end = microtime(1);
+$end = microtime(true);
 $msec = ($end - $start) * 1000;
 USE_VALGRIND || Assert::lessThanEq(abs($msec - $max_msec), $default );
 

@@ -11,7 +11,7 @@ go(function() {
     $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
     
     $redis->delete('hkey');
-    $redis->hSet('hkey', false, 'val0');
+    $redis->hSet('hkey', "", 'val0');
     $redis->hSet('hkey', "field", 'val1');
     $redis->hSet('hkey', 5, 'val5');
 

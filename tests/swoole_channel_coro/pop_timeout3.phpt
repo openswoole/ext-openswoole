@@ -10,13 +10,13 @@ $c1 = new chan();
 
 go(function () use ($c1) {
     $ret = $c1->pop(1);
-    echo "pop ret:".var_export($ret,1)." error:".$c1->errCode."\n";
+    echo "pop ret:".var_export($ret,true)." error:".$c1->errCode."\n";
 });
 
 go(function () use ($c1) {
     co::sleep(0.5);
     $ret = $c1->push("chan-1");
-    echo "chan push ret:".var_export($ret,1)." error:".$c1->errCode."\n";
+    echo "chan push ret:".var_export($ret,true)." error:".$c1->errCode."\n";
 });
 swoole_event_wait();
 ?>

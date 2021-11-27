@@ -14,7 +14,7 @@ go(function () {
     // Without this line, all is well:
     $dummy =& $r[0];
 
-    print stream_select($r, $w, $e, 0.5) . PHP_EOL;
+    print stream_select($r, $w, $e, 1) . PHP_EOL;
 });
 Swoole\Event::wait();
 ?>

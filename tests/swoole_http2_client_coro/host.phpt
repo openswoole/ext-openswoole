@@ -23,7 +23,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
                 'connection' => 'keep-alive'
             ];
             for ($i = 32; $i--;) {
-                $request->headers[md5(mt_rand(1, 65535))] = sha1(get_safe_random(32));
+                $request->headers[md5((string)mt_rand(1, 65535))] = sha1(get_safe_random(32));
             }
             Assert::assert($cli->send($request));
             $response = $cli->recv();

@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 $process = new Swoole\Process(function(Swoole\Process $worker) {
     echo Co::getCid() . PHP_EOL;
-}, false, false, true);
+}, false, 0, true);
 $process->start();
 $process::wait();
 

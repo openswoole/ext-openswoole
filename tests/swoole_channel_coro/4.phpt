@@ -13,7 +13,7 @@ go(function () use ($c1,$num) {
     echo "push start\n";
     for ($i = 0; $i < $num; $i++) {
         $ret = $c1->push("data-$i");
-        echo "push [#$i] ret:" . var_export($ret, 1) . "\n";
+        echo "push [#$i] ret:" . var_export($ret, true) . "\n";
     }
 });
 
@@ -21,7 +21,7 @@ go(function () use ($c1, $num) {
     echo "pop start\n";
     for ($i = 0; $i < $num; $i++) {
         $ret = $c1->pop();
-        echo "pop [#$i] ret:" . var_export($ret, 1) . "\n";
+        echo "pop [#$i] ret:" . var_export($ret, true) . "\n";
     }
 });
 echo "main end\n";

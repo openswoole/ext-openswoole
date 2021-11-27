@@ -32,7 +32,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $serv->on('request', function ($req, Response $resp) {
-        $resp->end(json_encode($req->get, true));
+        $resp->end(json_encode($req->get, 1));
     });
     $serv->start();
 };

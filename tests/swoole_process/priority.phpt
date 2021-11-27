@@ -16,7 +16,7 @@ $process = new Process(function(Process $worker) {
     Assert::eq($priority, PRIORITY);
     usleep(20000);
     $worker->exit(0);
-}, false, false);
+}, false, 0);
 
 $pid = $process->start();
 Process::wait();

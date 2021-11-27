@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->setRandomFunc(function () {
     static $str = '!#$&\'()*+/:;=?@{}『』';
-    return str_shuffle(str_repeat($str, mt_rand(128, 1024) / strlen($str)));
+    return str_shuffle(str_repeat($str, (int) mt_rand(128, 1024) / strlen($str)));
 });
 $pm->initRandomDataEx(1, MAX_REQUESTS);
 $pm->parentFunc = function () use ($pm) {

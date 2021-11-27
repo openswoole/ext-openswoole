@@ -23,10 +23,10 @@ swoole_timer_after(200, function () use ($chan) {
 
 go(function () use ($chan){
     for ($i = 0; $i < 2; $i++)  {
-        echo "[read]".var_export($chan->pop(), 1)."\n";
+        echo "[read]".var_export($chan->pop(), true)."\n";
     }
     for ($i = 0; $i < 8; $i++)  {
-        echo "[read & write]".var_export($chan->pop(), 1)."\n";
+        echo "[read & write]".var_export($chan->pop(), true)."\n";
     }
 });
 

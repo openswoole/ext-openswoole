@@ -12,7 +12,7 @@ $default = 10;
 $max_msec = 10;
 co::set(['enable_preemptive_scheduler' => true]);
 
-$start = microtime(1);
+$start = microtime(true);
 echo "start\n";
 $flag = 1;
 
@@ -25,7 +25,7 @@ go(function () use (&$flag, $max_msec, $start) {
     echo "coro 1 can exit\n";
 });
 
-$end = microtime(1);
+$end = microtime(true);
 $msec = ($end - $start) * 1000;
 
 go(function () use (&$flag) {

@@ -41,14 +41,14 @@ function mysql(): Co\MySQL
 for ($c = MAX_CONCURRENCY_LOW; $c--;) {
     go(function () use ($c) {
         // gen table structure
-        $table_name = 't' . substr(md5(mt_rand()), 0, 15);
+        $table_name = 't' . substr(md5((string)mt_rand()), 0, 15);
         $field_size = mt_rand(1, 100);
         list($fields, $fields_info) = (function () use ($field_size) {
             $fields_info = [];
             $fields = '';
             for ($i = $field_size; $i--;) {
                 $info = $fields_info[] = [
-                    'name' => 'f' . substr(md5(mt_rand()), 0, 7),
+                    'name' => 'f' . substr(md5((string)mt_rand()), 0, 7),
                     'type' => gen_type()
                 ];
                 $fields .= "{$info['name']} {$info['type']} NULL,\n";

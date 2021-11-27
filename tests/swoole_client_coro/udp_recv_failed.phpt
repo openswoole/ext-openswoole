@@ -9,13 +9,13 @@ require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
     $ret = $cli->connect('127.0.0.1', get_one_free_port(), 3);
-    echo "connect ret:".var_export($ret,1)."\n";
+    echo "connect ret:".var_export($ret,true)."\n";
 
     $ret = $cli->send("hello");
-    echo "send ret:".var_export($ret,1)."\n";
+    echo "send ret:".var_export($ret,true)."\n";
 
     $ret = @$cli->recv();
-    echo "recv ret:".var_export($ret,1)."\n";
+    echo "recv ret:".var_export($ret,true)."\n";
     Assert::same($cli->errCode, SOCKET_ECONNREFUSED);
     $cli->close();
 });

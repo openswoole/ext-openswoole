@@ -12,7 +12,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         go(function () use ($pm, $c) {
             $conn = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
             Assert::assert($conn->connect('127.0.0.1', $pm->getFreePort()));
-            $conn->send($c);
+            $conn->send((string)$c);
             $timeout = ms_random(0.1, 1);
             $s = microtime(true);
             $data = $conn->recvAll(1024, $timeout);

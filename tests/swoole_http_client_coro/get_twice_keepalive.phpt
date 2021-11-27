@@ -15,7 +15,7 @@ Swoole\Coroutine\Run(function () {
     $client->set(['timeout' => 5,]);
     for ($i = 0; $i < N; $i++) {
         $rand = mt_rand(100000, 999999999);
-        $path = "/index.php?email=" . $rand . "@" . substr(md5(microtime(true)), 0, 8) . ".com";
+        $path = "/index.php?email=" . $rand . "@" . substr(md5((string)microtime(true)), 0, 8) . ".com";
         Assert::assert($client->get($path));
         Assert::assert($client->getStatusCode() == 200);
     }

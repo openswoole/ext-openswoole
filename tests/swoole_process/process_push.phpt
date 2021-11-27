@@ -16,7 +16,7 @@ $process = new Process(function(Process $worker) {
   usleep(20000);
 
   $worker->exit(0);
-}, false, false);
+}, false, 0);
 
 $process->useQueue();
 $pid = $process->start();

@@ -27,8 +27,8 @@ namespace Swoole\Coroutine\Http {
 	    public function setBasicAuth(string $username, string $password): bool|void {}
 	    public function setCookies(array $cookies): bool {}
 	    public function setData(string|array $data): bool {}
-	    public function addFile(string $path, string $name, string $mimeType = "", string $fileName = "", int $offset = 0, int $length = 0): bool {}
-	    public function addData(string $data, string $name, string $mimeType = "", string $filename = ""): bool {}
+	    public function addFile(string $path, string $name, ?string $mimeType = null, string $fileName = "", int $offset = 0, int $length = 0): bool {}
+	    public function addData(string $data, string $name, ?string $mimeType = null, string $filename = ""): bool {}
 	    public function execute(string $path): int|bool {}
 	    public function getpeername(): array|false {}
 	    public function getsockname(): array|false {}

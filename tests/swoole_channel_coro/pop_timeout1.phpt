@@ -10,7 +10,7 @@ $c1 = new chan();
 
 go(function () use ($c1) {
     $ret = $c1->pop(1);
-    echo "pop ret:".var_export($ret,1)." error:".$c1->errCode."\n";
+    echo "pop ret:".var_export($ret,true)." error:".$c1->errCode."\n";
 
 });
 ?>

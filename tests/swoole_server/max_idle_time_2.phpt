@@ -42,13 +42,13 @@ $pm->childFunc = function () use ($pm, $time1, $time2) {
         $pm->wakeup();
     });
     $serv->on(Constant::EVENT_CONNECT, function ($serv, $fd, $tid) use ($time1) {
-        $time1->set(microtime(true) * 1000);
+        $time1->set((int)microtime(true) * 1000);
     });
     $serv->on('Receive', function ($serv, $fd, $tid, $data) use ($time1) {
         $serv->send($fd, str_repeat('A', 1024 * 1024));
     });
     $serv->on(Constant::EVENT_CLOSE, function ($serv, $fd, $tid) use ($time2) {
-        $time2->set(microtime(true) * 1000);
+        $time2->set((int)microtime(true) * 1000);
     });
     $serv->start();
 };

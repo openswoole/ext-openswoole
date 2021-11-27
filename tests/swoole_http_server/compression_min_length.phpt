@@ -34,7 +34,7 @@ $pm->childFunc = function () use ($pm)
         $pm->wakeup();
     });
     $http->on("request", function ($request, swoole_http_response $response) {
-        $response->end(str_repeat('A', $request->get['bytes']));
+        $response->end(str_repeat('A', (int)$request->get['bytes']));
     });
     $http->start();
 };

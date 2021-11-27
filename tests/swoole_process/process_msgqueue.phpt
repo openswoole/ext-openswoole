@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 function callback_function(swoole_process $worker){}
 
-$process = new swoole_process('callback_function', false, false);
+$process = new swoole_process('callback_function', false, 0);
 $process->useQueue();
 
 $bytes = 0;

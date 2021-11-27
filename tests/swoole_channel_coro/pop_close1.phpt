@@ -11,7 +11,7 @@ $c1->close();
 
 go(function () use ($c1) {
     $ret = $c1->pop();
-    echo "pop ret:".var_export($ret,1)." error:".$c1->errCode."\n";
+    echo "pop ret:".var_export($ret, true)." error:".$c1->errCode."\n";
 });
 ?>
 --EXPECTF--

@@ -12,7 +12,7 @@ $n = 4;
 
 for ($i = 0; $i < $n; $i++) {
     go(function () use ($i, $chan) {
-        echo "[pop]".var_export($chan->pop(), 1)."\n";
+        echo "[pop]".var_export($chan->pop(), true)."\n";
     });
 };
 
@@ -27,7 +27,7 @@ go(function ()use ($chan){
         $chan->push($i);
     }
     for ($i = 0; $i < 6; $i++)  {
-        echo "[pop & push]".var_export($chan->pop($i), 1)."\n";
+        echo "[pop & push]".var_export($chan->pop($i), true)."\n";
     }
 });
 
