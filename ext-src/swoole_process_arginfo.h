@@ -1,10 +1,10 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: b2b5063e8806dabddbb516f83d267650c60c7443 */
+ * Stub hash: c1b4da4d4cd2afdcc83b3b5b28352f733d0679b8 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, redirectStdIO, _IS_BOOL, 0, "false")
-	ZEND_ARG_TYPE_MASK(0, pipeType, MAY_BE_LONG|MAY_BE_BOOL, "SOCK_DGRAM")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, pipeType, IS_LONG, 0, "SOCK_DGRAM")
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, enableCoroutine, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
@@ -24,7 +24,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_freeQueue, 
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_kill, 0, 1, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_MASK(0, pid, MAY_BE_LONG|MAY_BE_STRING, NULL)
+	ZEND_ARG_TYPE_INFO(0, pid, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, sigNo, IS_LONG, 0, "SIGTERM")
 ZEND_END_ARG_INFO()
 

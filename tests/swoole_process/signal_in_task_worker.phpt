@@ -16,7 +16,7 @@ $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
     $_pid = file_get_contents(PID_FILE);
-    Process::kill($_pid, SIGINT);
+    Process::kill((int)$_pid, SIGINT);
     $pm->wait();
     $pm->kill();
 };

@@ -14,7 +14,7 @@ $pm->parentFunc = function () use ($pm) {
                 echo "cid-" . httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/task?n={$n}") . "\n";
             }
             if ($i == 1) {
-                Swoole\Process::kill(file_get_contents(TEST_PID_FILE), SIGUSR1);
+                Swoole\Process::kill((int)file_get_contents(TEST_PID_FILE), SIGUSR1);
                 usleep(100 * 1000);
             }
         }

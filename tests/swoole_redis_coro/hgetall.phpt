@@ -13,7 +13,7 @@ go(function() {
     $redis->delete('hkey');
     $redis->hSet('hkey', "", 'val0');
     $redis->hSet('hkey', "field", 'val1');
-    $redis->hSet('hkey', 5, 'val5');
+    $redis->hSet('hkey', '5', 'val5');
 
     $redis->delete('zkey');
     $redis->zAdd('zkey', "field", 'val0');

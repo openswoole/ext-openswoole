@@ -93,7 +93,7 @@ $pm->childFunc = function () use ($pm, $table) {
     });
 
     $serv->on('receive', function (Server $serv, $fd, $rid, $data) use ($pm, $table) {
-        $table->incr($serv->getWorkerId(), 'count');
+        $table->incr((string)$serv->getWorkerId(), 'count');
         if (rand(1000, 9999) % 10 == 0) {
             System::sleep(0.5);
         }

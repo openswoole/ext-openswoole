@@ -48,7 +48,7 @@ $pm->childFunc = function () use ($pm) {
                 //echo "user process $i send ok\n";
             });
         }
-    }, false, true);
+    }, false, 1);
 
     $serv->addProcess($proc);
     $serv->on("WorkerStart", function (\swoole_server $serv) use ($pm) {

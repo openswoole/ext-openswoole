@@ -18,7 +18,7 @@ Swoole\Runtime::enableCoroutine();
 
 $map = [];
 
-$timer_id = Swoole\Timer::tick(1000 / MAX_CONCURRENCY_MID, function () use (&$map) {
+$timer_id = Swoole\Timer::tick((int)(1000 / MAX_CONCURRENCY_MID), function () use (&$map) {
     $redis = new Redis();
     $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
     Assert::assert($redis->set('foo', 'bar'));
@@ -35,7 +35,7 @@ go(function () use ($timer_id, &$map) {
     phpt_var_dump($info);
     Assert::same($info['connected_clients'], count($map) + 1, var_dump_return($info));
     $map = []; // destruct
-    Co::sleep(0.001); // defer close
+    Co::sleep(1); // defer close
     switch_process();
     $info = (array)$redis->info('clients');
     phpt_var_dump($info);

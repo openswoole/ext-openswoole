@@ -60,7 +60,7 @@ $process = new Swoole\Process(function() {
     });
 
     $serv->start();
-},false, false);
+}, 0, false);
 $process->start();
 
 Swoole\Process::wait();

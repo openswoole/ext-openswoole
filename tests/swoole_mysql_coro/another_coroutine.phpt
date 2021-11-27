@@ -50,7 +50,7 @@ $process = new Swoole\Process(function () {
             });
         }
     });
-}, false, null, false);
+}, false, 0, false);
 $process->start();
 Swoole\Process::wait();
 ?>

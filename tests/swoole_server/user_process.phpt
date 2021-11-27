@@ -45,7 +45,7 @@ $pm->childFunc = function () use ($pm)
          //echo "user process send ok\n";
        }
      }
-    }, false, true);
+    }, 0, true);
 
     $serv->addProcess($proc);
     $serv->on("WorkerStart", function (Server $serv)  use ($pm)

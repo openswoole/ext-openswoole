@@ -17,13 +17,13 @@ $proc = new Process(function(Process $process) {
     });
     echo "START\n";
     Event::wait();
-}, true, true);
+}, true, 1);
 
 $r = $proc->start();
 Assert::assert($r > 0);
 
 echo $proc->read();
-Process::kill($r, SIGINT);
+Process::kill((int)$r, SIGINT);
 echo $proc->read();
 
 $retval = Process::wait(true);

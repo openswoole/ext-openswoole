@@ -14,7 +14,7 @@ $process::wait();
 
 $process = new Swoole\Process(function(Swoole\Process $worker) {
     echo Co::getCid() . PHP_EOL;
-}, false, false, false);
+}, false, 0, false);
 $process->set(['enable_coroutine' => true]);
 $process->start();
 $process::wait();

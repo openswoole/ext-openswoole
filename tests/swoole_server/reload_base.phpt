@@ -24,7 +24,7 @@ $pm->parentFunc = function () use ($pm) {
     $random = mt_rand(1, 12);
     usleep(100 * 1000);
     for ($n = $random; $n--;) {
-        Swoole\Process::kill($pid, SIGUSR1);
+        Swoole\Process::kill((int)$pid, SIGUSR1);
         usleep(100 * 1000);
         // Swoole\Process::kill($pid, SIGUSR2);
         // usleep(100 * 1000);

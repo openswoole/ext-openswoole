@@ -16,7 +16,7 @@ usleep(100);
 
 Swoole\Runtime::enableCoroutine();
 
-$timer_id = Swoole\Timer::tick(1000 / MAX_CONCURRENCY_MID, function () {
+$timer_id = Swoole\Timer::tick((int)(1000 / MAX_CONCURRENCY_MID), function () {
     $redis = new Redis();
     $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
     Assert::assert($redis->set('foo', 'bar'));

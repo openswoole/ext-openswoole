@@ -18,12 +18,12 @@
 /** @not-serializable */
 namespace Swoole {
     class Process {
-        public function __construct(callable $callback, bool $redirectStdIO = false, int|bool $pipeType = SOCK_DGRAM, bool $enableCoroutine = false) {}
+        public function __construct(callable $callback, bool $redirectStdIO = false, int $pipeType = SOCK_DGRAM, bool $enableCoroutine = false) {}
         public function __destruct() {}
         public function useQueue(int $key = 0, int $mode = 2, int $capacity = -1): bool {}
         public function statQueue(): bool|array {}
         public function freeQueue(): bool {}
-        public static function kill(int|string $pid, int $sigNo = SIGTERM): bool {}
+        public static function kill(int $pid, int $sigNo = SIGTERM): bool {}
         public static function signal(int $sigNo, ?callable $callback = null): bool {}
         public static function alarm(int $intervalUsec, int $type = ITIMER_REAL): bool {}
         public function start(): bool|int {}

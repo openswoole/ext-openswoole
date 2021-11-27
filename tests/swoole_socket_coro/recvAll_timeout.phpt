@@ -34,7 +34,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $server->on('Receive', function (Swoole\Server $server, int $fd, int $rid, string $data) use ($pm) {
-        $s = $pm->getRandomDataEx($data);
+        $s = $pm->getRandomDataEx((int)$data);
         while ($server->exists($fd)) {
             $server->send($fd, string_pop_front($s, 1));
             Co::sleep(0.005);

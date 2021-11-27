@@ -17,7 +17,7 @@ go(function () {
     // usleep
     $s = microtime(true);
     $t = ms_random(0.01, 0.1);
-    usleep($t * 1000 * 1000);
+    usleep((int) ($t * 1000 * 1000));
     time_approximate($t, microtime(true) - $s);
     usleep(0);
     usleep(-1);
