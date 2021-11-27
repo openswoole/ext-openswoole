@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 go(function () {
     Swoole\Runtime::enableCoroutine();
-    $fp1 = stream_socket_client("tcp://www.baidu.com:80", $errno, $errstr, 30);
+    $fp1 = stream_socket_client("tcp://www.google.com:80", $errno, $errstr, 30);
     if (!$fp1) {
         echo "$errstr ($errno)<br />\n";
     } else {

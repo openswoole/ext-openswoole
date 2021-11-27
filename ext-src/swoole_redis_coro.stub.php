@@ -133,10 +133,10 @@ namespace Swoole\Coroutine {
 	    public function zCount(string $key, string $start , string $end): int {}
 	    public function zRange(string $key, int $start, int $end, mixed $scores = null): array {}
 	    public function zRevRange(string $key, int $start, int $end, mixed $scores = null): array {}
-	    public function zRangeByScore(string $key, int $start, int $end, array $options = []): array {}
-	    public function zRevRangeByScore(string $key, int $start, int $end, array $options = []): array {}
-	    public function zRangeByLex(string $key, int $min, int $max, int $offset = -1, int $count = -1): array {}
-	    public function zRevRangeByLex(string $key, int $min, int $max, int $offset = -1, int $count = -1): array {}
+	    public function zRangeByScore(string $key, string $start, string $end, array $options = []): array {}
+	    public function zRevRangeByScore(string $key, string $start, string $end, array $options = []): array {}
+	    public function zRangeByLex(string $key, string $min, string $max, int $offset = -1, int $count = -1): array {}
+	    public function zRevRangeByLex(string $key, string $min, string $max, int $offset = -1, int $count = -1): array {}
 	    public function zInter(array $keys, array $weights = null, array $options = null): array {}
 	    public function zinterstore(string $dst, array $keys, array $weights = null, string $aggregate = null): int {}
 	    public function zUnion(array $keys, array $weights = null, array $options = null): array {}

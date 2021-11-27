@@ -29,13 +29,13 @@ go(function() {
     echo "-----hmGet---\n";
     var_dump($redis->hmGet('hkey', [3, 5]));
     echo "-----zRange---\n";
-    var_dump($redis->zRange('zkey', 0, 99, true));
+    var_dump($redis->zRange('zkey', '0', '99', true));
     echo "-----zRevRange---\n";
-    var_dump($redis->zRevRange('zkey', 0, 99, true));
+    var_dump($redis->zRevRange('zkey', '0', '99', true));
     echo "-----zRangeByScore---\n";
-    var_dump($redis->zRangeByScore('zkey', 0, 99, ['withscores' => true]));
+    var_dump($redis->zRangeByScore('zkey', '0', '99', ['withscores' => true]));
     echo "-----zRevRangeByScore---\n";
-    var_dump($redis->zRevRangeByScore('zkey', 99, 0, ['withscores' => true]));
+    var_dump($redis->zRevRangeByScore('zkey', '99', '0', ['withscores' => true]));
 });
 ?>
 --EXPECT--
