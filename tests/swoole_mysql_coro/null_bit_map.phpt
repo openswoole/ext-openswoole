@@ -18,7 +18,7 @@ function gen_data_from_type(string $type)
         case 'bigint':
             return mt_rand(1, PHP_INT_MAX);
         case 'varchar(255)':
-            return sha1(mt_rand());
+            return sha1((string)mt_rand());
         default:
             return null;
     }
