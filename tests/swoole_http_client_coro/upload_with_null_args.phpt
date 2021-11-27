@@ -9,7 +9,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
         $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
-        $cli->addFile(TEST_IMAGE, 'test.jpg', "", null, 0, 0);
+        $cli->addFile(TEST_IMAGE, 'test.jpg', "", '', 0, 0);
         $cli->post('/upload_file', ['name' => 'rango']);
         Assert::same($cli->statusCode, 200);
         $ret = json_decode($cli->body, true);

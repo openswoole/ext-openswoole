@@ -133,10 +133,10 @@ namespace Swoole\Coroutine {
 	    public function zCount(string $key, string $start , string $end): int {}
 	    public function zRange(string $key, int $start, int $end, mixed $scores = null): array {}
 	    public function zRevRange(string $key, int $start, int $end, mixed $scores = null): array {}
-	    public function zRangeByScore(string $key, string $start, string $end, array $options = []): array {}
-	    public function zRevRangeByScore(string $key, string $start, string $end, array $options = []): array {}
-	    public function zRangeByLex(string $key, string $min, string $max, int $offset = -1, int $count = -1): array {}
-	    public function zRevRangeByLex(string $key, string $min, string $max, int $offset = -1, int $count = -1): array {}
+	    public function zRangeByScore(string $key, int $start, int $end, array $options = []): array {}
+	    public function zRevRangeByScore(string $key, int $start, int $end, array $options = []): array {}
+	    public function zRangeByLex(string $key, int $min, int $max, int $offset = -1, int $count = -1): array {}
+	    public function zRevRangeByLex(string $key, int $min, int $max, int $offset = -1, int $count = -1): array {}
 	    public function zInter(array $keys, array $weights = null, array $options = null): array {}
 	    public function zinterstore(string $dst, array $keys, array $weights = null, string $aggregate = null): int {}
 	    public function zUnion(array $keys, array $weights = null, array $options = null): array {}
@@ -147,7 +147,7 @@ namespace Swoole\Coroutine {
 	    public function decrBy(string $key, int $value): int|Redis {}
 	    public function decr(string $key): int|Redis {}
 	    public function getBit(string $key, int $idx): int|Redis {}
-	    public function lInsert(string $key, string $pos, mixed $pivot, mixed $value): int|Redis {}
+	    public function lInsert(string $key, int $pos, mixed $pivot, mixed $value): int|Redis {}
 	    // fix openswoole
 	    public function lGet(string $key, int $index): string {}
 	    public function lIndex(string $key, int $index): string {}

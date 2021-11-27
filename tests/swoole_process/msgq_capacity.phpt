@@ -15,7 +15,7 @@ function callback_function(swoole_process $worker)
 }
 
 $process = new swoole_process('callback_function', false, 0);
-$process->useQueue(ftok(__DIR__, 1), '1', 1024 * 1024 * 64);
+$process->useQueue(ftok(__DIR__, '1'), 1, 1024 * 1024 * 64);
 
 const N = 32 * 1024 * 1024;
 
