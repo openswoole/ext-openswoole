@@ -3,7 +3,7 @@ swoole_http_server: compression_min_length
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use function Swoole\Coroutine\run;
 use Swoole\Coroutine\Http\Client;

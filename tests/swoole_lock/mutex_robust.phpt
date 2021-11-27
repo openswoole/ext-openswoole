@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip("no supports");
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $file = __DIR__.'/tmp.log';

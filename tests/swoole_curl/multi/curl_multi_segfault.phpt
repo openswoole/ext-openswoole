@@ -9,7 +9,7 @@ if (false === getenv('PHP_CURL_FTP_REMOTE_USER'))  exit("skip PHP_CURL_FTP_REMOT
 if (false === getenv('PHP_CURL_FTP_REMOTE_PASSWD'))  exit("skip PHP_CURL_FTP_REMOTE_PASSWD env variable is not defined");
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 

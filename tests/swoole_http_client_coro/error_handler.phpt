@@ -3,7 +3,7 @@ swoole_http_client_coro: error handler
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomData(MAX_CONCURRENCY_MID);

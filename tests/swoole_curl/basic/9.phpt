@@ -6,7 +6,7 @@ TestFest 2009 - AFUP - Perrick Penet <perrick@noparking.net>
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 <?php if (!extension_loaded("curl")) print "skip"; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $cm = new \SwooleTest\CurlManager();

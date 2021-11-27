@@ -5,7 +5,7 @@ swoole_runtime: stdin
 require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 
 use Swoole\Process;
 use Swoole\Runtime;

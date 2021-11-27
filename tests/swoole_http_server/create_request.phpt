@@ -5,7 +5,7 @@ swoole_http_server: parse request
 
 require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Http\Request;

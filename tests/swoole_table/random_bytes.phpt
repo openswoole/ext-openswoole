@@ -3,7 +3,7 @@ swoole_table: read/write random data
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $table = new \Swoole\Table(IS_IN_TRAVIS ? 1024 : 2048);
 $table->column('string', \Swoole\Table::TYPE_STRING, 256 * 1024);

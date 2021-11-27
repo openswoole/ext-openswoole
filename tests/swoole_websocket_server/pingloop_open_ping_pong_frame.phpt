@@ -3,7 +3,7 @@ swoole_websocket_server: ping loop
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const PING_INTERVAL = 100; // (ms), just for test, don't need to be so fast!

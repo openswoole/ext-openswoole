@@ -3,7 +3,7 @@ swoole_coroutine: cid map max num
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 const MAX_N = 1000;
 co::set([

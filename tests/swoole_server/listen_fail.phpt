@@ -3,7 +3,7 @@ swoole_server: listen fail
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 //调高log_level
 Co::set(['log_level' => SWOOLE_LOG_NONE]);

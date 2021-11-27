@@ -3,7 +3,7 @@ swoole_redis_coro: connect the same target and different
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 Co::set(['socket_timeout' => -1]);
 function test(string $host, int $port = 0)

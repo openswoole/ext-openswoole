@@ -3,7 +3,7 @@ swoole_server_port: tcp port with eof
 --SKIPIF--
 <?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 ini_set("swoole.display_errors", "Off");

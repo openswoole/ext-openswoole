@@ -5,7 +5,7 @@ swoole_curl: guzzle
 require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 require_once TESTS_LIB_PATH . '/vendor/autoload.php';
 

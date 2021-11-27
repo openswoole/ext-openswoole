@@ -5,7 +5,7 @@ swoole_coroutine_scheduler/preemptive: while with opcache enable
 require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $default = 10;

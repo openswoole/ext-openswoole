@@ -3,7 +3,7 @@ swoole_socket_coro: check writev and readv param type
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 use Swoole\Coroutine\Socket;
 
 use function Swoole\Coroutine\run;

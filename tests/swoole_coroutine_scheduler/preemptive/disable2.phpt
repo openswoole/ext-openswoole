@@ -5,7 +5,7 @@ swoole_coroutine_scheduler/preemptive: swoole_coroutine_scheduler/disable2
 require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $default = 10;

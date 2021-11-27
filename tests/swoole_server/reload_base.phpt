@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_in_valgrind();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 trigger_error('SWOOLE_BASE not support reload task workers.', E_USER_NOTICE);
 $worker_num = swoole_cpu_num() * 2;

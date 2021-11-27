@@ -3,7 +3,7 @@ swoole_event: dispatch
 --SKIPIF--
 <?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $id = swoole_timer_tick(100, function () {

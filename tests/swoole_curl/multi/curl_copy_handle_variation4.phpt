@@ -3,7 +3,7 @@ swoole_curl/multi: curl_copy_handle() allows to post CURLFile multiple times wit
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use SwooleTest\CurlManager;

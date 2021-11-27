@@ -7,7 +7,7 @@ skip_if_no_http_proxy();
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {

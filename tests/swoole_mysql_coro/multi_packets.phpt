@@ -7,7 +7,7 @@ skip_if_in_valgrind();
 skip_if_pdo_not_support_mysql8();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 co::set([

@@ -8,7 +8,7 @@ if (swoole_cpu_num() === 1) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const WORKER_NUM = 4;

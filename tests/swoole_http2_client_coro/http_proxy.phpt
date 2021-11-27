@@ -5,7 +5,7 @@ swoole_http2_client_coro: get with http_proxy
 skip_if_no_http_proxy();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\Http2\Client;

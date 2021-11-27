@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_extension_not_exist('sockets');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm){

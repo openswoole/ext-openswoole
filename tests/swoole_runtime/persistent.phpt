@@ -5,7 +5,7 @@ swoole_runtime: socket persistent then destruct
 require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $redis = new Redis();

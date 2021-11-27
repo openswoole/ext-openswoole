@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_constant_not_defined('HTTPBIN_LOCALLY');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $cli = new Swoole\Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);

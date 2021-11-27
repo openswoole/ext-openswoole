@@ -4,7 +4,7 @@ swoole_timer: call private method
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php if (PHP_VERSION_ID < 80000) die("Skipped: php version >= 8."); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 class Test

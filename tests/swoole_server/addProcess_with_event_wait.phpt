@@ -3,7 +3,7 @@ swoole_server: addProcess with event wait
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 $pm->setWaitTimeout(-1);

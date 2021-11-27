@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_constant_not_defined('SWOOLE_HAVE_COMPRESSION');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const HTTP_GET_REQUEST = "GET / HTTP/1.1\r\nAccept-Encoding: gzip, deflate, br\r\n\r\n";

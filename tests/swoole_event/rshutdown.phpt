@@ -3,7 +3,7 @@ swoole_event: read stdin
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 error_reporting(E_ALL & E_DEPRECATED);

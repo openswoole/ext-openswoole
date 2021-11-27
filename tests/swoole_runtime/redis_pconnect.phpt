@@ -5,7 +5,7 @@ swoole_runtime: hook stream redis pconnect
 skip_if_class_not_exist('Redis');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 go(function () {

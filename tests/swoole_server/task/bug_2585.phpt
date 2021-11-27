@@ -5,7 +5,7 @@ swoole_server/task: bug Github#2585
 require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 $pm = new SwooleTest\ProcessManager;

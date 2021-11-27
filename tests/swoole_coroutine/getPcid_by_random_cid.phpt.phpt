@@ -3,7 +3,7 @@ swoole_coroutine: getPcid by random cid
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 var_dump(Co::getPcid(-1)); // -1

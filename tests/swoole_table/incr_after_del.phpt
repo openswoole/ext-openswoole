@@ -3,7 +3,7 @@ swoole_table: incr after del
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $table = new \Swoole\Table(1024);
 $table->column('id', \Swoole\Table::TYPE_INT);

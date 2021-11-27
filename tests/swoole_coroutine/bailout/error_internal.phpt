@@ -5,7 +5,7 @@ swoole_coroutine/bailout: error
 skip_if_in_valgrind();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 go(function () {
     $a = str_repeat('A', 1024 * 1024 * 1024 * 1024);

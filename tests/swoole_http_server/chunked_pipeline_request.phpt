@@ -3,7 +3,7 @@ swoole_http_server: chunked and pipeline request
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 
 use Swoole\Coroutine;
 use Swoole\Coroutine\Socket;

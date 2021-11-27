@@ -5,7 +5,7 @@ swoole_library/exec/exec: Fix $output result inconsistency
 require __DIR__ . '/../../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../../include/bootstrap.php';
 
 $fileName = __DIR__ . '/exec_test.php';

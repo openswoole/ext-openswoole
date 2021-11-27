@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_function_not_exist('curl_init');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Http\Server;

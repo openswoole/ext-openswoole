@@ -5,7 +5,7 @@ swoole_redis_coro: zPopMin zPopMax bzPopMin bzPopMax
 skip_if_not_redis5();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function() {
     $redis = new Swoole\Coroutine\Redis();

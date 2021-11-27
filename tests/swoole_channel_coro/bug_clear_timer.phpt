@@ -5,7 +5,7 @@ swoole_channel_coro: the bug about timeout timer
 exit("skip for select");
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 // this sript will hanging up and remove out of tests
 // $chan = new chan(1);

@@ -3,7 +3,7 @@ swoole_channel_coro: pop close 1
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $c1 = new chan();

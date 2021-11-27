@@ -3,7 +3,7 @@ swoole_http_server/task: use async io and coroutine in task process
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 $randoms = [];
 for ($n = MAX_REQUESTS; $n--;) {

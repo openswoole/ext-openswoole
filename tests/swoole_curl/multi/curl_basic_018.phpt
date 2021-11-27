@@ -5,7 +5,7 @@ TestFest 2009 - AFUP - Thomas Rabaix <thomas.rabaix@gmail.com>
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use SwooleTest\CurlManager;

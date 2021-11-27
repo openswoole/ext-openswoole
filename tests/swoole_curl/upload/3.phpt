@@ -4,7 +4,7 @@ swoole_curl/upload: CURL file uploading[INFILE]
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 
 use Swoole\Runtime;
 use SwooleTest\CurlManager;

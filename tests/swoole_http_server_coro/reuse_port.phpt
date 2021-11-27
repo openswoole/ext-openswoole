@@ -5,7 +5,7 @@ swoole_http_server_coro: reuse port
 ?>
 <?php die('Deprecated.'); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use SwooleTest\ProcessManager;

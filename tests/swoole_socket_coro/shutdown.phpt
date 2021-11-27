@@ -3,7 +3,7 @@ swoole_socket_coro: shutdown
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 for ($n = 2; $n--;) {
     $randoms[] = get_safe_random();

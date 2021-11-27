@@ -3,7 +3,7 @@ swoole_runtime/stream_select: Bug #72075 (Referencing socket resources breaks st
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 go(function () {

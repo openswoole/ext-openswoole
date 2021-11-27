@@ -3,7 +3,7 @@ swoole_socket_coro: recvAll timeout (slow network)
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomDataEx(MAX_CONCURRENCY_MID, 1, 1024);

@@ -7,7 +7,7 @@ if (function_exists('posix_getpid') == false) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $pool = new Swoole\Process\Pool(1);

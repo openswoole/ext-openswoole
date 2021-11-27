@@ -3,7 +3,7 @@ swoole_client_coro: fixed package
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->setRandomFunc('mt_rand');

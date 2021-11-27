@@ -3,7 +3,7 @@ swoole_runtime: library
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $useShortName = !in_array(
     strtolower(trim(str_replace('0', '',

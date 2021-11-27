@@ -3,7 +3,7 @@ swoole_client_coro: (length protocol) no body
 --SKIPIF--
 <?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const N = MAX_REQUESTS * 10;

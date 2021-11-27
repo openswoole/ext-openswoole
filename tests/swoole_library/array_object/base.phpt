@@ -3,7 +3,7 @@ swoole_library/array_object: base
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 $data = ['foo', 'bar', 'char' => 'dua'];
 $array = _array();

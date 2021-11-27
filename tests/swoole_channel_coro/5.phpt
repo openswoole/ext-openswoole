@@ -5,7 +5,7 @@ swoole_channel_coro: push with sleep
 exit("skip for select");
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $c1 = new chan();

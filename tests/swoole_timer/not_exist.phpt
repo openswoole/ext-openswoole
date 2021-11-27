@@ -3,7 +3,7 @@ swoole_timer: clear timer not exist
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 Swoole\Timer::after(10, function () {
     Assert::assert(0); // never here

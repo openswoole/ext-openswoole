@@ -3,7 +3,7 @@ swoole_process_pool: bug Github#2639
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const MSGQ_KEY = 0x666;

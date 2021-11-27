@@ -3,7 +3,7 @@ swoole_client_coro: tcp package length check
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomData(count(tcp_length_types()) * MAX_REQUESTS);

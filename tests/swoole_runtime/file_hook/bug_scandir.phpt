@@ -5,7 +5,7 @@ swoole_runtime/file_hook: bug #3792
 require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $testDir = sys_get_temp_dir() . '/swoole_scandir_bug';

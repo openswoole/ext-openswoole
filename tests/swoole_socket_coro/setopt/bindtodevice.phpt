@@ -14,7 +14,7 @@ if (!function_exists("posix_getuid") || posix_getuid() != 0) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $socket = new Co\Socket(AF_INET, SOCK_STREAM, SOL_TCP);

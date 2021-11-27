@@ -4,7 +4,7 @@ swoole_mysql_coro: floating point value precision and unsigned big int overflow
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php if (PHP_VERSION_ID >= 80100) die("Skipped: php version >= 8.1 TODO: FIX"); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 ini_set('serialize_precision', 14);
 go(function () {

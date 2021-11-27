@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_no_process_affinity();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $r = Swoole\Process::setaffinity([0]);
 Assert::assert($r);

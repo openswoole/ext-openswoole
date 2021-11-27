@@ -3,7 +3,7 @@ swoole_event: swoole_event_defer without io
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 swoole_event_defer(function () {

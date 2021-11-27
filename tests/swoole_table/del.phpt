@@ -3,7 +3,7 @@ swoole_table: clear all columns
 --SKIPIF--
 <?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $table = new Swoole\Table(1024, 0.25);

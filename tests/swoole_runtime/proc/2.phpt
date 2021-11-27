@@ -7,7 +7,7 @@ if (!is_executable('/bin/sleep')) exit('skip no sleep');
 if (getenv('SKIP_SLOW_TESTS')) exit('skip slow test');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 Swoole\Runtime::enableCoroutine();

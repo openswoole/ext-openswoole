@@ -4,7 +4,7 @@ swoole_server_coro: tcp
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php die('Deprecated.'); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 

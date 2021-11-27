@@ -3,7 +3,7 @@ swoole_coroutine: current stats
 --SKIPIF--
 <?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 Assert::same(Co::stats()['coroutine_num'], 0);

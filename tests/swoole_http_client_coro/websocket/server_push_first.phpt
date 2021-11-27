@@ -3,7 +3,7 @@ swoole_http_client_coro/websocket: websocket server push first
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use SwooleTest\WaitRef;

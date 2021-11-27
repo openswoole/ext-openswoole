@@ -3,7 +3,7 @@ swoole_process: pop
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 // TODO 难道 queue不应该做成一个独立的组件，放在proc对象上啥意思

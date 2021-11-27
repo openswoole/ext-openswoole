@@ -4,7 +4,7 @@ swoole_websocket_server: exists & isEstablished
 <?php
 require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $connections = [];
 $pm = new ProcessManager;

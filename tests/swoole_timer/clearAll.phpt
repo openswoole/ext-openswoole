@@ -3,7 +3,7 @@ swoole_timer: #2697
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $server = new Swoole\Server('127.0.0.1', get_one_free_port());
 $server->set(['log_file' => '/dev/null']);

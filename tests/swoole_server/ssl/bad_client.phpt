@@ -3,7 +3,7 @@ swoole_server/ssl: ssl bad client
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 define('ERROR_FILE', __DIR__.'/ssl_error');

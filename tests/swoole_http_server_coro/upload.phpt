@@ -7,7 +7,7 @@ skip_if_function_not_exist('curl_init');
 ?>
 <?php die('Deprecated.'); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 Co::set(['log_level' => 0, 'trace_flags' => SWOOLE_TRACE_HTTP]);

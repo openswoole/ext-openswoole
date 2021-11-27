@@ -3,7 +3,7 @@ swoole_server: send big udp packet to server
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 //最大长度：65535 - UDP包头 8字节 + IP包头 20字节 = 65507

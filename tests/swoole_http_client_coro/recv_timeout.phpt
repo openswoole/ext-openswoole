@@ -3,7 +3,7 @@ swoole_http_client_coro: recv timeout
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $GLOBALS['socket'] = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 $GLOBALS['socket']->bind('127.0.0.1');

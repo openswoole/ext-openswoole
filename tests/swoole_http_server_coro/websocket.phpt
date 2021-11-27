@@ -4,7 +4,7 @@ swoole_http_server_coro: websocket greeter and reply twice
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php die('Deprecated.'); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $count = 0;
 $pm = new ProcessManager;

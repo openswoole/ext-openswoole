@@ -4,7 +4,7 @@ swoole_process_pool: enable coroutine
 <?php require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $pool = new Swoole\Process\Pool(1, SWOOLE_IPC_NONE, 0, true);

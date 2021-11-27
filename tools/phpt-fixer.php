@@ -64,6 +64,17 @@ function fix_tests_in_this_dir(string $dir, string $root = '')
                 }
                 $changed = true;
             }
+            if (strpos($content, 'declare(strict_types = 1);') === false) {
+                $strict_types_requirement = "declare(strict_types = 1);";
+                $content = preg_replace("/--FILE--\n<\?php/", "--FILE--\n<?php {$strict_types_requirement}", $content, 1, $count);
+                if (!$count) {
+                    swoole_error("Add strict_types failed in {$file}");
+                } else {
+                    swoole_ok("Add strict_types to the script in file {$file}");
+                }
+                $changed = true;
+            }
+
             // title
             preg_match('/--TEST--\n([^\n]+)/', $content, $matches);
             $current_title = $matches[1] ?? '';

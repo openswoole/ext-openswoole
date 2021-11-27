@@ -3,7 +3,7 @@ swoole_channel_coro: push timeout 3
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $channel = new Swoole\Coroutine\Channel(1);

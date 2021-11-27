@@ -5,7 +5,7 @@ swoole_runtime/file_lock: file_lock_1
 die("skip not support");
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 \Swoole\Runtime::enableCoroutine();

@@ -3,7 +3,7 @@ swoole_server: force reload
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 error_reporting(0);
 require __DIR__ . '/../include/bootstrap.php';
 

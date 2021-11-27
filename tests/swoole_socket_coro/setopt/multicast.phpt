@@ -3,7 +3,7 @@ swoole_socket_coro/setopt: multicast
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $socket = new Co\Socket(AF_INET, SOCK_DGRAM, SOL_UDP);

@@ -3,7 +3,7 @@ swoole_coroutine/output: main output global
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 ob_start();
 echo "0\n";

@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_php_version_lower_than('7.2');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 var_dump(new Co\Socket());
 ?>

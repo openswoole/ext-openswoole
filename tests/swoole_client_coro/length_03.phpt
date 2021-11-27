@@ -3,7 +3,7 @@ swoole_client_coro: length protocol 03
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use SwooleTest\ProcessManager;
 use Swoole\Server;

@@ -5,7 +5,7 @@ swoole_server: dispatch_func
 skip('not support ZTS', ZEND_THREAD_SAFE);
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Client;
 use Swoole\Timer;

@@ -7,7 +7,7 @@ skip_if_in_travis('travis network');
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $domain = 'www.zhihu.com';
