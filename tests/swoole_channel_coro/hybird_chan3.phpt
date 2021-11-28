@@ -3,7 +3,7 @@ swoole_channel_coro: hybird channel select
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $size = 2;
@@ -20,7 +20,7 @@ for ($i=0; $i < $coro_num; $i++) {
     go(function () use ($i, $chan, $coro_num) {
         for ($j = 0; $j < $coro_num; $j ++) {
             $c = $chan->pop();
-            echo  "@".$j . "->coro:" . $i . " pop chan id :" . var_export($c, 1) . PHP_EOL;
+            echo  "@".$j . "->coro:" . $i . " pop chan id :" . var_export($c, true) . PHP_EOL;
             co::sleep(0.2);
             $ret = $chan->push($c);
         }

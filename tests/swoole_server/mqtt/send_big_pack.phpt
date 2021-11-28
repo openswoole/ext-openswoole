@@ -3,7 +3,7 @@ swoole_server/mqtt: send_big_pack
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use SwooleTest\MQTT\Helper;

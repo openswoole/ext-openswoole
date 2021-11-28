@@ -4,7 +4,7 @@ swoole_coroutine: getBackTrace form listCoroutines
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php if (PHP_VERSION_ID >= 80100) die("Skipped: php version < 8.1"); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     go(function () {

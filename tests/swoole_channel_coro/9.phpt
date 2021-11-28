@@ -3,7 +3,7 @@ swoole_channel_coro: pop priority
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine as co;
 
@@ -23,10 +23,10 @@ swoole_timer_after(200, function () use ($chan) {
 
 go(function () use ($chan){
     for ($i = 0; $i < 2; $i++)  {
-        echo "[read]".var_export($chan->pop(), 1)."\n";
+        echo "[read]".var_export($chan->pop(), true)."\n";
     }
     for ($i = 0; $i < 8; $i++)  {
-        echo "[read & write]".var_export($chan->pop(), 1)."\n";
+        echo "[read & write]".var_export($chan->pop(), true)."\n";
     }
 });
 

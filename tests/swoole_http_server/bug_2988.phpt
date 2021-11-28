@@ -3,7 +3,7 @@ swoole_http_server: bug Github#2988
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const ILLEGAL_REQUEST = "GET / HTTP/1.1\r\nAccept: gzip\r\n\r\n";

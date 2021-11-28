@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_unsupported();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {

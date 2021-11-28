@@ -5,7 +5,7 @@ swoole_coroutine_system: getaddrinfo
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $ip_list = Swoole\Coroutine\System::getaddrinfo('www.baidu.com', AF_INET);

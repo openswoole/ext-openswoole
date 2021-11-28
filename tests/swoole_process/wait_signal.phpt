@@ -3,7 +3,7 @@ swoole_process: wait signal
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Process;
@@ -17,13 +17,13 @@ $proc = new Process(function(Process $process) {
     });
     echo "START\n";
     Event::wait();
-}, true, true);
+}, true, 1);
 
 $r = $proc->start();
 Assert::assert($r > 0);
 
 echo $proc->read();
-Process::kill($r, SIGINT);
+Process::kill((int)$r, SIGINT);
 echo $proc->read();
 
 $retval = Process::wait(true);

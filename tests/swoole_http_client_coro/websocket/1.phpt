@@ -5,7 +5,7 @@ swoole_http_client_coro/websocket: client & server
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $pm = new ProcessManager;

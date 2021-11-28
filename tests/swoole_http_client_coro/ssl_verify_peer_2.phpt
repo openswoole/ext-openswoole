@@ -5,7 +5,7 @@ swoole_http_client_coro: ssl_verify_peer [2]
 require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\Http\Client;

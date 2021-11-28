@@ -32,10 +32,10 @@
  ****************************************************************************************/
 
 .text
-.globl _make_fcontext
+.globl _make_fcontext_v1
 .align 8
-_make_fcontext:
-    /* first arg of make_fcontext() == top of context-stack */
+_make_fcontext_v1:
+    /* first arg of make_fcontext_v1() == top of context-stack */
     movq  %rdi, %rax
 
     /* shift address in RAX to lower 16 byte boundary */
@@ -47,7 +47,7 @@ _make_fcontext:
     /* on context-function entry: (RSP -0x8) % 16 == 0 */
     leaq  -0x48(%rax), %rax
 
-    /* third arg of make_fcontext() == address of context-function */
+    /* third arg of make_fcontext_v1() == address of context-function */
     movq  %rdx, 0x38(%rax)
 
     /* save MMX control- and status-word */

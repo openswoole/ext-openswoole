@@ -6,7 +6,7 @@ TestFest 2009 - AFUP - Jean-Marc Fontaine <jmf@durcommefaire.net>
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 /* Prototype  : bool curl_setopt(resource ch, int option, mixed value)
  * Description: Set an option for a cURL transfer
  * Source code: ext/curl/interface.c

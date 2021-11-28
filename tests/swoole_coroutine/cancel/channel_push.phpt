@@ -3,7 +3,7 @@ swoole_coroutine/cancel: push to channel
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use function Swoole\Coroutine\run;

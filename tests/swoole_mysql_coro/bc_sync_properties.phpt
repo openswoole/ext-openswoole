@@ -3,7 +3,7 @@ swoole_mysql_coro: mysql prepare (insert)
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $client = new Swoole\Coroutine\MySQL;

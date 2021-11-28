@@ -7,7 +7,7 @@ require __DIR__ . '/../include/config.php';
 skip_if_file_not_exist(REDIS_SERVER_PATH);
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $redis = new Swoole\Coroutine\Redis(['timeout' => 100]);

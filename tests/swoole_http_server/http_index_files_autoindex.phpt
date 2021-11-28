@@ -3,7 +3,7 @@ swoole_http_server: http_index_files_autoindex
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Http\Server;

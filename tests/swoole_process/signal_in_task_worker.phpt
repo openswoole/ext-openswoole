@@ -3,7 +3,7 @@ swoole_process: signal in task worker
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Process;
 use Swoole\Server;
@@ -16,7 +16,7 @@ $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
     $_pid = file_get_contents(PID_FILE);
-    Process::kill($_pid, SIGINT);
+    Process::kill((int)$_pid, SIGINT);
     $pm->wait();
     $pm->kill();
 };

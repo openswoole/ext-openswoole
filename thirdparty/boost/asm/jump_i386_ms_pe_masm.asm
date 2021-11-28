@@ -24,8 +24,8 @@
 .model flat, c
 .code
 
-jump_fcontext PROC BOOST_CONTEXT_EXPORT
-    ; fourth arg of jump_fcontext() == flag indicating preserving FPU
+jump_fcontext_v1 PROC BOOST_CONTEXT_EXPORT
+    ; fourth arg of jump_fcontext_v1() == flag indicating preserving FPU
     mov  ecx, [esp+010h]
 
     push  ebp  ; save EBP 
@@ -71,16 +71,16 @@ jump_fcontext PROC BOOST_CONTEXT_EXPORT
     fnstcw  [esp+04h]
 
 nxt1:
-    ; first arg of jump_fcontext() == context jumping from
+    ; first arg of jump_fcontext_v1() == context jumping from
     mov  eax, [esp+030h]
 
     ; store ESP (pointing to context-data) in EAX
     mov  [eax], esp
 
-    ; second arg of jump_fcontext() == context jumping to
+    ; second arg of jump_fcontext_v1() == context jumping to
     mov  edx, [esp+034h]
 
-    ; third arg of jump_fcontext() == value to be returned after jump
+    ; third arg of jump_fcontext_v1() == value to be returned after jump
     mov  eax, [esp+038h]
 
     ; restore ESP (pointing to context-data) from EDX
@@ -138,5 +138,5 @@ nxt2:
 
     ; indirect jump to context
     jmp  edx
-jump_fcontext ENDP
+jump_fcontext_v1 ENDP
 END

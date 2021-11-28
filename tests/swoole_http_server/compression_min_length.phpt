@@ -3,7 +3,7 @@ swoole_http_server: compression_min_length
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use function Swoole\Coroutine\run;
 use Swoole\Coroutine\Http\Client;
@@ -34,7 +34,7 @@ $pm->childFunc = function () use ($pm)
         $pm->wakeup();
     });
     $http->on("request", function ($request, swoole_http_response $response) {
-        $response->end(str_repeat('A', $request->get['bytes']));
+        $response->end(str_repeat('A', (int)$request->get['bytes']));
     });
     $http->start();
 };

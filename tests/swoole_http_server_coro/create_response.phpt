@@ -5,7 +5,7 @@ swoole_http_server_coro: create response
 require __DIR__ . '/../include/skipif.inc'; ?>
 <?php die('Deprecated.'); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\Server;

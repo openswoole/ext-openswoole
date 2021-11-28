@@ -25,7 +25,7 @@ namespace Swoole {
 		public function set(int $value): bool|void {}
 		public function wait(float $timeout = 1.0): bool {}
 		public function wakeup(int $count = 1): bool {}
-		public function cmpset(int $cmp_val = 0, int $new_val = 0): bool {}
+		public function cmpset(int $cmpVal = 0, int $newVal = 0): bool {}
 	}
 }
 
@@ -37,6 +37,6 @@ namespace Swoole\Atomic {
 		public function sub(int $value = 1): int|bool {}
 		public function get(): int {}
 		public function set(int $value): bool|void {}
-		public function cmpset(int $cmp_val = 0, int $new_val = 0): bool {}
+		public function cmpset(int $cmpVal = 0, int $newVal = 0): bool {}
     }
 }

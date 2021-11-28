@@ -3,7 +3,7 @@ swoole_mysql_coro: procedure in fetch mode
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 Co\run(function () {
     $db = new Swoole\Coroutine\Mysql;

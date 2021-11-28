@@ -5,7 +5,7 @@ swoole_server/task: task pack
 skip_if_function_not_exist('msg_get_queue');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 const MSGQ_KEY = 0x70001001;
 

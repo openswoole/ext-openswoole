@@ -3,7 +3,7 @@ swoole_server: addlistener
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $simple_tcp_server = __DIR__ . "/../include/api/swoole_server/opcode_server.php";

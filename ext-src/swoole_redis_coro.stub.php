@@ -147,7 +147,7 @@ namespace Swoole\Coroutine {
 	    public function decrBy(string $key, int $value): int|Redis {}
 	    public function decr(string $key): int|Redis {}
 	    public function getBit(string $key, int $idx): int|Redis {}
-	    public function lInsert(string $key, string $pos, mixed $pivot, mixed $value): int|Redis {}
+	    public function lInsert(string $key, int $pos, mixed $pivot, mixed $value): int|Redis {}
 	    // fix openswoole
 	    public function lGet(string $key, int $index): string {}
 	    public function lIndex(string $key, int $index): string {}

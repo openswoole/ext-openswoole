@@ -5,7 +5,7 @@ swoole_http2_client_coro: http2 go away
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $domain = 'nghttp2.org';

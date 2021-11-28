@@ -3,7 +3,7 @@ swoole_mysql_coro: mysql prepare multi (insert and delete)
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 for ($c = MAX_CONCURRENCY_LOW; $c--;) {
     go(function () {

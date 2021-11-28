@@ -4,7 +4,7 @@ swoole_coroutine: async dns lookup [5]
 <?php require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\System;

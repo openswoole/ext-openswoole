@@ -12,7 +12,7 @@ if ($curl_version['version_number'] < 0x073d00) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 class MyHttpClient
 {

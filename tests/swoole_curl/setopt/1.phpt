@@ -6,7 +6,7 @@ Mattijs Hoitink mattijshoitink@gmail.com
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 /*
  * Prototype:     bool curl_setopt_array(resource $ch, array $options)
  * Description:   Sets multiple options for a cURL session.

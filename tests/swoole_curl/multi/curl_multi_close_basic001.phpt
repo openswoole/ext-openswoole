@@ -6,7 +6,7 @@ swoole_curl/multi: curl_multi_close return false when supplied resource not vali
 if (!extension_loaded('curl')) print 'skip';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 

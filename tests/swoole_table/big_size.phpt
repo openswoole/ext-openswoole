@@ -3,7 +3,7 @@ swoole_table: big size
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $table = new \Swoole\Table(1);
 $table->column('string', \Swoole\Table::TYPE_STRING, $string_size = mt_rand(2, 6) * 0xffff);

@@ -4,13 +4,13 @@ swoole_coroutine_scheduler/preemptive: goto2
 <?php require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $max_msec = 10;
 co::set(['enable_preemptive_scheduler' => true]);
 $default = 10;
-$start = microtime(1);
+$start = microtime(true);
 echo "start\n";
 $flag = 1;
 
@@ -27,7 +27,7 @@ go(function () use (&$flag) {
     echo "coro 1 can exit\n";
 });
 
-$end = microtime(1);
+$end = microtime(true);
 $msec = ($end - $start) * 1000;
 USE_VALGRIND || Assert::lessThanEq(abs($msec - $max_msec), $default);
 go(function () use (&$flag) {

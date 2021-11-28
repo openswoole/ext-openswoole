@@ -88,33 +88,33 @@
  *                                                     *
  *******************************************************/
 
-.globl jump_fcontext
+.globl jump_fcontext_v1
 #if _CALL_ELF == 2
 	.text
 	.align 2
-jump_fcontext:
-        addis   %r2, %r12, .TOC.-jump_fcontext@ha
-        addi    %r2, %r2, .TOC.-jump_fcontext@l
-        .localentry jump_fcontext, . - jump_fcontext
+jump_fcontext_v1:
+        addis   %r2, %r12, .TOC.-jump_fcontext_v1@ha
+        addi    %r2, %r2, .TOC.-jump_fcontext_v1@l
+        .localentry jump_fcontext_v1, . - jump_fcontext_v1
 #else
 	.section ".opd","aw"
 	.align 3
-jump_fcontext:
+jump_fcontext_v1:
 # ifdef _CALL_LINUX
-        .quad   .L.jump_fcontext,.TOC.@tocbase,0
-        .type   jump_fcontext,@function
+        .quad   .L.jump_fcontext_v1,.TOC.@tocbase,0
+        .type   jump_fcontext_v1,@function
         .text
         .align 2
-.L.jump_fcontext:
+.L.jump_fcontext_v1:
 # else
-        .hidden .jump_fcontext
-        .globl  .jump_fcontext
-        .quad   .jump_fcontext,.TOC.@tocbase,0
-        .size   jump_fcontext,24
-        .type   .jump_fcontext,@function
+        .hidden .jump_fcontext_v1
+        .globl  .jump_fcontext_v1
+        .quad   .jump_fcontext_v1,.TOC.@tocbase,0
+        .size   jump_fcontext_v1,24
+        .type   .jump_fcontext_v1,@function
         .text
         .align 2
-.jump_fcontext:
+.jump_fcontext_v1:
 # endif
 #endif
     # reserve space on stack
@@ -253,12 +253,12 @@ jump_fcontext:
     # jump to context
     bctr
 #if _CALL_ELF == 2
-	.size jump_fcontext, .-jump_fcontext
+	.size jump_fcontext_v1, .-jump_fcontext_v1
 #else
 # ifdef _CALL_LINUX
-	.size .jump_fcontext, .-.L.jump_fcontext
+	.size .jump_fcontext_v1, .-.L.jump_fcontext_v1
 # else
-	.size .jump_fcontext, .-.jump_fcontext
+	.size .jump_fcontext_v1, .-.jump_fcontext_v1
 # endif
 #endif
 

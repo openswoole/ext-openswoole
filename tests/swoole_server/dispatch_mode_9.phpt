@@ -3,7 +3,7 @@ swoole_server: dispatch_mode = 9 [co req lb]
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\Client;
@@ -93,7 +93,7 @@ $pm->childFunc = function () use ($pm, $table) {
     });
 
     $serv->on('receive', function (Server $serv, $fd, $rid, $data) use ($pm, $table) {
-        $table->incr($serv->getWorkerId(), 'count');
+        $table->incr((string)$serv->getWorkerId(), 'count');
         if (rand(1000, 9999) % 10 == 0) {
             System::sleep(0.5);
         }

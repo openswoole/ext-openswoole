@@ -5,7 +5,7 @@ swoole_socket_coro: recv line
 <?php
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\Server;

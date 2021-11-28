@@ -7,7 +7,7 @@ skip_if_pdo_not_support_mysql8();
 die('Swoole\Coroutine\MySQL will be removed in future versions.');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $mysql = new Swoole\Coroutine\MySQL;

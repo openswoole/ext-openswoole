@@ -3,7 +3,7 @@ swoole_runtime/stream_select: Bug #64438 proc_open hangs with stdin/out with 409
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 go(function () {

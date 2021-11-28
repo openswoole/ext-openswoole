@@ -3,7 +3,7 @@ swoole_socket_coro: readv test
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 
 use Swoole\Coroutine\Socket;
 use Swoole\Coroutine\Server;

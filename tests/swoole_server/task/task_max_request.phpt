@@ -3,7 +3,7 @@ swoole_server/task: task_max_request
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 const N = 4000;
@@ -60,7 +60,7 @@ $process = new Swoole\Process(function() {
     });
 
     $serv->start();
-},false, false);
+}, false, 0);
 $process->start();
 
 Swoole\Process::wait();

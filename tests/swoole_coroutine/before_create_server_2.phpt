@@ -3,7 +3,7 @@ swoole_coroutine: co::create before server create [2]
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 define('SECRET', SwooleTest\RandStr::getBytes(rand(1024, 8192)));

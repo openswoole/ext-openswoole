@@ -3,7 +3,7 @@ swoole_mysql_coro: illegal another coroutine
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $process = new Swoole\Process(function () {
     go(function () {
@@ -50,7 +50,7 @@ $process = new Swoole\Process(function () {
             });
         }
     });
-}, false, null, false);
+}, false, 0, false);
 $process->start();
 Swoole\Process::wait();
 ?>

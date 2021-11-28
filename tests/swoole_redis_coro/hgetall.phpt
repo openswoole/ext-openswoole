@@ -3,7 +3,7 @@ swoole_redis_coro: hGetAll hmGet zRange zRevRange zRangeByScore zRevRangeByScore
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function() {
     $redis = new Swoole\Coroutine\Redis();
@@ -11,9 +11,9 @@ go(function() {
     $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
     
     $redis->delete('hkey');
-    $redis->hSet('hkey', false, 'val0');
+    $redis->hSet('hkey', "", 'val0');
     $redis->hSet('hkey', "field", 'val1');
-    $redis->hSet('hkey', 5, 'val5');
+    $redis->hSet('hkey', '5', 'val5');
 
     $redis->delete('zkey');
     $redis->zAdd('zkey', "field", 'val0');
@@ -33,9 +33,9 @@ go(function() {
     echo "-----zRevRange---\n";
     var_dump($redis->zRevRange('zkey', 0, 99, true));
     echo "-----zRangeByScore---\n";
-    var_dump($redis->zRangeByScore('zkey', 0, 99, ['withscores' => true]));
+    var_dump($redis->zRangeByScore('zkey', '0', '99', ['withscores' => true]));
     echo "-----zRevRangeByScore---\n";
-    var_dump($redis->zRevRangeByScore('zkey', 99, 0, ['withscores' => true]));
+    var_dump($redis->zRevRangeByScore('zkey', '99', '0', ['withscores' => true]));
 });
 ?>
 --EXPECT--

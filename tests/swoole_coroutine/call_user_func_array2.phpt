@@ -5,7 +5,7 @@ swoole_coroutine: call_user_func_array 2
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 class A

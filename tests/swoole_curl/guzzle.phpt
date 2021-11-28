@@ -5,7 +5,7 @@ swoole_curl: guzzle
 require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 require_once TESTS_LIB_PATH . '/vendor/autoload.php';
 
@@ -34,7 +34,7 @@ run(function () {
         ];
         $responses = Promise\Utils::unwrap($promises);
         Assert::contains($responses['baidu']->getBody(), '百度');
-        Assert::contains(iconv('gbk', 'utf-8', $responses['qq']->getBody()), '腾讯');
+        Assert::contains(iconv('gbk', 'utf-8', (string)$responses['qq']->getBody()), '腾讯');
         Assert::contains($responses['gov']->getBody(), '中华人民共和国');
         $result['task_1'] = 'OK';
         $wg->done();

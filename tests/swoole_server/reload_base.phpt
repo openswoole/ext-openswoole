@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_in_valgrind();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 trigger_error('SWOOLE_BASE not support reload task workers.', E_USER_NOTICE);
 $worker_num = swoole_cpu_num() * 2;
@@ -24,7 +24,7 @@ $pm->parentFunc = function () use ($pm) {
     $random = mt_rand(1, 12);
     usleep(100 * 1000);
     for ($n = $random; $n--;) {
-        Swoole\Process::kill($pid, SIGUSR1);
+        Swoole\Process::kill((int)$pid, SIGUSR1);
         usleep(100 * 1000);
         // Swoole\Process::kill($pid, SIGUSR2);
         // usleep(100 * 1000);

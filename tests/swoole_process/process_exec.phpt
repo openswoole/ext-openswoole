@@ -8,7 +8,7 @@ if (!@file_exists('/usr/bin/python')) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $process = new swoole_process('python_process', true);

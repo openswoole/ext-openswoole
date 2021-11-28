@@ -3,7 +3,7 @@ swoole_http2_client_coro: cookies
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $cli = new Swoole\Coroutine\Http2\Client('192.0.0.1', 9000);

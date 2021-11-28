@@ -4,7 +4,7 @@ swoole_socket_coro/protocol: bug GitHub#3586
 <?php
 require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Coroutine;

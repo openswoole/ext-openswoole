@@ -6,7 +6,7 @@ swoole_curl/multi: curl_multi_close closed by cleanup functions
 if (!extension_loaded('curl')) print 'skip';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);

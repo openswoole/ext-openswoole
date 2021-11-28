@@ -3,7 +3,7 @@ swoole_client_sync: recv witch open_eof_check and check errCode
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Server;
 

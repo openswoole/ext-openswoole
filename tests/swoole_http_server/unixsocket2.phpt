@@ -3,7 +3,7 @@ swoole_http_server: http unix socket [2]
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Http\Server;
@@ -32,7 +32,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $serv->on('request', function ($req, Response $resp) {
-        $resp->end(json_encode($req->get, true));
+        $resp->end(json_encode($req->get, 1));
     });
     $serv->start();
 };

@@ -3,7 +3,7 @@ swoole_http_client_coro: add array data
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $uri = 'http://' . HTTPBIN_SERVER_HOST . ':' . HTTPBIN_SERVER_PORT . '/post';

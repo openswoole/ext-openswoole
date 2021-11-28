@@ -39,9 +39,9 @@
  * *****************************************************/
 
 .text
-.globl _jump_fcontext
+.globl _jump_fcontext_v1
 .align 2
-_jump_fcontext:
+_jump_fcontext_v1:
     @ save LR as PC
     push {lr}
     @ save V1-V8,LR

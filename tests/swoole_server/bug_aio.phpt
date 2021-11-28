@@ -3,7 +3,7 @@ swoole_server: bug aio
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 define('__FILE_CONTENTS__', file_get_contents(__FILE__));
 $pm = new SwooleTest\ProcessManager;

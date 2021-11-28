@@ -5,7 +5,7 @@ swoole_server: send 2M data in task worker
 require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const SIZE = 2 * 1024 * 1024;

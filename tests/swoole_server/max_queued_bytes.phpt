@@ -3,7 +3,7 @@ swoole_server: max_queued_bytes
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const N = 10 * 1024 * 1024;

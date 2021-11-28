@@ -54,9 +54,9 @@
 .cpu    generic+fp+simd
 .text
 .align  2
-.global jump_fcontext
-.type   jump_fcontext, %function
-jump_fcontext:
+.global jump_fcontext_v1
+.type   jump_fcontext_v1, %function
+jump_fcontext_v1:
     # prepare stack for GP + FPU
     sub  sp, sp, #0xb0
 
@@ -126,7 +126,7 @@ jump_fcontext:
     add  sp, sp, #0xb0
 
     ret x4
-.size   jump_fcontext,.-jump_fcontext
+.size   jump_fcontext_v1,.-jump_fcontext_v1
 #ifndef __NetBSD__
 # Mark that we don't need executable stack.
 .section .note.GNU-stack,"",%progbits

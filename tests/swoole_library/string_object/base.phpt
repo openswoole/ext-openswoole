@@ -3,7 +3,7 @@ swoole_library/string_object: base
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 $string = _string('www.swoole.com ')->rtrim();
 $array = $string->split('.');

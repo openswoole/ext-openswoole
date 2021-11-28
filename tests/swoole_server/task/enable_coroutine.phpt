@@ -3,7 +3,7 @@ swoole_server/task: task [enable_coroutine]
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 $pm = new SwooleTest\ProcessManager;

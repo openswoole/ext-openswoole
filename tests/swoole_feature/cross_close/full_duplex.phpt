@@ -3,7 +3,7 @@ swoole_feature/cross_close: full duplex
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 $pm = new ProcessManager();
 $pm->parentFunc = function () use ($pm) {

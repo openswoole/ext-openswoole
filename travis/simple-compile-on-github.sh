@@ -10,7 +10,6 @@ if [ "${GITHUB_ACTIONS}" = true ]; then
   exit 255
 fi
 
-sudo apt-get update -y
 sudo apt-get install -y libc-ares-dev
 
 cd "${__DIR__}" && cd ../ && \

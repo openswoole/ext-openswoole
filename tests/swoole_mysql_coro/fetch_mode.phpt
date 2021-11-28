@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_unsupported();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $db = new Swoole\Coroutine\Mysql;

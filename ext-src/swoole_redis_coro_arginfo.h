@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: cfcc0a3fedf523eac28612c33bcd9aaf9efa69c2 */
+ * Stub hash: 72a52dfb2c1496de21c596a1bd031645207c2b7f */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Redis___construct, 0, 0, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, setting, IS_ARRAY, 0, "[]")
@@ -435,7 +435,7 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Redis_lInsert, 0, 4, Swoole\\Coroutine\\Redis, MAY_BE_LONG)
 	ZEND_ARG_TYPE_INFO(0, key, IS_STRING, 0)
-	ZEND_ARG_TYPE_INFO(0, pos, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, pos, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, pivot, IS_MIXED, 0)
 	ZEND_ARG_TYPE_INFO(0, value, IS_MIXED, 0)
 ZEND_END_ARG_INFO()

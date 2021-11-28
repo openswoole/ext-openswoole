@@ -7,7 +7,7 @@ if (!is_file('/proc/sys/net/core/wmem_max')) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 $port = get_one_free_port();
 

@@ -5,7 +5,7 @@ swoole_server: max_idle_time
 skip_if_extension_not_exist('sockets');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Server;
@@ -30,7 +30,7 @@ $pm->parentFunc = function ($pid) use ($pm, $time1, $time2) {
     $s = microtime(true);
     sleep(1);
     usleep(200000);
-    Assert::greaterThan($time2->get() - $time1->get(), 1000);
+    Assert::greaterThan($time2->get() - $time1->get(), 10000);
     $result = '';
     while(true) {
         $data = $client->recv();
@@ -55,11 +55,11 @@ $pm->childFunc = function () use ($pm, $time1, $time2) {
         $pm->wakeup();
     });
     $serv->on('Receive', function ($serv, $fd, $tid, $data) use ($time1)  {
-        $time1->set(microtime(true) * 1000);
+        $time1->set((int)(microtime(true) * 10000));
         $serv->send($fd, str_repeat('A', 1024 * 1024 * 4));
     });
     $serv->on('close', function ($serv, $fd, $tid) use ($time2) {
-        $time2->set(microtime(true) * 1000);
+        $time2->set((int)(microtime(true) * 10000));
     });
     $serv->start();
 };

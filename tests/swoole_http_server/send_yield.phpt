@@ -3,7 +3,7 @@ swoole_http_server: http chunk with send yield
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 const ONE_MEGABYTES = 1024 * 1024;
 foreach ([SWOOLE_BASE, SWOOLE_PROCESS] as $mode) {

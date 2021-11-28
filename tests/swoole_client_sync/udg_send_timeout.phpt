@@ -3,7 +3,7 @@ swoole_client_sync: udg send timeout
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 const N = 65507;
 define("SOCKET_FILE", __DIR__.'/server.sock');

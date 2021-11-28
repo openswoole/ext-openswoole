@@ -3,7 +3,7 @@ swoole_mysql_coro: mysql null bit map rand test
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 function gen_type(): string
@@ -18,7 +18,7 @@ function gen_data_from_type(string $type)
         case 'bigint':
             return mt_rand(1, PHP_INT_MAX);
         case 'varchar(255)':
-            return sha1(mt_rand());
+            return sha1((string)mt_rand());
         default:
             return null;
     }
@@ -41,14 +41,14 @@ function mysql(): Co\MySQL
 for ($c = MAX_CONCURRENCY_LOW; $c--;) {
     go(function () use ($c) {
         // gen table structure
-        $table_name = 't' . substr(md5(mt_rand()), 0, 15);
+        $table_name = 't' . substr(md5((string)mt_rand()), 0, 15);
         $field_size = mt_rand(1, 100);
         list($fields, $fields_info) = (function () use ($field_size) {
             $fields_info = [];
             $fields = '';
             for ($i = $field_size; $i--;) {
                 $info = $fields_info[] = [
-                    'name' => 'f' . substr(md5(mt_rand()), 0, 7),
+                    'name' => 'f' . substr(md5((string)mt_rand()), 0, 7),
                     'type' => gen_type()
                 ];
                 $fields .= "{$info['name']} {$info['type']} NULL,\n";
@@ -90,6 +90,8 @@ SQL;
             $result = $mysql->prepare("SELECT * FROM {$table_name}")->execute();
             Assert::same(array_reverse($data_list), $result);
         } catch (Throwable $e) {
+            var_dump($e->getMessage());
+            var_dump($e->getTrace());
             Assert::assert(0);
         } finally {
             Assert::assert($mysql->query("DROP TABLE {$table_name}"));

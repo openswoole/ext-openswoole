@@ -3,7 +3,7 @@ swoole_channel_coro: consumer first without select mode
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $c1 = new chan();
@@ -14,7 +14,7 @@ go(function () use ($c1, $num) {
     for ($i=0;$i<$num;$i++)
     {
         $ret = $c1->pop();
-        echo "pop [#$i] ret:".var_export($ret,1)."\n";
+        echo "pop [#$i] ret:".var_export($ret,true)."\n";
     }
 });
 
@@ -23,7 +23,7 @@ go(function () use ($c1,$num) {
     for ($i=0;$i<$num;$i++)
     {
         $ret = $c1->push("data-$i");
-        echo "push [#$i] ret:".var_export($ret,1)."\n";
+        echo "push [#$i] ret:".var_export($ret,true)."\n";
     }
 
 });

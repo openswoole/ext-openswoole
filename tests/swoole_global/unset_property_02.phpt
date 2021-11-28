@@ -3,7 +3,7 @@ swoole_global: unset user class's parent internal property
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 class C extends chan
 {

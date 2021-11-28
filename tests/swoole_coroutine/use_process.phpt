@@ -3,7 +3,7 @@ swoole_coroutine: user process
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $pm = new SwooleTest\ProcessManager();
@@ -48,7 +48,7 @@ $pm->childFunc = function () use ($pm) {
                 //echo "user process $i send ok\n";
             });
         }
-    }, false, true);
+    }, false, 1);
 
     $serv->addProcess($proc);
     $serv->on("WorkerStart", function (\swoole_server $serv) use ($pm) {

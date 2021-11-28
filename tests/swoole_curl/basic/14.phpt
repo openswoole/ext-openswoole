@@ -6,7 +6,7 @@ Jean-Marc Fontaine <jmf@durcommefaire.net>
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 <?php if (!extension_loaded("curl")) exit("skip curl extension not loaded"); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 
 require __DIR__ . '/../../include/bootstrap.php';
 

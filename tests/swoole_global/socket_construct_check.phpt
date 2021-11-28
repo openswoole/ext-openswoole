@@ -3,7 +3,7 @@ swoole_global: socket construct check
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $socket = new class (1, 2, 3) extends Co\Socket

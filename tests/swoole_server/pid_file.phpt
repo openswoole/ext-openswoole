@@ -3,7 +3,7 @@ swoole_server: pid_file
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 const PID_FILE = __DIR__.'/test.pid';
 $pm = new SwooleTest\ProcessManager;

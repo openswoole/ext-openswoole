@@ -18,7 +18,7 @@
 /** @not-serializable */
 namespace Swoole {
 	final class Lock {
-		public function __construct(int $type = SWOOLE_MUTEX, string $lockfile = "") {}
+		public function __construct(int $type = SWOOLE_MUTEX, string $lockFile = "") {}
 		public function lock(): bool {}
 		public function lockwait(float $timeout = 1.0): bool {}
 		public function trylock(): bool {}

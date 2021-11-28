@@ -3,7 +3,7 @@ swoole_event: swoole_event_wait (auto)
 --SKIPIF--
 <?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 register_shutdown_function(function () {
     echo "register 1\n";

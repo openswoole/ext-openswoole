@@ -3,7 +3,7 @@ swoole_socket_coro: closed bad fd
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);

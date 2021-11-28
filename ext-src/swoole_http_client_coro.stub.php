@@ -21,14 +21,14 @@ namespace Swoole\Coroutine\Http {
 	    public function __destruct() {}
 	    public function set(array $settings): bool {}
 	    public function getDefer(): bool {}
-	    public function setDefer(bool $defer = false): bool {}
+	    public function setDefer(bool $defer = true): bool {}
 	    public function setMethod(string $method): bool {}
 	    public function setHeaders(array $headers): bool {}
 	    public function setBasicAuth(string $username, string $password): bool|void {}
 	    public function setCookies(array $cookies): bool {}
 	    public function setData(string|array $data): bool {}
-	    public function addFile(string $path, string $name, string $mimeType = "", string $fileName = "", int $offset = 0, int $length = 0): bool {}
-	    public function addData(string $data, string $name, string $mimeType = "", string $filename = ""): bool {}
+	    public function addFile(string $path, string $name, ?string $mimeType = null, string $fileName = "", int $offset = 0, int $length = 0): bool {}
+	    public function addData(string $data, string $name, ?string $mimeType = null, string $filename = ""): bool {}
 	    public function execute(string $path): int|bool {}
 	    public function getpeername(): array|false {}
 	    public function getsockname(): array|false {}
@@ -42,7 +42,7 @@ namespace Swoole\Coroutine\Http {
 	    public function getHeaderOut(): string|bool {}
 	    public function getPeerCert(): string|false {}
 	    public function upgrade(string $path): bool {}
-	    public function push(mixed $data, int $opcode = WEBSOCKET_OPCODE_TEXT, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
+	    public function push(mixed $data, int $opcode = SWOOLE_WEBSOCKET_OPCODE_TEXT, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
 	    public function recv(float $timeout = 0): bool|\Swoole\WebSocket\Frame {}
 	    public function close(): bool {}
 	}

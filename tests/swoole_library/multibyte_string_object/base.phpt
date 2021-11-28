@@ -3,7 +3,7 @@ swoole_library/multibyte_string_object: base
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $str = swoole_mbstring('我是中国人');

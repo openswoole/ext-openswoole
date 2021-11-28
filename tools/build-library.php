@@ -8,7 +8,7 @@ define('PHP_TAG', '<?php');
 if (!isset($argv[1]) or $argv[1] != 'dev') {
     preg_match(
         '/^(\d+)/',
-        trim(shell_exec('cd ' . LIBRARY_DIR . ' && git diff --shortstat')),
+        trim("".shell_exec('cd ' . LIBRARY_DIR . ' && git diff --shortstat')),
         $file_change
     );
     $file_change = (int) ($file_change[1] ?? 0);

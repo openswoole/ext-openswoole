@@ -6,7 +6,7 @@ require __DIR__ . '/../../include/skipif.inc';
 skip_if_function_not_exist('posix_getpid');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $pm = new SwooleTest\ProcessManager;

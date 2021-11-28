@@ -24,10 +24,10 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <date>2021-10-25</date>
-    <time>02:00:00</time>
+    <date>2021-11-28</date>
+    <time>17:00:00</time>
     <version>
-        <release>4.7.2</release>
+        <release>4.8.0</release>
         <api>4.0</api>
     </version>
     <stability>
@@ -36,15 +36,17 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        1. Extension name changed to be openswoole
-        2. Bug fixed: PHP8.0 compatible issues
-        3. Bug fixed: PHP8.0 and Symfony HTTP client compatible issues
-        4. Added SW_ERROR_WEBSOCKET_PACK_FAILED error code
-        5. Updated Server id to be OpenSwoole-v4.x.x, Client id to be OpenSwoole/v4.x.x
-        6. Bug fixed: HTTP2 flow control bugs
-        7. Support ssl_ciphers in Swoole Client
-        8. Bug fixed: curl_multi_select CURL_SOCKET_TIMEOUT bug
-        9. Bug fixed: openswoole_postgresql compile issues on MacOS
+        - Official PHP 8.1 stable support 🎉
+        - Native support for Postgres coroutine client, enable --with-postgres[=DIR]
+        - New HTTP server option: max_request_execution_time
+        - Support strict type hinting and fix the type of arguments, return value
+        - Bug fixed: data loss bug in Swoole table
+        - Bug fixed: compile issues when enabling OpenSSL on macOS
+        - Throw \Swoole\Exception when Swoole table is too small to avoid data loss
+        - Deprecation warning added: Swoole\Coroutine\Server
+        - Deprecation warning added: Swoole\Coroutine\Barrier
+        - Deprecation warning added: Swoole\Coroutine\Http\Server
+        - Deprecation warning added: SWOOLE_HOOK_CURL, use SWOOLE_HOOK_NATIVE_CURL
     </notes>
     <contents>
         <dir name="/">
@@ -283,6 +285,7 @@
             <file role="doc" name="examples/http/raw.php" />
             <file role="doc" name="examples/http/redirect.php" />
             <file role="doc" name="examples/http/server.php" />
+            <file role="doc" name="examples/http/simple.php" />
             <file role="doc" name="examples/http/static_handler.php" />
             <file role="doc" name="examples/http/test.txt" />
             <file role="doc" name="examples/http/upload_file.php" />
@@ -343,6 +346,7 @@
             <file role="doc" name="examples/process/test.php" />
             <file role="doc" name="examples/process/worker.php" />
             <file role="doc" name="examples/process_pool/detach.php" />
+            <file role="doc" name="examples/process_pool/multi_tasks.php" />
             <file role="doc" name="examples/process_pool/send.php" />
             <file role="doc" name="examples/proxy_sync.php" />
             <file role="doc" name="examples/recv_1m_client.php" />
@@ -476,7 +480,6 @@
             <file role="src" name="ext-src/php_swoole.cc" />
             <file role="src" name="ext-src/php_swoole_client.h" />
             <file role="src" name="ext-src/php_swoole_coroutine.h" />
-            <file role="src" name="ext-src/php_swoole_coroutine_system.h" />
             <file role="src" name="ext-src/php_swoole_curl.h" />
             <file role="src" name="ext-src/php_swoole_cxx.cc" />
             <file role="src" name="ext-src/php_swoole_cxx.h" />
@@ -489,35 +492,110 @@
             <file role="src" name="ext-src/php_swoole_server.h" />
             <file role="src" name="ext-src/swoole_async_coro.cc" />
             <file role="src" name="ext-src/swoole_atomic.cc" />
+            <file role="src" name="ext-src/swoole_atomic.stub.php" />
+            <file role="src" name="ext-src/swoole_atomic_arginfo.h" />
+            <file role="src" name="ext-src/swoole_atomic_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_channel_coro.cc" />
+            <file role="src" name="ext-src/swoole_channel_coro.stub.php" />
+            <file role="src" name="ext-src/swoole_channel_coro_arginfo.h" />
+            <file role="src" name="ext-src/swoole_channel_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_client.cc" />
+            <file role="src" name="ext-src/swoole_client.stub.php" />
+            <file role="src" name="ext-src/swoole_client_arginfo.h" />
+            <file role="src" name="ext-src/swoole_client_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_client_coro.cc" />
+            <file role="src" name="ext-src/swoole_client_coro.stub.php" />
+            <file role="src" name="ext-src/swoole_client_coro_arginfo.h" />
+            <file role="src" name="ext-src/swoole_client_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_coroutine.cc" />
+            <file role="src" name="ext-src/swoole_coroutine.stub.php" />
+            <file role="src" name="ext-src/swoole_coroutine_arginfo.h" />
+            <file role="src" name="ext-src/swoole_coroutine_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_coroutine_scheduler.cc" />
+            <file role="src" name="ext-src/swoole_coroutine_scheduler.stub.php" />
+            <file role="src" name="ext-src/swoole_coroutine_scheduler_arginfo.h" />
+            <file role="src" name="ext-src/swoole_coroutine_scheduler_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_coroutine_system.cc" />
+            <file role="src" name="ext-src/swoole_coroutine_system.stub.php" />
+            <file role="src" name="ext-src/swoole_coroutine_system_arginfo.h" />
+            <file role="src" name="ext-src/swoole_coroutine_system_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_curl.cc" />
             <file role="src" name="ext-src/swoole_event.cc" />
+            <file role="src" name="ext-src/swoole_event.stub.php" />
+            <file role="src" name="ext-src/swoole_event_arginfo.h" />
+            <file role="src" name="ext-src/swoole_event_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_http2_client_coro.cc" />
+            <file role="src" name="ext-src/swoole_http2_client_coro.stub.php" />
+            <file role="src" name="ext-src/swoole_http2_client_coro_arginfo.h" />
+            <file role="src" name="ext-src/swoole_http2_client_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_http2_server.cc" />
             <file role="src" name="ext-src/swoole_http_client_coro.cc" />
+            <file role="src" name="ext-src/swoole_http_client_coro.stub.php" />
+            <file role="src" name="ext-src/swoole_http_client_coro_arginfo.h" />
+            <file role="src" name="ext-src/swoole_http_client_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_http_request.cc" />
+            <file role="src" name="ext-src/swoole_http_request.stub.php" />
+            <file role="src" name="ext-src/swoole_http_request_arginfo.h" />
+            <file role="src" name="ext-src/swoole_http_request_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_http_response.cc" />
+            <file role="src" name="ext-src/swoole_http_response.stub.php" />
+            <file role="src" name="ext-src/swoole_http_response_arginfo.h" />
+            <file role="src" name="ext-src/swoole_http_response_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_http_server.cc" />
             <file role="src" name="ext-src/swoole_http_server_coro.cc" />
+            <file role="src" name="ext-src/swoole_http_server_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_lock.cc" />
+            <file role="src" name="ext-src/swoole_lock.stub.php" />
+            <file role="src" name="ext-src/swoole_lock_arginfo.h" />
+            <file role="src" name="ext-src/swoole_lock_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_mysql_coro.cc" />
+            <file role="src" name="ext-src/swoole_mysql_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_mysql_proto.cc" />
+            <file role="src" name="ext-src/swoole_postgres_coro.cc" />
             <file role="src" name="ext-src/swoole_process.cc" />
+            <file role="src" name="ext-src/swoole_process.stub.php" />
+            <file role="src" name="ext-src/swoole_process_arginfo.h" />
+            <file role="src" name="ext-src/swoole_process_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_process_pool.cc" />
+            <file role="src" name="ext-src/swoole_process_pool.stub.php" />
+            <file role="src" name="ext-src/swoole_process_pool_arginfo.h" />
+            <file role="src" name="ext-src/swoole_process_pool_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_redis_coro.cc" />
+            <file role="src" name="ext-src/swoole_redis_coro.stub.php" />
+            <file role="src" name="ext-src/swoole_redis_coro_arginfo.h" />
+            <file role="src" name="ext-src/swoole_redis_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_redis_server.cc" />
+            <file role="src" name="ext-src/swoole_redis_server.stub.php" />
+            <file role="src" name="ext-src/swoole_redis_server_arginfo.h" />
+            <file role="src" name="ext-src/swoole_redis_server_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_runtime.cc" />
+            <file role="src" name="ext-src/swoole_runtime.stub.php" />
+            <file role="src" name="ext-src/swoole_runtime_arginfo.h" />
+            <file role="src" name="ext-src/swoole_runtime_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_server.cc" />
+            <file role="src" name="ext-src/swoole_server.stub.php" />
+            <file role="src" name="ext-src/swoole_server_arginfo.h" />
+            <file role="src" name="ext-src/swoole_server_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_server_port.cc" />
+            <file role="src" name="ext-src/swoole_server_port.stub.php" />
+            <file role="src" name="ext-src/swoole_server_port_arginfo.h" />
+            <file role="src" name="ext-src/swoole_server_port_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_socket_coro.cc" />
+            <file role="src" name="ext-src/swoole_socket_coro.stub.php" />
+            <file role="src" name="ext-src/swoole_socket_coro_arginfo.h" />
+            <file role="src" name="ext-src/swoole_socket_coro_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_table.cc" />
+            <file role="src" name="ext-src/swoole_table.stub.php" />
+            <file role="src" name="ext-src/swoole_table_arginfo.h" />
+            <file role="src" name="ext-src/swoole_table_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_timer.cc" />
+            <file role="src" name="ext-src/swoole_timer.stub.php" />
+            <file role="src" name="ext-src/swoole_timer_arginfo.h" />
+            <file role="src" name="ext-src/swoole_timer_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_websocket_server.cc" />
+            <file role="src" name="ext-src/swoole_websocket_server.stub.php" />
+            <file role="src" name="ext-src/swoole_websocket_server_arginfo.h" />
+            <file role="src" name="ext-src/swoole_websocket_server_arginfo_legacy.h" />
             <file role="doc" name="gdbinit" />
             <file role="src" name="google-style.xml" />
             <file role="src" name="include/helper/kqueue.h" />
@@ -867,6 +945,7 @@
             <file role="test" name="tests/swoole_client_sync/udp_client_sendto.phpt" />
             <file role="test" name="tests/swoole_coroutine/after_start_server_1.phpt" />
             <file role="test" name="tests/swoole_coroutine/all_asleep.phpt" />
+            <file role="test" name="tests/swoole_coroutine/all_asleep_81.phpt" />
             <file role="test" name="tests/swoole_coroutine/array_walk.phpt" />
             <file role="test" name="tests/swoole_coroutine/array_walk_deep.phpt" />
             <file role="test" name="tests/swoole_coroutine/async_callback/event_cycle.phpt" />
@@ -940,6 +1019,7 @@
             <file role="test" name="tests/swoole_coroutine/iterator.phpt" />
             <file role="test" name="tests/swoole_coroutine/kernel_coroutine.phpt" />
             <file role="test" name="tests/swoole_coroutine/list_and_backtrace.phpt" />
+            <file role="test" name="tests/swoole_coroutine/list_and_backtrace_81.phpt" />
             <file role="test" name="tests/swoole_coroutine/max_num.phpt" />
             <file role="test" name="tests/swoole_coroutine/max_num_limit.phpt" />
             <file role="test" name="tests/swoole_coroutine/nested1.phpt" />
@@ -1298,6 +1378,7 @@
             <file role="test" name="tests/swoole_http_server/issue_2360.phpt" />
             <file role="test" name="tests/swoole_http_server/large_url.phpt" />
             <file role="test" name="tests/swoole_http_server/max_coro_num.phpt" />
+            <file role="test" name="tests/swoole_http_server/max_request_execution_time.phpt" />
             <file role="test" name="tests/swoole_http_server/mixed_server.phpt" />
             <file role="test" name="tests/swoole_http_server/no_compression.phpt" />
             <file role="test" name="tests/swoole_http_server/pipeline.phpt" />
@@ -1430,6 +1511,7 @@
             <file role="test" name="tests/swoole_mysql_coro/without_fetch.phpt" />
             <file role="test" name="tests/swoole_mysql_coro/wrong_password.phpt" />
             <file role="test" name="tests/swoole_mysql_coro/z_reset.phpt" />
+            <file role="test" name="tests/swoole_postgres_coro/query.phpt" />
             <file role="test" name="tests/swoole_process/alarm.phpt" />
             <file role="test" name="tests/swoole_process/coro/ipc.phpt" />
             <file role="test" name="tests/swoole_process/coro/set_protocol.phpt" />
@@ -2065,6 +2147,8 @@
             <file role="src" name="tools/constant-generator.php" />
             <file role="src" name="tools/export.php" />
             <file role="src" name="tools/gen-data.php" />
+            <file role="src" name="tools/gen_func_stub.php" />
+            <file role="src" name="tools/gen_stub.php" />
             <file role="src" name="tools/get-ip-info.php" />
             <file role="src" name="tools/next-version.php" />
             <file role="src" name="tools/option-generator.php" />
@@ -2106,5 +2190,6 @@
         <configureoption default="no" name="enable-mysqlnd" prompt="enable mysqlnd support?"/>
         <configureoption default="no" name="enable-swoole-json" prompt="enable json support?"/>
         <configureoption default="no" name="enable-swoole-curl" prompt="enable curl support?"/>
+        <configureoption default="no" name="with-postgres" prompt="enable postgres support?"/>
     </extsrcrelease>
 </package>

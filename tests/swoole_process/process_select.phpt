@@ -3,7 +3,7 @@ swoole_process: select
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $process = new swoole_process(function (swoole_process $worker)

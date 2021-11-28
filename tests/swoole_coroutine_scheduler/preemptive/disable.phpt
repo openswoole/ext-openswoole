@@ -5,7 +5,7 @@ swoole_coroutine_scheduler/preemptive: swoole_coroutine_scheduler/disable
 require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $default = 10;
@@ -16,7 +16,7 @@ co::set([
     'hook_flags' => 0,
 ]);
 
-$start = microtime(1);
+$start = microtime(true);
 echo "start\n";
 $flag = 1;
 
@@ -26,7 +26,7 @@ go(function () use (&$flag, $max_msec, $start) {
     $i = 0;
     while ($flag) {
         $i++;
-        $m = microtime(1);
+        $m = microtime(true);
         usleep(500000);
         if (($m-$start) * 1000 > 500) {
             echo "coro 1 exec more 500ms and break\n";
@@ -37,7 +37,7 @@ go(function () use (&$flag, $max_msec, $start) {
     Swoole\Coroutine::enableScheduler();
 });
 
-$end = microtime(1);
+$end = microtime(true);
 $msec = ($end - $start) * 1000;
 
 go(function () use (&$flag) {

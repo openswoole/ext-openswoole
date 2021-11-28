@@ -39,10 +39,10 @@
  *******************************************************/
 
 .text
-.globl jump_fcontext
+.globl jump_fcontext_v1
 .align 2
-.type jump_fcontext,%function
-jump_fcontext:
+.type jump_fcontext_v1,%function
+jump_fcontext_v1:
     @ save LR as PC
     push {lr}
     @ save V1-V8,LR
@@ -87,7 +87,7 @@ jump_fcontext:
     
     @ restore v1-V8,LR,PC
     pop {v1-v8,lr,pc}
-.size jump_fcontext,.-jump_fcontext
+.size jump_fcontext_v1,.-jump_fcontext_v1
 
 #ifndef __NetBSD__
 @ Mark that we don't need executable stack.

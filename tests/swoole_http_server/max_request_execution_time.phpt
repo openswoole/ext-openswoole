@@ -1,8 +1,9 @@
 --TEST--
 swoole_http_server: max_request_execution_time
 --SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomData(2);

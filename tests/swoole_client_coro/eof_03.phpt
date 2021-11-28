@@ -7,7 +7,7 @@ skip_if_in_travis();
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $client = new Co\Client(SWOOLE_TCP);

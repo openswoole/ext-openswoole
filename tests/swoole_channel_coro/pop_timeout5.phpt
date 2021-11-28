@@ -5,7 +5,7 @@ swoole_channel_coro: pop timeout hanging up
 exit("skip for hanging up");
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $c1 = new chan();

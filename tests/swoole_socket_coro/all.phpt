@@ -3,7 +3,7 @@ swoole_socket_coro: recv/send all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 define('BIG_RANDOM_DATA', str_repeat(get_safe_random(1024), 64 * 1024));
 define('BIG_RANDOM_DATA_LENGTH', strlen(BIG_RANDOM_DATA));

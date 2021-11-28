@@ -18,10 +18,10 @@
 /** @not-serializable */
 namespace Swoole\Coroutine\Http2 {
 	final class Client {
-		public function __construct(string $host, int $port, bool $openSSL = false) {}
+		public function __construct(string $host, int $port = 80, bool $openSSL = false) {}
 		public function set(array $options): bool {}
 		public function connect(): bool {}
-		public function stats(?string $key = null): bool|array {}
+		public function stats(string $key = ""): bool|array|int {}
 		public function isStreamExist(int $streamId): bool {}
 		public function send(\Swoole\Http2\Request $request): bool|int {}
 		public function write(int $streamId, mixed $data, bool $end = false): bool {}

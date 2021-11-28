@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_no_top();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 define('FRAME_DATA_SIZE', 100 * 1024);

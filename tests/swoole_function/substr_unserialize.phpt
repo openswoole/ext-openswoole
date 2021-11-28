@@ -3,7 +3,7 @@ swoole_function: ext_unserialize
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $a['hello'] = base64_encode(random_bytes(1000));

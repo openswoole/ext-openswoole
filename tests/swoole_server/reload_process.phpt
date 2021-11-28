@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 //skip_if_in_valgrind();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $worker_num = $task_worker_num = swoole_cpu_num() * 2;
 $counter = [
@@ -19,7 +19,7 @@ $pm->parentFunc = function () use ($pm) {
     while (!file_exists(TEST_PID_FILE)) {
         usleep(100 * 1000);
     }
-    $pid = file_get_contents(TEST_PID_FILE);
+    $pid = (int) file_get_contents(TEST_PID_FILE);
     $random = mt_rand(1, 4);
     usleep(100 * 1000);
     for ($n = $random; $n--;) {

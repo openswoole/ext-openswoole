@@ -3,7 +3,7 @@ swoole_socket_coro: getsockname
 --SKIPIF--
 <?php require __DIR__.'/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__.'/../include/bootstrap.php';
 $conn = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 $conn->bind('127.0.0.1');

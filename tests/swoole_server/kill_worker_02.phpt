@@ -7,7 +7,7 @@ skip_if_darwin();
 skip_if_in_valgrind();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 const WORKER_PROC_NAME = 'swoole_unittest_server_event_worker';

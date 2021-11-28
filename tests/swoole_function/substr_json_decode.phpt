@@ -5,7 +5,7 @@ swoole_function: substr_json_decode
 skip_if_function_not_exist('swoole_substr_json_decode');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $a['hello'] = base64_encode(random_bytes(1000));

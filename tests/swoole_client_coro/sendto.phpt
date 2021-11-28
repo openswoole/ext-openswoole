@@ -4,7 +4,7 @@ swoole_client_coro: sendto
 <?php require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use function Swoole\Coroutine\run;

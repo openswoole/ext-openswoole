@@ -6,7 +6,7 @@ swoole_curl/multi: Bug #67643 (curl_multi_getcontent returns '' when RETURNTRANS
 if (!extension_loaded('curl')) print 'skip';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 

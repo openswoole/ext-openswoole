@@ -26,10 +26,10 @@
 .file	"make_i386_ms_pe_gas.asm"
 .text
 .p2align 4,,15
-.globl	_make_fcontext
-.def	_make_fcontext;	.scl	2;	.type	32;	.endef
-_make_fcontext:
-    /* first arg of make_fcontext() == top of context-stack */
+.globl	_make_fcontext_v1
+.def	_make_fcontext_v1;	.scl	2;	.type	32;	.endef
+_make_fcontext_v1:
+    /* first arg of make_fcontext_v1() == top of context-stack */
     movl  0x04(%esp), %eax
 
     /* reserve space for first argument of context-function */
@@ -45,11 +45,11 @@ _make_fcontext:
     /* additional space is required for SEH */
     leal  -0x3c(%eax), %eax
 
-    /* first arg of make_fcontext() == top of context-stack */
+    /* first arg of make_fcontext_v1() == top of context-stack */
     movl  0x04(%esp), %ecx
     /* save top address of context stack as 'base' */
     movl  %ecx, 0x14(%eax)
-    /* second arg of make_fcontext() == size of context-stack */
+    /* second arg of make_fcontext_v1() == size of context-stack */
     movl  0x08(%esp), %edx
     /* negate stack size for LEA instruction (== substraction) */
     negl  %edx
@@ -60,7 +60,7 @@ _make_fcontext:
     /* save bottom address of context-stack as 'dealloction stack' */
     movl  %ecx, 0xc(%eax)
 
-    /* third arg of make_fcontext() == address of context-function */
+    /* third arg of make_fcontext_v1() == address of context-function */
     movl  0xc(%esp), %ecx
     movl  %ecx, 0x2c(%eax)
 

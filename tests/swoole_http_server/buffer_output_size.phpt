@@ -3,7 +3,7 @@ swoole_http_server: buffer output size
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 define('RANDOM_CHAR', get_safe_random(1));
 define('OUTPUT_BUFFER_SIZE', pow(2, 12));

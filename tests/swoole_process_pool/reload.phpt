@@ -7,7 +7,7 @@ if (function_exists('msg_get_queue') == false) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $pm = new ProcessManager;

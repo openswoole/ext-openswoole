@@ -4,7 +4,7 @@ swoole_curl/ssl: Test SSL_VERSION option
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 <?php if (!extension_loaded("curl")) print "skip"; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 
 require __DIR__ . '/../../include/bootstrap.php';
 

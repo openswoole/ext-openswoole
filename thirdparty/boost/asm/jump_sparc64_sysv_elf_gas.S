@@ -45,13 +45,13 @@
     .register %g6,#ignore
 
 .text
-.globl jump_fcontext
+.globl jump_fcontext_v1
 .align 4
-.type jump_fcontext,@function
+.type jump_fcontext_v1,@function
 // intptr_t
-// jump_fcontext( fcontext_t * ofc, fcontext_t const* nfc, intptr_t vp,
+// jump_fcontext_v1( fcontext_t * ofc, fcontext_t const* nfc, intptr_t vp,
 //                bool preserve_fpu = true);
-jump_fcontext:
+jump_fcontext_v1:
     // %o0 = pointer to old fcontext, save current state here
     // %o1 = new context to jump to
     // %o2 = new return value in context %o0
@@ -133,7 +133,7 @@ Lno_fpu:
     jmp %o4
     mov %o2, %o0    // return arg as result
 
-.size jump_fcontext,.-jump_fcontext
+.size jump_fcontext_v1,.-jump_fcontext_v1
 
 /* Mark that we don't need executable stack.  */
 .section .note.GNU-stack,"",%progbits

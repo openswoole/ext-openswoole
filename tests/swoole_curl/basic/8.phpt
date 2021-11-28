@@ -12,7 +12,7 @@ if (gethostbyname($addr) != $addr) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 $cm = new \SwooleTest\CurlManager();
 $cm->run(function ($host) {

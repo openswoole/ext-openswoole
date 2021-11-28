@@ -5,7 +5,7 @@ swoole_http_client_coro: upgrade bug
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $host = 'www.imiphp.com';

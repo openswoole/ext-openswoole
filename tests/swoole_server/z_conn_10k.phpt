@@ -9,7 +9,7 @@ if ((int)`ulimit -n 2>&1` < MAX_CONCURRENCY_MID * MAX_REQUESTS) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $count = 0;
 $client_map = [];

@@ -5,7 +5,7 @@ swoole_curl/multi: Variation of bug #48203 with curl_multi_exec (Crash when file
 require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use SwooleTest\CurlManager;

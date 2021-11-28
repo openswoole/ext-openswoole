@@ -7,7 +7,7 @@ if (!is_executable("/bin/cat")) exit('skip');
 if (!function_exists("proc_open")) exit('skip proc_open() is not available');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 Swoole\Runtime::enableCoroutine();

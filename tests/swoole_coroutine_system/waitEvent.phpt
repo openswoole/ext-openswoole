@@ -5,7 +5,7 @@ swoole_coroutine_system: waitEvent
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine;

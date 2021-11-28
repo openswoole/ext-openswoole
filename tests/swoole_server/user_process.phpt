@@ -3,7 +3,7 @@ swoole_server: user process
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Server;
 use Swoole\Client;
@@ -45,7 +45,7 @@ $pm->childFunc = function () use ($pm)
          //echo "user process send ok\n";
        }
      }
-    }, false, true);
+    }, false, 1);
 
     $serv->addProcess($proc);
     $serv->on("WorkerStart", function (Server $serv)  use ($pm)

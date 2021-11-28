@@ -6,7 +6,7 @@ require __DIR__ . '/../include/skipif.inc';
 skip_if_openssl_version_lower_than('1.1.0');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $pm = new SwooleTest\ProcessManager;

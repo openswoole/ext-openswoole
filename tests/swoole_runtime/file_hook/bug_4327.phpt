@@ -6,7 +6,7 @@ require __DIR__ . '/../../include/skipif.inc';
 ?>
 <?php die('Deprecated.'); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 
 use Swoole\Coroutine;
 use Swoole\Coroutine\WaitGroup;

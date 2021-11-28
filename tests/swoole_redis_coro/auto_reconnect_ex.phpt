@@ -3,7 +3,7 @@ swoole_redis_coro: auto reconnect after server side close the connection
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Redis\Server;

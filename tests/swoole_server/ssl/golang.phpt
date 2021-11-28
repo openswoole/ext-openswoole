@@ -9,7 +9,7 @@ chdir($dir);
 skip_if_file_not_exist( __DIR__.'/code/go_client');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 

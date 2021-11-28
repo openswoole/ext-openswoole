@@ -5,7 +5,7 @@ swoole_event: swoole_event_set
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $fp = stream_socket_client("tcp://www.qq.com:80", $errno, $errstr, 30);

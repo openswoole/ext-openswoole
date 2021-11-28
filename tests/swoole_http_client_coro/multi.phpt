@@ -5,7 +5,7 @@ swoole_http_client_coro: multi http client
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 go(function () {
@@ -17,7 +17,7 @@ go(function () {
         'Accept' => 'text/html,application/xhtml+xml,application/xml',
         'Accept-Encoding' => 'gzip',
     ]);
-    $cli1->setDefer(1);
+    $cli1->setDefer(true);
 
     $cli2 = new Swoole\Coroutine\Http\Client('www.qq.com', 443, true);
     $cli2->set(['timeout' => 10]);
@@ -27,7 +27,7 @@ go(function () {
         'Accept' => 'text/html,application/xhtml+xml,application/xml',
         'Accept-Encoding' => 'gzip',
     ]);
-    $cli2->setDefer(1);
+    $cli2->setDefer(true);
 
     $ret1 = ($cli1->get('/'));
     $ret2 = ($cli2->get('/'));

@@ -6,7 +6,7 @@ swoole_socket_coro/setopt: setOption SO_RCVTIMEO
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 $socket = new Co\Socket(AF_INET, SOCK_STREAM, SOL_TCP);

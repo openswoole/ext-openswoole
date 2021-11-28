@@ -4,7 +4,7 @@ swoole_http_server_coro: bug 2682 getData/getRawContent
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php die('Deprecated.'); ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 define('PORT', get_one_free_port());
 define(

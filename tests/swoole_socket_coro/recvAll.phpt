@@ -3,7 +3,7 @@ swoole_socket_coro: recvAll
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 $pm->initRandomDataArray(4, 512 * 1024);

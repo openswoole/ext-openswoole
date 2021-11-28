@@ -3,7 +3,7 @@ swoole_event: swoole_event_defer and sleep
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     co::sleep(0.001);

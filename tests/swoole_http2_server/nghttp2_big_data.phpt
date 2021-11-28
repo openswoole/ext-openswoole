@@ -8,7 +8,7 @@ if (strpos(`nghttp --version 2>&1`, 'nghttp2') === false) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {

@@ -5,16 +5,16 @@ swoole_process: daemon
 require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use  Swoole\Process;
+use Swoole\Process;
 
 $sockets = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
 
 $process = new Process(function (swoole_process $worker) use ($sockets) {
     fclose($sockets[1]);
-    Process::daemon(1, 1, [null, $sockets[0], $sockets[0]]);
+    Process::daemon(true, true, [null, $sockets[0], $sockets[0]]);
 
     fwrite(STDOUT, "ERROR 1\n");
     fwrite(STDOUT, "ERROR 2\n");

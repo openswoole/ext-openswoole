@@ -4,7 +4,7 @@ swoole_http_server/sni: server
 <?php
 require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Http\Request;

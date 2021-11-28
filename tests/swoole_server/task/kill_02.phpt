@@ -7,7 +7,7 @@ skip_if_darwin();
 skip_if_in_valgrind();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Server;
 const PROC_NAME = 'swoole_unittest_server_task_worker';

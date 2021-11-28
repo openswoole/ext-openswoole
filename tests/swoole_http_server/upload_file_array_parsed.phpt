@@ -7,7 +7,7 @@ skip_if_function_not_exist('curl_init');
 skip_if_function_not_exist('curl_file_create');
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 $pm = new ProcessManager;

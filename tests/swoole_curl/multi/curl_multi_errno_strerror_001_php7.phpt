@@ -9,7 +9,7 @@ if (!extension_loaded("curl")) {
 }
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 

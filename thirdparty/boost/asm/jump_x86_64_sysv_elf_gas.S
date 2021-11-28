@@ -32,10 +32,10 @@
  ****************************************************************************************/
 
 .text
-.globl jump_fcontext
-.type jump_fcontext,@function
+.globl jump_fcontext_v1
+.type jump_fcontext_v1,@function
 .align 16
-jump_fcontext:
+jump_fcontext_v1:
     pushq  %rbp  /* save RBP */
     pushq  %rbx  /* save RBX */
     pushq  %r15  /* save R15 */
@@ -92,7 +92,7 @@ jump_fcontext:
 
     /* indirect jump to context */
     jmp  *%r8
-.size jump_fcontext,.-jump_fcontext
+.size jump_fcontext_v1,.-jump_fcontext_v1
 
 #ifndef __NetBSD__
 /* Mark that we don't need executable stack.  */

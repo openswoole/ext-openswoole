@@ -3,7 +3,7 @@ swoole_http_server: issue 2360 (swoole_http_server silently fails to read reques
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 define('SOCKET_BUFFER_SIZE', 2 << mt_rand(10, 13)); // 1024 ~ 8192
 phpt_echo("SOCKET_BUFFER_SIZE=" . SOCKET_BUFFER_SIZE . PHP_EOL);

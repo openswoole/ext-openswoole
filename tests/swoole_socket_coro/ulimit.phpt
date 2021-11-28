@@ -3,7 +3,7 @@ swoole_socket_coro: new socket failed
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 if ($argv[1] ?? '' === 'ulimit') {
     try {

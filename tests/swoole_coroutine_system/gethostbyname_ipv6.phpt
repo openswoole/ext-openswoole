@@ -5,7 +5,7 @@ swoole_coroutine_system: gethostbyname for IPv6
 skip_if_offline();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
 Swoole\Coroutine::create(function () {

@@ -6,7 +6,7 @@ require __DIR__.'/../include/skipif.inc';
 skip_if_darwin();
 ?>
 --FILE--
-<?php
+<?php declare(strict_types = 1);
 require __DIR__.'/../include/bootstrap.php';
 
 
@@ -14,8 +14,8 @@ function callback_function(swoole_process $worker)
 {
 }
 
-$process = new swoole_process('callback_function', false, false);
-$process->useQueue(ftok(__DIR__, 1), 1, 1024 * 1024 * 64);
+$process = new swoole_process('callback_function', false, 0);
+$process->useQueue(ftok(__DIR__, '1'), 1, 1024 * 1024 * 64);
 
 const N = 32 * 1024 * 1024;
 
