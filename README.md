@@ -1,5 +1,5 @@
 <h1>
-<img width="200" height="120" align=center alt="Swoole Logo" src="https://www.swoole.co.uk/images/swoole-logo.svg" />
+    <img width="200" height="120" align="center" alt="Open Swoole Logo" src="https://www.swoole.co.uk/images/swoole-logo.svg" />
 </h1>
 
 [![lib-openswoole](https://github.com/openswoole/swoole-src/workflows/lib-openswoole/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Alib-openswoole)
@@ -54,7 +54,7 @@ make && make install
 
 #### Enable extension in PHP
 
-After compiling and installing to the system successfully, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Open Swoole extension. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
+After compiling and installing the openswoole extension, you have to add a new line `extension=openswoole.so` to `php.ini` to enable Open Swoole. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
 
 #### Extra compile configurations
 
@@ -94,7 +94,7 @@ Security issues should be reported privately, via email, to the Open Swoole deve
 > PR are welcome if your framework is using openswoole
  
  - [**Laravel Octane**](https://laravel.com/docs/8.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
- - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kind of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
+ - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kinds of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
  - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on Open Swoole.
 
 ## License
