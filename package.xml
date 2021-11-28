@@ -36,7 +36,7 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        - Offical PHP 8.1 stable support 🎉
+        - Official PHP 8.1 stable support 🎉
         - Native support for Postgres coroutine client, enable --with-postgres[=DIR]
         - New HTTP server option: max_request_execution_time
         - Support strict type hinting and fix the type of arguments, return value
