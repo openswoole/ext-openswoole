@@ -539,6 +539,33 @@ static int meta_data_result_parse(PGObject *object) {
     return SW_OK;
 }
 
+#ifndef PG_DIAG_SEVERITY
+# define PG_DIAG_SEVERITY 'S'
+#endif
+#ifndef PG_DIAG_SQLSTATE
+# define PG_DIAG_SQLSTATE 'C'
+#endif
+#ifndef PG_DIAG_MESSAGE_PRIMARY
+# define PG_DIAG_MESSAGE_PRIMARY 'M'
+#endif
+#ifndef PG_DIAG_MESSAGE_DETAIL
+# define PG_DIAG_MESSAGE_DETAIL 'D'
+#endif
+#ifndef PG_DIAG_MESSAGE_HINT
+# define PG_DIAG_MESSAGE_HINT 'H'
+#endif
+#ifndef PG_DIAG_STATEMENT_POSITION
+# define PG_DIAG_STATEMENT_POSITION 'P'
+#endif
+#ifndef PG_DIAG_INTERNAL_POSITION
+# define PG_DIAG_INTERNAL_POSITION 'p'
+#endif
+#ifndef PG_DIAG_INTERNAL_QUERY
+# define PG_DIAG_INTERNAL_QUERY 'q'
+#endif
+#ifndef PG_DIAG_CONTEXT
+# define PG_DIAG_CONTEXT 'W'
+#endif
 #ifndef PG_DIAG_SCHEMA_NAME
 # define PG_DIAG_SCHEMA_NAME 's'
 #endif
@@ -553,6 +580,15 @@ static int meta_data_result_parse(PGObject *object) {
 #endif
 #ifndef PG_DIAG_CONSTRAINT_NAME
 # define PG_DIAG_CONSTRAINT_NAME 'n'
+#endif
+#ifndef PG_DIAG_SOURCE_FILE
+# define PG_DIAG_SOURCE_FILE 'F'
+#endif
+#ifndef PG_DIAG_SOURCE_LINE
+# define PG_DIAG_SOURCE_LINE 'L'
+#endif
+#ifndef PG_DIAG_SOURCE_FUNCTION
+# define PG_DIAG_SOURCE_FUNCTION 'R'
 #endif
 
 static void set_error_diag(const PGObject *object, const PGresult *pgsql_result) {
