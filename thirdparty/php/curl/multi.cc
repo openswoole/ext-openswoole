@@ -690,20 +690,17 @@ static HashTable *curl_multi_get_gc(zend_object *object, zval **table, int *n) {
 }
 
 void curl_multi_register_class(const zend_function_entry *method_entries) {
-    SW_INIT_CLASS_ENTRY(swoole_coroutine_curl_multi_handle,
-                        "Swoole\\Coroutine\\Curl\\MultiHandle",
-                        nullptr,
-                        "Co\\Curl\\MultiHandle",
-                        nullptr);
-    SW_SET_CLASS_NOT_SERIALIZABLE(
-        swoole_coroutine_curl_multi_handle);
-    SW_SET_CLASS_CUSTOM_OBJECT(
-        swoole_coroutine_curl_multi_handle, curl_multi_create_object, curl_multi_free_obj, php_curlm, std);
-    swoole_coroutine_curl_multi_handle_ce->ce_flags |= ZEND_ACC_FINAL | ZEND_ACC_NO_DYNAMIC_PROPERTIES;
+    swoole_coroutine_curl_multi_handle_ce = curl_multi_ce;
+    swoole_coroutine_curl_multi_handle_ce->create_object = curl_multi_create_object;
+
+    memcpy(&swoole_coroutine_curl_multi_handle_handlers, &std_object_handlers, sizeof(zend_object_handlers));
+    swoole_coroutine_curl_multi_handle_handlers.offset = XtOffsetOf(php_curlm, std);
+    swoole_coroutine_curl_multi_handle_handlers.free_obj = curl_multi_free_obj;
     swoole_coroutine_curl_multi_handle_handlers.get_gc = curl_multi_get_gc;
     swoole_coroutine_curl_multi_handle_handlers.get_constructor = curl_multi_get_constructor;
     swoole_coroutine_curl_multi_handle_handlers.clone_obj = NULL;
     swoole_coroutine_curl_multi_handle_handlers.cast_object = curl_cast_object;
+    swoole_coroutine_curl_multi_handle_handlers.compare = zend_objects_not_comparable;
 }
 #else
 void swoole_curl_multi_close(zend_resource *rsrc) /* {{{ */
@@ -748,15 +745,18 @@ static void _php_curl_multi_free(php_curlm *mh) {
     }
 
     zend_llist_clean(&mh->easyh);
-    if (mh->handlers->server_push) {
-        zval_ptr_dtor(&mh->handlers->server_push->func_name);
-        efree(mh->handlers->server_push);
-    }
     if (mh->handlers) {
+        if (mh->handlers->server_push) {
+            zval_ptr_dtor(&mh->handlers->server_push->func_name);
+            efree(mh->handlers->server_push);
+        }
         efree(mh->handlers);
     }
     if (mh->multi) {
-        delete mh->multi;
+        // TODO: FIX
+        // delete mh->multi;
+        // curl_multi_cleanup(mh->multi);
+        mh->multi = nullptr;
     }
 }
 
