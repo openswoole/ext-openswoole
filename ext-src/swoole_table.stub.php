@@ -34,8 +34,8 @@ namespace Swoole {
 		public function rewind(): void {}
 		public function valid(): bool {}
 		public function next(): void {}
-		public function current(): array|null {}
-		public function key(): string|null {}
+		public function current(): ?array {}
+		public function key(): ?string {}
 
 	}
 }

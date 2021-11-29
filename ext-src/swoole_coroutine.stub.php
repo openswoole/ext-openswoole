@@ -33,7 +33,7 @@ namespace Swoole {
 		public static function getPcid(int $cid = 0): int {}
 		public static function getContext(int $cid = 0): \Swoole\Coroutine\Context|null {}
 		public static function getBackTrace(int $cid = 0, int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, int $limit = 0): array|false {}
-		public static function printBackTrace(int $cid = 0, int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, int $limit = 0): false|void {}
+		public static function printBackTrace(int $cid = 0, int $options = DEBUG_BACKTRACE_PROVIDE_OBJECT, int $limit = 0): void {}
 		public static function getElapsed(int $cid = 0): int {}
 		public static function getStackUsage(int $cid = 0): int|false {}
 		public static function list(): \Swoole\Coroutine\Iterator {}

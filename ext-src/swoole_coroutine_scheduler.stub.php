@@ -18,10 +18,10 @@
 /** @not-serializable */
 namespace Swoole\Coroutine {
 	final class Scheduler {
-		public function add(callable $callback, mixed ...$params): false|void {}
+		public function add(callable $callback, mixed ...$params): ?bool {}
 		public function parallel(int $count, callable $callback, mixed ...$params): void {}
 		public function set(array $settings): void {}
-		public function getOptions(): array|void {}
+		public function getOptions(): ?array {}
 		public function start(): bool {}
 	}
 }
