@@ -539,6 +539,22 @@ static int meta_data_result_parse(PGObject *object) {
     return SW_OK;
 }
 
+#ifndef PG_DIAG_SCHEMA_NAME
+# define PG_DIAG_SCHEMA_NAME 's'
+#endif
+#ifndef PG_DIAG_TABLE_NAME
+# define PG_DIAG_TABLE_NAME 't'
+#endif
+#ifndef PG_DIAG_COLUMN_NAME
+# define PG_DIAG_COLUMN_NAME 'c'
+#endif
+#ifndef PG_DIAG_DATATYPE_NAME
+# define PG_DIAG_DATATYPE_NAME 'd'
+#endif
+#ifndef PG_DIAG_CONSTRAINT_NAME
+# define PG_DIAG_CONSTRAINT_NAME 'n'
+#endif
+
 static void set_error_diag(const PGObject *object, const PGresult *pgsql_result) {
     const unsigned int error_codes[] = {PG_DIAG_SEVERITY,
                                         PG_DIAG_SQLSTATE,
