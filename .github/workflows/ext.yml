@@ -68,6 +68,20 @@ jobs:
         --enable-openssl --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
+  build-centos:
+    runs-on: ubuntu-latest
+    container: 'centos:latest'
+    steps:
+    - uses: actions/checkout@v1
+    - name: install-deps
+      run: yum update -y && yum install -y gcc gcc-c++ make c-ares-devel php-devel curl php-curl libcurl-devel openssl-devel postgresql-devel
+    - name: phpize
+      run: phpize
+    - name: build
+      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-swoole-curl --enable-swoole-json
+        --enable-openssl --enable-cares --with-postgres --enable-debug-log &&
+        make clean && make -j$(sysctl -n hw.ncpu)
+
   build-macos-latest:
     runs-on: macos-latest
     steps:
