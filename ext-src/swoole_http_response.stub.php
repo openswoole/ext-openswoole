@@ -21,10 +21,10 @@ namespace Swoole\Http {
 		public function write(string $data): bool {}
 		public function end(?string $data = null): bool {}
 		public function sendfile(string $fileName, int $offset = 0, int $length = 0): bool {}
-		public function redirect(string $url, int $status_code = 302): bool|void {}
-		public function cookie(string $key, ?string $value = null, int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httpOnly = false, string $sameSite = "", string $priority = ""): false|void {}
-		public function rawcookie(string $key, ?string $value = null, int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httpOnly = false, string $sameSite = "", string $priority = ""): false|void {}
-		public function header(string $key, string $value, bool $format = true): false|void {}
+		public function redirect(string $url, int $status_code = 302): ?bool {}
+		public function cookie(string $key, ?string $value = null, int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httpOnly = false, string $sameSite = "", string $priority = ""): bool {}
+		public function rawcookie(string $key, ?string $value = null, int $expire = 0, string $path = "", string $domain = "", bool $secure = false, bool $httpOnly = false, string $sameSite = "", string $priority = ""): bool {}
+		public function header(string $key, string $value, bool $format = true): bool {}
 		public function initHeader(): bool {}
 		public function isWritable(): bool {}
 		public function detach(): bool {}

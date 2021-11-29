@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 9f7f4b5b31a78e6cad37056bb5fea99757f4d70a */
+ * Stub hash: 5d5504674715d1b7b8a69da5aff49703b290f49a */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Client___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, host, IS_STRING, 0)
@@ -29,7 +29,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Clie
 	ZEND_ARG_TYPE_INFO(0, headers, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Http_Client_setBasicAuth, 0, 2, MAY_BE_BOOL|MAY_BE_VOID)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http_Client_setBasicAuth, 0, 2, _IS_BOOL, 1)
 	ZEND_ARG_TYPE_INFO(0, username, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, password, IS_STRING, 0)
 ZEND_END_ARG_INFO()

@@ -22,7 +22,7 @@ namespace Swoole {
 		public function add(int $value = 1): int|bool {}
 		public function sub(int $value = 1): int|bool {}
 		public function get(): int {}
-		public function set(int $value): bool|void {}
+		public function set(int $value): ?bool {}
 		public function wait(float $timeout = 1.0): bool {}
 		public function wakeup(int $count = 1): bool {}
 		public function cmpset(int $cmpVal = 0, int $newVal = 0): bool {}
@@ -36,7 +36,7 @@ namespace Swoole\Atomic {
 		public function add(int $value = 1): int|bool {}
 		public function sub(int $value = 1): int|bool {}
 		public function get(): int {}
-		public function set(int $value): bool|void {}
+		public function set(int $value): ?bool {}
 		public function cmpset(int $cmpVal = 0, int $newVal = 0): bool {}
     }
 }
