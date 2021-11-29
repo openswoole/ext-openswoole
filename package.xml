@@ -24,10 +24,10 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <date>2021-11-28</date>
-    <time>17:00:00</time>
+    <date>2021-11-29</date>
+    <time>20:00:00</time>
     <version>
-        <release>4.8.0</release>
+        <release>4.8.1</release>
         <api>4.0</api>
     </version>
     <stability>
@@ -36,17 +36,8 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        - Official PHP 8.1 stable support 🎉
-        - Native support for Postgres coroutine client, enable --with-postgres[=DIR]
-        - New HTTP server option: max_request_execution_time
-        - Support strict type hinting and fix the type of arguments, return value
-        - Bug fixed: data loss bug in Swoole table
-        - Bug fixed: compile issues when enabling OpenSSL on macOS
-        - Throw \Swoole\Exception when Swoole table is too small to avoid data loss
-        - Deprecation warning added: Swoole\Coroutine\Server
-        - Deprecation warning added: Swoole\Coroutine\Barrier
-        - Deprecation warning added: Swoole\Coroutine\Http\Server
-        - Deprecation warning added: SWOOLE_HOOK_CURL, use SWOOLE_HOOK_NATIVE_CURL
+        - Fix build with postgresql 9 on RHEL
+        - Fix data type bugs
     </notes>
     <contents>
         <dir name="/">
