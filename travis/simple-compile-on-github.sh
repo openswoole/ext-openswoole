@@ -3,6 +3,9 @@
 # shellcheck disable=SC2006
 __CURRENT__=`pwd`
 __DIR__=$(cd "$(dirname "$0")";pwd)
+__INI__=$(php -i | grep /.+/conf.d -oE | tail -1)
+
+php --ini
 
 if [ "${GITHUB_ACTIONS}" = true ]; then
   # shellcheck disable=SC2028
@@ -20,6 +23,8 @@ phpize > /dev/null && \
  > /dev/null && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
-make install && \
+make install
+
+echo "\n[openswoole]\nextension=openswoole.so" >> "${__INI__}/zz_openswoole.ini" && \
 php --ri curl && \
-php -d extension=openswoole.so --ri openswoole
+php --ri openswoole
