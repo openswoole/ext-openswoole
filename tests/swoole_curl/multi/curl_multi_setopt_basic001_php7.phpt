@@ -11,12 +11,9 @@ if (!extension_loaded("curl")) {
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
-use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
-
-Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
+Co\run(function () {
     $mh = curl_multi_init();
     var_dump(curl_multi_setopt($mh, CURLMOPT_PIPELINING, 0));
 

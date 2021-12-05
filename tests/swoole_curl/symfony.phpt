@@ -39,7 +39,7 @@ run(function () {
     echo 'Done' . PHP_EOL;
 });
 
-Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
+Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 ?>
 --EXPECT--
 Done
