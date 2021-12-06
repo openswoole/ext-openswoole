@@ -9,12 +9,9 @@ Ivo Jansch <ivo@ibuildings.com>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
-use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
-
-Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
+Co\run(function () {
     // create the multiple cURL handle
     $mh = curl_multi_init();
     echo curl_multi_select($mh)."\n";
