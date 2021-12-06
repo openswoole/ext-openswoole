@@ -26,6 +26,7 @@ static zend_class_entry *swoole_coroutine_system_ce;
 SW_EXTERN_C_BEGIN
 PHP_METHOD(swoole_coroutine_system, exec);
 PHP_METHOD(swoole_coroutine_system, sleep);
+PHP_METHOD(swoole_coroutine_system, usleep);
 PHP_METHOD(swoole_coroutine_system, fread);
 PHP_METHOD(swoole_coroutine_system, fgets);
 PHP_METHOD(swoole_coroutine_system, fwrite);
@@ -47,6 +48,7 @@ static const zend_function_entry swoole_coroutine_system_methods[] =
     ZEND_FENTRY(dnsLookup, ZEND_FN(swoole_async_dns_lookup_coro), arginfo_class_Swoole_Coroutine_System_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, exec, arginfo_class_Swoole_Coroutine_System_exec, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, sleep, arginfo_class_Swoole_Coroutine_System_sleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_coroutine_system, usleep, arginfo_class_Swoole_Coroutine_System_usleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, getaddrinfo, arginfo_class_Swoole_Coroutine_System_getaddrinfo, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, statvfs, arginfo_class_Swoole_Coroutine_System_statvfs, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, readFile, arginfo_class_Swoole_Coroutine_System_readFile, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -75,17 +77,31 @@ void php_swoole_coroutine_system_minit(int module_number) {
 }
 
 PHP_METHOD(swoole_coroutine_system, sleep) {
-    double seconds;
+    zend_long seconds;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_DOUBLE(seconds)
+    Z_PARAM_LONG(seconds)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
-    if (UNEXPECTED(seconds < SW_TIMER_MIN_SEC)) {
-        php_swoole_fatal_error(E_WARNING, "Timer must be greater than or equal to " ZEND_TOSTR(SW_TIMER_MIN_SEC));
+    if (UNEXPECTED(seconds < 0)) {
+        php_swoole_fatal_error(E_WARNING, "Timer must be greater than or equal to " ZEND_TOSTR(0));
         RETURN_FALSE;
     }
     RETURN_BOOL(System::sleep(seconds) == 0);
+}
+
+PHP_METHOD(swoole_coroutine_system, usleep) {
+    zend_long microseconds;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_LONG(microseconds)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (UNEXPECTED(microseconds < 0)) {
+        php_swoole_fatal_error(E_WARNING, "Timer must be greater than or equal to " ZEND_TOSTR(0));
+        RETURN_FALSE;
+    }
+    RETURN_BOOL(System::usleep(microseconds) == 0);
 }
 
 static void co_socket_read(int fd, zend_long length, INTERNAL_FUNCTION_PARAMETERS) {
