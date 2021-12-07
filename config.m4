@@ -545,7 +545,7 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_DEFINE(SW_USE_MYSQLND, 1, [use mysqlnd])
     fi
 
-    if test "$PHP_POSTGRES" != "no"; then
+    if test "$PHP_POSTGRES" != "no" && test "$PHP_POSTGRES" != "n"; then
         PHP_EXPAND_PATH($PGSQL_INCLUDE, PGSQL_INCLUDE)
 
         AC_MSG_CHECKING(for pg_config)
