@@ -12,7 +12,6 @@ Co\run(function () {
 function test() {
     echo "curl init\n";
     $ch = curl_init();
-//    $url = 'https://www.baidu.com/';
     $url = "http://127.0.0.1:9801/";
 
     curl_setopt($ch, CURLOPT_URL, $url);

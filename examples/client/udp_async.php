@@ -1,5 +1,5 @@
 <?php
-$client = new swoole_client(SWOOLE_SOCK_UDP, SWOOLE_SOCK_ASYNC); //异步非阻塞
+$client = new swoole_client(SWOOLE_SOCK_UDP, SWOOLE_SOCK_ASYNC); // async nonblock
 
 $client->on("connect", function(swoole_client $cli) {
     echo "connected\n";

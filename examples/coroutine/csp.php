@@ -4,29 +4,29 @@ $serv = new \swoole_http_server("127.0.0.1", 9503, SWOOLE_BASE);
 $serv->on('request', function ($req, $resp) {
     $chan = new chan(2);
     go(function () use ($chan) {
-        $cli = new Swoole\Coroutine\Http\Client('www.baidu.com', 443, true);
+        $cli = new Swoole\Coroutine\Http\Client('www.google.com', 443, true);
             $cli->set(['timeout' => 10]);
             $cli->setHeaders([
-            'Host' => "www.baidu.com",
+            'Host' => "www.google.com",
             "User-Agent" => 'Chrome/49.0.2587.3',
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
             'Accept-Encoding' => 'gzip',
         ]);
         $ret = $cli->get('/');
-        $chan->push(['www.baidu.com' => substr(trim(strip_tags($cli->body)), 0, 100)]);
+        $chan->push(['www.google.com' => substr(trim(strip_tags($cli->body)), 0, 100)]);
     });
 
     go(function () use ($chan) {
-        $cli = new Swoole\Coroutine\Http\Client('www.taobao.com', 443, true);
+        $cli = new Swoole\Coroutine\Http\Client('www.php.net', 443, true);
         $cli->set(['timeout' => 10]);
         $cli->setHeaders([
-            'Host' => "www.taobao.com",
+            'Host' => "www.php.net",
             "User-Agent" => 'Chrome/49.0.2587.3',
             'Accept' => 'text/html,application/xhtml+xml,application/xml',
             'Accept-Encoding' => 'gzip',
         ]);
         $ret = $cli->get('/');
-        $chan->push(['www.taobao.com' => substr(trim(strip_tags($cli->body)), 0, 100)]);
+        $chan->push(['www.php.net' => substr(trim(strip_tags($cli->body)), 0, 100)]);
     });
 
     $result = [];

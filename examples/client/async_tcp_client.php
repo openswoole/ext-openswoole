@@ -1,5 +1,5 @@
 <?php
-$client = new swoole_client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_ASYNC); //异步非阻塞
+$client = new Swoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_ASYNC); // async, nonblock
 //$client->set(array(
 //    'socket_buffer_size' => 1024 * 1024 * 2,
 //    'open_eof_check' => true,
@@ -19,12 +19,12 @@ $client->on("receive", function(swoole_client $cli, $data){
     $cli->_count++;
     if ($cli->_count > 5)
     {
-        //睡眠模式，不再接收新的数据
+        // not receving data when sleep
         echo "count=10, sleep(5000ms)\n";
         $cli->sleep();
         $cli->_count = 0;
         swoole_timer_after(5000, function() use ($cli) {
-            //唤醒
+            // wake up
             $cli->wakeup();
         });
         //$cli->close();
