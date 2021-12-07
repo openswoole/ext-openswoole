@@ -1,22 +1,23 @@
-
 <?php
 
-go(function () {
+// Find more example at https://www.swoole.co.uk/docs/modules/swoole-coroutine-postgres
 
-    $pg = new Swoole\Coroutine\PostgreSql();
-    $conn  = $pg -> connect ("host=127.0.0.1 port=5432 dbname=test user=wuzhenyu password=");
-    $result = $pg->query($conn, 'SELECT * FROM test;');
-    $arr = $pg->fetchAll($result);// the same with affectedRows(),fetchObject(),fetchAssoc(),fetchArray(),fetchRow(),numRows()
+use Swoole\Coroutine\PostgreSQL;
+
+Co\run(function() {
+
+    $pg = new PostgreSQL();
+
+    $conn = $pg->connect("host=127.0.0.1;port=5432;dbname=test;user=postgres;password=***");
+
+    if(!$conn)
+    {
+        var_dump($pg->error);
+        return;
+    }
+
+    $result = $pg->query('SELECT * FROM test;');
+
+    $arr = $pg->fetchAll($result);
     var_dump($arr);
-
 });
-
-go(function () {
-
-    $pg = new Swoole\Coroutine\PostgreSql();
-    $conn  = $pg -> connect ("host=127.0.0.1 port=5432 dbname=test user=wuzhenyu password=");
-    $metaData = $pg->metaData($conn, 'test');
-    var_dump($metaData);
-
-});
-?>
