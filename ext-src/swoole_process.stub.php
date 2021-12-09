@@ -42,7 +42,7 @@ namespace Swoole {
         public function setBlocking(bool $blocking): void {}
         public static function setPriority(int $which, int $priority): bool {}
         public function getPriority(int $which): int {}
-        public static function wait(bool $blocking = 1): bool|array {}
+        public static function wait(bool $blocking = true): bool|array {}
         public function name(string $processName): bool {}
     }
 }
