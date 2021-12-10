@@ -537,6 +537,10 @@ int Server::start() {
     gs->master_pid = getpid();
     gs->start_time = ::time(nullptr);
 
+    gs->tasking_num = 0;
+    gs->reload_count = 0;
+    gs->reload_last_time = ::time(nullptr);
+
     /**
      * store to ProcessPool object
      */

@@ -11,11 +11,17 @@ $server->on("Start", function(Server $server)
     echo "Swoole http server is started at http://127.0.0.1:9501\n";
 });
 
-$server->on("Request", function(Request $request, Response $response)
+class A {
+    public $a = 'abcd';
+};
+
+$server->on("Request", function(Request $request, Response $response) use ($server)
 {
-    sleep(70);
+    // memory leak example
+    global $c;
+    $c[] = new A();
     $response->header("Content-Type", "text/plain");
-    $response->end("Hello OpenSwoole.\n");
+    $response->end(json_encode($server->stats()));
 });
 
 $server->start();

@@ -2684,58 +2684,82 @@ static PHP_METHOD(swoole_server, resume) {
     RETURN_BOOL(serv->feedback(conn, SW_SERVER_EVENT_RESUME_RECV));
 }
 
+static uint32_t vm_object_count() {
+    uint32_t count = 0;
+
+    if (EG(objects_store).object_buckets) {
+        for (uint32_t i = 1; i < EG(objects_store).top ; i++) {
+            if (EG(objects_store).object_buckets[i] &&
+               IS_OBJ_VALID(EG(objects_store).object_buckets[i]) && (!(GC_FLAGS(EG(objects_store).object_buckets[i]) & IS_OBJ_DESTRUCTOR_CALLED))) {
+                count++;
+            }
+        }
+    }
+
+    return count;
+}
+
 static PHP_METHOD(swoole_server, stats) {
-    Server *serv = php_swoole_server_get_and_check_server(ZEND_THIS);
-    if (sw_unlikely(!serv->is_started())) {
+    Server *server = php_swoole_server_get_and_check_server(ZEND_THIS);
+    if (sw_unlikely(!server->is_started())) {
         php_swoole_fatal_error(E_WARNING, "server is not running");
         RETURN_FALSE;
     }
 
     array_init(return_value);
-    add_assoc_long_ex(return_value, ZEND_STRL("start_time"), serv->gs->start_time);
-    add_assoc_long_ex(return_value, ZEND_STRL("connection_num"), serv->gs->connection_num);
-    add_assoc_long_ex(return_value, ZEND_STRL("accept_count"), serv->gs->accept_count);
-    add_assoc_long_ex(return_value, ZEND_STRL("close_count"), serv->gs->close_count);
-    /**
-     * reset
-     */
-    int tasking_num = serv->gs->tasking_num;
-    if (tasking_num < 0) {
-        tasking_num = serv->gs->tasking_num = 0;
-    }
 
-    uint32_t idle_worker_num = 0;
-    uint32_t worker_num = serv->worker_num;
-    uint32_t task_worker_num = serv->task_worker_num;
+    // server
+    add_assoc_string(return_value, "version", (char *) OPENSWOOLE_VERSION);
+    add_assoc_long_ex(return_value, ZEND_STRL("master_pid"), server->gs->master_pid);
+    add_assoc_long_ex(return_value, ZEND_STRL("manager_pid"), server->gs->manager_pid);
+
+    add_assoc_long_ex(return_value, ZEND_STRL("start_time"), server->gs->start_time);
+    add_assoc_long_ex(return_value, ZEND_STRL("start_since"), ::time(nullptr) - server->gs->start_time);
+
+    add_assoc_long_ex(return_value, ZEND_STRL("connection_num"), server->gs->connection_num);
+    add_assoc_long_ex(return_value, ZEND_STRL("accept_count"), server->gs->accept_count);
+    add_assoc_long_ex(return_value, ZEND_STRL("close_count"), server->gs->close_count);
+    add_assoc_long_ex(return_value, ZEND_STRL("reload_count"), server->gs->reload_count);
+    add_assoc_long_ex(return_value, ZEND_STRL("reload_last_time"), server->gs->reload_last_time);
+    add_assoc_long_ex(return_value, ZEND_STRL("php_memory_usage"), zend_memory_usage(true));
+    add_assoc_long_ex(return_value, ZEND_STRL("server_memory_usage"), dynamic_cast<GlobalMemory *>(sw_mem_pool())->get_memory_size());
+    add_assoc_long_ex(return_value, ZEND_STRL("vm_object_num"), vm_object_count());
+    add_assoc_long_ex(return_value, ZEND_STRL("vm_resource_num"), zend_array_count(&EG(regular_list)));
+
+    // table count and usage, row count
+
+    // worker count and memory usage
+
+    uint32_t worker_num = server->worker_num;
+    uint32_t idle_worker_num = server->get_idle_worker_num();
+    uint32_t task_worker_num = server->task_worker_num;
 
     add_assoc_long_ex(return_value, ZEND_STRL("worker_num"), worker_num);
-    idle_worker_num = serv->get_idle_worker_num();
-
     add_assoc_long_ex(return_value, ZEND_STRL("idle_worker_num"), idle_worker_num);
     add_assoc_long_ex(return_value, ZEND_STRL("task_worker_num"), task_worker_num);
-    add_assoc_long_ex(return_value, ZEND_STRL("tasking_num"), tasking_num);
-    add_assoc_long_ex(return_value, ZEND_STRL("request_count"), serv->gs->request_count);
-    add_assoc_long_ex(return_value, ZEND_STRL("dispatch_count"), serv->gs->dispatch_count);
+    if (task_worker_num > 0) {
+        uint32_t task_worker_idle_num = server->get_idle_task_worker_num();
+        add_assoc_long_ex(return_value, ZEND_STRL("task_worker_idle_num"), task_worker_idle_num);
+    }
+    add_assoc_long_ex(return_value, ZEND_STRL("tasking_num"), server->gs->tasking_num);
+    add_assoc_long_ex(return_value, ZEND_STRL("request_count"), server->gs->request_count);
+    add_assoc_long_ex(return_value, ZEND_STRL("dispatch_count"), server->gs->dispatch_count);
 
     if (SwooleWG.worker) {
         add_assoc_long_ex(return_value, ZEND_STRL("worker_request_count"), SwooleWG.worker->request_count);
         add_assoc_long_ex(return_value, ZEND_STRL("worker_dispatch_count"), SwooleWG.worker->dispatch_count);
     }
 
-    if (serv->task_ipc_mode > Server::TASK_IPC_UNIXSOCK && serv->gs->task_workers.queue) {
+    if (server->task_ipc_mode > Server::TASK_IPC_UNIXSOCK && server->gs->task_workers.queue) {
         size_t queue_num = -1;
         size_t queue_bytes = -1;
-        if (serv->gs->task_workers.queue->stat(&queue_num, &queue_bytes)) {
+        if (server->gs->task_workers.queue->stat(&queue_num, &queue_bytes)) {
             add_assoc_long_ex(return_value, ZEND_STRL("task_queue_num"), queue_num);
             add_assoc_long_ex(return_value, ZEND_STRL("task_queue_bytes"), queue_bytes);
         }
     }
 
-    if (task_worker_num > 0) {
-        idle_worker_num = serv->get_idle_task_worker_num();
-        add_assoc_long_ex(return_value, ZEND_STRL("task_idle_worker_num"), idle_worker_num);
-    }
-
+    // coro
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_num"), Coroutine::count());
 }
 
