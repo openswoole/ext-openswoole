@@ -23,6 +23,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
         $client->close();
     });
     puts('done!');
+    sleep(1);
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
