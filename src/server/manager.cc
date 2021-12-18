@@ -659,6 +659,7 @@ pid_t Server::spawn_user_worker(Worker *worker) {
          * user_workers: shared memory
          */
         get_worker(worker->id)->pid = worker->pid = pid;
+        get_worker(worker->id)->start_time = ::time(nullptr);
         user_worker_map->emplace(std::make_pair(pid, worker));
         return pid;
     }
