@@ -2787,7 +2787,7 @@ static PHP_METHOD(swoole_server, stats) {
     }
 
     add_assoc_long_ex(&stats, ZEND_STRL("start_time"), server->gs->start_time);
-    add_assoc_long_ex(&stats, ZEND_STRL("start_time_seconds"), ::time(nullptr) - server->gs->start_time);
+    add_assoc_long_ex(&stats, ZEND_STRL("start_seconds"), ::time(nullptr) - server->gs->start_time);
     add_assoc_long_ex(&stats, ZEND_STRL("max_conn"), server->get_max_connection());
     add_assoc_long_ex(&stats, ZEND_STRL("connections_accepted"), server->gs->accept_count);
     add_assoc_long_ex(&stats, ZEND_STRL("connections_active"), server->gs->connection_num);
@@ -2817,7 +2817,7 @@ static PHP_METHOD(swoole_server, stats) {
             add_assoc_long(&worker_stats, "worker_id", worker->id);
             add_assoc_long(&worker_stats, "pid", worker->pid);
             add_assoc_long(&worker_stats, "start_time", worker->start_time);
-            add_assoc_long(&worker_stats, "start_time_seconds", ::time(nullptr) - worker->start_time);
+            add_assoc_long(&worker_stats, "start_seconds", ::time(nullptr) - worker->start_time);
             add_assoc_long(&worker_stats, "request_count", worker->request_count);
             add_assoc_long(&worker_stats, "dispatch_count", worker->dispatch_count);
             add_next_index_zval(&event_workers, &worker_stats);
@@ -2828,7 +2828,7 @@ static PHP_METHOD(swoole_server, stats) {
             add_assoc_long(&worker_stats, "worker_id", worker->id);
             add_assoc_long(&worker_stats, "pid", worker->pid);
             add_assoc_long(&worker_stats, "start_time", worker->start_time);
-            add_assoc_long(&worker_stats, "start_time_seconds", ::time(nullptr) - worker->start_time);
+            add_assoc_long(&worker_stats, "start_seconds", ::time(nullptr) - worker->start_time);
             add_next_index_zval(&task_workers, &worker_stats);
 
         } else {
@@ -2837,7 +2837,7 @@ static PHP_METHOD(swoole_server, stats) {
             add_assoc_long(&worker_stats, "worker_id", worker->id);
             add_assoc_long(&worker_stats, "pid", worker->pid);
             add_assoc_long(&worker_stats, "start_time", worker->start_time);
-            add_assoc_long(&worker_stats, "start_time_seconds", ::time(nullptr) - worker->start_time);
+            add_assoc_long(&worker_stats, "start_seconds", ::time(nullptr) - worker->start_time);
             add_next_index_zval(&user_workers, &worker_stats);
 
         }
