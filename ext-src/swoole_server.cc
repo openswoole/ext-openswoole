@@ -2434,6 +2434,7 @@ static PHP_METHOD(swoole_server, addProcess) {
     Z_TRY_ADDREF_P(process);
 
     Worker *worker = php_swoole_process_get_and_check_worker(process);
+    worker->start_time = ::time(nullptr);
     worker->ptr = process;
 
     int id = serv->add_worker(worker);
@@ -2691,12 +2692,46 @@ static uint32_t vm_object_count() {
         for (uint32_t i = 1; i < EG(objects_store).top ; i++) {
             if (EG(objects_store).object_buckets[i] &&
                IS_OBJ_VALID(EG(objects_store).object_buckets[i]) && (!(GC_FLAGS(EG(objects_store).object_buckets[i]) & IS_OBJ_DESTRUCTOR_CALLED))) {
+                // printf("obj: %s\n", EG(objects_store).object_buckets[i]->ce->name->val);
                 count++;
             }
         }
     }
 
     return count;
+}
+
+static zval vm_object_top() {
+
+    std::unordered_map<std::string, int> classes;
+
+    if (EG(objects_store).object_buckets) {
+        for (uint32_t i = 1; i < EG(objects_store).top ; i++) {
+            if (EG(objects_store).object_buckets[i] &&
+               IS_OBJ_VALID(EG(objects_store).object_buckets[i]) && (!(GC_FLAGS(EG(objects_store).object_buckets[i]) & IS_OBJ_DESTRUCTOR_CALLED))) {
+                classes[EG(objects_store).object_buckets[i]->ce->name->val] ++;
+            }
+        }
+    }
+
+    std::vector<std::pair<std::string,int>> vClasses (classes.begin(),classes.end());
+    sort(vClasses.begin(),vClasses.end(), [](std::pair<std::string,int>&a, std::pair<std::string,int>&b){
+       return a.second>b.second;
+    });
+
+    zval topc;
+    array_init(&topc);
+
+    int i = 0;
+    for (const std::pair<std::string, int>& kv : vClasses)
+    {
+        add_assoc_long(&topc, kv.first.c_str(), kv.second);
+        if(i++ > 10) {
+            break;
+        }
+    }
+
+    return topc;
 }
 
 static PHP_METHOD(swoole_server, stats) {
@@ -2706,61 +2741,128 @@ static PHP_METHOD(swoole_server, stats) {
         RETURN_FALSE;
     }
 
-    array_init(return_value);
+    zend_long mode = 0;
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(mode)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    zval stats;
+    array_init(&stats);
 
     // server
-    add_assoc_string(return_value, "version", (char *) OPENSWOOLE_VERSION);
-    add_assoc_long_ex(return_value, ZEND_STRL("master_pid"), server->gs->master_pid);
-    add_assoc_long_ex(return_value, ZEND_STRL("manager_pid"), server->gs->manager_pid);
-
-    add_assoc_long_ex(return_value, ZEND_STRL("start_time"), server->gs->start_time);
-    add_assoc_long_ex(return_value, ZEND_STRL("start_since"), ::time(nullptr) - server->gs->start_time);
-
-    add_assoc_long_ex(return_value, ZEND_STRL("connection_num"), server->gs->connection_num);
-    add_assoc_long_ex(return_value, ZEND_STRL("accept_count"), server->gs->accept_count);
-    add_assoc_long_ex(return_value, ZEND_STRL("close_count"), server->gs->close_count);
-    add_assoc_long_ex(return_value, ZEND_STRL("reload_count"), server->gs->reload_count);
-    add_assoc_long_ex(return_value, ZEND_STRL("reload_last_time"), server->gs->reload_last_time);
-    add_assoc_long_ex(return_value, ZEND_STRL("php_memory_usage"), zend_memory_usage(true));
-    add_assoc_long_ex(return_value, ZEND_STRL("server_memory_usage"), dynamic_cast<GlobalMemory *>(sw_mem_pool())->get_memory_size());
-    add_assoc_long_ex(return_value, ZEND_STRL("vm_object_num"), vm_object_count());
-    add_assoc_long_ex(return_value, ZEND_STRL("vm_resource_num"), zend_array_count(&EG(regular_list)));
+    add_assoc_long(&stats, "up", 1);
+    add_assoc_string(&stats, "version", (char *) OPENSWOOLE_VERSION);
+    add_assoc_long_ex(&stats, ZEND_STRL("master_pid"), server->gs->master_pid);
+    add_assoc_long_ex(&stats, ZEND_STRL("manager_pid"), server->gs->manager_pid);
+    add_assoc_long_ex(&stats, ZEND_STRL("worker_id"), SwooleWG.worker->id);
 
     // table count and usage, row count
 
     // worker count and memory usage
-
     uint32_t worker_num = server->worker_num;
     uint32_t idle_worker_num = server->get_idle_worker_num();
     uint32_t task_worker_num = server->task_worker_num;
 
-    add_assoc_long_ex(return_value, ZEND_STRL("worker_num"), worker_num);
-    add_assoc_long_ex(return_value, ZEND_STRL("idle_worker_num"), idle_worker_num);
-    add_assoc_long_ex(return_value, ZEND_STRL("task_worker_num"), task_worker_num);
-    if (task_worker_num > 0) {
-        uint32_t task_worker_idle_num = server->get_idle_task_worker_num();
-        add_assoc_long_ex(return_value, ZEND_STRL("task_worker_idle_num"), task_worker_idle_num);
-    }
-    add_assoc_long_ex(return_value, ZEND_STRL("tasking_num"), server->gs->tasking_num);
-    add_assoc_long_ex(return_value, ZEND_STRL("request_count"), server->gs->request_count);
-    add_assoc_long_ex(return_value, ZEND_STRL("dispatch_count"), server->gs->dispatch_count);
+    add_assoc_long_ex(&stats, ZEND_STRL("reactor_threads_num"), server->reactor_num);
+    add_assoc_long_ex(&stats, ZEND_STRL("workers_total"), worker_num);
+    add_assoc_long_ex(&stats, ZEND_STRL("workers_idle"), idle_worker_num);
+    add_assoc_long_ex(&stats, ZEND_STRL("task_workers_total"), task_worker_num);
+    
+    uint32_t task_worker_idle_num = server->get_idle_task_worker_num();
+    add_assoc_long_ex(&stats, ZEND_STRL("task_workers_idle"), task_worker_idle_num);
+    add_assoc_long_ex(&stats, ZEND_STRL("tasking_num"), server->gs->tasking_num);
 
-    if (SwooleWG.worker) {
-        add_assoc_long_ex(return_value, ZEND_STRL("worker_request_count"), SwooleWG.worker->request_count);
-        add_assoc_long_ex(return_value, ZEND_STRL("worker_dispatch_count"), SwooleWG.worker->dispatch_count);
-    }
+    add_assoc_long_ex(&stats, ZEND_STRL("user_workers_total"), server->user_worker_num);
+    add_assoc_long_ex(&stats, ZEND_STRL("dispatch_total"), server->gs->dispatch_count);
+    add_assoc_long_ex(&stats, ZEND_STRL("requests_total"), server->gs->request_count);
 
     if (server->task_ipc_mode > Server::TASK_IPC_UNIXSOCK && server->gs->task_workers.queue) {
         size_t queue_num = -1;
         size_t queue_bytes = -1;
         if (server->gs->task_workers.queue->stat(&queue_num, &queue_bytes)) {
-            add_assoc_long_ex(return_value, ZEND_STRL("task_queue_num"), queue_num);
-            add_assoc_long_ex(return_value, ZEND_STRL("task_queue_bytes"), queue_bytes);
+            add_assoc_long_ex(&stats, ZEND_STRL("task_queue_num"), queue_num);
+            add_assoc_long_ex(&stats, ZEND_STRL("task_queue_bytes"), queue_bytes);
         }
     }
 
-    // coro
-    add_assoc_long_ex(return_value, ZEND_STRL("coroutine_num"), Coroutine::count());
+    add_assoc_long_ex(&stats, ZEND_STRL("start_time"), server->gs->start_time);
+    add_assoc_long_ex(&stats, ZEND_STRL("start_time_seconds"), ::time(nullptr) - server->gs->start_time);
+    add_assoc_long_ex(&stats, ZEND_STRL("max_conn"), server->get_max_connection());
+    add_assoc_long_ex(&stats, ZEND_STRL("connections_accepted"), server->gs->accept_count);
+    add_assoc_long_ex(&stats, ZEND_STRL("connections_active"), server->gs->connection_num);
+    add_assoc_long_ex(&stats, ZEND_STRL("connections_closed"), server->gs->close_count);
+    add_assoc_long_ex(&stats, ZEND_STRL("reload_count"), server->gs->reload_count);
+    add_assoc_long_ex(&stats, ZEND_STRL("reload_last_time"), server->gs->reload_last_time);
+    add_assoc_long_ex(&stats, ZEND_STRL("worker_memory_usage"), zend_memory_usage(true));
+    add_assoc_long_ex(&stats, ZEND_STRL("worker_vm_object_num"), vm_object_count());
+    add_assoc_long_ex(&stats, ZEND_STRL("worker_vm_resource_num"), zend_array_count(&EG(regular_list)));
+    add_assoc_long_ex(&stats, ZEND_STRL("coroutine_num"), Coroutine::count());
+
+    // workers
+
+    zval event_workers, task_workers, user_workers, worker_stats;
+
+    array_init_size(&event_workers, server->worker_num);
+    array_init_size(&task_workers, server->task_worker_num);
+    array_init_size(&user_workers, server->user_worker_num);
+
+    // worker_num, task_worker_num, task_worker_num
+    uint32_t all_worker_num = server->get_all_worker_num();
+    SW_LOOP_N(all_worker_num) {
+        Worker *worker = server->get_worker(i);
+        if(i < server->worker_num) {
+            // event worker
+            array_init(&worker_stats);
+            add_assoc_long(&worker_stats, "worker_id", worker->id);
+            add_assoc_long(&worker_stats, "pid", worker->pid);
+            add_assoc_long(&worker_stats, "start_time", worker->start_time);
+            add_assoc_long(&worker_stats, "start_time_seconds", ::time(nullptr) - worker->start_time);
+            add_assoc_long(&worker_stats, "request_count", worker->request_count);
+            add_assoc_long(&worker_stats, "dispatch_count", worker->dispatch_count);
+            add_next_index_zval(&event_workers, &worker_stats);
+
+        } else if(i < server->worker_num + server->task_worker_num) {
+            // task worker
+            array_init(&worker_stats);
+            add_assoc_long(&worker_stats, "worker_id", worker->id);
+            add_assoc_long(&worker_stats, "pid", worker->pid);
+            add_assoc_long(&worker_stats, "start_time", worker->start_time);
+            add_assoc_long(&worker_stats, "start_time_seconds", ::time(nullptr) - worker->start_time);
+            add_next_index_zval(&task_workers, &worker_stats);
+
+        } else {
+            // user worker
+            array_init(&worker_stats);
+            add_assoc_long(&worker_stats, "worker_id", worker->id);
+            add_assoc_long(&worker_stats, "pid", worker->pid);
+            add_assoc_long(&worker_stats, "start_time", worker->start_time);
+            add_assoc_long(&worker_stats, "start_time_seconds", ::time(nullptr) - worker->start_time);
+            add_next_index_zval(&user_workers, &worker_stats);
+
+        }
+    }
+
+    add_assoc_zval(&stats, "event_workers", &event_workers);
+    add_assoc_zval(&stats, "task_workers", &task_workers);
+    add_assoc_zval(&stats, "user_workers", &user_workers);
+    zval topc = vm_object_top();
+    add_assoc_zval(&stats, "top_classes", &topc);
+
+    if(mode == 1) {
+        zval args[1];
+        args[0] = stats;
+        zend::function::ReturnValue retval = zend::function::call("\\Swoole\\Server\\Helper::statsToJSON", 1, args);
+        zval_ptr_dtor(&args[0]);
+        RETURN_ZVAL(&retval.value, 1, 0);
+    } else if(mode == 2) {
+        zval args[1];
+        args[0] = stats;
+        zend::function::ReturnValue retval = zend::function::call("\\Swoole\\Server\\Helper::statsToOpenMetrics", 1, args);
+        zval_ptr_dtor(&args[0]);
+        RETURN_ZVAL(&retval.value, 1, 0);
+    }
+    RETURN_ZVAL(&stats, 0, 0);
 }
 
 static PHP_METHOD(swoole_server, reload) {
