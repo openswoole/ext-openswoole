@@ -57,7 +57,7 @@ namespace Swoole {
         public function connection_list(int $startFd = 0, int $pageSize = 10): bool|array {}
         public function sendMessage(mixed $message, int $workerId): bool {}
         public function addProcess(\Swoole\Process $process): bool|int {}
-        public function stats(): array|false {}
+        public function stats(int $mode = 0): string|array|false {}
         public function getSocket(int $port = -1): mixed {}
         public function bind(int $fd, int $uid): bool {}
         public function after(int $ms, callable $callback): void {}
