@@ -24,7 +24,7 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <date>2021-11-29</date>
+    <date>2021-12-19</date>
     <time>20:00:00</time>
     <version>
         <release>4.9.0</release>
@@ -36,8 +36,14 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        - Fix build with postgresql 9 on RHEL
-        - Fix data type bugs
+        - OpenMetrics and JSON format server metrics support
+        - Added more OpenSwoole server metrics
+        - Updated $server->stats() API
+        - Fix CurlMulti bugs
+        - Fix type bug in Process->wait
+        - Added Laravel Octane tests
+        - Added CentOS build tests
+        - Support disable Postgres with --with-postgres=n
     </notes>
     <contents>
         <dir name="/">
