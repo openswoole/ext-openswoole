@@ -24,6 +24,7 @@
 #include <unordered_map>
 #include <list>
 #include <vector>
+#include <algorithm>
 
 //--------------------------------------------------------
 enum php_swoole_server_callback_type {

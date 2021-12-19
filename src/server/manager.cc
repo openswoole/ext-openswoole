@@ -298,7 +298,7 @@ void Manager::start(Server *_server) {
             }
             // reload task & event workers
             else if (reload_all_worker) {
-                swoole_info("Server is reloading all workers now");
+                swoole_info("Server is reloading all workers");
                 if (_server->onBeforeReload != nullptr) {
                     _server->onBeforeReload(_server);
                 }
@@ -330,6 +330,8 @@ void Manager::start(Server *_server) {
                         reload_worker_i = 0;
                     }
                 }
+                swoole_info("Server has done all workers reloading");
+                //
                 goto _kill_worker;
             }
             // only reload task workers
@@ -400,6 +402,9 @@ void Manager::start(Server *_server) {
     // reload worker
     _kill_worker:
         if (reloading) {
+            // count reloading
+            _server->gs->reload_last_time = ::time(nullptr);
+            sw_atomic_fetch_add(&_server->gs->reload_count, 1);
             // reload finish
             if (reload_worker_i >= reload_worker_num) {
                 reload_worker_pid = reload_worker_i = 0;
@@ -654,6 +659,7 @@ pid_t Server::spawn_user_worker(Worker *worker) {
          * user_workers: shared memory
          */
         get_worker(worker->id)->pid = worker->pid = pid;
+        get_worker(worker->id)->start_time = ::time(nullptr);
         user_worker_map->emplace(std::make_pair(pid, worker));
         return pid;
     }

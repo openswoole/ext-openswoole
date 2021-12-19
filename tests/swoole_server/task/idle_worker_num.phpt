@@ -25,7 +25,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $data = $client->recv();
     Assert::assert($data);
     $json = json_decode($data);
-    Assert::eq($json->task_idle_worker_num, 1);
+    Assert::eq($json->task_workers_idle, 1);
     $pm->kill();
 };
 

@@ -326,6 +326,7 @@ bool ProcessFactory::finish(SendData *resp) {
                          "send %d bytes failed, because session#%ld is closed",
                          resp->info.len,
                          session_id);
+        // printf("data: %s\n", resp->data);
         return false;
     } else if (conn->overflow) {
         if (server_->send_yield && process_is_supported_send_yield(server_, conn)) {

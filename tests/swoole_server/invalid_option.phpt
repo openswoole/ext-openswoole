@@ -23,7 +23,7 @@ try {
 
 ?>
 --EXPECTF--
-Warning: unsupported option [invalid_option] in @swoole-src/library/core/Server/Helper.php on line %d
+Warning: Unknown option [invalid_option] in @swoole-src/library/core/Server/Helper.php on line %d
 #0 %S Swoole\Server\Helper::checkOptions()
 #1 %S Swoole\Server\Port->set()
 #2 %S Swoole\Server->set()%S
