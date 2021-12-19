@@ -1,5 +1,5 @@
 --TEST--
-swoole_server: idle_worker_num
+swoole_server: workers_idle
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
@@ -23,7 +23,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $data = $client->recv();
     Assert::assert($data);
     $json = json_decode($data);
-    Assert::eq($json->idle_worker_num, 2);
+    Assert::eq($json->workers_idle, 2);
     $pm->kill();
 };
 

@@ -12,7 +12,6 @@ if (swoole_cpu_num() === 1) {
 require __DIR__ . '/../include/bootstrap.php';
 
 const WORKER_NUM = 4;
-error_reporting(0);
 
 $pm = new ProcessManager;
 $atomic = new Swoole\Atomic;
@@ -68,7 +67,7 @@ $pm->run();
 %d [%d] start
 %d [%d] start
 %s start to reload
-[%s]	INFO	Server is reloading all workers now
+[%s]	INFO	Server is reloading all workers
 [%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
 [%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
 [%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
