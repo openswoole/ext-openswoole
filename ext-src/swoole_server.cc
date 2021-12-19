@@ -2715,7 +2715,7 @@ static zval vm_object_top() {
     }
 
     std::vector<std::pair<std::string,int>> vClasses (classes.begin(),classes.end());
-    sort(vClasses.begin(),vClasses.end(), [](std::pair<std::string,int>&a, std::pair<std::string,int>&b){
+    std::sort(vClasses.begin(),vClasses.end(), [](std::pair<std::string,int>&a, std::pair<std::string,int>&b){
        return a.second>b.second;
     });
 
