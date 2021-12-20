@@ -381,7 +381,9 @@ static zend_function *swoole_curl_get_constructor(zend_object *object) {
 static zend_object *swoole_curl_clone_obj(zend_object *object) {
     php_curl *ch;
     CURL *cp;
+#if LIBCURL_VERSION_NUM >= 0x073800 /* 7.56.0 */
     zval *postfields;
+#endif
     zend_object *clone_object;
     php_curl *clone_ch;
 
@@ -399,6 +401,7 @@ static zend_object *swoole_curl_clone_obj(zend_object *object) {
     clone_ch->cp = cp;
     swoole_setup_easy_copy_handlers(clone_ch, ch);
 
+#if LIBCURL_VERSION_NUM >= 0x073800 /* 7.56.0 */
     postfields = &clone_ch->postfields;
     if (Z_TYPE_P(postfields) != IS_UNDEF) {
         if (build_mime_structure_from_hash(clone_ch, postfields) != SUCCESS) {
@@ -406,6 +409,7 @@ static zend_object *swoole_curl_clone_obj(zend_object *object) {
             return &clone_ch->std;
         }
     }
+#endif
 
     return &clone_ch->std;
 }
@@ -415,7 +419,9 @@ static HashTable *swoole_curl_get_gc(zend_object *object, zval **table, int *n) 
 
     zend_get_gc_buffer *gc_buffer = zend_get_gc_buffer_create();
 
+#if LIBCURL_VERSION_NUM >= 0x073800 /* 7.56.0 */
     zend_get_gc_buffer_add_zval(gc_buffer, &curl->postfields);
+#endif
     if (curl_handlers(curl)) {
         if (curl_handlers(curl)->read) {
             zend_get_gc_buffer_add_zval(gc_buffer, &curl_handlers(curl)->read->func_name);
@@ -2835,7 +2841,9 @@ static void _php_curl_free(php_curl *ch) {
     efree(ch->handlers);
 #endif
 
+#if LIBCURL_VERSION_NUM >= 0x073800 /* 7.56.0 */
     zval_ptr_dtor(&ch->postfields);
+#endif
 
 #if PHP_VERSION_ID >= 80100
     zval_ptr_dtor(&ch->private_data);
