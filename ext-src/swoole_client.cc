@@ -835,7 +835,7 @@ static PHP_METHOD(swoole_client, send) {
 static PHP_METHOD(swoole_client, sendto) {
     char *host;
     size_t host_len;
-    long port;
+    zend_long port = 0;
     char *data;
     size_t len;
 
