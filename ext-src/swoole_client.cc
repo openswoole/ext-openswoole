@@ -665,10 +665,12 @@ static PHP_METHOD(swoole_client, __construct) {
     char *id = nullptr;
     size_t len = 0;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|bs", &type, &async, &id, &len) == FAILURE) {
-        php_swoole_fatal_error(E_ERROR, "socket type param is required");
-        RETURN_FALSE;
-    }
+    ZEND_PARSE_PARAMETERS_START(1, 3)
+        Z_PARAM_LONG(type)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_BOOL(async)
+        Z_PARAM_STRING(id, len)
+    ZEND_PARSE_PARAMETERS_END();
 
     if (async) {
         php_swoole_fatal_error(E_ERROR, "async field should always be false.");
