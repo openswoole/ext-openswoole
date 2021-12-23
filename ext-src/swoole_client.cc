@@ -906,10 +906,6 @@ static PHP_METHOD(swoole_client, sendfile) {
     zend_long offset = 0;
     zend_long length = 0;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|ll", &file, &file_len, &offset, &length) == FAILURE) {
-        RETURN_FALSE;
-    }
-
     ZEND_PARSE_PARAMETERS_START(1, 3)
     Z_PARAM_STRING(file, file_len)
     Z_PARAM_OPTIONAL
@@ -1342,9 +1338,12 @@ static PHP_METHOD(swoole_client, verifyPeerCert) {
         RETURN_FALSE;
     }
     zend_bool allow_self_signed = 0;
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "|b", &allow_self_signed) == FAILURE) {
-        RETURN_FALSE;
-    }
+
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_BOOL(allow_self_signed)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
     SW_CHECK_RETURN(cli->ssl_verify(allow_self_signed));
 }
 #endif
@@ -1354,10 +1353,12 @@ static PHP_METHOD(swoole_client, shutdown) {
     if (!cli) {
         RETURN_FALSE;
     }
-    long __how;
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &__how) == FAILURE) {
-        RETURN_FALSE;
-    }
+    zend_long __how = 0;
+
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+    Z_PARAM_LONG(__how)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
     SW_CHECK_RETURN(cli->shutdown(__how));
 }
 
@@ -1369,9 +1370,13 @@ PHP_FUNCTION(swoole_client_select) {
     uint32_t index = 0;
     double timeout = SW_CLIENT_CONNECT_TIMEOUT;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "a!a!a!|d", &r_array, &w_array, &e_array, &timeout) == FAILURE) {
-        RETURN_FALSE;
-    }
+    ZEND_PARSE_PARAMETERS_START(3, 4)
+    Z_PARAM_ARRAY_EX(r_array, 1, 1)
+    Z_PARAM_ARRAY_EX(w_array, 1, 1)
+    Z_PARAM_ARRAY_EX(e_array, 1, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_DOUBLE(timeout)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
     int maxevents = SW_MAX(SW_MAX(php_swoole_array_length_safe(r_array), php_swoole_array_length_safe(w_array)),
                            php_swoole_array_length_safe(e_array));
@@ -1422,9 +1427,13 @@ PHP_FUNCTION(swoole_client_select) {
     double timeout = SW_CLIENT_CONNECT_TIMEOUT;
     struct timeval timeo;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "a!a!a!|d", &r_array, &w_array, &e_array, &timeout) == FAILURE) {
-        RETURN_FALSE;
-    }
+    ZEND_PARSE_PARAMETERS_START(3, 4)
+    Z_PARAM_ARRAY_EX(r_array, 1, 1)
+    Z_PARAM_ARRAY_EX(w_array, 1, 1)
+    Z_PARAM_ARRAY_EX(e_array, 1, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_DOUBLE(timeout)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);
