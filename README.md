@@ -14,7 +14,7 @@
 
 ## Documentation & Community
 
-+ __Documentation__: <https://www.swoole.co.uk/docs>
++ __Documentation__: <https://openswoole.com/docs>
 + __Twitter__: <https://twitter.com/openswoole>
 + __Join Slack Group__: <https://goo.gl/forms/wooTTDmhbu30x4qC3>
 + __Join Discord Channel__: <https://discord.gg/5QC57RNPpw>
