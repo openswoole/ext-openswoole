@@ -719,12 +719,9 @@ static PHP_METHOD(swoole_client, __destruct) {
 
 static PHP_METHOD(swoole_client, set) {
     zval *zset;
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &zset) == FAILURE) {
-        RETURN_FALSE;
-    }
-    if (!ZVAL_IS_ARRAY(zset)) {
-        RETURN_FALSE;
-    }
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+        Z_PARAM_ARRAY(zset)
+    ZEND_PARSE_PARAMETERS_END();
 
     zval *zsetting = sw_zend_read_and_convert_property_array(swoole_client_ce, ZEND_THIS, ZEND_STRL("setting"), 0);
     php_array_merge(Z_ARRVAL_P(zsetting), Z_ARRVAL_P(zset));
@@ -842,9 +839,11 @@ static PHP_METHOD(swoole_client, sendto) {
     char *data;
     size_t len;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "sls", &host, &host_len, &port, &data, &len) == FAILURE) {
-        RETURN_FALSE;
-    }
+    ZEND_PARSE_PARAMETERS_START(3, 3)
+    Z_PARAM_STRING(host, host_len)
+    Z_PARAM_LONG(port)
+    Z_PARAM_STRING(data, len)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
     if (len == 0) {
         php_swoole_error(E_WARNING, "data to send is empty");
@@ -910,6 +909,14 @@ static PHP_METHOD(swoole_client, sendfile) {
     if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|ll", &file, &file_len, &offset, &length) == FAILURE) {
         RETURN_FALSE;
     }
+
+    ZEND_PARSE_PARAMETERS_START(1, 3)
+    Z_PARAM_STRING(file, file_len)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(offset)
+    Z_PARAM_LONG(length)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
     if (file_len == 0) {
         php_swoole_fatal_error(E_WARNING, "file to send is empty");
         RETURN_FALSE;
