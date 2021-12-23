@@ -10,7 +10,7 @@ swoole_curl: curlmulti
 Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
 Co\run(function () {
-    $nodes = array('https://www.google.com', 'https://www.php.net', 'https://www.swoole.co.uk');
+    $nodes = array('https://www.google.com', 'https://www.php.net', 'https://openswoole.com');
     $node_count = count($nodes);
 
     $curl_arr = array();

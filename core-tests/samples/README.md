@@ -1,6 +1,6 @@
-编译 swoole.so
+Compile openswoole.so
 ------
-`git clone`源代码，然后设置环境变量`export SWOOLE_DIR=/home/htf/workspace/swoole-src`
+`git clone` the repo then run `export SWOOLE_DIR=~/swoole-src`
 
 ```shell
 cd swoole-src
@@ -10,7 +10,7 @@ cmake .
 make -j
 ```
 
-编译示例程序
+Example applications
 -----
 ```shell
 cd swoole-src/core-tests/samples

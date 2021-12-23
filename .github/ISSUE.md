@@ -1,17 +1,14 @@
-English | [中文](./ISSUE-CN.md)
-
 # Bug reports
 
 ## Instruction
 
-If you think you have found a bug in Swoole, please report it.
-The Swoole developers probably don't know about it,
+If you think you have found a bug in OpenSwoole, please report it.
+The OpenSwoole developers probably don't know about it,
 and unless you report it, chances are it won't be fixed.
-You can report bugs at https://github.com/swoole/swoole-src/issues.
-Please do not send bug reports in the mailing list or personal letters.
+You can report bugs at https://github.com/openswoole/swoole-src/issues.
 The issue page is also suitable to submit feature requests.
 
-Please read the **How to report a bug document** before submitting any bug reports.
+Please read the **How to report a bug document** and check the docs at https://openswoole.com/docs before submitting any bug reports.
 
 ## New issue
 
@@ -22,7 +19,7 @@ Please answer these questions before submitting your issue. Thanks!
 1. What did you do? If possible, provide a simple script for reproducing the error.
 2. What did you expect to see?
 3. What did you see instead?
-4. What version of Swoole are you using (`php --ri swoole`)?
+4. What version of Swoole are you using (`php --ri openswoole`)?
 5. What is your machine environment used (including the version of kernel & php & gcc)?
 ```
 The most important thing is to provide a simple script for reproducing the error, otherwise, you must provide as much information as possible.

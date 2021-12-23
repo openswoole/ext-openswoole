@@ -10,7 +10,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/openswoole/swoole-src)](https://github.com/openswoole/swoole-src/stargazers)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/openswoole.svg?style=social&label=Follow%20%40OpenSwoole)](https://twitter.com/openswoole)
 
-**Open Swoole (since 2017) is a programmatic server for PHP with async IO, coroutines and fibers: secure, reliable, high performance**
+**Open Swoole is a programmatic server for PHP with async IO, coroutines and fibers: secure, reliable, high performance**
 
 ## Documentation & Community
 
@@ -18,7 +18,7 @@
 + __Twitter__: <https://twitter.com/openswoole>
 + __Join Slack Group__: <https://goo.gl/forms/wooTTDmhbu30x4qC3>
 + __Join Discord Channel__: <https://discord.gg/5QC57RNPpw>
-+ __IDE Helper for Code Autocompletion__: <https://github.com/openswoole/ide-helper>
++ __IDE Helper__: <https://github.com/openswoole/ide-helper>
 
 ## Installation
 
