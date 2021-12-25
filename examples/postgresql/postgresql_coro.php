@@ -1,6 +1,6 @@
 <?php
 
-// Find more example at https://www.swoole.co.uk/docs/modules/swoole-coroutine-postgres
+// Find more example at https://openswoole.com/docs/modules/swoole-coroutine-postgres
 
 use Swoole\Coroutine\PostgreSQL;
 

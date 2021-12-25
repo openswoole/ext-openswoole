@@ -1,5 +1,5 @@
 <?php
 Swoole\Runtime::enableCoroutine();
-go(function () {
+Co\run(function () {
     sleep(1);
 });

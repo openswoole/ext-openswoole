@@ -1,5 +1,5 @@
 <h1>
-    <img width="200" height="120" align="center" alt="Open Swoole Logo" src="https://www.swoole.co.uk/images/swoole-logo.svg" />
+    <img width="200" height="120" align="center" alt="Open Swoole Logo" src="https://openswoole.com/images/swoole-logo.svg" />
 </h1>
 
 [![lib-openswoole](https://github.com/openswoole/swoole-src/workflows/lib-openswoole/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Alib-openswoole)
@@ -22,7 +22,7 @@
 
 ## Installation
 
-> As with any open source project, Open Swoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
+> Open Swoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
 
 ### Compiling requirements
 

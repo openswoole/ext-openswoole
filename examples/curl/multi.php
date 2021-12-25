@@ -5,7 +5,7 @@ function test()
     $ch1 = curl_init();
     $ch2 = curl_init();
 
-    curl_setopt($ch1, CURLOPT_URL, "https://www.swoole.co.uk/");
+    curl_setopt($ch1, CURLOPT_URL, "https://openswoole.com/");
     curl_setopt($ch1, CURLOPT_HEADER, 0);
     curl_setopt($ch1, CURLOPT_RETURNTRANSFER, 1);
 

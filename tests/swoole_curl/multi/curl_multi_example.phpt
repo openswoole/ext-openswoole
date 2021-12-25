@@ -14,7 +14,7 @@ Co\run(function() {
   $multiCurl = array();
   $result = array();
   $mh = curl_multi_init();
-  $urls = ['https://www.swoole.co.uk','https://www.php.net/'];
+  $urls = ['https://openswoole.com','https://www.php.net/'];
   foreach ($urls as $i => $url) {
     $multiCurl[$i] = curl_init();
     curl_setopt($multiCurl[$i], CURLOPT_URL,$url);

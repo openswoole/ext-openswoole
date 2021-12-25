@@ -1,5 +1,5 @@
 <?php
-go(function () {
+Co\run(function () {
     Swoole\Runtime::enableCoroutine();
 
     $redis = new redis;

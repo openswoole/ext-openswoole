@@ -1,5 +1,5 @@
 <?php
-go(function () {
+Co\run(function () {
     $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
     $client->set(array(
         'socket_buffer_size' => 1024 * 512,
@@ -23,5 +23,3 @@ go(function () {
     }
     var_dump($client->errCode);
 });
-
-swoole_event_wait();

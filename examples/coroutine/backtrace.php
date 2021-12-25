@@ -10,11 +10,11 @@ function test2() {
     }
 }
 
-$cid = go(function () {
+$cid = Co\run(function () {
     test1();
 });
 
-go(function () use ($cid) {
+Co\run(function () use ($cid) {
     while(true) {
         echo "BackTrace[$cid]:\n-----------------------------------------------\n";
         echo get_debug_print_backtrace(co::getBackTrace($cid))."\n";
