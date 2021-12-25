@@ -426,6 +426,7 @@ void TableRow::set_value(TableColumn *col, void *value, size_t vlen) {
         break;
     default:
         if (vlen > (col->size - sizeof(TableStringLength))) {
+            // error
             swoole_warning("[key=%s,field=%s]string value is too long", key, col->name.c_str());
             vlen = col->size - sizeof(TableStringLength);
         }
