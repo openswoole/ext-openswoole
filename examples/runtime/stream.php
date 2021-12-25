@@ -1,5 +1,5 @@
 <?php
-go(function () {
+Co\run(function () {
     Swoole\Runtime::enableCoroutine();
     $fp = stream_socket_client("tcp://www.baidu.com:80", $errno, $errstr, 30);
     if (!$fp) {

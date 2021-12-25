@@ -1,7 +1,7 @@
 <?php
 swoole\runtime::enableCoroutine();
 
-go(function () {
+Co\run(function () {
     $fp = stream_socket_client("ssl://www.baidu.com:443", $errno, $errstr, 30);
     if (!$fp) {
         echo "$errstr ($errno)<br />\n";
