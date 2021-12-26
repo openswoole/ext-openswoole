@@ -24,10 +24,10 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <date>2021-12-20</date>
-    <time>04:00:00</time>
+    <date>2021-12-27</date>
+    <time>02:00:00</time>
     <version>
-        <release>4.9.0</release>
+        <release>4.9.1</release>
         <api>4.0</api>
     </version>
     <stability>
@@ -36,14 +36,8 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        - OpenMetrics and JSON format server metrics support
-        - Added more OpenSwoole server metrics
-        - Updated $server->stats() API
-        - Fix CurlMulti bugs
-        - Fix type bug in Process->wait
-        - Added Laravel Octane tests
-        - Added CentOS build tests
-        - Support disable Postgres with --with-postgres=n
+        - Bug fixed: Added type validation and value length validation at Swoole Table
+        - Fix build with old libcurl, thanks @remicollet
     </notes>
     <contents>
         <dir name="/">
@@ -303,11 +297,6 @@
             <file role="doc" name="examples/multicast/client.php" />
             <file role="doc" name="examples/multicast/server.php" />
             <file role="doc" name="examples/mysql_proxy_server.php" />
-            <file role="doc" name="examples/namespace/README.md" />
-            <file role="doc" name="examples/namespace/atomic.php" />
-            <file role="doc" name="examples/namespace/http_server.php" />
-            <file role="doc" name="examples/namespace/server.php" />
-            <file role="doc" name="examples/namespace/timer.php" />
             <file role="doc" name="examples/php/buf_size.php" />
             <file role="doc" name="examples/php/debug_server.php" />
             <file role="doc" name="examples/php/error.php" />
@@ -367,8 +356,6 @@
             <file role="doc" name="examples/runtime/unlink.phpt" />
             <file role="doc" name="examples/send_1m_svr.php" />
             <file role="doc" name="examples/sendfile_server.php" />
-            <file role="doc" name="examples/serialize.php" />
-            <file role="doc" name="examples/serialize2.php" />
             <file role="doc" name="examples/server.php" />
             <file role="doc" name="examples/server/dispatch_func.php" />
             <file role="doc" name="examples/server/dispatch_stream.php" />
@@ -400,7 +387,6 @@
             <file role="doc" name="examples/socket_coro/client.php" />
             <file role="doc" name="examples/socket_coro/server.php" />
             <file role="doc" name="examples/socket_coro/udp.php" />
-            <file role="doc" name="examples/ssl/async_client.php" />
             <file role="doc" name="examples/ssl/ca/ca-cert.pem" />
             <file role="doc" name="examples/ssl/ca/ca-key.pem" />
             <file role="doc" name="examples/ssl/ca/ca-req.csr" />
@@ -414,7 +400,7 @@
             <file role="doc" name="examples/ssl/ca/server-req.csr" />
             <file role="doc" name="examples/ssl/client.c" />
             <file role="doc" name="examples/ssl/client.php" />
-            <file role="doc" name="examples/ssl/co_client.php" />
+            <file role="doc" name="examples/ssl/coroutine_client.php" />
             <file role="doc" name="examples/ssl/gen_cert.md" />
             <file role="doc" name="examples/ssl/http_client.php" />
             <file role="doc" name="examples/ssl/passphrase.php" />
@@ -431,10 +417,9 @@
             <file role="doc" name="examples/ssl/websocket_server.php" />
             <file role="doc" name="examples/swoole_http_client.php" />
             <file role="doc" name="examples/table/deadlock.php" />
-            <file role="doc" name="examples/table/iterator.php" />
             <file role="doc" name="examples/table/server.php" />
-            <file role="doc" name="examples/table/set.php" />
             <file role="doc" name="examples/table/simulation.php" />
+            <file role="doc" name="examples/table/table_iterator.php" />
             <file role="doc" name="examples/table/usage.php" />
             <file role="doc" name="examples/task/http.php" />
             <file role="doc" name="examples/task/msg_push.php" />
@@ -451,7 +436,6 @@
             <file role="doc" name="examples/timer/clear.php" />
             <file role="doc" name="examples/timer/enable_coroutine.php" />
             <file role="doc" name="examples/timer/tick.php" />
-            <file role="doc" name="examples/udp/async_client.php" />
             <file role="doc" name="examples/udp/client.php" />
             <file role="doc" name="examples/udp/server.php" />
             <file role="doc" name="examples/unixsock/async_client.php" />
@@ -1978,6 +1962,7 @@
             <file role="test" name="tests/swoole_table/negative.phpt" />
             <file role="test" name="tests/swoole_table/random_bytes.phpt" />
             <file role="test" name="tests/swoole_table/set_after_del.phpt" />
+            <file role="test" name="tests/swoole_table/validation.phpt" />
             <file role="test" name="tests/swoole_timer/after.phpt" />
             <file role="test" name="tests/swoole_timer/after_fork.phpt" />
             <file role="test" name="tests/swoole_timer/bug_2342.phpt" />

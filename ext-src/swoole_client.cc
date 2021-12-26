@@ -1355,7 +1355,7 @@ static PHP_METHOD(swoole_client, shutdown) {
     }
     zend_long __how = 0;
 
-    ZEND_PARSE_PARAMETERS_START(0, 1)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_LONG(__how)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 

@@ -2,7 +2,7 @@
 swoole_curl: curlmulti
 --SKIPIF--
 <?php
-// require __DIR__ . '/../include/skipif.inc';
+require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
 <?php declare(strict_types = 1);
