@@ -6,7 +6,7 @@
 [![ext-openswoole](https://github.com/openswoole/swoole-src/workflows/ext-openswoole/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Aext-openswoole)
 [![test-linux](https://github.com/openswoole/swoole-src/workflows/test-linux/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Atest-linux)
 [![Coverity Scan Build Status](https://scan.coverity.com/projects/23970/badge.svg)](https://scan.coverity.com/projects/open-swoole-src)
-[![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src)
+<!-- [![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src) -->
 [![GitHub stars](https://img.shields.io/github/stars/openswoole/swoole-src)](https://github.com/openswoole/swoole-src/stargazers)
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/openswoole.svg?style=social&label=Follow%20%40OpenSwoole)](https://twitter.com/openswoole)
 
