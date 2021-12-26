@@ -37,16 +37,16 @@ jobs:
       run: 
         cd core-tests && ./run.sh
 
-    - name: run coverage
-      shell: bash
-      run: sudo apt-get install lcov &&
-          sudo lcov --directory . --capture --output-file coverage.info &&
-          sudo lcov --remove coverage.info "${{runner.workspace}}/swoole-src/include/*" '/usr/*' --output-file coverage.info &&
-          sudo lcov --list coverage.info
+#     - name: run coverage
+#       shell: bash
+#       run: sudo apt-get install lcov &&
+#           sudo lcov --directory . --capture --output-file coverage.info &&
+#           sudo lcov --remove coverage.info "${{runner.workspace}}/swoole-src/include/*" '/usr/*' --output-file coverage.info &&
+#           sudo lcov --list coverage.info
 
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v1
-      with:
-        token: ${{ secrets.CODECOV_TOKEN }}
-        files: ./coverage.info
-        fail_ci_if_error: true
+#     - name: Upload coverage to Codecov
+#       uses: codecov/codecov-action@v1
+#       with:
+#         token: ${{ secrets.CODECOV_TOKEN }}
+#         files: ./coverage.info
+#         fail_ci_if_error: true
