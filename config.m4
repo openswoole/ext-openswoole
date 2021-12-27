@@ -831,6 +831,11 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_DEFINE(SW_USE_ASM_CONTEXT, 1, [use boost asm context])
     fi
 
+    # 32-bit ARM
+    if test "$SW_CPU" = "arm"; then
+        PHP_ADD_LIBRARY(atomic, 1, OPENSWOOLE_SHARED_LIBADD)
+    fi
+
     PHP_NEW_EXTENSION(openswoole, $swoole_source_file, $ext_shared,, "$EXTRA_CFLAGS -DENABLE_PHP_SWOOLE", cxx)
 
     PHP_ADD_INCLUDE([$ext_srcdir])
