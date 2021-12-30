@@ -215,8 +215,8 @@ int php_swoole_reactor_init() {
             return SW_ERR;
         }
         
-        // @DEPRECATED: users have to call swoole_event_wait() implicitly 
-        // php_swoole_register_shutdown_function("Swoole\\Event::rshutdown");
+        // @TODO: users have to call swoole_event_wait() implicitly 
+        php_swoole_register_shutdown_function("Swoole\\Event::rshutdown");
     }
 
     if (sw_reactor() && SwooleG.user_exit_condition &&
