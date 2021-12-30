@@ -313,7 +313,7 @@ static PHP_METHOD(swoole_table, set) {
                     }
                     zend_string *str = zval_get_string(zv);
                     if(ZSTR_LEN(str) > col->size - sizeof(TableStringLength)) {
-                        zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] value is too long: %d, maximum length: %d", key, col->name.c_str(), ZSTR_LEN(str), col->size - sizeof(TableStringLength));
+                        zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] value is too long: %zu, maximum length: %lu", key, col->name.c_str(), ZSTR_LEN(str), col->size - sizeof(TableStringLength));
                     }
                     row->set_value(col, ZSTR_VAL(str), ZSTR_LEN(str));
                     zend_string_release(str);
@@ -350,7 +350,7 @@ static PHP_METHOD(swoole_table, set) {
                 }
                 zend_string *str = zval_get_string(zv);
                 if(ZSTR_LEN(str) > col->size - sizeof(TableStringLength)) {
-                    zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] value is too long: %d, maximum length: %d", key, col->name.c_str(), ZSTR_LEN(str), col->size - sizeof(TableStringLength));
+                    zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] value is too long: %zu, maximum length: %lu", key, col->name.c_str(), ZSTR_LEN(str), col->size - sizeof(TableStringLength));
                 }
                 row->set_value(col, ZSTR_VAL(str), ZSTR_LEN(str));
                 zend_string_release(str);
