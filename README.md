@@ -13,11 +13,14 @@
 Open Swoole is a programmatic server for PHP with async IO, coroutines and fibers: secure, reliable, high performance
 
 + __Website__: <https://openswoole.com>
-+ __Documentation__: <https://openswoole.com/docs>
 + __Twitter__: <https://twitter.com/openswoole>
 + __Slack__: <https://goo.gl/forms/wooTTDmhbu30x4qC3>
 + __Discord__: <https://discord.gg/5QC57RNPpw>
 + __IDE Helper__: <https://github.com/openswoole/ide-helper>
+
+## Documentation
+
+Documentation for Open Swoole can be found on the [Open Swoole website](https://openswoole.com/docs).
 
 ## Installation
 
@@ -62,6 +65,14 @@ make && make install
 
 After compiling and installing the openswoole extension, you have to add a new line `extension=openswoole.so` at the end of `php.ini` or create a ini file at `conf.d` folder to enable Open Swoole. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
 
+## Frameworks & Components
+
+> PR are welcome if your framework is using openswoole
+ 
+ - [**Laravel Octane**](https://laravel.com/docs/8.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
+ - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kinds of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
+ - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on Open Swoole.
+
 ## Call for Contributors
 
 If you like to involve the maintenance of this repo, it is better to get started by submitting PR, you will be invited to the dev group once there are significant contributions. Or join Slack group firstly, the team will provide mentoring and internal support to help you get started.
@@ -74,14 +85,6 @@ This project exists thanks to all the historical [[Contributors](https://github.
 ## Security issues
 
 Security issues should be reported privately, via email, to the Open Swoole develop team [hello@openswoole.com](mailto:hello@openswoole.com). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
-
-## Frameworks & Components
-
-> PR are welcome if your framework is using openswoole
- 
- - [**Laravel Octane**](https://laravel.com/docs/8.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
- - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kinds of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
- - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on Open Swoole.
 
 ## License
 
