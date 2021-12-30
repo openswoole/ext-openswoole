@@ -103,16 +103,17 @@ class PHPCoroutine {
         HOOK_FILE              = 1u << 8,
         HOOK_SLEEP             = 1u << 9,
         HOOK_PROC              = 1u << 10,
-        HOOK_CURL              = 1u << 11,
+        HOOK_CURL              = 1u << 11, // removed
         HOOK_NATIVE_CURL       = 1u << 12,
         HOOK_BLOCKING_FUNCTION = 1u << 13,
         HOOK_SOCKETS           = 1u << 14,
         HOOK_STDIO             = 1u << 15,
-#ifdef SW_USE_CURL
+// Remove HOOK_CURL
+// #ifdef SW_USE_CURL
         HOOK_ALL               = 0x7fffffff ^ HOOK_CURL,
-#else
-        HOOK_ALL               = 0x7fffffff ^ HOOK_NATIVE_CURL,
-#endif
+// #else
+        // HOOK_ALL               = 0x7fffffff ^ HOOK_NATIVE_CURL,
+// #endif
     };
 
     static const uint8_t MAX_EXEC_MSEC = 10;
