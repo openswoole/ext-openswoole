@@ -1,12 +1,10 @@
 <p align="center"><a href="https://openswoole.com" target="_blank"><img src="https://openswoole.com/images/swoole-logo.svg" width="200"></a></p>
-    
-[![lib-openswoole](https://github.com/openswoole/swoole-src/workflows/lib-openswoole/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Alib-openswoole)
-[![ext-openswoole](https://github.com/openswoole/swoole-src/workflows/ext-openswoole/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Aext-openswoole)
-[![test-linux](https://github.com/openswoole/swoole-src/workflows/test-linux/badge.svg)](https://github.com/openswoole/swoole-src/actions?query=workflow%3Atest-linux)
-[![Coverity Scan Build Status](https://scan.coverity.com/projects/23970/badge.svg)](https://scan.coverity.com/projects/open-swoole-src)
-<!-- [![codecov](https://codecov.io/gh/openswoole/swoole-src/branch/master/graph/badge.svg)](https://codecov.io/gh/openswoole/swoole-src) -->
-[![GitHub stars](https://img.shields.io/github/stars/openswoole/swoole-src)](https://github.com/openswoole/swoole-src/stargazers)
-[![Twitter](https://img.shields.io/twitter/url/https/twitter.com/openswoole.svg?style=social&label=Follow%20%40OpenSwoole)](https://twitter.com/openswoole)
+
+
+<p align="center"><a href="https://github.com/openswoole/swoole-src/actions?query=workflow%3Alib-openswoole"><img src="https://github.com/openswoole/swoole-src/workflows/lib-openswoole/badge.svg" alt="lib-openswoole" style="max-width: 100%;"></a>
+<a href="https://github.com/openswoole/swoole-src/actions?query=workflow%3Aext-openswoole"><img src="https://github.com/openswoole/swoole-src/workflows/ext-openswoole/badge.svg" alt="ext-openswoole" style="max-width: 100%;"></a>
+<a href="https://github.com/openswoole/swoole-src/actions?query=workflow%3Atest-linux"><img src="https://github.com/openswoole/swoole-src/workflows/test-linux/badge.svg" alt="test-linux" style="max-width: 100%;"></a>
+<a href="https://scan.coverity.com/projects/open-swoole-src" rel="nofollow"><img src="https://camo.githubusercontent.com/74ce2aa24f7fc272064e7afeec3712e0e548cda19202c4af7e42e7cacf2e7f6f/68747470733a2f2f7363616e2e636f7665726974792e636f6d2f70726f6a656374732f32333937302f62616467652e737667" alt="Coverity Scan Build Status" data-canonical-src="https://scan.coverity.com/projects/23970/badge.svg" style="max-width: 100%;"></a></p>
 
 ## Open Swoole
 
