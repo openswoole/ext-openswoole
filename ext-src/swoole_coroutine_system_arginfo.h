@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 7aceebdbc071b05f9d7e9db71b6109f020f900d3 */
+ * Stub hash: 732bd8bf97680e86267c95e811963549833a95b3 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_System_exec, 0, 1, MAY_BE_ARRAY|MAY_BE_FALSE)
 	ZEND_ARG_TYPE_INFO(0, command, IS_STRING, 0)
@@ -10,7 +10,9 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_sl
 	ZEND_ARG_TYPE_INFO(0, seconds, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_Swoole_Coroutine_System_usleep arginfo_class_Swoole_Coroutine_System_sleep
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_usleep, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, microseconds, IS_LONG, 0)
+ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_System_statvfs, 0, 1, MAY_BE_BOOL|MAY_BE_ARRAY)
 	ZEND_ARG_TYPE_INFO(0, path, IS_STRING, 0)
