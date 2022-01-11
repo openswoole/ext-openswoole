@@ -33,6 +33,7 @@
 
 #include <unordered_map>
 #include <chrono>
+#include <algorithm>
 
 using std::unordered_map;
 using swoole::Coroutine;
@@ -40,6 +41,8 @@ using swoole::PHPContext;
 using swoole::PHPCoroutine;
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
+using swoole::coroutine::Channel;
+using swoole::coroutine::Selector;
 
 #define PHP_CORO_TASK_SLOT                                                                                             \
     ((int) ((ZEND_MM_ALIGNED_SIZE(sizeof(PHPContext)) + ZEND_MM_ALIGNED_SIZE(sizeof(zval)) - 1) /                      \
@@ -112,6 +115,7 @@ static PHP_METHOD(swoole_coroutine, getStackUsage);
 static PHP_METHOD(swoole_coroutine, list);
 static PHP_METHOD(swoole_coroutine, enableScheduler);
 static PHP_METHOD(swoole_coroutine, disableScheduler);
+static PHP_METHOD(swoole_coroutine, select);
 PHP_METHOD(swoole_coroutine_system, exec);
 PHP_METHOD(swoole_coroutine_system, sleep);
 PHP_METHOD(swoole_coroutine_system, fread);
@@ -155,6 +159,7 @@ static const zend_function_entry swoole_coroutine_methods[] =
     PHP_ME(swoole_coroutine, getElapsed, arginfo_class_Swoole_Coroutine_getElapsed, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, getStackUsage, arginfo_class_Swoole_Coroutine_getStackUsage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, list, arginfo_class_Swoole_Coroutine_list, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_coroutine, select, arginfo_class_Swoole_Coroutine_select, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_MALIAS(swoole_coroutine, listCoroutines, list, arginfo_class_Swoole_Coroutine_list, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, enableScheduler, arginfo_class_Swoole_Coroutine_enableScheduler, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, disableScheduler, arginfo_class_Swoole_Coroutine_disableScheduler, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -1215,6 +1220,76 @@ static PHP_METHOD(swoole_coroutine, list) {
                                       nullptr,
                                       &zlist);
     zval_ptr_dtor(&zlist);
+}
+
+struct ChannelObject {
+    Channel *chan;
+    zend_object std;
+};
+
+static sw_inline ChannelObject *php_swoole_channel_coro_fetch_object(zend_object *obj) {
+    return (ChannelObject *) ((char *) obj - XtOffsetOf(ChannelObject, std));
+}
+
+static sw_inline Channel *php_swoole_get_channel(zval *zobject) {    
+    Channel *chan = php_swoole_channel_coro_fetch_object(Z_OBJ_P(zobject))->chan;
+    return chan;
+}
+
+static PHP_METHOD(swoole_coroutine, select) {
+    zval *pull_chans = nullptr;
+    zval *push_chans = nullptr;
+    double timeout = -1;
+    ZEND_PARSE_PARAMETERS_START(2, 3)
+    Z_PARAM_ARRAY_EX(pull_chans, 1, 1)
+    Z_PARAM_ARRAY_EX(push_chans, 1, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_DOUBLE(timeout)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    zend_ulong num_idx;
+    zend_string *key;
+    zval *val;
+
+    std::vector<Channel *> pull_chans_vector;
+    std::vector<Channel *> push_chans_vector;
+
+    ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(pull_chans), num_idx, key, val) {
+        ZVAL_DEREF(val);
+        Channel *chan = php_swoole_get_channel(val);
+        pull_chans_vector.push_back(chan);
+    } ZEND_HASH_FOREACH_END();
+
+    ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(push_chans), num_idx, key, val) {
+        ZVAL_DEREF(val);
+        Channel *chan = php_swoole_get_channel(val);
+        push_chans_vector.push_back(chan);
+    } ZEND_HASH_FOREACH_END();
+
+    Selector selector;
+    std::pair<std::vector<int>, std::vector<int>> ready = selector.select(pull_chans_vector, push_chans_vector, timeout);
+
+    HashTable *h1 = Z_ARRVAL_P(pull_chans);
+    ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(pull_chans), num_idx, key) {
+        ZVAL_DEREF(val);
+        if(std::find(ready.first.begin(), ready.first.end(), num_idx) == ready.first.end()) {
+            zend_hash_index_del(h1, num_idx);
+        }
+    } ZEND_HASH_FOREACH_END();
+
+    HashTable *h2 = Z_ARRVAL_P(push_chans);
+    ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(push_chans), num_idx, key) {
+        ZVAL_DEREF(val);
+        if(std::find(ready.second.begin(), ready.second.end(), num_idx) == ready.second.end()) {
+            zend_hash_index_del(h2, num_idx);
+        }
+    } ZEND_HASH_FOREACH_END();
+
+    array_init(return_value);
+    add_assoc_zval_ex(return_value, ZEND_STRL("pull_chans"), pull_chans);
+    Z_TRY_ADDREF_P(pull_chans);
+    add_assoc_zval_ex(return_value, ZEND_STRL("push_chans"), push_chans);
+    Z_TRY_ADDREF_P(push_chans);
 }
 
 PHP_METHOD(swoole_coroutine, enableScheduler) {
