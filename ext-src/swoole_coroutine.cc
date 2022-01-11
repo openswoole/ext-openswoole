@@ -1241,8 +1241,8 @@ static PHP_METHOD(swoole_coroutine, select) {
     zval *push_chans = nullptr;
     double timeout = -1;
     ZEND_PARSE_PARAMETERS_START(2, 3)
-    Z_PARAM_ARRAY_EX(pull_chans, 1, 1)
-    Z_PARAM_ARRAY_EX(push_chans, 1, 1)
+    Z_PARAM_ARRAY_EX(pull_chans, 0, 1)
+    Z_PARAM_ARRAY_EX(push_chans, 0, 1)
     Z_PARAM_OPTIONAL
     Z_PARAM_DOUBLE(timeout)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
