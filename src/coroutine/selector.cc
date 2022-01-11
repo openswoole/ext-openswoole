@@ -36,7 +36,7 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
 
     Coroutine *current_co = Coroutine::get_current_safe();
 
-    if (all_waiting(pull_chans)) {
+    if (all_waiting(pull_chans, push_chans)) {
         TimeoutMessage msg;
         msg.error = false;
         msg.timer = nullptr;
