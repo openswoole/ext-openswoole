@@ -27,7 +27,6 @@ Co\run(function () {
         $chan2->push(['content' => $content, 'id' => 'chan2']);
     });
     var_dump([$chan1, $chan2]);
-    $i = 0;
 
     $start = time();
     $ret = co::select([$chan1, $chan2], [], 10);

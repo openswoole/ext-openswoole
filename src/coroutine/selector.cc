@@ -62,6 +62,8 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
         }
     }
 
+    remove_waiting(current_co, pull_chans, push_chans);
+
     int index = 0;
     for (auto &chan : pull_chans) {
         if (chan->get_error() > 0) {
@@ -73,7 +75,6 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
         }
 
         if (!chan->is_empty() && chan->consumer_num() == 0) {
-            remove_waiting(current_co, pull_chans, push_chans);
             pull_ready.push_back(index);
         }
         index++;
@@ -90,7 +91,6 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
         }
 
         if (!chan->is_empty() && chan->producer_num() == 0) {
-            remove_waiting(current_co, pull_chans, push_chans);
             push_ready.push_back(index);
         }
         index++;

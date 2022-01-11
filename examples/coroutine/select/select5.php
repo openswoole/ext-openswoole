@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types = 1);
 
 Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
@@ -7,6 +7,7 @@ function fetchUrl($url) {
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $output = curl_exec($ch);
+    var_dump(strlen($output));
     curl_close($ch);
     return $output;
 }
