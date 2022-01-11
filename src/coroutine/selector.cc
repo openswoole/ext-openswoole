@@ -66,15 +66,19 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
 
     int index = 0;
     for (auto &chan : pull_chans) {
+        bool ready = false;
         if (chan->get_error() > 0) {
-            pull_ready.push_back(index);
+            ready = true;
         }
 
         if (chan->is_closed() && chan->is_empty()) {
-            pull_ready.push_back(index);
+            ready = true;
         }
 
-        if (!chan->is_empty() && chan->consumer_num() == 0) {
+        if (!chan->is_empty()) {
+            ready = true;
+        }
+        if(ready) {
             pull_ready.push_back(index);
         }
         index++;
@@ -82,16 +86,20 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
 
     index = 0;
     for (auto &chan : push_chans) {
+        bool ready = false;
         if (chan->get_error() > 0) {
-            push_ready.push_back(index);
+            ready = true;
         }
 
         if (chan->is_closed() && chan->is_empty()) {
-            push_ready.push_back(index);
+            ready = true;
         }
 
-        if (!chan->is_empty() && chan->producer_num() == 0) {
-            push_ready.push_back(index);
+        if (!chan->is_empty()) {
+            ready = true;
+        }
+        if(ready) {
+            pull_ready.push_back(index);
         }
         index++;
     }
