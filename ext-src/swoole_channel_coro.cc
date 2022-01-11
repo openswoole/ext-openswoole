@@ -123,6 +123,7 @@ void php_swoole_channel_coro_minit(int module_number) {
         SW_CLASS_ALIAS("Chan", swoole_channel_coro);
     }
 
+    zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("id"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("capacity"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
 
@@ -147,6 +148,7 @@ static PHP_METHOD(swoole_channel_coro, __construct) {
 
     ChannelObject *chan_t = php_swoole_channel_coro_fetch_object(Z_OBJ_P(ZEND_THIS));
     chan_t->chan = new Channel(capacity);
+    zend_update_property_long(swoole_channel_coro_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("id"), chan_t->chan->get_id());
     zend_update_property_long(swoole_channel_coro_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("capacity"), capacity);
 }
 
