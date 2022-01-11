@@ -1247,6 +1247,14 @@ static PHP_METHOD(swoole_coroutine, select) {
     Z_PARAM_DOUBLE(timeout)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
+    if(timeout == -1) {
+        timeout = INT_MAX;
+    }
+
+    if (timeout <= 0 || timeout > INT_MAX) {
+        timeout = INT_MAX;
+    }
+
     zend_ulong num_idx;
     zend_string *key;
     zval *val;
