@@ -56,7 +56,9 @@ class Channel {
     bool push(void *data, double timeout = -1);
     bool close();
 
-    Channel(size_t _capacity = 1) : capacity(_capacity) {}
+    Channel(size_t _capacity = 1) : capacity(_capacity) {
+        id_ = getGlobalId()++;
+    }
 
     ~Channel() {
         if (!producer_queue.empty()) {
@@ -110,12 +112,24 @@ class Channel {
         return error_;
     }
 
-  protected:
-    size_t capacity = 1;
-    bool closed = false;
     int error_ = 0;
+
     std::list<Coroutine *> producer_queue;
     std::list<Coroutine *> consumer_queue;
+
+    static int &getGlobalId() {
+        static int gcid = 0;
+        return gcid;
+    }
+
+    int get_id() {
+        return id_;
+    }
+
+  protected:
+    int id_ = 0;
+    size_t capacity = 1;
+    bool closed = false;
     std::queue<void *> data_queue;
 
     static void timer_callback(Timer *timer, TimerNode *tnode);
