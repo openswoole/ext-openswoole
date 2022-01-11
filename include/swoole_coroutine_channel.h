@@ -150,7 +150,7 @@ class Channel {
             co = producer_queue.front();
             producer_queue.pop_front();
             swoole_trace_log(SW_TRACE_CHANNEL, "resume producer cid=%ld", co->get_cid());
-        } else  // if (type == CONSUMER)
+        } else if (type == CONSUMER)
         {
             co = consumer_queue.front();
             consumer_queue.pop_front();
