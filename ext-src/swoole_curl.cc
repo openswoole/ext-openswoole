@@ -165,7 +165,7 @@ CURLcode Multi::exec(php_curl *ch) {
         }
 
         co = check_bound_co();
-        co->yield_ex(-1);
+        co->yield_ex(0.1);
         is_canceled = co->is_canceled();
         co = nullptr;
 
@@ -173,7 +173,6 @@ CURLcode Multi::exec(php_curl *ch) {
             swoole_set_last_error(SW_ERROR_CO_CANCELED);
             break;
         }
-
         int sockfd = last_sockfd;
         int bitmask = 0;
         if (sockfd >= 0) {
