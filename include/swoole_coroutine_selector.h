@@ -66,15 +66,58 @@ class Selector {
         }
     }
 
+    inline bool is_ready(Channel *chan) {
+        bool ready = false;
+        if (chan->get_error() > 0) {
+            ready = true;
+        }
+
+        if (chan->is_closed() && chan->is_empty()) {
+            ready = true;
+        }
+
+        if (!chan->is_empty()) {
+            ready = true;
+        }
+        return ready;
+    }
+
     inline bool all_waiting(std::vector<Channel *> pull_chans = std::vector<Channel *>(),
                             std::vector<Channel *> push_chans = std::vector<Channel *>()) {
         for (auto &chan : pull_chans) {
-            if (!chan->is_empty() && chan->consumer_num() == 0) {
+            // bool ready = false;
+            // if (chan->get_error() > 0) {
+            //     ready = true;
+            // }
+
+            // if (chan->is_closed() && chan->is_empty()) {
+            //     ready = true;
+            // }
+
+            // if (!chan->is_empty()) {
+            //     ready = true;
+            // }
+
+            if (is_ready(chan)) {
                 return false;
             }
+
         }
         for (auto &chan : push_chans) {
-            if (!chan->is_empty() && chan->producer_num() == 0) {
+            // bool ready = false;
+            // if (chan->get_error() > 0) {
+            //     ready = true;
+            // }
+
+            // if (chan->is_closed() && chan->is_empty()) {
+            //     ready = true;
+            // }
+
+            // if (!chan->is_empty()) {
+            //     ready = true;
+            // }
+
+            if (is_ready(chan)) {
                 return false;
             }
         }
