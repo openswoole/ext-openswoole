@@ -1,5 +1,7 @@
 <?php declare(strict_types = 1);
 
+// Example of co::select
+
 Co\run(function () {
     $chan1 = new chan(1);
     $chan2 = new chan(1);

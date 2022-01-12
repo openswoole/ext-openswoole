@@ -1,4 +1,6 @@
-<?php
+<?php declare(strict_types = 1);
+
+// Example of select and curl
 
 function fetchUrl($url) {
     $urlInfo = parse_url($url);

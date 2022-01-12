@@ -1,5 +1,7 @@
 <?php declare(strict_types = 1);
 
+// Example of pipeline
+
 Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
 function fetchUrl($url) {
