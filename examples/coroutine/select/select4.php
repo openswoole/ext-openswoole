@@ -15,7 +15,7 @@ function fetchUrl($url) {
     $client->get($path);
     $client->close();
 
-    return strlen($client->body);
+    return $client->body;
 }
 
 Co\run(function () {
@@ -24,21 +24,22 @@ Co\run(function () {
 
     go(function() use ($chan1) {
         $content = fetchUrl('https://openswoole.com/');
+        var_dump(strlen($content));
         $chan1->push(['content' => $content, 'id' => 'chan1']);
     });
 
     go(function() use ($chan2) {
         $content = fetchUrl('https://openswoole.com/');
+        var_dump(strlen($content));
         $chan2->push(['content' => $content, 'id' => 'chan2']);
     });
     var_dump([$chan1, $chan2]);
-    $i = 0;
 
     $start = time();
     $ret = co::select([$chan1, $chan2], [], 10);
     echo "select result:".var_export($ret, true)."\n";
     $cost = time() - $start;
     echo "SELECT DONE after $cost seconds\n";
-    var_dump(array_values($ret['pull_chans'])[0]->pop());
+    // var_dump(array_values($ret['pull_chans'])[0]->pop());
     echo "waiting for shutdown..\n";
 });
