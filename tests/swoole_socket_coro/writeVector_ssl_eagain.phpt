@@ -57,7 +57,7 @@ $pm->childFunc = function () use ($pm) {
         $conn = $socket->accept();
         $conn->sslHandshake();
 
-        Coroutine::sleep(0.5);
+        Coroutine::usleep(500000);
 
         Assert::eq($conn->recvAll($totalLength), $packedStr, -1);
         $conn->send('close');

@@ -56,7 +56,7 @@ run(function () {
         Assert::assert($conn->connect('127.0.0.1', $port));
 
         // Let readVectorAll trigger EAGAIN (verify the correctness of the error returned by readVectorAll)
-        Coroutine::sleep(0.5);
+        Coroutine::usleep(500000);
 
         $ret = $conn->sendAll($packedStr);
         Assert::eq($ret, $totalLength);

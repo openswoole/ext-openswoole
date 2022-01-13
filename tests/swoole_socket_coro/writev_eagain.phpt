@@ -37,7 +37,7 @@ run(function () {
         Assert::assert($conn instanceof Socket);
 
         // Let writeVectorAll trigger EAGAIN (verify the correctness of the error returned by writeVectorAll)
-        Coroutine::sleep(0.5);
+        Coroutine::usleep(500000);
         Assert::eq($conn->recvAll($totalLength), $packedStr);
     });
 

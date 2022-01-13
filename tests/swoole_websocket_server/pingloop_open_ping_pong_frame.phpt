@@ -73,7 +73,7 @@ $pm->childFunc = function () use ($pm) {
         });
         $server->after(PING_LOOP * PING_INTERVAL, function () use ($pm, $server, $timer_id) {
             $server->clearTimer($timer_id);
-            Swoole\Coroutine::sleep(0.1); // wait pong
+            Swoole\Coroutine::usleep(100000); // wait pong
             foreach ($server->connections as $fd) {
                 $server->push($fd, new swoole_websocket_closeframe);
             }

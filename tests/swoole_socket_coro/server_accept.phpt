@@ -82,7 +82,7 @@ Co\run(function () {
     }
     Coroutine::create(function () use ($server) {
         while (true) {
-            Coroutine::sleep(0.1);
+            Coroutine::usleep(100000);
             if (Coroutine::stats()['coroutine_num'] === 2) {
                 $server->close();
                 break;
