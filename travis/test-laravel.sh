@@ -6,6 +6,8 @@ __DIR__=$(cd "$(dirname "$0")";pwd)
 php -v
 php --ri openswoole
 
+export COMPOSER_ALLOW_SUPERUSER=1;
+
 rm -rf cd ${__DIR__}/octane && \
 cd ${__DIR__} && \
 git clone https://github.com/laravel/octane.git --depth 1 && \
