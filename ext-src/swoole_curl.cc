@@ -340,18 +340,21 @@ void Multi::callback(Handle *handle, int event_bitmask) {
     if (selector.get() && handle) {
         selector->active_handles.insert(handle);
     }
-    if (defer_callback) {
-        return;
+    if (co) {
+        co->resume();
     }
-    defer_callback = true;
-    swoole_event_defer(
-        [this](void *data) {
-            defer_callback = false;
-            if (co) {
-                co->resume();
-            }
-        },
-        nullptr);
+    // if (defer_callback) {
+    //     return;
+    // }
+    // defer_callback = true;
+    // swoole_event_defer(
+    //     [this](void *data) {
+    //         defer_callback = false;
+    //         if (co) {
+    //             co->resume();
+    //         }
+    //     },
+    //     nullptr);
 }
 }  // namespace curl
 }  // namespace swoole

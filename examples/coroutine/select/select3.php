@@ -39,7 +39,7 @@ Co\run(function () {
 
     $start = time();
     echo "start select\n";
-    $ret = co::select([$chan1, $chan2], [], 4);
+    $ret = co::select([$chan1, $chan2], [], 10);
     echo "select result:".var_export($ret, true)."\n";
     $cost = time() - $start;
     echo "SELECT DONE after $cost seconds\n";
