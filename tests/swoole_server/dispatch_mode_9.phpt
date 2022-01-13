@@ -58,7 +58,7 @@ $pm->parentFunc = function ($pid) use ($pm, $table) {
         while ($n--) {
             $client->send($_serialize_data);
             if ($n % 10 == 1) {
-                System::sleep(0.002);
+                System::usleep(2000);
             }
         }
     });
@@ -95,7 +95,7 @@ $pm->childFunc = function () use ($pm, $table) {
     $serv->on('receive', function (Server $serv, $fd, $rid, $data) use ($pm, $table) {
         $table->incr((string)$serv->getWorkerId(), 'count');
         if (rand(1000, 9999) % 10 == 0) {
-            System::sleep(0.5);
+            System::usleep(500000);
         }
         $_data = unserialize(rtrim($data));
         if ($_data and is_array($_data) and $_data['sid'] == $pm->magic_code) {

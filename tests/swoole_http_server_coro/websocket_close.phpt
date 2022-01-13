@@ -44,7 +44,7 @@ $pm->childFunc = function () use ($pm) {
                 $ws->push("Hello {$frame->data}!");
                 $ws->close();
             }
-            System::sleep(0.5);
+            System::usleep(500000);
         });
         $server->handle('/shutdown', function ($request, $response) use ($server) {
             echo "shutdown\n";
