@@ -26,5 +26,6 @@ namespace Swoole\Coroutine {
 		public function stats(): array {}
 		public function isEmpty(): bool {}
 		public function isFull(): bool {}
+		public function getId(): int {}
 	}
 }

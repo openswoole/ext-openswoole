@@ -46,6 +46,7 @@ static PHP_METHOD(swoole_channel_coro, stats);
 static PHP_METHOD(swoole_channel_coro, length);
 static PHP_METHOD(swoole_channel_coro, isEmpty);
 static PHP_METHOD(swoole_channel_coro, isFull);
+static PHP_METHOD(swoole_channel_coro, getId);
 SW_EXTERN_C_END
 
 // clang-format off
@@ -58,6 +59,7 @@ static const zend_function_entry swoole_channel_coro_methods[] =
     PHP_ME(swoole_channel_coro, isFull, arginfo_class_Swoole_Coroutine_Channel_isFull, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_channel_coro, close, arginfo_class_Swoole_Coroutine_Channel_close, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_channel_coro, stats, arginfo_class_Swoole_Coroutine_Channel_stats, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_channel_coro, getId, arginfo_class_Swoole_Coroutine_Channel_getId, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_channel_coro, length, arginfo_class_Swoole_Coroutine_Channel_length, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
@@ -123,6 +125,7 @@ void php_swoole_channel_coro_minit(int module_number) {
         SW_CLASS_ALIAS("Chan", swoole_channel_coro);
     }
 
+    zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("id"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("capacity"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
 
@@ -147,6 +150,7 @@ static PHP_METHOD(swoole_channel_coro, __construct) {
 
     ChannelObject *chan_t = php_swoole_channel_coro_fetch_object(Z_OBJ_P(ZEND_THIS));
     chan_t->chan = new Channel(capacity);
+    zend_update_property_long(swoole_channel_coro_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("id"), chan_t->chan->get_id());
     zend_update_property_long(swoole_channel_coro_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("capacity"), capacity);
 }
 
@@ -216,6 +220,11 @@ static PHP_METHOD(swoole_channel_coro, isEmpty) {
 static PHP_METHOD(swoole_channel_coro, isFull) {
     Channel *chan = php_swoole_get_channel(ZEND_THIS);
     RETURN_BOOL(chan->is_full());
+}
+
+static PHP_METHOD(swoole_channel_coro, getId) {
+    Channel *chan = php_swoole_get_channel(ZEND_THIS);
+    RETURN_LONG(chan->get_id());
 }
 
 static PHP_METHOD(swoole_channel_coro, stats) {

@@ -20,3 +20,4 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_Swoole_Coroutine_Channel_stats arginfo_swoole_void
 #define arginfo_class_Swoole_Coroutine_Channel_isEmpty arginfo_swoole_void
 #define arginfo_class_Swoole_Coroutine_Channel_isFull arginfo_swoole_void
+#define arginfo_class_Swoole_Coroutine_Channel_getId arginfo_swoole_void
