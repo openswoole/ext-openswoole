@@ -20,7 +20,7 @@ Co\run(function () {
             echo PHP_EOL;
             var_dump($request->rawContent());
             $response->end('OK');
-            Co::sleep(0.01);
+            co::usleep(10000);
             $server->shutdown();
         });
         $server->start();

@@ -27,7 +27,7 @@ class Process3 extends Swoole\Process
                 return;
             }
             echo "sleep start then ";
-            Co::sleep(0.01);
+            co::usleep(10000);
             echo "sleep end\n";
             trigger_error('ERROR', E_USER_ERROR);
         });

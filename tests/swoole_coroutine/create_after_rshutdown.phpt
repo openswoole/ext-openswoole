@@ -7,7 +7,7 @@ swoole_coroutine: create coroutine after RSHTUDOWN
 require __DIR__ . '/../include/bootstrap.php';
 register_shutdown_function(function () {
     go(function () {
-        co::sleep(.01);
+        co::usleep(10000);
         echo "DONE\n";
     });
     swoole_event::wait();

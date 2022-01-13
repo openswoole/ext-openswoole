@@ -13,7 +13,7 @@ go(function () {
     echo "foo\n";
     $ob_1 = (ob_get_status(true));
     // yield and it will switch to #co2
-    co::sleep(0.1);
+    co::usleep(100000);
     // resume to ob_1
     Assert::same($ob_1, (ob_get_status(true)));
     ob_start(); // ob_2
@@ -21,7 +21,7 @@ go(function () {
     Assert::same(ob_get_status()['level'], 1);
     ob_start(); // ob_3
     // yield and it will switch to #co3
-    co::sleep(0.2);
+    co::usleep(200000);
     // resume to ob_3
     Assert::same(ob_get_status()['level'], 2);
     echo "baz\n";
@@ -33,13 +33,13 @@ go(function () {
 go(function () {
     Assert::same(ob_get_status(true), []); //empty
     Assert::assert(!ob_get_contents());
-    co::sleep(0.001);
+    Co::usleep(1000);
     Assert::assert(!ob_get_clean());
 });
 
 // #co3
 go(function () {
-    co::sleep(0.2);
+    co::usleep(200000);
     Assert::same(ob_get_status(true), []); //empty
 });
 Assert::same(ob_get_clean(), 'main');

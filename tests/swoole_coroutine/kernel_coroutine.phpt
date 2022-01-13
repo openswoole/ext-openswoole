@@ -9,12 +9,12 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 
 const N = 4;
-const T = 0.02;
+const T = 20000;
 
 Co\run(function () {
     go(function () {
         for ($i = 0; $i < N; $i++) {
-            Co::sleep(T);
+            Co::usleep(T);
         }
     });
     swoole_test_kernel_coroutine(N, T);

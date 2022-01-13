@@ -34,12 +34,12 @@ class Test
 
     static function process(CoLock $lock)
     {
-        co::sleep(0.001);
+        Co::usleep(1000);
         //这里需要操作全局对象，有可能会有上下文的问题
         //使用 chan 实现协程锁
         $lock->lock();
         if (Test::$num > 0) {
-            co::sleep(0.02);
+            co::usleep(20000);
             Test::$num--;
             $lock->unlock();
         } else {

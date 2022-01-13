@@ -11,7 +11,7 @@ co::set([
 ]);
 for ($c = MAX_N + 1; $c--;) {
     $ret = go(function () {
-        co::sleep(0.001);
+        Co::usleep(1000);
     });
 }
 $info = co::stats();

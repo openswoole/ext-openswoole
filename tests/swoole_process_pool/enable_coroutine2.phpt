@@ -14,7 +14,7 @@ $counter = new Swoole\Atomic(0);
 
 $pool->on('workerStart', function (Swoole\Process\Pool $pool, int $workerId) use ($counter) {
     if ($counter->get() <= 5) {
-        Co::sleep(0.05);
+        co::usleep(50000);
         $counter->add(1);
         echo "hello world\n";
     }

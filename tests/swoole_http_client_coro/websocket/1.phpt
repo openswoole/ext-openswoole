@@ -27,7 +27,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         {
             $cli->push('hello server');
             echo ($cli->recv())->data;
-            co::sleep(0.1);
+            co::usleep(100000);
         }
     });
     swoole_event::wait();
@@ -57,7 +57,7 @@ $pm->childFunc = function () use ($pm)
     });
 
     $ws->on('message', function ($serv, $frame) {
-        co::sleep(0.1);
+        co::usleep(100000);
         $serv->push($frame->fd, "hello client\n");
     });
 

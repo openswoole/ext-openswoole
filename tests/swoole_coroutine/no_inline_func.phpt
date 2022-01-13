@@ -16,7 +16,7 @@ co::create(function () {
 function test()
 {
     echo "start func\n";
-    co::sleep(0.001);
+    Co::usleep(1000);
     echo "end func\n";
     return "return func params\n";
 }

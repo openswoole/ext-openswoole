@@ -8,14 +8,14 @@ require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     go(function () {
         go(function () {
-            Co::sleep(0.001);
+            Co::usleep(1000);
             var_dump(Co::exists(Co::getPcid())); // 1: true
         });
         go(function () {
-            Co::sleep(0.003);
+            Co::usleep(3000);
             var_dump(Co::exists(Co::getPcid())); // 3: false
         });
-        Co::sleep(0.002);
+        co::usleep(2000);
         var_dump(Co::exists(Co::getPcid())); // 2: false
     });
 });

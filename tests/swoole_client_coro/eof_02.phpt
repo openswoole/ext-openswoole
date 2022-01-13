@@ -56,7 +56,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
                 $client->send('hello' . $i . "\r\n");
                 $con[] = $client;
             }
-            co::sleep(0.1);
+            co::usleep(100000);
             foreach ($con as $key => $value)
             {
                 echo "recv:" . trim($value->recv()) . "\n";

@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $chan = new \Swoole\Coroutine\Channel(1);
 
 go(function () use ($chan) {
-    co::sleep(0.5);
+    co::usleep(500000);
     Assert::same($chan->pop(0.1), 1);
     Assert::same($chan->pop(0.1), 'swoole');
 });

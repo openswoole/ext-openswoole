@@ -27,7 +27,7 @@ run(function () use ($pm) {
     curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $strHeader) use (&$header_count) {
         Assert::eq(curl_getinfo($ch, CURLINFO_HTTP_CODE), 200);
         Assert::eq(md5_file(__FILE__), md5(file_get_contents(__FILE__)));
-        Co::sleep(0.05);
+        co::usleep(50000);
         $header_count++;
         return strlen($strHeader);
     });

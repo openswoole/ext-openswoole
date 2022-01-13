@@ -13,7 +13,7 @@ go(function () {
         exit("$errstr ($errno)\n");
     } else {
         go(function () use ($fp) {
-            co::sleep(0.001);
+            Co::usleep(1000);
             echo "CLOSE\n";
             fclose($fp);
             echo "DONE\n";

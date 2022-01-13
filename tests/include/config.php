@@ -115,7 +115,7 @@ define('PRESSURE_LEVEL',
 
 /** ============== Time ============== */
 define('SERVER_PREHEATING_TIME', 0.1);
-define('REQUESTS_WAIT_TIME', [0.005, 0.005, 0.05, 0.1][PRESSURE_LEVEL]);
+define('REQUESTS_WAIT_TIME', [5000, 5000, 50000, 100000][PRESSURE_LEVEL]);
 
 /** ============== Times ============== */
 define('MAX_CONCURRENCY', [16, 32, 64, 256][PRESSURE_LEVEL]);

@@ -9,7 +9,7 @@ for ($c = MAX_CONCURRENCY; $c--;) {
     go(function () {
         $seconds = ms_random(0.1, 0.5);
         $start = microtime(true);
-        Co::sleep($seconds);
+        Co::usleep($seconds * 1000000);
         time_approximate($seconds, microtime(true) - $start, 0.25);
     });
 }

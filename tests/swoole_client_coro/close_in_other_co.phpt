@@ -25,9 +25,9 @@ go(function () use ($client) {
 });
 
 go(function () use ($client, $cid) {
-    co::sleep(.01);
+    co::usleep(10000);
     $client->close();
-    co::sleep(.01);
+    co::usleep(10000);
     co::resume($cid);
 });
 

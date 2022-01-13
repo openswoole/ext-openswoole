@@ -61,7 +61,7 @@ $pm->childFunc = function () use ($pm) {
             $server->shutdown();
         });
         $server->handle(function (Connection $conn) {
-            Co::sleep(0.005);
+            Co::usleep(5000);
             $data = $conn->recv();
             if (empty($data)) {
                 $conn->close();

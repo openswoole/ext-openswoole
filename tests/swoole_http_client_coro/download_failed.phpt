@@ -19,7 +19,7 @@ Co\run(function () {
     go(function () use ($server) {
         $client = $server->accept();
         while ($client->recv(1)) {
-            CO::sleep(0.01);
+            co::usleep(10000);
         }
         $server->close();
     });
@@ -38,7 +38,7 @@ Co\run(function () {
         $client = $server->accept();
         $client->send("HTTP/1.1 200 OK\r\nContent-Length: 99999\r\n\r\n");
         while ($client->send('a')) {
-            CO::sleep(0.001);
+            Co::usleep(1000);
         }
         $server->close();
     });

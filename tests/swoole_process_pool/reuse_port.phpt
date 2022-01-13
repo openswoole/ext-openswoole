@@ -71,7 +71,7 @@ $pm->childFunc = function () use ($pm) {
                 }
                 continue;
             }
-            Co::sleep(0.005);
+            Co::usleep(5000);
             $data = $client->recv();
             if (empty($data)) {
                 $client->close();

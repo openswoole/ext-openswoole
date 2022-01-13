@@ -13,17 +13,17 @@ $pm->parentFunc = function ($pid) use ($pm, $port) {
     Assert::same($socket->errCode, 0);
     go(function () use ($socket, $port) {
         Assert::assert($socket->connect('localhost', $port));
-        $i = 0.000;
+        $i = 0;
         while (true) {
             $socket->send("hello");
             $server_reply = $socket->recv(1024, 0.1);
             Assert::same($server_reply, 'swoole');
-            co::sleep($i += .001); // after 10 times we sleep 0.01s to trigger server timeout
+            co::usleep($i += 1000); // after 10 times we sleep 0.01s to trigger server timeout
             if ($i > .01) {
                 break;
             }
         }
-        co::sleep(0.5);
+        co::usleep(500000);
         echo("client exit\n");
         $socket->close();
     });

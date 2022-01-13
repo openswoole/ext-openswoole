@@ -28,7 +28,7 @@ $pm->parentFunc = function () use ($pm) {
             $client->send("Swoole\r\nhello world\r\nphp\r\njava\r\n");
             $client->close();
         }
-        Co::sleep(0.8);
+        Co::usleep(800000);
     });
     $pm->kill();
     Assert::eq(substr_count(file_get_contents(TMP_LOG_FILE),
@@ -49,7 +49,7 @@ $pm->childFunc = function () use ($pm) {
     ]);
     $serv->on('workerStart', function (Server $serv) use ($pm) {
         $pm->wakeup();
-        Co::sleep(0.5);
+        co::usleep(500000);
     });
     $serv->on('receive', function (Server $serv, $fd, $rid, $data) {
         $serv->send($fd, "hello {$data}\r\n\r\n");

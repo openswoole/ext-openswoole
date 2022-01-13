@@ -12,7 +12,7 @@ Swoole\Coroutine::create(function () {
     $result = Swoole\Coroutine\System::gethostbyname("wwww.xxxx.cccn.xer" . time(), AF_INET, 0.001);
     Assert::eq($result, false);
     Assert::same(swoole_last_error(), SWOOLE_ERROR_DNSLOOKUP_RESOLVE_TIMEOUT);
-    co::sleep(0.1);
+    co::usleep(100000);
     echo "NEXT\n";
     $result = Swoole\Coroutine\System::gethostbyname("www.github.com", AF_INET, 1);
     Assert::notEmpty($result);

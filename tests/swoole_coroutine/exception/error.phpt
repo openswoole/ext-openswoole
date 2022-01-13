@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 go(function () {
     echo "start\n";
     throw new Exception('coro Exception');
-    co::sleep(.001);
+    co::usleep(1000);
     echo "after sleep\n";
 });
 echo "end\n";

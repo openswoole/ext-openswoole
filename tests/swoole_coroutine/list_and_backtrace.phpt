@@ -21,7 +21,7 @@ go(function () {
             });
             go(function () use ($main) {
                 go(function () {
-                    Co::sleep(0.001);
+                    Co::usleep(1000);
                 });
                 go(function () {
                     Co::readFile(__FILE__);

@@ -17,7 +17,7 @@ go(function () {
     for ($n = MAX_REQUESTS; $n--;) {
         $statement = $mysql->prepare('SELECT ?');
         $statement = null;
-        Co::sleep(0.001);
+        Co::usleep(1000);
         $result = $mysql->query('show status like \'Prepared_stmt_count\'');
         assert($result[0]['Value'] === '0');
     }

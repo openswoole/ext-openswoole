@@ -25,7 +25,7 @@ $pm->parentFunc = function () use ($pm) {
             approximate(0.2, microtime(true) - $s);
             // -1 & 0.3
             go(function () use ($client) {
-                co::sleep(0.3);
+                Co::usleep(300000);
                 $client->close();
             });
             Assert::assert(@!$client->recv(-1)); // connection closed

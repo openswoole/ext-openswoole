@@ -25,7 +25,7 @@ $pm->childFunc = function () use ($pm) {
     ]);
     $http->on("request", function (Swoole\Http\Request $request, Swoole\Http\Response $response) {
         go(function () use ($response) {
-            co::sleep(0.001);
+            Co::usleep(1000);
             $cid = go(function () use ($response) {
                 co::yield();
                 $response->end(Co::getuid());

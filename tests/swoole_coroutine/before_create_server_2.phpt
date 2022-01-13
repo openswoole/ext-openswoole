@@ -20,7 +20,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
     go(function () use ($pm) {
-        co::sleep(0.1);
+        co::usleep(100000);
         echo "co shutdown\n";
     });
     swoole_event_wait();

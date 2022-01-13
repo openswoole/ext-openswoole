@@ -21,7 +21,7 @@ $pm->parentFunc = function ($pid) use ($pm)
         $cli->connect('127.0.0.1', $pm->getFreePort());
         $data = str_repeat('A', 1025);
         $cli->send(pack('N', strlen($data)).$data);
-        co::sleep(0.2);
+        co::usleep(200000);
         $retData = $cli->recv();
         Assert::assert(is_string($retData) and strlen($retData) > 0);
         /** use valgrind to check memory */

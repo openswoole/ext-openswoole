@@ -14,7 +14,7 @@ $pm->parentFunc = function ($pid) use ($pm)
         $cli->connect('127.0.0.1', $pm->getFreePort());
 
         $cli->send("hello world\n");
-        co::sleep(0.2);
+        co::usleep(200000);
         $retData = $cli->recv();
         Assert::assert($retData === false);
         Assert::assert($cli->errCode === SOCKET_ECONNRESET);

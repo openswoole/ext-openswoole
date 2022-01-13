@@ -13,7 +13,7 @@ class A
     function bar()
     {
         echo "bar\n";
-        co::sleep(.02);
+        co::usleep(20000);
         $result = co::gethostbyname('www.tsinghua.edu.cn');
         echo "end\n";
         return $result;

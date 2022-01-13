@@ -7,7 +7,7 @@ swoole_process/coro: start with coroutine
 require __DIR__ . '/../../include/bootstrap.php';
 
 $proc = new \swoole_process(function () {
-    co::sleep(0.2);
+    co::usleep(200000);
     echo "SUCCESS\n";
 }, false, 1, true);
 

@@ -21,7 +21,7 @@ $pm->parentFunc = function ($pid) use ($pm)
     run(function() use ($pm, $pid) {
         httpRequest('http://127.0.0.1:' . $pm->getFreePort(0));
         for ($i = 0; $i < 4; ++$i) {
-            Co::sleep(0.5);
+            co::usleep(500000);
             $content = @file_get_contents(STATS_FILE);
             if ('' != $content) {
                 echo $content;

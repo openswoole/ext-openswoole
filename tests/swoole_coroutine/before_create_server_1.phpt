@@ -23,7 +23,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
     go(function () use ($pm) {
-        Co::sleep(0.1);
+        co::usleep(100000);
         $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
         $http->set([
             'log_file' => '/dev/null',

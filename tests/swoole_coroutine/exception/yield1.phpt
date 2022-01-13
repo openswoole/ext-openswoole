@@ -11,7 +11,7 @@ go(function () {
     try {
         echo "start\n";
         throw new Exception('coro Exception');
-        co::sleep(.001);
+        co::usleep(1000);
         echo "after sleep\n";
     } catch (Exception $e) {
         echo 'Caught exception: ',  $e->getMessage(), "\n";

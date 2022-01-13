@@ -33,7 +33,7 @@ function controller()
 function your_code()
 {
     global $exit_status_list;
-    co::sleep(.001);
+    co::usleep(1000);
     $exit_status = array_shift($exit_status_list);
     if ($exit_status === 'undef') {
         exit;

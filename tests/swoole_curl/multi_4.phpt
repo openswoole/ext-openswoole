@@ -18,7 +18,7 @@ run(function () {
     $n = 4;
     while ($n--) {
         go(function () {
-            swoole_test_curl_multi(['sleep' => 0.2]);
+            swoole_test_curl_multi(['usleep' => 200000]);
             echo "Done\n";
         });
     }

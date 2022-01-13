@@ -16,7 +16,7 @@ go(function () {
     }
     $ret = $cli->ping();
     Assert::assert($ret);
-    Co::sleep(0.5);
+    co::usleep(500000);
     Assert::greaterThan($cli->send(new Swoole\Http2\Request), 0);
     /** @var $response Swoole\Http2\Response */
     $response = $cli->recv();

@@ -11,9 +11,9 @@ $sch = new Co\Scheduler;
 $sch->set(['max_coroutine' => 100]);
 
 $sch->parallel(10, function ($t, $n) {
-    Co::sleep($t);
+    Co::usleep($t);
     echo "Co ".Co::getCid()."\n";
-}, 0.05, 'A');
+}, 50000, 'A');
 
 $sch->start();
 

@@ -59,7 +59,7 @@ $pm->childFunc = function () use ($pm) {
         static $i = 0;
         $i++;
         if ($i <= MAX_REQUESTS) {
-            co::sleep(0.1 / MAX_REQUESTS);
+            co::usleep(intval(100000 / MAX_REQUESTS));
             $response->end($pm->getRandomData());
         } else {
             $server->close($request->fd);

@@ -20,7 +20,7 @@ go(function () use (&$cid)  {
     $fp = fopen(FILE, 'w+');
     Assert::true(flock($fp, LOCK_EX));
     Co::resume($cid);
-    Co::sleep(0.01);
+    co::usleep(10000);
     flock($fp, LOCK_UN);
     fclose($fp);
 });

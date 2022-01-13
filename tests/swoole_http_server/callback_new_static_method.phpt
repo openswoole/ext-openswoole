@@ -30,7 +30,7 @@ $pm->childFunc = function () use ($pm) {
 
         public static function foo(swoole_http_request $request, swoole_http_response $response)
         {
-            co::sleep(0.001);
+            Co::usleep(1000);
             $cid = go(function () use ($response) {
                 co::yield();
                 $response->end('Hello Swoole!');

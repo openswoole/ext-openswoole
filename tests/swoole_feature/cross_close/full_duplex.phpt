@@ -13,7 +13,7 @@ $pm->parentFunc = function () use ($pm) {
         Assert::assert($cli->connected);
         set_socket_coro_buffer_size($cli->exportSocket(), 8192);
         go(function () use ($pm, $cli) {
-            Co::sleep(0.001);
+            Co::usleep(1000);
             echo "CLOSE\n";
             $cli->close();
             $pm->kill();

@@ -23,7 +23,7 @@ $pm->parentFunc = function () use ($pm) {
                 $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
                 $cli->set(['timeout' => -1]);
                 while (!@$cli->upgrade('/')) {
-                    Co::sleep(0.1);
+                    co::usleep(100000);
                 }
                 while ($cli->recv(-1)) {
                     continue;
@@ -85,7 +85,7 @@ $pm->childFunc = function () use ($pm) {
                 }
             }
             phpt_echo("#{$records_count}: push " . (FRAME_DATA_SIZE / 1024) . "k data to {$fd} client success {$success}!\n");
-            co::sleep(REQUESTS_WAIT_TIME);
+            co::usleep(REQUESTS_WAIT_TIME);
             switch_process();
         }
     });

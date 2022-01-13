@@ -19,7 +19,7 @@ $pm->parentFunc = function () use ($pm) {
             Assert::true($ret, "code: {$redis->errCode}, msg={$redis->errMsg}");
             $ret = $redis->get('random_val');
             Assert::true($ret && $ret === $random, "code: {$redis->errCode}, msg={$redis->errMsg}");
-            Co::sleep(0.001);
+            Co::usleep(1000);
         }
         $redis->setOptions(['reconnect' => false]);
         for ($n = MAX_REQUESTS; $n--;) {
@@ -27,7 +27,7 @@ $pm->parentFunc = function () use ($pm) {
             Assert::true($n === MAX_REQUESTS ? $ret : !$ret);
             $ret = $redis->get('random_val');
             Assert::true($n === MAX_REQUESTS ? ($ret && $ret === $random) : !$ret);
-            Co::sleep(0.001);
+            Co::usleep(1000);
         }
     });
     $pm->kill();

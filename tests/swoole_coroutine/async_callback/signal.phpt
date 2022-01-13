@@ -10,13 +10,13 @@ use Swoole\Process;
 
 Co\run(function () {
     Process::signal(SIGUSR1, function ($signo) {
-        Co::sleep(0.5);
+        co::usleep(500000);
         var_dump($signo);
     });
 
-    Co::sleep(0.01);
+    co::usleep(10000);
     Process::kill(posix_getpid(), SIGUSR1);
-    Co::sleep(0.02);
+    co::usleep(20000);
 });
 ?>
 --EXPECT--

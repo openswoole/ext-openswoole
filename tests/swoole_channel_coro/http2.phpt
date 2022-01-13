@@ -13,13 +13,13 @@ for ($c = MAX_CONCURRENCY; $c--;) {
             $send = new Chan;
             $rand = get_safe_random(mt_rand(1, 1024));
             go(function () use ($recv) {
-                co::sleep(0.001);
+                Co::usleep(1000);
                 $recv->push(new stdClass()); // response
             });
             go(function () use ($send, $rand) {
                 $data = $send->pop();
                 if (Assert::assert($data === $rand)) {
-                    co::sleep(0.001);
+                    Co::usleep(1000);
                     $send->push(true); // send ok
                 }
             });

@@ -11,7 +11,7 @@ use Swoole\Runtime;
 use Swoole\Event;
 
 $process = new Process(function ($process) {
-    Co::sleep(.2);
+    Co::usleep(200000);
 }, false, SOCK_DGRAM, true);
 
 $process->start();
@@ -23,7 +23,7 @@ Process::signal(SIGCHLD, function ($sig) {
 });
 
 go(function () {
-    Co::sleep(.3);
+    Co::usleep(300000);
     echo "END\n";
 });
 

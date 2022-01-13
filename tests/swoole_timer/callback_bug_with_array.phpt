@@ -10,7 +10,7 @@ class TestCo
 {
     public function foo()
     {
-        co::sleep(0.001);
+        Co::usleep(1000);
         $cid = go(function () {
             co::yield();
         });

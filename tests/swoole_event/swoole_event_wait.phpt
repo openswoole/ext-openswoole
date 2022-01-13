@@ -16,7 +16,7 @@ register_shutdown_function(function () {
 });
 
 go(function () {
-    co::sleep(0.1);
+    co::usleep(100000);
     register_shutdown_function(function () {
         echo "register 4\n";
     });

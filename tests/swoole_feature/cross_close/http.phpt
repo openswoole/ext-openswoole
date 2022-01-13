@@ -12,7 +12,7 @@ $pm->parentFunc = function () use ($pm) {
         $http = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
         echo "GET\n";
         go(function () use ($pm, $http) {
-            Co::sleep(0.001);
+            Co::usleep(1000);
             echo "CLOSE\n";
             $http->close();
             $pm->kill();

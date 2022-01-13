@@ -10,12 +10,12 @@ $co_list = [];
 
 foreach(range(1, 10) as $i) {
     $co_list[] = go(function () use ($i) {
-        co::sleep(.4);
+        Co::usleep(400000);
     });
 }
 
 go(function () use ($co_list) {
-    co::sleep(.2);
+    Co::usleep(200000);
     $coros = Co::listCoroutines();
     $list_2 = iterator_to_array($coros);
     Assert::same(array_values(array_diff($list_2, $co_list)), [Co::getUid(),]);

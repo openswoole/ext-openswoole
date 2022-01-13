@@ -14,7 +14,7 @@ go(function () use ($c1) {
 });
 
 go(function () use ($c1) {
-    co::sleep(0.5);
+    co::usleep(500000);
     $ret = $c1->push("chan-1");
     echo "chan push ret:".var_export($ret,true)." error:".$c1->errCode."\n";
 });

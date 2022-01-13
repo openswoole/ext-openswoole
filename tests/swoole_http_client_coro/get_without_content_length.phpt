@@ -47,7 +47,7 @@ $pm->childFunc = function () use ($pm)
     {
         $serv->send($fd, "HTTP/1.1 200 OK\r\nServer: nginx\r\nContent-Type: text/html\r\nConnection: close\r\n\r\n");
         foreach (range(0, 5) as $i) {
-            co::sleep(0.1);
+            co::usleep(100000);
             $serv->send($fd, str_repeat('A', rand(1024, 2048)));
         }
         $serv->close($fd);

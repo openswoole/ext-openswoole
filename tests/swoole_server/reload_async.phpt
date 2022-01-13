@@ -36,7 +36,7 @@ $pm->childFunc = function () use ($pm, $reloaded, $workerCounter) {
             }
             go(function () use ($pm) {
                 for ($n = 1; $n <= 5; $n++) {
-                    Co::sleep(0.1);
+                    co::usleep(100000);
                     echo "{$n}\n";
                 }
                 echo "RELOADED\n";

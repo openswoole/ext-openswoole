@@ -55,7 +55,7 @@ $pm->childFunc = function () use ($pm, $randoms) {
         Assert::assert($task->flags > 0);
         Assert::assert($task->id >= 0);
         $n = $task->data;
-        co::sleep(0.002);
+        co::usleep(2000);
         $task->finish([$n, $randoms[$n]]);
     });
     $server->start();

@@ -15,7 +15,7 @@ go(function () use ($sock) {
     while ($client = $sock->accept(-1)) {
         $client->recv();
         $client->send("*3\r\n\$10\r\npsubscribe\r\n\$8\r\nchannel1\r\n:1\r\n");
-        co::sleep(0.1);
+        co::usleep(100000);
         $client->close();
     }
 

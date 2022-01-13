@@ -36,7 +36,7 @@ $pm->childFunc = function () use ($pm)
 
     $serv->on('task', function (swoole_server $serv, $task) {
         list($fd) = $task->data;
-        co::sleep(0.2);
+        co::usleep(200000);
         $serv->send($fd, "sleep\r\n\r\n");
     });
 

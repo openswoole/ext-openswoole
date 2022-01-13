@@ -11,7 +11,7 @@ function test_flock()
 {
     $fp = fopen('/tmp/flock.log', 'w+');
     Assert::assert(flock($fp, LOCK_EX));
-    Co::sleep(0.001);
+    Co::usleep(1000);
     $ret = fwrite($fp, ($date = date('Y-m-d H:i:s')));
     Assert::same($ret, strlen($date));
     flock($fp, LOCK_UN);

@@ -10,7 +10,7 @@ define('RUN_IN_CHILD', true);
 
 $map = [
     function () {
-        Co::sleep(0.001);
+        Co::usleep(1000);
         Assert::assert(0); // never here
     },
     function () {

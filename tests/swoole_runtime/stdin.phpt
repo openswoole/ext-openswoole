@@ -18,7 +18,7 @@ $proc = new Process(function ($p) {
     Co\run(function () use($p) {
         $p->write('start'.PHP_EOL);
         go(function() {
-            co::sleep(0.05);
+            co::usleep(50000);
             echo "sleep\n";
         });
         echo fread(STDIN, 1024);

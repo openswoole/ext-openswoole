@@ -13,7 +13,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
-        co::sleep(0.1);
+        co::usleep(100000);
         $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
         $cli->connect();
 

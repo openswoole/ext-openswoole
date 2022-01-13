@@ -36,7 +36,7 @@ go(function () use (&$time) {
 // channel with scheduler
 $chan = new Chan;
 go(function () use (&$time, $chan) {
-    co::sleep(0.1);
+    co::usleep(100000);
     $time['channel_scheduler'] = microtime(true);
     for ($i = MAX_LOOPS; $i--;) {
         $chan->push($i);

@@ -12,7 +12,7 @@ go(function () {
     }, LogicException::class);
     $wg->add(1);
     go(function () use ($wg) {
-        Co::sleep(0.001);
+        Co::usleep(1000);
         Assert::throws(function () use ($wg) {
             $wg->add(1);
         }, LogicException::class);

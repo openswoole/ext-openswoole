@@ -54,7 +54,7 @@ Coroutine\run(function () {
             Assert::true($client->connect('127.0.0.1', $server->getsockname()['port']));
             if (rand(0, 5) > 3) {
                 $client->send(substr(GREETER, 0, 5));
-                Co::sleep(0.1);
+                co::usleep(100000);
                 $client->send(substr(GREETER, 5));
             } else {
                 $client->send(GREETER);

@@ -9,7 +9,7 @@ skip_if_in_valgrind();
 require __DIR__ . '/../../include/bootstrap.php';
 go(function () {
     $a = str_repeat('A', 1024 * 1024 * 1024 * 1024);
-    co::sleep(0.1);
+    co::usleep(100000);
 });
 ?>
 --EXPECTF--
