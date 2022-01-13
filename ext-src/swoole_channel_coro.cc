@@ -46,6 +46,7 @@ static PHP_METHOD(swoole_channel_coro, stats);
 static PHP_METHOD(swoole_channel_coro, length);
 static PHP_METHOD(swoole_channel_coro, isEmpty);
 static PHP_METHOD(swoole_channel_coro, isFull);
+static PHP_METHOD(swoole_channel_coro, getId);
 SW_EXTERN_C_END
 
 // clang-format off
@@ -58,6 +59,7 @@ static const zend_function_entry swoole_channel_coro_methods[] =
     PHP_ME(swoole_channel_coro, isFull, arginfo_class_Swoole_Coroutine_Channel_isFull, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_channel_coro, close, arginfo_class_Swoole_Coroutine_Channel_close, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_channel_coro, stats, arginfo_class_Swoole_Coroutine_Channel_stats, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_channel_coro, getId, arginfo_class_Swoole_Coroutine_Channel_getId, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_channel_coro, length, arginfo_class_Swoole_Coroutine_Channel_length, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
@@ -218,6 +220,11 @@ static PHP_METHOD(swoole_channel_coro, isEmpty) {
 static PHP_METHOD(swoole_channel_coro, isFull) {
     Channel *chan = php_swoole_get_channel(ZEND_THIS);
     RETURN_BOOL(chan->is_full());
+}
+
+static PHP_METHOD(swoole_channel_coro, getId) {
+    Channel *chan = php_swoole_get_channel(ZEND_THIS);
+    RETURN_LONG(chan->get_id());
 }
 
 static PHP_METHOD(swoole_channel_coro, stats) {
