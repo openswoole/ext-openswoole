@@ -55,9 +55,9 @@ class Selector {
   protected:
     static void timer_callback(Timer *timer, TimerNode *tnode);
 
-    inline void remove_waiting(Coroutine *co,
-                               std::vector<Channel *> pull_chans = std::vector<Channel *>(),
-                               std::vector<Channel *> push_chans = std::vector<Channel *>()) {
+    void remove_waiting(Coroutine *co,
+                        std::vector<Channel *> pull_chans = std::vector<Channel *>(),
+                        std::vector<Channel *> push_chans = std::vector<Channel *>()) {
         for (auto &chan : pull_chans) {
             chan->consumer_queue.remove(co);
         }
@@ -66,7 +66,7 @@ class Selector {
         }
     }
 
-    inline bool is_ready(Channel *chan) {
+    bool is_ready(Channel *chan) {
         bool ready = false;
         if (chan->get_error() > 0) {
             ready = true;
@@ -82,41 +82,14 @@ class Selector {
         return ready;
     }
 
-    inline bool all_waiting(std::vector<Channel *> pull_chans = std::vector<Channel *>(),
-                            std::vector<Channel *> push_chans = std::vector<Channel *>()) {
+    bool all_waiting(std::vector<Channel *> pull_chans = std::vector<Channel *>(),
+                     std::vector<Channel *> push_chans = std::vector<Channel *>()) {
         for (auto &chan : pull_chans) {
-            // bool ready = false;
-            // if (chan->get_error() > 0) {
-            //     ready = true;
-            // }
-
-            // if (chan->is_closed() && chan->is_empty()) {
-            //     ready = true;
-            // }
-
-            // if (!chan->is_empty()) {
-            //     ready = true;
-            // }
-
             if (is_ready(chan)) {
                 return false;
             }
-
         }
         for (auto &chan : push_chans) {
-            // bool ready = false;
-            // if (chan->get_error() > 0) {
-            //     ready = true;
-            // }
-
-            // if (chan->is_closed() && chan->is_empty()) {
-            //     ready = true;
-            // }
-
-            // if (!chan->is_empty()) {
-            //     ready = true;
-            // }
-
             if (is_ready(chan)) {
                 return false;
             }
