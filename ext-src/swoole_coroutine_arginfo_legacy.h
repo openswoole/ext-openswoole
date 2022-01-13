@@ -149,3 +149,8 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_waitEvent, 0, 0, 1)
     ZEND_ARG_INFO(0, timeout)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_select, 0, 0, 1)
+    ZEND_ARG_INFO(0, pull_chans)
+    ZEND_ARG_INFO(0, push_chans)
+    ZEND_ARG_INFO(0, timeout)
+ZEND_END_ARG_INFO()

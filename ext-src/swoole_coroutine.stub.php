@@ -55,5 +55,6 @@ namespace Swoole {
 		public static function gethostbyname(string $domain, int $family = AF_INET, float $timeout = -1): string|false {}
 		public static function dnsLookup(string $domain, float $timeout = 5): string|false {}
 		public static function getaddrinfo(string $domain, int $family = AF_INET, int $sockType = SOCK_STREAM, int $protocol = STREAM_IPPROTO_TCP, string $service = null, float $timeout = -1): array|false{}
+		public static function select(array $pull_chans = [], array $push_chans = [], float $timeout = -1): mixed {}
 	}
 }

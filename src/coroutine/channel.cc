@@ -143,12 +143,14 @@ bool Channel::push(void *data, double timeout) {
      * push data
      */
     data_queue.push(data);
-    swoole_trace_log(SW_TRACE_CHANNEL, "push data to channel, count=%ld", length());
+    swoole_trace_log(
+        SW_TRACE_CHANNEL, "push data to channel, count=%ld, consumer_queue size=%ld", length(), consumer_queue.size());
     /**
      * notify consumer
      */
     if (!consumer_queue.empty()) {
         Coroutine *co = pop_coroutine(CONSUMER);
+
         co->resume();
     }
     return true;

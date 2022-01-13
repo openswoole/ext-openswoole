@@ -22,6 +22,8 @@
 #include "swoole_coroutine.h"
 #include "swoole_coroutine_socket.h"
 #include "swoole_coroutine_system.h"
+#include "swoole_coroutine_channel.h"
+#include "swoole_coroutine_selector.h"
 #include "zend_vm.h"
 #include "zend_closures.h"
 
