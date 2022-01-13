@@ -239,7 +239,7 @@ static PHP_METHOD(swoole_http_response, write) {
 
 #ifdef SW_USE_HTTP2
     if (ctx->http2) {
-        php_swoole_error(E_WARNING, "HTTP2 client does not support HTTP-CHUNK");
+        php_swoole_error(E_WARNING, "Chunked transfer encoding is not supported in HTTP/2");
         RETURN_FALSE;
     }
 #endif

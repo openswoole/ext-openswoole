@@ -35,6 +35,7 @@ $pm->childFunc = function () use ($pm) {
             $pm->wakeup();
             Process::signal(SIGINT, function () use($pm) {
                 echo "SIGINT triggered\n";
+                sleep(1);
                 $pm->wakeup();
             });
         }

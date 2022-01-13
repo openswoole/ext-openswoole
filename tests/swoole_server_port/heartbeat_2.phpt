@@ -23,15 +23,15 @@ $pm->parentFunc = function ($pid) use ($pm) {
             return $cli->recv(0.01);
         };
         go(function () use ($test_func) {
-            Assert::same($test_func(0, 1.3), '');
+            Assert::same($test_func(0, 2), '');
             echo "DONE 0\n";
         });
         go(function () use ($test_func) {
-            Assert::same($test_func(1, 2.3), '');
+            Assert::same($test_func(1, 3), '');
             echo "DONE 1\n";
         });
         go(function () use ($test_func) {
-            Assert::same($test_func(2, 3.3), false);
+            Assert::same($test_func(2, 4), false);
             echo "DONE 2\n";
         });
     });

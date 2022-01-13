@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Server;
 
-const N = IS_IN_TRAVIS ? 32 : 128;
+const N = 32;
 const W = 4;
 
 $pm = new SwooleTest\ProcessManager;
@@ -24,7 +24,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         function () use ($pm, &$workerCounter) {
             $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
-                echo "Over flow. errno=" . $client->errCode;
+                echo "Overflow. errno=" . $client->errCode;
                 die("\n");
             }
 
