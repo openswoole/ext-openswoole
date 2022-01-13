@@ -23,7 +23,7 @@ go(function () {
         return $cli;
     }
 
-    $swoole = createDeferCli('www.swoole.co.uk', true);
+    $swoole = createDeferCli('openswoole.com', true);
     $google = createDeferCli('www.google.com', true);
 
     //first

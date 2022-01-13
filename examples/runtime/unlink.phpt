@@ -1,5 +1,5 @@
 <?php
 Swoole\Runtime::enableCoroutine();
-go(function () {
+Co\run(function () {
     var_dump(unlink('data.txt'));
 });

@@ -545,7 +545,7 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_DEFINE(SW_USE_MYSQLND, 1, [use mysqlnd])
     fi
 
-    if test "$PHP_POSTGRES" != "no"; then
+    if test "$PHP_POSTGRES" != "no" && test "$PHP_POSTGRES" != "n"; then
         PHP_EXPAND_PATH($PGSQL_INCLUDE, PGSQL_INCLUDE)
 
         AC_MSG_CHECKING(for pg_config)
@@ -829,6 +829,11 @@ if test "$PHP_SWOOLE" != "no"; then
             ${SW_ASM_DIR}make_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}jump_${SW_CONTEXT_ASM_FILE} "
         AC_DEFINE(SW_USE_ASM_CONTEXT, 1, [use boost asm context])
+    fi
+
+    # 32-bit ARM
+    if test "$SW_CPU" = "arm"; then
+        PHP_ADD_LIBRARY(atomic, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
 
     PHP_NEW_EXTENSION(openswoole, $swoole_source_file, $ext_shared,, "$EXTRA_CFLAGS -DENABLE_PHP_SWOOLE", cxx)

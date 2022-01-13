@@ -24,10 +24,10 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <date>2021-11-29</date>
-    <time>20:00:00</time>
+    <date>2021-12-27</date>
+    <time>02:00:00</time>
     <version>
-        <release>4.8.1</release>
+        <release>4.9.1</release>
         <api>4.0</api>
     </version>
     <stability>
@@ -36,8 +36,8 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        - Fix build with postgresql 9 on RHEL
-        - Fix data type bugs
+        - Bug fixed: Added type validation and value length validation at Swoole Table
+        - Fix build with old libcurl, thanks @remicollet
     </notes>
     <contents>
         <dir name="/">
@@ -120,9 +120,9 @@
             <file role="doc" name="examples/atomic/test.php" />
             <file role="doc" name="examples/atomic/wait.php" />
             <file role="doc" name="examples/c10k.php" />
-            <file role="doc" name="examples/client/async.php" />
+            <file role="doc" name="examples/client/async_tcp_client.php" />
             <file role="doc" name="examples/client/get_socket.php" />
-            <file role="doc" name="examples/client/long_tcp.php" />
+            <file role="doc" name="examples/client/persistent_tcp_client.php" />
             <file role="doc" name="examples/client/select.php" />
             <file role="doc" name="examples/client/sync.php" />
             <file role="doc" name="examples/client/test.txt" />
@@ -297,11 +297,6 @@
             <file role="doc" name="examples/multicast/client.php" />
             <file role="doc" name="examples/multicast/server.php" />
             <file role="doc" name="examples/mysql_proxy_server.php" />
-            <file role="doc" name="examples/namespace/README.md" />
-            <file role="doc" name="examples/namespace/atomic.php" />
-            <file role="doc" name="examples/namespace/http_server.php" />
-            <file role="doc" name="examples/namespace/server.php" />
-            <file role="doc" name="examples/namespace/timer.php" />
             <file role="doc" name="examples/php/buf_size.php" />
             <file role="doc" name="examples/php/debug_server.php" />
             <file role="doc" name="examples/php/error.php" />
@@ -361,8 +356,6 @@
             <file role="doc" name="examples/runtime/unlink.phpt" />
             <file role="doc" name="examples/send_1m_svr.php" />
             <file role="doc" name="examples/sendfile_server.php" />
-            <file role="doc" name="examples/serialize.php" />
-            <file role="doc" name="examples/serialize2.php" />
             <file role="doc" name="examples/server.php" />
             <file role="doc" name="examples/server/dispatch_func.php" />
             <file role="doc" name="examples/server/dispatch_stream.php" />
@@ -394,7 +387,6 @@
             <file role="doc" name="examples/socket_coro/client.php" />
             <file role="doc" name="examples/socket_coro/server.php" />
             <file role="doc" name="examples/socket_coro/udp.php" />
-            <file role="doc" name="examples/ssl/async_client.php" />
             <file role="doc" name="examples/ssl/ca/ca-cert.pem" />
             <file role="doc" name="examples/ssl/ca/ca-key.pem" />
             <file role="doc" name="examples/ssl/ca/ca-req.csr" />
@@ -408,7 +400,7 @@
             <file role="doc" name="examples/ssl/ca/server-req.csr" />
             <file role="doc" name="examples/ssl/client.c" />
             <file role="doc" name="examples/ssl/client.php" />
-            <file role="doc" name="examples/ssl/co_client.php" />
+            <file role="doc" name="examples/ssl/coroutine_client.php" />
             <file role="doc" name="examples/ssl/gen_cert.md" />
             <file role="doc" name="examples/ssl/http_client.php" />
             <file role="doc" name="examples/ssl/passphrase.php" />
@@ -425,10 +417,9 @@
             <file role="doc" name="examples/ssl/websocket_server.php" />
             <file role="doc" name="examples/swoole_http_client.php" />
             <file role="doc" name="examples/table/deadlock.php" />
-            <file role="doc" name="examples/table/iterator.php" />
             <file role="doc" name="examples/table/server.php" />
-            <file role="doc" name="examples/table/set.php" />
             <file role="doc" name="examples/table/simulation.php" />
+            <file role="doc" name="examples/table/table_iterator.php" />
             <file role="doc" name="examples/table/usage.php" />
             <file role="doc" name="examples/task/http.php" />
             <file role="doc" name="examples/task/msg_push.php" />
@@ -445,7 +436,6 @@
             <file role="doc" name="examples/timer/clear.php" />
             <file role="doc" name="examples/timer/enable_coroutine.php" />
             <file role="doc" name="examples/timer/tick.php" />
-            <file role="doc" name="examples/udp/async_client.php" />
             <file role="doc" name="examples/udp/client.php" />
             <file role="doc" name="examples/udp/server.php" />
             <file role="doc" name="examples/unixsock/async_client.php" />
@@ -1114,6 +1104,7 @@
             <file role="test" name="tests/swoole_curl/cancel.phpt" />
             <file role="test" name="tests/swoole_curl/close_before_resume.phpt" />
             <file role="test" name="tests/swoole_curl/concurrent.phpt" />
+            <file role="test" name="tests/swoole_curl/curlmultil.phpt" />
             <file role="test" name="tests/swoole_curl/error.phpt" />
             <file role="test" name="tests/swoole_curl/exec_twice.phpt" />
             <file role="test" name="tests/swoole_curl/guzzle.phpt" />
@@ -1139,6 +1130,7 @@
             <file role="test" name="tests/swoole_curl/multi/curl_multi_close_reference.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_errno_strerror_001.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_errno_strerror_001_php7.phpt" />
+            <file role="test" name="tests/swoole_curl/multi/curl_multi_example.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_getcontent_basic3.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_info_read.phpt" />
             <file role="test" name="tests/swoole_curl/multi/curl_multi_init_basic.phpt" />
@@ -1763,7 +1755,7 @@
             <file role="test" name="tests/swoole_server/heartbeat_true.phpt" />
             <file role="test" name="tests/swoole_server/heartbeat_with_base.phpt" />
             <file role="test" name="tests/swoole_server/http_protocol.phpt" />
-            <file role="test" name="tests/swoole_server/idle_worekr_num.phpt" />
+            <file role="test" name="tests/swoole_server/idle_worker_num.phpt" />
             <file role="test" name="tests/swoole_server/invalid_fd.phpt" />
             <file role="test" name="tests/swoole_server/invalid_option.phpt" />
             <file role="test" name="tests/swoole_server/kill_user_process_01.phpt" />
@@ -1848,7 +1840,6 @@
             <file role="test" name="tests/swoole_server/ssl/verify_03.phpt" />
             <file role="test" name="tests/swoole_server/start_twice.phpt" />
             <file role="test" name="tests/swoole_server/stats.phpt" />
-            <file role="test" name="tests/swoole_server/stats_file.phpt" />
             <file role="test" name="tests/swoole_server/stop.phpt" />
             <file role="test" name="tests/swoole_server/stop_in_workerStart.phpt" />
             <file role="test" name="tests/swoole_server/systemd_fds.phpt" />
@@ -1858,7 +1849,7 @@
             <file role="test" name="tests/swoole_server/task/enable_coroutine.phpt" />
             <file role="test" name="tests/swoole_server/task/finish_timeout.phpt" />
             <file role="test" name="tests/swoole_server/task/huge_data.phpt" />
-            <file role="test" name="tests/swoole_server/task/idle_worekr_num.phpt" />
+            <file role="test" name="tests/swoole_server/task/idle_worker_num.phpt" />
             <file role="test" name="tests/swoole_server/task/invalid_packet.phpt" />
             <file role="test" name="tests/swoole_server/task/kill_01.phpt" />
             <file role="test" name="tests/swoole_server/task/kill_02.phpt" />
@@ -1971,6 +1962,7 @@
             <file role="test" name="tests/swoole_table/negative.phpt" />
             <file role="test" name="tests/swoole_table/random_bytes.phpt" />
             <file role="test" name="tests/swoole_table/set_after_del.phpt" />
+            <file role="test" name="tests/swoole_table/validation.phpt" />
             <file role="test" name="tests/swoole_timer/after.phpt" />
             <file role="test" name="tests/swoole_timer/after_fork.phpt" />
             <file role="test" name="tests/swoole_timer/bug_2342.phpt" />
@@ -2161,6 +2153,7 @@
             <file role="src" name="travis/run-tests.sh" />
             <file role="src" name="travis/simple-compile-on-github.sh" />
             <file role="src" name="travis/simple-compile.sh" />
+            <file role="src" name="travis/test-laravel.sh" />
         </dir>
     </contents>
     <dependencies>

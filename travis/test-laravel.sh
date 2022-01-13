@@ -8,7 +8,7 @@ php --ri openswoole
 
 rm -rf cd ${__DIR__}/octane && \
 cd ${__DIR__} && \
-git clone https://github.com/laravel/octane.git && \
+git clone https://github.com/laravel/octane.git --depth 1 && \
 cd ${__DIR__}/octane && \
 composer require laravel/framework:"^8.35" --no-update && \
 composer update --prefer-dist --no-interaction --no-progress && \

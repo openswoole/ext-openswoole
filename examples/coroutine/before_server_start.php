@@ -1,5 +1,5 @@
 <?php
-go(function ()
+Co\run(function ()
 {
     co::sleep(1);
 

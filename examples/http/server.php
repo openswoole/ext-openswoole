@@ -32,7 +32,6 @@ $http->set([
 //    'ssl_cert_file' => $key_dir.'/ssl.crt',
 //    'ssl_key_file' => $key_dir.'/ssl.key',
 //    'enable_static_handler' => true,
-//    'document_root' => '/home/htf/workspace/php/www.swoole.com/web/'
 ]);
 
 $http->listen('127.0.0.1', 9502, SWOOLE_SOCK_TCP);

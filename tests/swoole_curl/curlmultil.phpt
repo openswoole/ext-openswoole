@@ -2,7 +2,7 @@
 swoole_curl: curlmulti
 --SKIPIF--
 <?php
-// require __DIR__ . '/../include/skipif.inc';
+require __DIR__ . '/../include/skipif.inc';
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -10,7 +10,7 @@ swoole_curl: curlmulti
 Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
 Co\run(function () {
-    $nodes = array('https://www.google.com', 'https://www.php.net', 'https://www.swoole.co.uk');
+    $nodes = array('https://www.google.com', 'https://www.php.net', 'https://openswoole.com');
     $node_count = count($nodes);
 
     $curl_arr = array();

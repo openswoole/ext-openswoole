@@ -214,7 +214,8 @@ int php_swoole_reactor_init() {
             php_swoole_fatal_error(E_ERROR, "Unable to create event-loop reactor");
             return SW_ERR;
         }
-
+        
+        // @TODO: users have to call swoole_event_wait() implicitly 
         php_swoole_register_shutdown_function("Swoole\\Event::rshutdown");
     }
 
@@ -685,6 +686,7 @@ static PHP_FUNCTION(swoole_event_wait) {
     php_swoole_event_wait();
 }
 
+// @DEPRECATED: users have to call swoole_event_wait() implicitly 
 static PHP_FUNCTION(swoole_event_rshutdown) {
     /* prevent the program from jumping out of the rshutdown */
     zend_try {

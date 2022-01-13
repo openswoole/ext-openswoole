@@ -745,6 +745,14 @@ PHP_MINIT_FUNCTION(openswoole) {
     SW_REGISTER_LONG_CONSTANT("SWOOLE_IPC_SOCKET", SW_IPC_SOCKET);
 
     /**
+     * stats
+     */
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_STATS_DEFAULT", 0);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_STATS_JSON", 1);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_STATS_OPENMETRICS", 2);
+
+
+    /**
      * limit
      */
     SW_REGISTER_LONG_CONSTANT("SWOOLE_IOV_MAX", IOV_MAX);
@@ -846,7 +854,7 @@ PHP_MINFO_FUNCTION(openswoole) {
     char buf[64];
     php_info_print_table_start();
     php_info_print_table_header(2, "Open Swoole", "enabled");
-    php_info_print_table_row(2, "Author", "Open Swoole Group & Contributors <hello@swoole.co.uk>");
+    php_info_print_table_row(2, "Author", "Open Swoole Group <hello@openswoole.com>");
     php_info_print_table_row(2, "Version", SWOOLE_VERSION);
     snprintf(buf, sizeof(buf), "%s %s", __DATE__, __TIME__);
     php_info_print_table_row(2, "Built", buf);

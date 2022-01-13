@@ -1,4 +1,4 @@
-Please answer these questions before submitting your issue. Thanks!
+Please answer these questions before submitting your issue.
 
 1. What did you do? If possible, provide a simple script for reproducing the error.
 
@@ -12,7 +12,7 @@ Please answer these questions before submitting your issue. Thanks!
 
 
 
-4. What version of Open Swoole are you using (show your `php --ri openswoole`)?
+4. What version of OpenSwoole are you using (show your `php --ri openswoole`)?
 
 
 
