@@ -191,7 +191,7 @@ array(2) {
     ["line"]=>
     int(%d)
     ["function"]=>
-    string(5) "usleep"
+    string(6) "usleep"
     ["class"]=>
     string(16) "Swoole\Coroutine"
     ["type"]=>
