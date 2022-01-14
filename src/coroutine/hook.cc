@@ -464,7 +464,7 @@ void swoole_coroutine_sleep(int sec) {
 }
 
 void swoole_coroutine_usleep(int usec) {
-    System::sleep((double) usec / 1024 / 1024);
+    System::sleep((double) usec / 1000 / 1000);
 }
 
 int swoole_coroutine_socket_set_timeout(int sockfd, int which, double timeout) {
