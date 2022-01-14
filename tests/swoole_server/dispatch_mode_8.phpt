@@ -22,7 +22,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->magic_code = rand(10000000, 90000000);
 $pm->parentFunc = function ($pid) use ($pm, $table) {
     run(function () use ($pm, $table) {
-        $n = 200;
+        $n = 100;
         while ($n--) {
             go(function () use ($pm, $table) {
                 $client = new Client(SWOOLE_SOCK_TCP);

@@ -984,10 +984,10 @@ int Server::schedule_worker(int fd, SendData *data) {
         }
     } else if (dispatch_mode == DISPATCH_CO_CONN_LB) {
         Connection *conn = get_connection(fd);
-        if (conn == nullptr) {
-            return key % worker_num;
-        }
-        if (conn->worker_id < 0) {
+        // if (conn == nullptr) {
+        //     return key % worker_num;
+        // }
+        if (conn == nullptr || conn->worker_id < 0) {
             conn->worker_id = get_lowest_load_worker_id();
         }
         return conn->worker_id;
