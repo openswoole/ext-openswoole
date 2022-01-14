@@ -19,7 +19,7 @@ Co\run(function () {
 
     go(function() use ($chan1) {
         $start = time();
-        co:sleep(3);
+        co:sleep(3); // simulate latency
         $content = fetchUrl('https://openswoole.com/');
         var_dump(strlen($content));
         $cost = time() - $start;
@@ -29,7 +29,7 @@ Co\run(function () {
 
     go(function() use ($chan2) {
         $start = time();
-        co:sleep(2);
+        co:sleep(2); // simulate latency
         $content = fetchUrl('https://www.google.com/');
         var_dump(strlen($content));
         $cost = time() - $start;
