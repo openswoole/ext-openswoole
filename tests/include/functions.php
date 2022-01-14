@@ -1,10 +1,10 @@
 <?php
 /**
- * This file is part of Swoole, for internal use only
+ * This file is part of Open Swoole
  *
- * @link     https://www.swoole.com
- * @contact  team@swoole.com
- * @license  https://github.com/swoole/library/blob/master/LICENSE
+ * @link     https://openswoole.com
+ * @contact  hello@openswoole.com
+ * @license  https://github.com/openswoole/library/blob/master/LICENSE
  */
 
 require_once __DIR__ . '/config.php';

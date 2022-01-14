@@ -21,13 +21,13 @@ go(function () {
 
     $random = mt_rand();
     Assert::assert($db->begin());
-    Assert::assert($db->query('INSERT INTO ckl (`domain`,`path`,`name`) VALUES ("www.swoole.com", "/", "' . $random . '")'));
+    Assert::assert($db->query('INSERT INTO ckl (`domain`,`path`,`name`) VALUES ("openswoole.com", "/", "' . $random . '")'));
     Assert::assert(!empty($db->query('SELECT `name` FROM `ckl` WHERE `name`="' . $random . '"')));
     Assert::assert($db->rollback());
     Assert::assert(empty($db->query('SELECT `name` FROM `ckl` WHERE `name`="' . $random . '"')));
     $random = mt_rand();
     Assert::assert($db->begin());
-    Assert::assert($db->query('INSERT INTO ckl (`domain`,`path`,`name`) VALUES ("www.swoole.com", "/", "' . $random . '")'));
+    Assert::assert($db->query('INSERT INTO ckl (`domain`,`path`,`name`) VALUES ("openswoole.com", "/", "' . $random . '")'));
     Assert::assert($db->commit());
     Assert::assert(!empty($db->query('SELECT `name` FROM `ckl` WHERE `name`="' . $random . '"')));
     Assert::assert($db->query('DELETE FROM `ckl` WHERE `name`="' . $random . '"'));
