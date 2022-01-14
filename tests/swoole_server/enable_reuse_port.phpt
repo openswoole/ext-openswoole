@@ -44,7 +44,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $pm->kill();
 
     foreach ($workerCounter as $c) {
-        Assert::greaterThan($c, N / W / 2);
+        Assert::greaterThan($c, N / W / 3);
     }
 };
 
