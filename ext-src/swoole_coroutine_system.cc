@@ -84,7 +84,7 @@ PHP_METHOD(swoole_coroutine_system, sleep) {
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
     if (UNEXPECTED(seconds < 0)) {
-        php_swoole_fatal_error(E_WARNING, "Timer must be greater than or equal to " ZEND_TOSTR(0));
+        php_swoole_fatal_error(E_WARNING, "Number of seconds must be greater than or equal to " ZEND_TOSTR(0));
         RETURN_FALSE;
     }
     RETURN_BOOL(System::sleep(seconds) == 0);
@@ -98,7 +98,7 @@ PHP_METHOD(swoole_coroutine_system, usleep) {
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
     if (UNEXPECTED(microseconds < 0)) {
-        php_swoole_fatal_error(E_WARNING, "Timer must be greater than or equal to " ZEND_TOSTR(0));
+        php_swoole_fatal_error(E_WARNING, "Number of microseconds must be greater than or equal to " ZEND_TOSTR(0));
         RETURN_FALSE;
     }
     RETURN_BOOL(System::usleep(microseconds) == 0);

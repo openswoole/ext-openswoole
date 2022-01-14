@@ -42,7 +42,7 @@ NON-BLOCKED
 
 Warning: sleep(): Number of seconds must be greater than or equal to 0 in %s on line %d
 
-Warning: usleep(): Number of seconds must be greater than or equal to 0 in %s on line %d
+Warning: usleep(): Number of microseconds must be greater than or equal to 0 in %s on line %d
 
 Warning: time_nanosleep(): The seconds value must be greater than 0 in %s on line %d
 
