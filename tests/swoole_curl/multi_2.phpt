@@ -15,7 +15,7 @@ use function Swoole\Coroutine\run;
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 run(function () {
-    swoole_test_curl_multi(['sleep' => 0.2]);
+    swoole_test_curl_multi(['usleep' => 200000]);
     echo "Done\n";
 });
 ?>

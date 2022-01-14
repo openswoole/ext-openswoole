@@ -17,7 +17,7 @@ $co1 = go(function () {
 
 go(function () use ($co1) {
     go(function () {
-        co::sleep(.001);
+        co::usleep(1000);
         echo "co3\n";
         co::resume(4);
     });

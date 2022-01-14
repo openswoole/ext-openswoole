@@ -42,7 +42,7 @@ $pm->childFunc = function () use ($pm) {
         for ($i = 0; $i < TIMES/2; $i ++) {
             go (function() use ($serv,$data, $i){
                 //echo "user sleep start\n";
-                co::sleep(0.01);
+                co::usleep(10000);
                 //echo "user sleep end\n";
                 $serv->send($data['fd'], str_repeat('A', SIZE) . "\r\n\r\n");
                 //echo "user process $i send ok\n";
@@ -61,7 +61,7 @@ $pm->childFunc = function () use ($pm) {
         for ($i = 0; $i < TIMES/2; $i ++) {
             go (function() use ($serv,$fd, $i){
                 //echo "worker sleep start\n";
-                co::sleep(0.01);
+                co::usleep(10000);
                 //echo "worker sleep end\n";
                 $serv->send($fd, str_repeat('A', SIZE) . "\r\n\r\n");
                 //echo "worker send $i ok\n";

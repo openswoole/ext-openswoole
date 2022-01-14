@@ -9,7 +9,7 @@ use Swoole\Coroutine as co;
 $chan = new co\Channel(1);
 co::create(function () use ($chan) {
     for($i=1; $i<=10; $i++) {
-        co::sleep(0.01);
+        co::usleep(10000);
         $chan->push($i);
         echo "$i\n";
     }

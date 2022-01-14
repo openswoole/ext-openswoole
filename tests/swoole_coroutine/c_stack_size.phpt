@@ -18,7 +18,7 @@ Assert::assert($info['coroutine_peak_num'] == 0);
 
 co::set(['c_stack_size' => 1 * M]);
 for ($n = 100; $n--;) {
-    go(function () { co::sleep(0.001); });
+    go(function () { Co::usleep(1000); });
 }
 // echo "1M\n";
 $info = co::stats();
@@ -28,7 +28,7 @@ Assert::assert($info['coroutine_peak_num'] == 100);
 
 co::set(['c_stack_size' => 1 * K]); // will be extend
 for ($n = 100; $n--;) {
-    go(function () { co::sleep(0.001); });
+    go(function () { Co::usleep(1000); });
 }
 // echo "256K\n";
 $info = co::stats();
@@ -38,7 +38,7 @@ Assert::assert($info['coroutine_peak_num'] == 200);
 
 co::set(['c_stack_size' => 511 * K]); // will be aligned
 for ($n = 100; $n--;) {
-    go(function () { co::sleep(0.001); });
+    go(function () { Co::usleep(1000); });
 }
 // echo "512K\n";
 $info = co::stats();
@@ -48,7 +48,7 @@ Assert::assert($info['coroutine_peak_num'] == 300);
 
 co::set(['c_stack_size' => 1 * G]); // will be limit
 for ($n = 100; $n--;) {
-    go(function () { co::sleep(0.001); });
+    go(function () { Co::usleep(1000); });
 }
 // echo "16M\n";
 $info = co::stats();
@@ -58,7 +58,7 @@ Assert::assert($info['coroutine_peak_num'] == 400);
 
 co::set(['c_stack_size' => -1]); // will be limit
 for ($n = 100; $n--;) {
-    go(function () { co::sleep(0.001); });
+    go(function () { Co::usleep(1000); });
 }
 // echo "16M\n";
 $info = co::stats();

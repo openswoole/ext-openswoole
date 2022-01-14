@@ -16,7 +16,7 @@ Co\run(function () {
         if ($GLOBALS['count'] == 5) {
             Timer::clear($timer);
         }
-        Co::sleep(0.5);
+        co::usleep(500000);
         echo "tick\n";
     });
 });

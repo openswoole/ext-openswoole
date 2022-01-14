@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 Assert::same(Co::getuid(), -1);
 go(function () {
     Assert::same(Co::getuid(), 1);
-    Co::sleep(0.01);
+    co::usleep(10000);
     Assert::same(Co::getuid(), 1);
 });
 Assert::same(Co::getuid(), -1);
@@ -22,7 +22,7 @@ go(function () {
             Assert::same(Co::getuid(), 4);
             go(function () {
                 Assert::same(Co::getuid(), 5);
-                Co::sleep(0.01);
+                co::usleep(10000);
                 Assert::same(Co::getuid(), 5);
             });
             Assert::same(Co::getuid(), 4);

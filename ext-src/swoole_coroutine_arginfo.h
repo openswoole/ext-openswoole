@@ -77,7 +77,11 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_exec, 0, 
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_sleep, 0, 1, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO(0, seconds, IS_DOUBLE, 0)
+	ZEND_ARG_TYPE_INFO(0, seconds, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_usleep, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, microseconds, IS_LONG, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_statvfs, 0, 1, MAY_BE_BOOL|MAY_BE_ARRAY)

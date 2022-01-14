@@ -33,7 +33,7 @@ $pm->parentFunc = function () use ($pm) {
         });
 
         go(function() use ($ch) {
-            Co::sleep(0.1);
+            co::usleep(100000);
             $res = curl_close($ch);
             echo "close [1]\n";
             Assert::true($res);

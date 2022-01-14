@@ -14,7 +14,7 @@ co::create(function() {
 });
 function foo() {
    echo "func start\n";
-   co::sleep(.001);
+   co::usleep(1000);
    echo "func end\n";
 }
 echo "main end\n";

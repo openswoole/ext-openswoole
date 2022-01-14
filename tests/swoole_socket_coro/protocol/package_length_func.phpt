@@ -27,7 +27,7 @@ Coroutine\run(function () {
                 Assert::isInstanceOf($client, Socket::class);
                 for ($n = 0; $n < strlen(GREETER); $n++) {
                     Assert::eq($client->sendAll(GREETER[$n]), 1);
-                    Coroutine::sleep(0.01);
+                    Coroutine::usleep(10000);
                 }
                 $client->close();
             });

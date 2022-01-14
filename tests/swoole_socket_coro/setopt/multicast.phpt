@@ -36,7 +36,7 @@ go(function () use ($socket) {
     $n = 10;
     while($n--) {
         $client->send("hello world [$n]\n");
-        co::sleep(.03);
+        co::usleep(30000);
     }
 });
 

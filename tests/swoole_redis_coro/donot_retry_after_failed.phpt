@@ -33,7 +33,7 @@ go(function () use ($cid, $port) {
     Assert::assert($redis->connected);
     Assert::same($redis->errCode, 0, $redis->errCode);
     Assert::same($redis->errMsg, '', $redis->errMsg);
-    co::sleep(0.001);
+    Co::usleep(1000);
     co::resume($cid);
 });
 swoole_event_wait();

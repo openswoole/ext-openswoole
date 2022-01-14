@@ -16,7 +16,7 @@ $proc1 = new \swoole_process(function (swoole_process $proc) {
 Assert::assert($proc1->start());
 
 $proc2 = new \swoole_process(function (swoole_process $proc) use ($proc1) {
-    Co::sleep(0.01);
+    co::usleep(10000);
     $socket = $proc1->exportSocket();
     $socket->send("hello proc1\n");
     echo $socket->recv();

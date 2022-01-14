@@ -12,21 +12,21 @@ Co\run(function () {
             array_walk($array, function ($item) use ($array) {
                 array_walk($array, function ($item) use ($array) {
                     array_walk($array, function ($item) use ($array) {
-                        Co::sleep([0.01, 0.001][$item]);
+                        Co::usleep([10000, 1000][$item]);
                     });
-                    Co::sleep([0.01, 0.001][$item]);
+                    Co::usleep([10000, 1000][$item]);
                     array_walk($array, function ($item) use ($array) {
-                        Co::sleep([0.01, 0.001][$item]);
+                        Co::usleep([10000, 1000][$item]);
                     });
                 });
-                Co::sleep([0.01, 0.001][$item]);
+                Co::usleep([10000, 1000][$item]);
                 array_walk($array, function ($item) use ($array) {
                     array_walk($array, function ($item) use ($array) {
-                        Co::sleep([0.01, 0.001][$item]);
+                        Co::usleep([10000, 1000][$item]);
                     });
-                    Co::sleep([0.01, 0.001][$item]);
+                    Co::usleep([10000, 1000][$item]);
                     array_walk($array, function ($item) use ($array) {
-                        Co::sleep([0.01, 0.001][$item]);
+                        Co::usleep([10000, 1000][$item]);
                     });
                 });
             });

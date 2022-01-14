@@ -33,7 +33,7 @@ $pm->parentFunc = function () use ($pm) {
         });
 
         go(function() use ($ch) {
-            Co::sleep(0.1);
+            co::usleep(100000);
             echo "co 2 exec\n";
             var_dump(curl_exec($ch), curl_errno($ch));
         });

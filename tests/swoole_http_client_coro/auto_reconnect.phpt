@@ -14,7 +14,7 @@ $pm->parentFunc = function () use ($pm) {
         for ($n = MAX_REQUESTS; $n--;) {
             Assert::assert($cli->get('/'));
             Assert::same($cli->body, $pm->getRandomData(), var_dump_return($cli));
-            co::sleep(0.005);
+            Co::usleep(5000);
         }
     });
     swoole_event_wait();
@@ -32,7 +32,7 @@ $pm->childFunc = function () use ($pm) {
     });
     $server->on('request', function (swoole_http_request $request, swoole_http_response $response) use ($pm, $server) {
         $response->end($pm->getRandomData());
-        co::sleep(0.001);
+        Co::usleep(1000);
         $server->close($request->fd);
     });
     $server->start();

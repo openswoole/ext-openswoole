@@ -10,8 +10,8 @@ go(function () {
 	$ret = [];
     for($i=0;$i<10;$i++) {
         $wg->add();
-        go(function() use ($wg, $i, &$ret) {		
-            co::sleep(0.1);			
+        go(function() use ($wg, $i, &$ret) {
+            co::usleep(100000);
 			$ret[$i] = $i;
             $wg->done();
         });

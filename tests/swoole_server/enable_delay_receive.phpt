@@ -30,10 +30,10 @@ $pm->childFunc = function () use ($pm) {
     });
 
     $server->on('connect', function (Swoole\Server $serv, int $fd, int $rid) {
-        Co::sleep(0.3);
+        Co::usleep(300000);
         $serv->confirm($fd);
     });
-    
+
     $server->on('receive', function (Swoole\Server $serv, int $fd, int $rid, string $data) {
         $serv->send($fd, "hello {$data}");
     });

@@ -15,7 +15,7 @@ run(function () {
     $chan = new Coroutine\Channel(1);
     $cid = Coroutine::getCid();
     go(function () use ($cid) {
-        System::sleep(0.002);
+        System::usleep(2000);
         Assert::true(Coroutine::cancel($cid));
     });
 

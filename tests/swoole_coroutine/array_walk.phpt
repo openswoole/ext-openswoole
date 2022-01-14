@@ -10,7 +10,7 @@ Co\run(function () {
         go(function () {
             $array = range(0, 1);
             array_walk($array, function ($item) {
-                Co::sleep([0.01, 0.001][$item]);
+                Co::usleep([10000, 1000][$item]);
             });
         });
     }

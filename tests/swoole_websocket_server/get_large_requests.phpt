@@ -49,7 +49,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $serv->on('message', function (Server $server, Frame $frame) {
-        co::sleep(0.001);
+        Co::usleep(1000);
         if ($frame->data === 'max') {
             $server->push($frame->fd, co::stats()['coroutine_peak_num']);
         } else {

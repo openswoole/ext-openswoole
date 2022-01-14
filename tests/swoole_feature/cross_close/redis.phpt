@@ -14,7 +14,7 @@ $pm->parentFunc = function () use ($pm) {
         go(function () use ($pm, $redis) {
             echo "GET\n";
             go(function () use ($pm, $redis) {
-                co::sleep(0.001);
+                Co::usleep(1000);
                 echo "CLOSE\n";
                 Assert::assert($redis->close());
                 echo "DONE\n";

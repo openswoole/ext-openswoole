@@ -13,7 +13,7 @@ go(function () {
     echo "start to create coro\n";
     go(function () use ($main) {
         echo "coro 2\n";
-        co::sleep(0.1);
+        co::usleep(100000);
         echo "resume\n";
         co::resume($main);
     });

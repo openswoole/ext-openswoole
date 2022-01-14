@@ -27,6 +27,10 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_System_sleep, 0, 0, 1)
     ZEND_ARG_INFO(0, seconds)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_System_usleep, 0, 0, 1)
+    ZEND_ARG_INFO(0, microseconds)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_System_fread, 0, 0, 1)
     ZEND_ARG_INFO(0, handle)
     ZEND_ARG_INFO(0, length)

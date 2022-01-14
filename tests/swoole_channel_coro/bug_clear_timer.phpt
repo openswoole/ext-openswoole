@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 // $chan = new chan(1);
 
 // go(function () use ($chan) {
-//     co::sleep(0.1);
+//     co::usleep(100000);
 //     $chan->push('foo');
 // });
 

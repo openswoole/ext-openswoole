@@ -22,7 +22,7 @@ go(function () use ($socket) {
 
 //Client
 go(function () use ($socket) {
-    co::sleep(0.1);
+    co::usleep(100000);
     $socket->cancel();
 });
 swoole_event_wait();

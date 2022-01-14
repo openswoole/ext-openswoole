@@ -19,7 +19,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         $test_func = function ($port_index, $sleep_seconds) use ($pm) {
             $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $cli->connect('127.0.0.1', $pm->getFreePort($port_index));
-            System::sleep($sleep_seconds);
+            System::usleep(intval($sleep_seconds * 1000000));
             return $cli->recv(0.01);
         };
         go(function () use ($test_func) {

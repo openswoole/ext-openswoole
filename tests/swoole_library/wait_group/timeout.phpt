@@ -11,9 +11,9 @@ go(function () {
 	$ret = [];
     for($i=0;$i<10;$i++) {
         $wg->add();
-        go(function() use ($wg, $i, &$ret) {		
-			$time = rand(5,15)/10;
-            co::sleep($time);			
+        go(function() use ($wg, $i, &$ret) {
+			$time = rand(5,15) * 100000;
+            co::usleep($time);
 			$ret[$i] = $time;
             $wg->done();
         });

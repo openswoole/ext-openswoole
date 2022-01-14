@@ -21,7 +21,7 @@ function char(int $random)
 }
 
 go(function () {
-    co::sleep(0.001);
+    Co::usleep(1000);
 });
 go(function () {
     foo();

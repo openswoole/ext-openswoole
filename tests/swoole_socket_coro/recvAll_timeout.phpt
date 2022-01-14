@@ -37,7 +37,7 @@ $pm->childFunc = function () use ($pm) {
         $s = $pm->getRandomDataEx((int)$data);
         while ($server->exists($fd)) {
             $server->send($fd, string_pop_front($s, 1));
-            Co::sleep(0.005);
+            Co::usleep(5000);
         }
     });
     $server->start();

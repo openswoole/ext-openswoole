@@ -11,14 +11,14 @@ $sch = new Co\Scheduler;
 $sch->set(['max_coroutine' => 100]);
 
 $sch->add(function ($t, $n) {
-    Co::sleep($t);
+    Co::usleep($t);
     echo "$n\n";
-}, 0.2, 'A');
+}, 200000, 'A');
 
 $sch->add(function ($t, $n) {
-    Co::sleep($t);
+    Co::usleep($t);
     echo "$n\n";
-}, 0.1, 'B');
+}, 100000, 'B');
 
 $sch->add(function () {
     var_dump(Co::getCid());

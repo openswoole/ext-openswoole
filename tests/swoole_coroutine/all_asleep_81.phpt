@@ -31,7 +31,7 @@ Co\run(function () {
     go(function () {
         test2();
     });
-    Co::sleep(0.1);
+    co::usleep(100000);
 });
 echo "DONE\n";
 ?>

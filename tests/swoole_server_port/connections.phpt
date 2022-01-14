@@ -74,7 +74,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
     $sch->add(
         function () use ($pm) {
-            \Co\System::sleep(.5);
+            \Co\System::usleep(500000);
             $pm->kill();
         }
     );

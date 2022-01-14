@@ -40,7 +40,8 @@ namespace Swoole {
 		public static function enableScheduler(): bool {}
 		public static function disableScheduler(): bool {}
 		public static function exec(string $command, bool $get_error_stream = false): array|false {}
-		public static function sleep(float $seconds): bool {}
+		public static function sleep(int $seconds): bool {}
+		public static function usleep(int $microseconds): bool {}
 		public static function statvfs(string $path): bool|array {}
 		public static function readFile(string $filename, int $flags = 0): false|string {}
 		public static function writeFile(string $filename, string $data, int $flags = 0): bool|int {}

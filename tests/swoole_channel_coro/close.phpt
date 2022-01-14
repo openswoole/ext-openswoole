@@ -24,10 +24,10 @@ go(function () {
 
     $frame = '11';
     $chan->push($frame);
-    co::sleep(0.2);
+    co::usleep(200000);
     print("chan close " . json_encode($chan->stats()) . "\n");
     $chan->close();
-    co::sleep(0.2);
+    co::usleep(200000);
     print("chan END\n");
     unset($a['1']);
 });

@@ -20,7 +20,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
         go(function () use ($cli) {
             (function () use ($cli) {
                 (function () use ($cli) {
-                    co::sleep(0.001);
+                    Co::usleep(1000);
                     get($cli);
                 })();
             })();
@@ -41,7 +41,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $server->on('request', function (swoole_http_request $request, swoole_http_response $response) use ($pm, $server) {
-        co::sleep(0.1);
+        co::usleep(100000);
         $server->shutdown();
     });
     $server->start();

@@ -14,7 +14,7 @@ const T = 0.02;
 Co\run(function () {
     go(function () {
         for ($i = 0; $i < N; $i++) {
-            Co::sleep(T);
+            Co::usleep((int) (T * 1000 * 1000));
         }
     });
     swoole_test_kernel_coroutine(N, T);

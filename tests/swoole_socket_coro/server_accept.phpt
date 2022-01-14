@@ -47,7 +47,7 @@ Co\run(function () {
     }
     for ($n = MAX_CONCURRENCY; $n--;) {
         Coroutine::create(function () use ($port) {
-            Co::sleep(0.01);
+            co::usleep(10000);
             $client = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
             $connected = $client->connect('127.0.0.1', $port, 3);
             if (!$connected) {
@@ -82,7 +82,7 @@ Co\run(function () {
     }
     Coroutine::create(function () use ($server) {
         while (true) {
-            Coroutine::sleep(0.1);
+            Coroutine::usleep(100000);
             if (Coroutine::stats()['coroutine_num'] === 2) {
                 $server->close();
                 break;

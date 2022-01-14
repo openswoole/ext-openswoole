@@ -24,7 +24,7 @@ go(function () use ($wg) {
     });
     go(function () use ($wg, $cid) {
         $wg->add();
-        Assert::notSame(Co::sleep(0.001), false);
+        Assert::notSame(Co::usleep(1000), false);
         Co::resume($cid);
         echo "TASK[3] DONE\n";
         $wg->done();

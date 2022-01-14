@@ -52,16 +52,20 @@ static void sleep_callback(Coroutine *co, bool *canceled) {
 }
 
 int System::sleep(double sec) {
+    return System::usleep((long) sec * 1000000);
+}
+
+int System::usleep(long microseconds) {
     Coroutine *co = Coroutine::get_current_safe();
 
     bool *canceled = new bool(false);
     TimerNode *tnode = nullptr;
 
-    if (sec < SW_TIMER_MIN_SEC) {
+    if (microseconds < SW_TIMER_MIN_MICRO_SEC) {
         swoole_event_defer([co, canceled](void *data) { sleep_callback(co, canceled); }, nullptr);
     } else {
         auto fn = [canceled](Timer *timer, TimerNode *tnode) { sleep_callback((Coroutine *) tnode->data, canceled); };
-        tnode = swoole_timer_add((long) (sec * 1000), false, fn, co);
+        tnode = swoole_timer_add(microseconds / 1000, false, fn, co);
         if (tnode == nullptr) {
             delete canceled;
             return -1;

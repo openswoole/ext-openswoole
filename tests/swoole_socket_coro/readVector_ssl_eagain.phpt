@@ -33,7 +33,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         ]);
         $conn->connect('127.0.0.1', $pm->getFreePort());
 
-        Coroutine::sleep(0.5);
+        Coroutine::usleep(500000);
         $ret = $conn->sendAll($packedStr);
         Assert::eq($ret, $totalLength);
         $conn->recv();

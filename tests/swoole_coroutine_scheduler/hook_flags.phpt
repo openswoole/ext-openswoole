@@ -11,12 +11,12 @@ $sch = new Swoole\Coroutine\Scheduler();
 $sch->set(['hook_flags' => SWOOLE_HOOK_ALL,]);
 
 $sch->add(function ($t, $n) {
-    usleep($t);
+    Co::usleep($t);
     echo "$n\n";
 }, 200000, 'A');
 
 $sch->add(function ($t, $n) {
-    usleep($t);
+    Co::usleep($t);
     echo "$n\n";
 }, 100000, 'B');
 

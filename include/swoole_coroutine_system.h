@@ -44,6 +44,7 @@ class System {
     static void init_reactor(Reactor *reactor);
     /* sleep */
     static int sleep(double sec);
+    static int usleep(long microseconds);
     /* file */
     static std::shared_ptr<String> read_file(const char *file, bool lock = false);
     static ssize_t write_file(const char *file, char *buf, size_t length, bool lock = 0, int flags = 0);

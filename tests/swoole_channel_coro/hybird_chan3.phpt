@@ -21,7 +21,7 @@ for ($i=0; $i < $coro_num; $i++) {
         for ($j = 0; $j < $coro_num; $j ++) {
             $c = $chan->pop();
             echo  "@".$j . "->coro:" . $i . " pop chan id :" . var_export($c, true) . PHP_EOL;
-            co::sleep(0.2);
+            co::usleep(200000);
             $ret = $chan->push($c);
         }
     });

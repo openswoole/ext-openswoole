@@ -15,8 +15,8 @@ $pipe = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP
 Co::create(function()use(&$pipe){
     foreach(range(0, 9) as $n) {
         printf("Write byte: %d\n", fwrite($pipe[0], 'hello world '.$n));
-        Co::sleep(.01);
-    } 
+        co::usleep(10000);
+    }
     fclose($pipe[0]);
 });
 

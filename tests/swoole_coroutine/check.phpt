@@ -10,7 +10,7 @@ define('RUN_IN_CHILD', true);
 
 $map = [
     function () {
-        Co::sleep(0.001);
+        Co::usleep(1000);
         Assert::assert(0); // never here
     },
     function () {
@@ -50,11 +50,11 @@ $map = [
         Assert::assert(0); // never here
     },
     function () {
-        Co::gethostbyname('www.swoole.com');
+        Co::gethostbyname('openswoole.com');
         Assert::assert(0); // never here
     },
     function () {
-        Co::getaddrinfo('www.swoole.com');
+        Co::getaddrinfo('openswoole.com');
         Assert::assert(0); // never here
     },
 //    function () {

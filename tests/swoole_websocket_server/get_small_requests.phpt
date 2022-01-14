@@ -45,7 +45,7 @@ $pm->childFunc = function () use ($pm) {
     });
     $serv->on('message', function (swoole_websocket_server $server, swoole_websocket_frame $frame) {
         if (mt_rand(0, 1)) {
-            co::sleep(0.001); // 50% block
+            Co::usleep(1000); // 50% block
         }
         if ($frame->data === 'max') {
             $server->push($frame->fd, co::stats()['coroutine_peak_num']);

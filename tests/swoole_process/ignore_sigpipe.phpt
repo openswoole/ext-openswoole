@@ -33,7 +33,7 @@ $pm->childFunc = function () use ($pm) {
             return;
         }
         while (1) {
-            usleep(10000);
+            Co::usleep(10000);
             if ($cli->send($GLOBALS['data']) == false) {
                 Assert::eq($cli->errCode, SOCKET_EPIPE);
                 break;

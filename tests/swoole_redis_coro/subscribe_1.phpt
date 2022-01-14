@@ -26,7 +26,7 @@ go(function () {
 go(function () {
     $redis = new Co\redis;
     $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
-    co::sleep(0.1);
+    co::usleep(100000);
 
     for ($i = 0; $i < MAX_REQUESTS; $i++) {
         $ret = $redis->publish('test', 'hello-' . $i);

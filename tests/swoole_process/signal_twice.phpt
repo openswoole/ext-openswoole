@@ -33,7 +33,7 @@ $pm->childFunc = function () use ($pm) {
             $pm->wakeup();
             go(static function () use(&$running) {
                 while ($running) {
-                    Co::sleep(0.1);
+                    co::usleep(100000);
                 }
             });
         });

@@ -14,7 +14,7 @@ go(function () {
     $f = fopen(FILE, 'w+');
     $ret = flock($f, LOCK_EX);
     Assert::assert($ret);
-    co::sleep(0.3);
+    Co::usleep(300000);
     $ret = flock($f, LOCK_UN);
     Assert::assert($ret);
 });

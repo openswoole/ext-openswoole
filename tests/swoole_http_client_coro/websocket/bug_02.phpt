@@ -16,7 +16,7 @@ $pm->parentFunc = function () use ($pm) {
         for ($i = 0; $i < 5; $i++) {
             $cli->push("hello server\n", SWOOLE_WEBSOCKET_OPCODE_TEXT, true);
             echo ($cli->recv(1))->data;
-            co::sleep(0.1);
+            co::usleep(100000);
         }
         $cli->close();
     });

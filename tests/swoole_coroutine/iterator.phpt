@@ -13,7 +13,7 @@ go(function () {
     var_dump($i->current());
     $i->rewind();
     go(function () use ($i) {
-        Co::sleep(0.1);
+        co::usleep(100000);
         // 1
         var_dump($i->current());
         $i->next();

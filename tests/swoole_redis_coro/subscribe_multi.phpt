@@ -30,7 +30,7 @@ go(function () {
 go(function () {
     $redis = new Co\redis;
     $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
-    co::sleep(0.1);
+    co::usleep(100000);
 
     $ret = $redis->publish('test1', 'hello');
     Assert::assert($ret);

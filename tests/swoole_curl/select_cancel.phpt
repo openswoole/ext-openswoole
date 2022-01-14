@@ -50,7 +50,7 @@ $pm->parentFunc = function () use ($pm) {
 
         $cid = Coroutine::getCid();
         go(function () use($cid) {
-            System::sleep(0.005);
+            System::usleep(5000);
             Coroutine::cancel($cid);
         });
 

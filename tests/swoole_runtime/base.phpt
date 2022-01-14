@@ -37,14 +37,14 @@ go(function () {
     echo '4' . PHP_EOL;
 });
 go(function () use ($server) {
-    usleep(10 * 1000);
+    Co::usleep(10 * 1000);
     echo 'sleep2' . PHP_EOL;
     $server->shutdown();
 });
 echo '5' . PHP_EOL;
 Swoole\Runtime::enableCoroutine(true); // all
 go(function () {
-    usleep(5 * 1000);
+    Co::usleep(5 * 1000);
     echo 'sleep1' . PHP_EOL;
 });
 echo '6' . PHP_EOL;

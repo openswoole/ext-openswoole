@@ -40,7 +40,7 @@ $pm->childFunc = function () use ($pm) {
         'open_http2_protocol' => true
     ]);
     $http->on('request', function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) {
-        Coroutine::sleep(mt_rand(1, MAX_REQUESTS) / 1000);
+        Coroutine::usleep(mt_rand(1, MAX_REQUESTS) * 1000);
         $response->end($request->rawContent());
     });
     $http->start();

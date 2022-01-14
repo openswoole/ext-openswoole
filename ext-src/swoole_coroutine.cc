@@ -118,6 +118,7 @@ static PHP_METHOD(swoole_coroutine, disableScheduler);
 static PHP_METHOD(swoole_coroutine, select);
 PHP_METHOD(swoole_coroutine_system, exec);
 PHP_METHOD(swoole_coroutine_system, sleep);
+PHP_METHOD(swoole_coroutine_system, usleep);
 PHP_METHOD(swoole_coroutine_system, fread);
 PHP_METHOD(swoole_coroutine_system, fgets);
 PHP_METHOD(swoole_coroutine_system, fwrite);
@@ -142,7 +143,7 @@ static const zend_function_entry swoole_coroutine_methods[] =
     ZEND_FENTRY(defer, ZEND_FN(swoole_coroutine_defer), arginfo_class_Swoole_Coroutine_defer, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_scheduler, set, arginfo_class_Swoole_Coroutine_set, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_scheduler, getOptions, arginfo_class_Swoole_Coroutine_getOptions, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    
+
     PHP_ME(swoole_coroutine, exists, arginfo_class_Swoole_Coroutine_exists, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, yield, arginfo_class_Swoole_Coroutine_yield, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, cancel, arginfo_class_Swoole_Coroutine_cancel, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -168,6 +169,7 @@ static const zend_function_entry swoole_coroutine_methods[] =
     ZEND_FENTRY(dnsLookup, ZEND_FN(swoole_async_dns_lookup_coro), arginfo_class_Swoole_Coroutine_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, exec, arginfo_class_Swoole_Coroutine_exec, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, sleep, arginfo_class_Swoole_Coroutine_sleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_coroutine_system, usleep, arginfo_class_Swoole_Coroutine_usleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, getaddrinfo, arginfo_class_Swoole_Coroutine_getaddrinfo, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, statvfs, arginfo_class_Swoole_Coroutine_statvfs, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, readFile, arginfo_class_Swoole_Coroutine_readFile, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)

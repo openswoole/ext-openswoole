@@ -31,7 +31,7 @@ $pm->parentFunc = function () use ($pm) {
 
         $cid = Coroutine::getCid();
         go(function () use ($cid) {
-            System::sleep(0.01);
+            System::usleep(10000);
             Assert::true(Coroutine::cancel($cid));
             Assert::false(Coroutine::isCanceled());
         });

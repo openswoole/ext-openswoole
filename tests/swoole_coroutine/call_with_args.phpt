@@ -10,7 +10,7 @@ class TestCo
 {
     public function foo(...$args)
     {
-        co::sleep(0.001);
+        Co::usleep(1000);
         $cid = go(function () {
             co::yield();
         });
@@ -22,13 +22,13 @@ class TestCo
             $send = new Chan;
             $data = $args[$index];
             go(function () use ($recv, $data) {
-                co::sleep(0.001);
+                Co::usleep(1000);
                 $recv->push($data); // response
             });
             go(function () use ($send, $data) {
                 $data = $send->pop();
                 if (Assert::assert($data === $data)) {
-                    co::sleep(0.001);
+                    Co::usleep(1000);
                     $send->push(true); // send ok
                 }
             });

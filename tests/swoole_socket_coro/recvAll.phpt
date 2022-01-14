@@ -19,7 +19,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
          */
         if (swoole_string(CASE_LIST)->split(',')->contains(1, false)) {
             $conn->send("case-1");
-            Co::sleep(0.001);
+            Co::usleep(1000);
             $header = $conn->recvAll(4);
             $len = unpack('Nlen', $header)['len'];
             $body = $conn->recvAll($len);
@@ -40,7 +40,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
          */
         if (swoole_string(CASE_LIST)->split(',')->contains(3, false)) {
             $conn->send("case-3");
-            Co::sleep(0.001);
+            Co::usleep(1000);
             $header = $conn->recvAll(4);
             $len = unpack('Nlen', $header)['len'];
             $body = $conn->recvAll($len);
@@ -51,7 +51,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
          */
         if (swoole_string(CASE_LIST)->split(',')->contains(4, false)) {
             $conn->send("case-4");
-            Co::sleep(0.001);
+            Co::usleep(1000);
             $header = $conn->recvAll(4);
             $len = unpack('Nlen', $header)['len'];
             $body = $conn->recvAll($len);

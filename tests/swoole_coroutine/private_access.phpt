@@ -26,7 +26,7 @@ class Bar
             var_dump($this->private);
             var_dump($this->protect);
             var_dump($this->public);
-            co::sleep(.001);
+            co::usleep(1000);
             var_dump(self::$s_private);
             var_dump(self::$s_protect);
             var_dump(self::$s_public);
@@ -103,7 +103,7 @@ class Bar
             var_dump($this->private);
             var_dump($this->protect);
             var_dump($this->public);
-            Co::sleep(0.001);
+            Co::usleep(1000);
             var_dump(self::$s_private);
             var_dump(self::$s_protect);
             var_dump(self::$s_public);

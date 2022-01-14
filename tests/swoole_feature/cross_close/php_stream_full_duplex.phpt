@@ -12,7 +12,7 @@ $pm->parentFunc = function () use ($pm) {
         $cli = stream_socket_client("tcp://127.0.0.1:{$pm->getFreePort()}", $errno, $errstr, 1);
         Assert::true(!$errno);
         go(function () use ($pm, $cli) {
-            Co::sleep(0.001);
+            Co::usleep(1000);
             echo "CLOSE\n";
             Assert::true(fclose($cli));
             $pm->kill();

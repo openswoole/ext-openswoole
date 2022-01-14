@@ -28,13 +28,13 @@ function swoole_test_curl_multi($options = []) {
             unset($options['sleep']);
         }
         go(function() use($mh) {
-            Co::sleep(0.005);
+            Co::usleep(5000);
             curl_multi_select($mh);
         });
     }
 
-    if (isset($options['sleep'])) {
-        Co::sleep($options['sleep']);
+    if (isset($options['usleep'])) {
+        Co::usleep($options['usleep']);
     }
 
     while ($active && $mrc == CURLM_OK) {

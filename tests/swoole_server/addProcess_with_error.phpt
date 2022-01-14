@@ -31,7 +31,7 @@ $pm->childFunc = function () use ($pm) {
                     return;
                 }
                 echo "sleep start then ";
-                Co::sleep(0.01);
+                co::usleep(10000);
                 echo "sleep end\n";
                 trigger_error('ERROR', E_USER_ERROR);
             });

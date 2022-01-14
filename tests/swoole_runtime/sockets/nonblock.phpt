@@ -23,7 +23,7 @@ run(function () {
 
         $cli = socket_accept($sock);
         $data = socket_read($cli, 1024);
-        usleep(50 * 1000);
+        Co::usleep(50 * 1000);
         socket_write($cli, "Swoole: $data");
         socket_close($cli);
     });

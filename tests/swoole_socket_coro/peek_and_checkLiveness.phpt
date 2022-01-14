@@ -20,7 +20,7 @@ $pm->parentFunc = function () use ($pm) {
                 $random = get_safe_random();
                 Assert::same($socket->sendAll($random), strlen($random));
                 for ($n = 100; $n--;) {
-                    Coroutine::sleep(0.001);
+                    Coroutine::usleep(1000);
                     $data = $socket->peek(strlen($random));
                     if ($data === $random) {
                         break;

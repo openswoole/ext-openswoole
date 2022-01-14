@@ -31,7 +31,7 @@ $pm->childFunc = function () use ($pm) {
     $http->on('request', function (swoole_http_request $request, swoole_http_response $response) use ($http) {
         go(function () {
             for ($i = 5; $i--;) {
-                co::sleep(0.001);
+                Co::usleep(1000);
             }
         });
         $response->end('Hello Swoole!');

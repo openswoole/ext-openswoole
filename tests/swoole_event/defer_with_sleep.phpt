@@ -6,12 +6,12 @@ swoole_event: swoole_event_defer and sleep
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    co::sleep(0.001);
+    Co::usleep(1000);
     echo "timer [1]\n";
     swoole_event_defer(function () {
         echo "defer [2]\n";
         go(function () {
-            co::sleep(0.001);
+            Co::usleep(1000);
             echo "timer [2]\n";
         });
     });

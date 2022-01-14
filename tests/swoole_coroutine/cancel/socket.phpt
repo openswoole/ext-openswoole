@@ -24,9 +24,9 @@ run(function() {
         }
         echo "DONE\n";
     });
-    
+
     // client
-    co::sleep(0.1);
+    co::usleep(100000);
     Assert::true(Coroutine::cancel($cid));
 });
 ?>

@@ -34,7 +34,7 @@ Coroutine\run(function () {
         });
         $server->start();
     });
-    Coroutine::sleep(0.001);
+    Coroutine::usleep(1000);
     Coroutine::create(function () use ($server) {
         $socket = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         if (Assert::true($socket->connect('127.0.0.1', $server->port, -1))) {

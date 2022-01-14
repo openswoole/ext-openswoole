@@ -19,13 +19,13 @@ Co\run(function () {
         if ($GLOBALS['count'] == N) {
             Event::cycle(null);
         }
-        Co::sleep(0.02);
+        co::usleep(20000);
         $GLOBALS['logs'] [] = "cycle\n";
     });
 
     $n = N;
     while ($n--) {
-        Co::sleep(0.01);
+        co::usleep(10000);
         $GLOBALS['logs'] [] = "sleep\n";
     }
 });
