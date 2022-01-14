@@ -19,7 +19,7 @@ $pm->parentFunc = function ($pid) use ($pm, $port) {
             $server_reply = $socket->recv(1024, 0.1);
             Assert::same($server_reply, 'swoole');
             co::usleep($i += 1000); // after 10 times we sleep 0.01s to trigger server timeout
-            if ($i > 10000) {
+            if ($i >= 10000) {
                 break;
             }
         }
