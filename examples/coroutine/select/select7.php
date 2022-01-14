@@ -32,7 +32,8 @@ Co\run(function () {
 
     go(function() use ($chan1, $chan2){
         while(1) {
-            $ret = co::select([$chan1, $chan2], [], 10);
+            $ret = co::select([$chan1, $chan2], [], 3);
+            if(sizeof($ret['pull_chans']) === 0) break;
             $ret = array_values($ret['pull_chans'])[0]->pop();
             var_dump($ret);
         }
