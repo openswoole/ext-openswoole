@@ -51,7 +51,7 @@ $pm->childFunc = function () use ($pm, $port) {
         }
         echo "$i\n";
         echo("sever exit\n");
-        usleep(1);
+        Co::usleep(1);
         $client->close();
         $socket->close();
     });

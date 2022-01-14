@@ -12,7 +12,7 @@ Co\run(function () {
     });
     go(function () use ($timer1) {
         for ($i = 0; $i < 10; ++$i) {
-            usleep(100000);
+            Co::usleep(100000);
         }
         var_dump('b');
         Swoole\Timer::clear($timer1);

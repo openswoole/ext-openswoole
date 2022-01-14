@@ -17,10 +17,10 @@ go(function () {
     // usleep
     $s = microtime(true);
     $t = ms_random(0.01, 0.1);
-    usleep((int) ($t * 1000 * 1000));
+    Co::usleep((int) ($t * 1000 * 1000));
     time_approximate($t, microtime(true) - $s);
-    usleep(0);
-    usleep(-1);
+    Co::usleep(0);
+    Co::usleep(-1);
 
     // time_nanosleep
     Assert::false(time_nanosleep(-1, 1));
