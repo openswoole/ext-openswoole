@@ -70,6 +70,7 @@ After compiling and installing the openswoole extension, you have to add a new l
  - [**Laravel Octane**](https://laravel.com/docs/8.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
  - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kinds of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
  - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on Open Swoole.
+ - [**Swoole Bundle for Symfony**](https://github.com/k911/swoole-bundle) allows you to run Symfony applications on Open Swoole.
 
 ## Call for Contributors
 
