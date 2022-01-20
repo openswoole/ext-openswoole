@@ -1296,9 +1296,9 @@ static PHP_METHOD(swoole_coroutine, select) {
     } ZEND_HASH_FOREACH_END();
 
     array_init(return_value);
-    add_assoc_zval_ex(return_value, ZEND_STRL("pull_chans"), pull_chans);
+    add_assoc_zval_ex(return_value, ZEND_STRL("read"), pull_chans);
     Z_TRY_ADDREF_P(pull_chans);
-    add_assoc_zval_ex(return_value, ZEND_STRL("push_chans"), push_chans);
+    add_assoc_zval_ex(return_value, ZEND_STRL("write"), push_chans);
     Z_TRY_ADDREF_P(push_chans);
 }
 
