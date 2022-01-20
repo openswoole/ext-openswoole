@@ -20,8 +20,8 @@ Co\run(function () {
     go(function() use ($chan1, $chan2){
         while(1) {
             $ret = co::select([$chan1, $chan2], [], 10);
-            array_values($ret['pull_chans'])[0]->pop();
-            if(array_values($ret['pull_chans'])[0]->errCode === -2) {
+            array_values($ret['read'])[0]->pop();
+            if(array_values($ret['read'])[0]->errCode === -2) {
                 break;
             }
         }

@@ -25,6 +25,6 @@ Co\run(function () {
     });
 
     $ret = co::select([$chan1, $chan2], [], 10);
-    $content = array_values($ret['pull_chans'])[0]->pop();
+    $content = array_values($ret['read'])[0]->pop();
     var_dump($content);
 });
