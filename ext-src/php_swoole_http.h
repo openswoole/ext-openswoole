@@ -196,6 +196,7 @@ struct Context {
 
 #ifdef SW_USE_HTTP2
     void http2_end(zval *zdata, zval *return_value);
+    void http2_send(zval *zdata, zval *return_value);
 #endif
 
     void free();
