@@ -64,7 +64,7 @@ enum swSSLVersion {
     SW_SSL_DTLS = 1u << 7,
 };
 
-#define SW_SSL_ALL (SW_SSL_SSLv2 | SW_SSL_SSLv3 | SW_SSL_TLSv1 | SW_SSL_TLSv1_1 | SW_SSL_TLSv1_2 | SW_SSL_TLSv1_3)
+#define SW_SSL_ALL (SW_SSL_SSLv2 | SW_SSL_TLSv1 | SW_SSL_TLSv1_1 | SW_SSL_TLSv1_2 | SW_SSL_TLSv1_3)
 
 enum swSSLMethod {
     SW_SSLv23_METHOD = 0,
