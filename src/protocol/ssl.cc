@@ -220,32 +220,8 @@ static void swoole_ssl_info_callback(const SSL *ssl, int where, int ret) {
 
 namespace swoole {
 
-#ifndef OPENSSL_NO_NEXTPROTONEG
-
-const std::string HTTP2_H2_ALPN("\x02h2");
-const std::string HTTP2_H2_16_ALPN("\x05h2-16");
-const std::string HTTP2_H2_14_ALPN("\x05h2-14");
-const std::string HTTP1_NPN("\x08http/1.1");
-
 #define OS_HTTP_V2_ALPN_PROTO "\x02h2"
 #define OS_HTTP_ALPN_PROTOS "\x08http/1.1\x08http/1.0"
-
-static bool ssl_select_proto(const uchar **out, uchar *outlen, const uchar *in, uint inlen, const std::string &key) {
-    for (auto p = in, end = in + inlen; p + key.size() <= end; p += *p + 1) {
-        if (std::equal(std::begin(key), std::end(key), p)) {
-            *out = p + 1;
-            *outlen = *p;
-            return true;
-        }
-    }
-    return false;
-}
-
-static bool ssl_select_h2(const uchar **out, uchar *outlen, const uchar *in, uint inlen) {
-    return ssl_select_proto(out, outlen, in, inlen, HTTP2_H2_ALPN) ||
-           ssl_select_proto(out, outlen, in, inlen, HTTP2_H2_16_ALPN) ||
-           ssl_select_proto(out, outlen, in, inlen, HTTP2_H2_14_ALPN);
-}
 
 #ifdef TLSEXT_TYPE_application_layer_protocol_negotiation
 static int ssl_alpn_advertised(SSL *ssl, const uchar **out, uchar *outlen, const uchar *in, uint32_t inlen, void *arg) {
@@ -265,26 +241,6 @@ static int ssl_alpn_advertised(SSL *ssl, const uchar **out, uchar *outlen, const
         return SSL_TLSEXT_ERR_ALERT_FATAL;
     }
 
-    return SSL_TLSEXT_ERR_OK;
-}
-#endif
-
-static int ssl_select_next_proto_cb(SSL *ssl, uchar **out, uchar *outlen, const uchar *in, uint inlen, void *arg) {
-#ifdef SW_LOG_TRACE_OPEN
-    std::string info("[NPN] server offers:\n");
-    for (unsigned int i = 0; i < inlen; i += in[i] + 1) {
-        info += "        * " + std::string(reinterpret_cast<const char *>(&in[i + 1]), in[i]);
-    }
-    swoole_trace_log(SW_TRACE_HTTP2, "[NPN] server offers: %s", info.c_str());
-#endif
-    SSLContext *ctx = (SSLContext *) arg;
-    if (ctx->http_v2 && !ssl_select_h2(const_cast<const unsigned char **>(out), outlen, in, inlen)) {
-        swoole_warning("HTTP/2 protocol was not selected, expects [h2]");
-        return SSL_TLSEXT_ERR_NOACK;
-    } else if (ctx->http) {
-        *out = (uchar *) HTTP1_NPN.c_str();
-        *outlen = HTTP1_NPN.length();
-    }
     return SSL_TLSEXT_ERR_OK;
 }
 #endif
@@ -486,16 +442,18 @@ bool SSLContext::create() {
 
 #if OPENSSL_VERSION_NUMBER >= 0x10002000L
     if (http || http_v2) {
-        std::string value;
+        unsigned int protos_len;
+        unsigned char *protos;
+
         if (http_v2) {
-            value = HTTP2_H2_ALPN + HTTP1_NPN;
+            protos = (unsigned char *) OS_HTTP_V2_ALPN_PROTO OS_HTTP_ALPN_PROTOS;
+            protos_len = sizeof(OS_HTTP_V2_ALPN_PROTO OS_HTTP_ALPN_PROTOS) - 1;
         } else {
-            value = HTTP1_NPN;
+            protos = (unsigned char *) OS_HTTP_ALPN_PROTOS;
+            protos_len = sizeof(OS_HTTP_ALPN_PROTOS) - 1;
         }
-#ifndef OPENSSL_NO_NEXTPROTONEG
-        SSL_CTX_set_next_proto_select_cb(context, ssl_select_next_proto_cb, nullptr);
-#endif
-        if (SSL_CTX_set_alpn_protos(context, (const unsigned char *) value.c_str(), value.length()) < 0) {
+
+        if (SSL_CTX_set_alpn_protos(context, protos, protos_len) < 0) {
             return false;
         }
 
