@@ -222,10 +222,13 @@ namespace swoole {
 
 #ifndef OPENSSL_NO_NEXTPROTONEG
 
-const std::string HTTP2_H2_ALPN("\x2h2");
-const std::string HTTP2_H2_16_ALPN("\x5h2-16");
-const std::string HTTP2_H2_14_ALPN("\x5h2-14");
+const std::string HTTP2_H2_ALPN("\x02h2");
+const std::string HTTP2_H2_16_ALPN("\x05h2-16");
+const std::string HTTP2_H2_14_ALPN("\x05h2-14");
 const std::string HTTP1_NPN("\x08http/1.1");
+
+#define OS_HTTP_V2_ALPN_PROTO "\x02h2"
+#define OS_HTTP_ALPN_PROTOS "\x08http/1.1\x08http/1.0"
 
 static bool ssl_select_proto(const uchar **out, uchar *outlen, const uchar *in, uint inlen, const std::string &key) {
     for (auto p = in, end = in + inlen; p + key.size() <= end; p += *p + 1) {
@@ -249,19 +252,19 @@ static int ssl_alpn_advertised(SSL *ssl, const uchar **out, uchar *outlen, const
     unsigned int srvlen;
     unsigned char *srv;
 
-    std::string value;
     SSLContext *cfg = (SSLContext *) arg;
     if (cfg->http_v2) {
-        value = HTTP2_H2_ALPN + HTTP1_NPN;
+        srv = (unsigned char *) OS_HTTP_V2_ALPN_PROTO OS_HTTP_ALPN_PROTOS;
+        srvlen = sizeof(OS_HTTP_V2_ALPN_PROTO OS_HTTP_ALPN_PROTOS) - 1;
     } else {
-        value = HTTP1_NPN;
+        srv = (unsigned char *) OS_HTTP_ALPN_PROTOS;
+        srvlen = sizeof(OS_HTTP_ALPN_PROTOS) - 1;
     }
 
-    srv = (unsigned char *) value.c_str();
-    srvlen = value.length();
     if (SSL_select_next_proto((unsigned char **) out, outlen, srv, srvlen, in, inlen) != OPENSSL_NPN_NEGOTIATED) {
-        return SSL_TLSEXT_ERR_NOACK;
+        return SSL_TLSEXT_ERR_ALERT_FATAL;
     }
+
     return SSL_TLSEXT_ERR_OK;
 }
 #endif
