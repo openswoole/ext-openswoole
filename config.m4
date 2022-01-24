@@ -650,10 +650,10 @@ if test "$PHP_SWOOLE" != "no"; then
         src/core/timer.cc \
         src/coroutine/base.cc \
         src/coroutine/channel.cc \
-        src/coroutine/selector.cc \
         src/coroutine/context.cc \
         src/coroutine/file_lock.cc \
         src/coroutine/hook.cc \
+        src/coroutine/selector.cc \
         src/coroutine/socket.cc \
         src/coroutine/system.cc \
         src/coroutine/thread_context.cc \
