@@ -17,10 +17,10 @@ $pm->parentFunc = function () use ($pm) {
             ]
         );
         $encoding = $headers['content-encoding'] ?? '';
-        if (defined('SWOOLE_HAVE_BROTLI')) {
-            Assert::same($encoding, 'br');
-        } elseif (defined('SWOOLE_HAVE_ZLIB')) {
+        if (defined('SWOOLE_HAVE_ZLIB')) {
             Assert::same($encoding, 'gzip');
+        } elseif (defined('SWOOLE_HAVE_BROTLI')) {
+            Assert::same($encoding, 'br');
         }
         if (defined('SWOOLE_HAVE_COMPRESSION')) {
             phpt_var_dump($encoding);
