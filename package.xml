@@ -36,8 +36,11 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        - Bug fixed: Added type validation and value length validation at Swoole Table
-        - Fix build with old libcurl, thanks @remicollet
+        - New feature: Co::select, the non-blocking coroutine channel selector
+        - New feature: HTTP2 SSE server-sent events
+        - New feature: Improved channel stats
+        - Fixes: Argument data type fixed at sleep() and usleep() API by @Hailong
+        - Fixes: HTTP2 and TLS bug fixes
     </notes>
     <contents>
         <dir name="/">
