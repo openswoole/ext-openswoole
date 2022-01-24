@@ -810,16 +810,17 @@ static int http_request_message_complete(swoole_http_parser *parser) {
 
 #ifdef SW_HAVE_COMPRESSION
 void HttpContext::set_compression_method(const char *accept_encoding, size_t length) {
-#ifdef SW_HAVE_BROTLI
-    if (swoole_strnpos(accept_encoding, length, ZEND_STRL("br")) >= 0) {
-        accept_compression = 1;
-        compression_method = HTTP_COMPRESS_BR;
-    } else
-#endif
-        if (swoole_strnpos(accept_encoding, length, ZEND_STRL("gzip")) >= 0) {
+    if (swoole_strnpos(accept_encoding, length, ZEND_STRL("gzip")) >= 0) {
         accept_compression = 1;
         compression_method = HTTP_COMPRESS_GZIP;
-    } else if (swoole_strnpos(accept_encoding, length, ZEND_STRL("deflate")) >= 0) {
+    }
+#ifdef SW_HAVE_BROTLI
+    else if (swoole_strnpos(accept_encoding, length, ZEND_STRL("br")) >= 0) {
+        accept_compression = 1;
+        compression_method = HTTP_COMPRESS_BR;
+    }
+#endif
+    else if (swoole_strnpos(accept_encoding, length, ZEND_STRL("deflate")) >= 0) {
         accept_compression = 1;
         compression_method = HTTP_COMPRESS_DEFLATE;
     } else {
