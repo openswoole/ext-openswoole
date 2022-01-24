@@ -1,5 +1,5 @@
 --TEST--
-swoole_server: unregistered signal
+swoole_server: unregistered signal, ignore SIGPIPE
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
@@ -37,4 +37,3 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-[%s]	WARNING	%s (ERRNO 721): Unable to find callback function for signal Broken pipe: 13

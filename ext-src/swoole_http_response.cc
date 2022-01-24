@@ -239,8 +239,8 @@ static PHP_METHOD(swoole_http_response, write) {
 
 #ifdef SW_USE_HTTP2
     if (ctx->http2) {
-        php_swoole_error(E_WARNING, "Chunked transfer encoding is not supported in HTTP/2");
-        RETURN_FALSE;
+        ctx->send_chunked = 0;
+        return ctx->http2_send(zdata, return_value);
     }
 #endif
 

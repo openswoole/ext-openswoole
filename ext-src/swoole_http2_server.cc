@@ -37,6 +37,7 @@ static std::unordered_map<SessionId, Http2Session *> http2_sessions;
 extern String *swoole_http_buffer;
 
 static bool swoole_http2_server_respond(HttpContext *ctx, String *body);
+static int swoole_http2_server_send(HttpContext *ctx, String *body);
 
 Http2Stream::Stream(Http2Session *client, uint32_t _id) {
     ctx = swoole_http_context_new(client->fd);
@@ -340,7 +341,9 @@ static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_l
     }
 #endif
     ret = swoole_itoa(intbuf[1], body_length);
-    headers.add(ZEND_STRL("content-length"), intbuf[1], ret);
+    if(body_length > 0) {
+        headers.add(ZEND_STRL("content-length"), intbuf[1], ret);
+    }
 
     Http2Session *client = http2_sessions[ctx->fd];
     nghttp2_hd_deflater *deflater = client->deflater;
@@ -489,6 +492,32 @@ bool Http2Stream::send_trailer() {
     return true;
 }
 
+int swoole_http2_server_send(HttpContext *ctx, String *body) {
+    Http2Session *client = http2_sessions[ctx->fd];
+    Http2Stream *stream = ctx->stream;
+
+// disable compression
+#ifdef SW_HAVE_COMPRESSION
+    ctx->accept_compression = 0;
+    if (ctx->accept_compression) {
+        if (body->length == 0 ||
+            swoole_http_response_compress(body->str, body->length, ctx->compression_method, ctx->compression_level) !=
+                SW_OK) {
+            ctx->accept_compression = 0;
+        } else {
+            body = swoole_zlib_buffer;
+        }
+    }
+#endif
+
+    if (!ctx->send_header_) {
+        stream->send_header(0, 0);
+    }
+
+    stream->send_body(body, 0, client->local_settings.max_frame_size);
+    return 1;
+}
+
 static bool swoole_http2_server_respond(HttpContext *ctx, String *body) {
     Http2Session *client = http2_sessions[ctx->fd];
     Http2Stream *stream = ctx->stream;
@@ -512,8 +541,10 @@ static bool swoole_http2_server_respond(HttpContext *ctx, String *body) {
     }
 
     bool end_stream = (ztrailer == nullptr);
-    if (!stream->send_header(body->length, end_stream)) {
-        return false;
+    if (!ctx->send_header_) {
+        if (!stream->send_header(body->length, end_stream)) {
+            return false;
+        }
     }
 
     // The headers has already been sent, retries are no longer allowed (even if send body failed)
@@ -852,6 +883,13 @@ int swoole_http2_server_parse(Http2Session *client, const char *buf) {
             buf += sizeof(id) + sizeof(value);
             length -= sizeof(id) + sizeof(value);
         }
+
+        char ack_frame[SW_HTTP2_FRAME_HEADER_SIZE];
+        Http2::set_frame_header(
+            ack_frame, SW_HTTP2_TYPE_SETTINGS, 0, SW_HTTP2_FLAG_ACK, stream_id);
+        memcpy(ack_frame + SW_HTTP2_FRAME_HEADER_SIZE, buf, 0);
+        client->default_ctx->send(
+            client->default_ctx, ack_frame, SW_HTTP2_FRAME_HEADER_SIZE);
         break;
     }
     case SW_HTTP2_TYPE_HEADERS: {
@@ -1055,6 +1093,18 @@ void HttpContext::http2_end(zval *zdata, zval *return_value) {
     }
 
     RETURN_BOOL(swoole_http2_server_respond(this, &http_body));
+}
+
+void HttpContext::http2_send(zval *zdata, zval *return_value) {
+    String http_body = {};
+    if (zdata) {
+        http_body.length = php_swoole_get_send_data(zdata, &http_body.str);
+    } else {
+        http_body.length = 0;
+        http_body.str = nullptr;
+    }
+
+    RETURN_BOOL(swoole_http2_server_send(this, &http_body));
 }
 
 #endif
