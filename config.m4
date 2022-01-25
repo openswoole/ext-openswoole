@@ -41,10 +41,10 @@ PHP_ARG_ENABLE([http2],
   [AS_HELP_STRING([--enable-http2],
     [Use http2.0])], [no], [no])
 
-PHP_ARG_ENABLE([swoole],
-  [swoole support],
-  [AS_HELP_STRING([--enable-swoole],
-    [Enable swoole support])], [enable_swoole="yes"])
+PHP_ARG_ENABLE([openswoole],
+  [openswoole support],
+  [AS_HELP_STRING([--enable-openswoole],
+    [Enable openswoole support])], [enable_openswoole"yes"])
 
 PHP_ARG_ENABLE([mysqlnd],
   [enable mysqlnd support],

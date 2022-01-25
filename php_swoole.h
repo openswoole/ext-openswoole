@@ -35,7 +35,7 @@
 #endif
 
 extern zend_module_entry openswoole_module_entry;
-#define phpext_swoole_ptr &openswoole_module_entry
+#define phpext_openswoole_ptr &openswoole_module_entry
 
 PHP_MINIT_FUNCTION(openswoole);
 PHP_MSHUTDOWN_FUNCTION(openswoole);
