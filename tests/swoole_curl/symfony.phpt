@@ -9,6 +9,8 @@ require __DIR__ . '/../include/skipif.inc';
 require __DIR__ . '/../include/bootstrap.php';
 require_once TESTS_LIB_PATH . '/vendor/autoload.php';
 
+error_reporting(E_ERROR);
+
 use Swoole\Runtime;
 use Symfony\Component\HttpClient\HttpClient as SymfonyHttpClient;
 use Symfony\Component\HttpClient\HttplugClient as SymfonyHttplugClient;
