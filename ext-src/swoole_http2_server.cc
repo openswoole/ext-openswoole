@@ -19,6 +19,7 @@
 #ifdef SW_USE_HTTP2
 
 #include "swoole_static_handler.h"
+#include "swoole_util.h"
 
 #include "main/php_variables.h"
 
@@ -164,6 +165,18 @@ static bool swoole_http2_is_static_file(Server *serv, HttpContext *ctx) {
             ctx->response.status = SW_HTTP_NOT_FOUND;
             swoole_http2_server_respond(ctx, &null_body);
             return true;
+        }
+
+        std::set<std::string> dir_files;
+        std::string index_file = "";
+        if (serv->http_index_files && !serv->http_index_files->empty() && handler.is_dir()) {
+            handler.get_dir_files(dir_files);
+            index_file = swoole::intersection(*serv->http_index_files, dir_files);
+            if (index_file != "" && !handler.set_filename(index_file)) {
+                return false;
+            } else if (index_file == "" && !serv->http_autoindex) {
+                return false;
+            }
         }
 
         auto date_str = handler.get_date();

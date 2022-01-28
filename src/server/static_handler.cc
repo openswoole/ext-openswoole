@@ -207,7 +207,7 @@ size_t StaticHandler::get_index_page(std::set<std::string> &files, char *buffer,
     ret = sw_snprintf(p,
                       size - ret,
                       "\t</ul>\n"
-                      "<hr><i>Powered by Swoole</i></body>\n"
+                      "<hr><i>Powered by OpenSwoole</i></body>\n"
                       "</html>\n");
 
     p += ret;
@@ -238,16 +238,9 @@ bool StaticHandler::get_dir_files(std::set<std::string> &index_files) {
 
 bool StaticHandler::set_filename(std::string &filename) {
     char *p = task.filename + l_filename;
-
-    if (*p != '/') {
-        *p = '/';
-        p += 1;
-    }
-
     memcpy(p, filename.c_str(), filename.length());
-    p += filename.length();
-    *p = 0;
-
+    l_filename += filename.length();
+    task.filename[l_filename] = '\0';
     if (lstat(task.filename, &file_stat) < 0) {
         return false;
     }
