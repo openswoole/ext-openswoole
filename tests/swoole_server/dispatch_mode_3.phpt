@@ -20,10 +20,12 @@ $stats = array();
 $count = 0;
 $port = get_one_free_port();
 
+const MAX_CONCURRENCY_ = 128;
+
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($port) {
     global $count, $stats;
-    for ($i = 0; $i < MAX_CONCURRENCY; $i++) {
+    for ($i = 0; $i < MAX_CONCURRENCY_; $i++) {
         go(function () use ($port) {
             $cli = new Client(SWOOLE_SOCK_TCP);
             $cli->set([
@@ -58,7 +60,7 @@ $pm->parentFunc = function ($pid) use ($port) {
     Assert::eq(count($stats), WORKER_N);
     Assert::lessThan($stats[5], MAX_REQUESTS);
     Assert::lessThan($stats[10], MAX_REQUESTS);
-    Assert::same(array_sum($stats), MAX_REQUESTS * MAX_CONCURRENCY);
+    Assert::same(array_sum($stats), MAX_REQUESTS * MAX_CONCURRENCY_);
     echo "DONE\n";
 };
 
