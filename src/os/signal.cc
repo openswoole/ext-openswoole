@@ -153,7 +153,7 @@ static void swoole_signal_async_handler(int signo) {
 
 void swoole_signal_callback(int signo) {
     if (signo >= SW_SIGNO_MAX) {
-        swoole_warning("signal[%d] numberis invalid", signo);
+        swoole_warning("signal[%d] number is invalid", signo);
         return;
     }
     SignalHandler callback = signals[signo].handler;
