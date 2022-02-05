@@ -1145,6 +1145,10 @@ uint32_t Client::send_request(zval *zrequest) {
         flags |= SW_HTTP2_STREAM_USE_PIPELINE_READ;
     }
 
+    if(streams.size() >= local_settings.max_concurrent_streams) {
+        return 0;
+    }
+
     auto stream = create_stream(stream_id, flags);
 
     flags = SW_HTTP2_FLAG_END_HEADERS;
