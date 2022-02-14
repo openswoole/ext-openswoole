@@ -1145,7 +1145,7 @@ uint32_t Client::send_request(zval *zrequest) {
         flags |= SW_HTTP2_STREAM_USE_PIPELINE_READ;
     }
 
-    if(streams.size() >= local_settings.max_concurrent_streams) {
+    if(streams.size() >= remote_settings.max_concurrent_streams) {
         return 0;
     }
 
