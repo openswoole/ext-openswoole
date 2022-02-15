@@ -246,6 +246,8 @@ class Session {
 
     void (*handle)(Session *, Stream *) = nullptr;
 
+    void apply_setting(Server *serv);
+
     Session(SessionId _fd);
     ~Session();
 };

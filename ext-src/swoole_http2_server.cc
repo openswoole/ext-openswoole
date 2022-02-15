@@ -75,6 +75,25 @@ Http2Session::Session(SessionId _fd) {
     http2_sessions[_fd] = this;
 }
 
+void Http2Session::apply_setting(Server *serv) {
+    Http2::Settings *settings = &local_settings;
+    if(serv->http2_header_table_size > 0) {
+        local_settings.header_table_size = serv->http2_header_table_size;
+    }
+    if(serv->http2_initial_window_size > 0) {
+        local_settings.window_size = serv->http2_initial_window_size;
+    }
+    if(serv->http2_max_concurrent_streams > 0) {
+        local_settings.max_concurrent_streams = serv->http2_max_concurrent_streams;
+    }
+    if(serv->http2_max_frame_size > 0) {
+        local_settings.max_frame_size = serv->http2_max_frame_size;
+    }
+    if(serv->http2_max_header_list_size > 0) {
+        local_settings.max_header_list_size = serv->http2_max_header_list_size;
+    }
+}
+
 Http2Session::~Session() {
     for (auto iter = streams.begin(); iter != streams.end(); iter++) {
         delete iter->second;
@@ -1066,6 +1085,7 @@ int swoole_http2_server_onFrame(Server *serv, Connection *conn, RecvData *req) {
     Http2Session *client = http2_sessions[session_id];
     if (client == nullptr) {
         client = new Http2Session(session_id);
+        client->apply_setting(serv);
     }
 
     client->handle = swoole_http2_onRequest;

@@ -14,16 +14,14 @@ file_put_contents(RES_FILE, "");
 $pm = new ProcessManager;
 $pm->setWaitTimeout(-1);
 $pm->parentFunc = function ($pid) use ($pm) {
-    $fp = fopen(RES_FILE, "rw");
+    $fp = fopen(RES_FILE, "r");
     while (!feof($fp)) {
         $line = fgets($fp);
         if ($line) {
             echo $line;
         }
     }
-    if (IS_MAC_OS) {
-        $pm->kill();
-    }
+    $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
     $server = new Swoole\Server("0.0.0.0", $pm->getFreePort(), SWOOLE_BASE);

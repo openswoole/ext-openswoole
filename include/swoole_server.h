@@ -701,6 +701,13 @@ class Server {
     uint32_t input_buffer_size = SW_INPUT_BUFFER_SIZE;
     uint32_t max_queued_bytes = 0;
 
+    // http2 server
+    uint32_t http2_header_table_size = 0;
+    uint32_t http2_initial_window_size = 0;
+    uint32_t http2_max_concurrent_streams = 0;
+    uint32_t http2_max_frame_size = 0;
+    uint32_t http2_max_header_list_size = 0;
+
     /**
      * the master process and worker process communicate using unix socket dgram.
      * ipc_max_size represents the maximum size of each datagram,

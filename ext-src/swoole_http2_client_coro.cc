@@ -148,6 +148,29 @@ class Client {
         }
     }
 
+    void apply_http2_setting(zval *zset) {
+        Http2::Settings *settings = &local_settings;
+        if(ZVAL_IS_ARRAY(zset)) {
+            HashTable *vht = Z_ARRVAL_P(zset);
+            zval *ztmp;
+            if (php_swoole_array_get_value(vht, "http2_header_table_size", ztmp)) {
+                local_settings.header_table_size = zval_get_long(ztmp);
+            }
+            if (php_swoole_array_get_value(vht, "http2_initial_window_size", ztmp)) {
+                local_settings.window_size = zval_get_long(ztmp);
+            }
+            if (php_swoole_array_get_value(vht, "http2_max_concurrent_streams", ztmp)) {
+                local_settings.max_concurrent_streams = zval_get_long(ztmp);
+            }
+            if (php_swoole_array_get_value(vht, "http2_max_frame_size", ztmp)) {
+                local_settings.max_frame_size = zval_get_long(ztmp);
+            }
+            if (php_swoole_array_get_value(vht, "http2_max_header_list_size", ztmp)) {
+                local_settings.max_header_list_size = zval_get_long(ztmp);
+            }
+        }
+    }
+
     inline bool recv_packet(double timeout) {
         if (sw_unlikely(client->recv_packet(timeout) <= 0)) {
             io_error();
@@ -803,6 +826,7 @@ static PHP_METHOD(swoole_http2_client_coro, set) {
     php_array_merge(Z_ARRVAL_P(zsetting), Z_ARRVAL_P(zset));
 
     h2c->apply_setting(zset);
+    h2c->apply_http2_setting(zset);
 
     RETURN_TRUE;
 }
@@ -1143,6 +1167,10 @@ uint32_t Client::send_request(zval *zrequest) {
     }
     if (zval_is_true(zuse_pipeline_read)) {
         flags |= SW_HTTP2_STREAM_USE_PIPELINE_READ;
+    }
+
+    if(streams.size() >= remote_settings.max_concurrent_streams) {
+        return 0;
     }
 
     auto stream = create_stream(stream_id, flags);
