@@ -144,6 +144,7 @@ enum swErrorCode {
     SW_ERROR_SERVER_SEND_IN_MASTER,
     SW_ERROR_SERVER_INVALID_REQUEST,
     SW_ERROR_SERVER_CONNECT_FAIL,
+    SW_ERROR_SERVER_NO_RESPONSE_CONTEXT,
 
     /**
      * Process exit timeout, forced to end.
