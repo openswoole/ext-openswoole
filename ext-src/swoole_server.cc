@@ -418,6 +418,8 @@ static zend_function_entry swoole_server_methods[] = {
     //process
     PHP_ME(swoole_server, sendMessage, arginfo_class_Swoole_Server_sendMessage, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, addProcess, arginfo_class_Swoole_Server_addProcess, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, addCommand, arginfo_class_Swoole_Server_addCommand, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, command, arginfo_class_Swoole_Server_command, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, stats, arginfo_class_Swoole_Server_stats, ZEND_ACC_PUBLIC)
 #ifdef SWOOLE_SOCKETS_SUPPORT
     PHP_ME(swoole_server, getSocket, arginfo_class_Swoole_Server_getSocket, ZEND_ACC_PUBLIC)
