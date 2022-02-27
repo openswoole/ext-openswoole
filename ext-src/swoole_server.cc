@@ -3828,7 +3828,7 @@ static PHP_METHOD(swoole_server, getWorkerPid) {
     if (!worker) {
         RETURN_FALSE;
     }
-    RETURN_LONG(serv->get_worker(worker_id)->pid);
+    RETURN_LONG(worker->pid);
 }
 
 static PHP_METHOD(swoole_server, getManagerPid) {
