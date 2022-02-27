@@ -56,7 +56,9 @@ namespace Swoole {
         public function connection_info(int $fd, int $reactorId = -1, bool $noCheckConn = false): bool|array {}
         public function connection_list(int $startFd = 0, int $pageSize = 10): bool|array {}
         public function sendMessage(mixed $message, int $workerId): bool {}
+        public function command(string $name, int $processId, int $processType, mixed $data, bool $jsonEncode = true): bool {}
         public function addProcess(\Swoole\Process $process): bool|int {}
+        public function addCommand(string $name, int $acceptedProcessTypes, callable $callback): bool {}
         public function stats(int $mode = 0): string|array|false {}
         public function getSocket(int $port = -1): mixed {}
         public function bind(int $fd, int $uid): bool {}

@@ -114,7 +114,7 @@ Reactor::Reactor(int max_event, Type _type) {
         swoole_call_hook(SW_GLOBAL_HOOK_ON_REACTOR_CREATE, this);
     }
 
-    set_end_callback(Reactor::PRIORITY_DEFER_TASK, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_DEFER_TASK, [](Reactor *reactor) {
         CallbackManager *cm = reactor->defer_tasks;
         if (cm) {
             reactor->defer_tasks = nullptr;
@@ -123,10 +123,10 @@ Reactor::Reactor(int max_event, Type _type) {
         }
     });
 
-    set_exit_condition(Reactor::EXIT_CONDITION_DEFER_TASK,
-                       [](Reactor *reactor, int &event_num) -> bool { return reactor->defer_tasks == nullptr; });
+    set_exit_condition(EXIT_CONDITION_DEFER_TASK,
+                       [](Reactor *reactor, size_t &event_num) -> bool { return reactor->defer_tasks == nullptr; });
 
-    set_end_callback(Reactor::PRIORITY_IDLE_TASK, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_IDLE_TASK, [](Reactor *reactor) {
         if (reactor->idle_task.callback) {
             reactor->idle_task.callback(reactor->idle_task.data);
         }
@@ -134,21 +134,21 @@ Reactor::Reactor(int max_event, Type _type) {
 
     swoole_signal_set(SIGPIPE, nullptr);
 
-    set_end_callback(Reactor::PRIORITY_SIGNAL_CALLBACK, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_SIGNAL_CALLBACK, [](Reactor *reactor) {
         if (sw_unlikely(reactor->singal_no)) {
             swoole_signal_callback(reactor->singal_no);
             reactor->singal_no = 0;
         }
     });
 
-    set_end_callback(Reactor::PRIORITY_TRY_EXIT, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_TRY_EXIT, [](Reactor *reactor) {
         if (reactor->wait_exit && reactor->if_exit()) {
             reactor->running = false;
         }
     });
 
 #ifdef SW_USE_MALLOC_TRIM
-    set_end_callback(Reactor::PRIORITY_MALLOC_TRIM, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_MALLOC_TRIM, [](Reactor *reactor) {
         time_t now = ::time(nullptr);
         if (reactor->last_malloc_trim_time < now - SW_MALLOC_TRIM_INTERVAL) {
             malloc_trim(SW_MALLOC_TRIM_PAD);
@@ -157,8 +157,8 @@ Reactor::Reactor(int max_event, Type _type) {
     });
 #endif
 
-    set_exit_condition(Reactor::EXIT_CONDITION_DEFAULT,
-                       [](Reactor *reactor, int &event_num) -> bool { return event_num == 0; });
+    set_exit_condition(EXIT_CONDITION_DEFAULT,
+                       [](Reactor *reactor, size_t &event_num) -> bool { return event_num == 0; });
 }
 
 bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
@@ -169,11 +169,11 @@ bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
         return false;
     }
 
-    if (Reactor::isset_read_event(_fdtype)) {
+    if (isset_read_event(_fdtype)) {
         read_handler[fdtype] = handler;
-    } else if (Reactor::isset_write_event(_fdtype)) {
+    } else if (isset_write_event(_fdtype)) {
         write_handler[fdtype] = handler;
-    } else if (Reactor::isset_error_event(_fdtype)) {
+    } else if (isset_error_event(_fdtype)) {
         error_handler[fdtype] = handler;
     } else {
         swoole_warning("unknown fdtype");
@@ -184,7 +184,7 @@ bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
 }
 
 bool Reactor::if_exit() {
-    int _event_num = event_num;
+    size_t _event_num = get_event_num();
     for (auto &kv : exit_conditions) {
         if (kv.second(this, _event_num) == false) {
             return false;
@@ -212,7 +212,7 @@ int Reactor::_close(Reactor *reactor, Socket *socket) {
 using SendFunc = std::function<ssize_t(void)>;
 using AppendFunc = std::function<void(Buffer *buffer)>;
 
-static int write_func(
+static ssize_t write_func(
     Reactor *reactor, Socket *socket, const size_t __len, const SendFunc &send_fn, const AppendFunc &append_fn) {
     ssize_t retval;
     Buffer *buffer = socket->out_buffer;
@@ -283,10 +283,10 @@ static int write_func(
         }
         append_fn(buffer);
     }
-    return SW_OK;
+    return __len;
 }
 
-int Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_t n) {
+ssize_t Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_t n) {
     ssize_t send_bytes = 0;
     auto send_fn = [&send_bytes, socket, buf, n]() -> ssize_t {
         send_bytes = socket->send(buf, n, 0);
@@ -299,7 +299,7 @@ int Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_t n)
     return write_func(reactor, socket, n, send_fn, append_fn);
 }
 
-int Reactor::_writev(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt) {
+ssize_t Reactor::_writev(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt) {
 #ifdef SW_USE_OPENSSL
     if (socket->ssl) {
         swoole_error_log(SW_LOG_WARNING, SW_ERROR_OPERATION_NOT_SUPPORT, "does not support SSL");
@@ -385,7 +385,7 @@ void Reactor::set_end_callback(enum EndCallback id, const std::function<void(Rea
     end_callbacks[id] = fn;
 }
 
-void Reactor::set_exit_condition(enum ExitCondition id, const std::function<bool(Reactor *, int &)> &fn) {
+void Reactor::set_exit_condition(enum ExitCondition id, const std::function<bool(Reactor *, size_t &)> &fn) {
     exit_conditions[id] = fn;
 }
 

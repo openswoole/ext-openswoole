@@ -708,6 +708,7 @@ if test "$PHP_SWOOLE" != "no"; then
         src/server/static_handler.cc \
         src/server/task_worker.cc \
         src/server/worker.cc \
+        src/server/message_bus.cc \
         src/wrapper/event.cc \
         src/wrapper/timer.cc"
 

@@ -1148,6 +1148,7 @@ bool Socket::listen(int backlog) {
         set_err(errno);
         return false;
     }
+    socket->get_name(&socket->info);
 #ifdef SW_USE_OPENSSL
     ssl_is_server = true;
 #endif

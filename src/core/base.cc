@@ -852,22 +852,28 @@ namespace swoole {
 size_t DataHead::dump(char *_buf, size_t _len) {
     return sw_snprintf(_buf,
                        _len,
-                       "swDataHead[%p]\n"
+                       "DataHead[%p]\n"
                        "{\n"
                        "    long fd = %ld;\n"
+                       "    uint64_t msg_id = %lu;\n"
                        "    uint32_t len = %d;\n"
                        "    int16_t reactor_id = %d;\n"
                        "    uint8_t type = %d;\n"
                        "    uint8_t flags = %d;\n"
                        "    uint16_t server_fd = %d;\n"
+                       "    uint16_t ext_flags = %d;\n"
+                       "    double time = %f;\n"
                        "}\n",
                        this,
                        fd,
+                       msg_id,
                        len,
                        reactor_id,
                        type,
                        flags,
-                       server_fd);
+                       server_fd,
+                       ext_flags,
+                       time);
 }
 
 std::string dirname(const std::string &file) {
