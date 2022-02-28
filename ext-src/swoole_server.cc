@@ -68,7 +68,7 @@ static std::unordered_map<std::string, ServerEvent> server_event_map({
 
 // server event callback
 static void php_swoole_onPipeMessage(Server *serv, EventData *req);
-static void php_swoole_onStart(Server *);
+static void php_swoole_server_onStart(Server *);
 static void php_swoole_onShutdown(Server *);
 static void php_swoole_server_onWorkerStart(Server *, int worker_id);
 static void php_swoole_server_onBeforeReload(Server *serv);
@@ -1391,7 +1391,7 @@ static int php_swoole_server_onFinish(Server *serv, EventData *req) {
     return SW_OK;
 }
 
-static void php_swoole_onStart(Server *serv) {
+static void php_swoole_server_onStart(Server *serv) {
     serv->lock();
     zval *zserv = (zval *) serv->private_data_2;
     ServerObject *server_object = server_fetch_object(Z_OBJ_P(zserv));
