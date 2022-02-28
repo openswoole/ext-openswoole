@@ -967,7 +967,7 @@ void ServerObject::register_callback() {
      * optional callback
      */
     if (property->callbacks[SW_SERVER_CB_onStart] != nullptr) {
-        serv->onStart = php_swoole_onStart;
+        serv->onStart = php_swoole_server_onStart;
     }
     serv->onShutdown = php_swoole_onShutdown;
     /**
