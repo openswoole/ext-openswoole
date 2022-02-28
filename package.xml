@@ -1789,6 +1789,7 @@
             <file role="test" name="tests/swoole_server/object/getMasterPid.phpt" />
             <file role="test" name="tests/swoole_server/object/getWorkerId.phpt" />
             <file role="test" name="tests/swoole_server/object/getWorkerPid.phpt" />
+            <file role="test" name="tests/swoole_server/object/getWorkerPidFromAnotherWorker.phpt" />
             <file role="test" name="tests/swoole_server/object/packet.phpt" />
             <file role="test" name="tests/swoole_server/object/pipe_message.phpt" />
             <file role="test" name="tests/swoole_server/object/status_info.phpt" />
