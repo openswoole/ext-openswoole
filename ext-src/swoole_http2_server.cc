@@ -48,7 +48,11 @@ Http2Stream::Stream(Http2Session *client, uint32_t _id) {
     ctx->keepalive = true;
     id = _id;
     local_window_size = SW_HTTP2_DEFAULT_WINDOW_SIZE;
-    remote_window_size = SW_HTTP2_DEFAULT_WINDOW_SIZE;
+    if(client->remote_settings.window_size > 0) {
+        remote_window_size = client->remote_settings.window_size;
+    } else {
+        remote_window_size = SW_HTTP2_DEFAULT_WINDOW_SIZE;
+    }
 }
 
 Http2Stream::~Stream() {
