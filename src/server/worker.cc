@@ -110,7 +110,7 @@ _discard_data:
                      "[2] ignore data[%u bytes] received from session#%ld",
                      task->info.len,
                      task->info.fd);
-}
+
     return true;
 }
 
