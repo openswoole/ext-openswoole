@@ -2,7 +2,7 @@
 swoole_server/object: getWorkerPidFromAnotherWorker()
 --SKIPIF--
 <?php
-//require __DIR__ . '/../../include/skipif.inc';
+require __DIR__ . '/../../include/skipif.inc';
 ?>
 --FILE--
 <?php declare(strict_types = 1);
