@@ -6,13 +6,15 @@ swoole_server: bug Github#2308
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+use Swoole\Server;
+
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     $pm->kill();
 };
 
 $pm->childFunc = function () use ($pm) {
-    $server = new \Swoole\Server('0.0.0.0', 9501, SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $server = new Server('0.0.0.0', 9501, SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $server->set([
         'worker_num' => MAX_PROCESS_NUM,
         'log_file' => '/dev/null',
@@ -21,10 +23,11 @@ $pm->childFunc = function () use ($pm) {
     $server->on('start', function () {
         \Swoole\Coroutine::create(function () {
             $redis = new \Swoole\Coroutine\Redis();
-            $redis->connect('127.0.0.1', 6379);
-            while (true) {
-                $msg = $redis->subscribe(['task']);
-            }
+            $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
+            $ret = $redis->set('foo', 'bar');
+            Assert::assert($ret);
+            $ret = $redis->get('foo');
+            Assert::same($ret, 'bar');
         });
     });
     $server->on('workerStart', function ($server) {
