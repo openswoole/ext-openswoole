@@ -75,7 +75,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: fix-repo
       run: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && 
-           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
+           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=https://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
     - name: install-deps
       run: yum update -y && yum install -y gcc gcc-c++ make c-ares-devel php-devel curl php-curl libcurl-devel openssl-devel postgresql-devel
     - name: phpize
