@@ -549,8 +549,7 @@ int Server::start() {
     gs->event_workers.worker_num = worker_num;
     gs->event_workers.use_msgqueue = 0;
 
-    uint32_t i;
-    for (i = 0; i < worker_num; i++) {
+    SW_LOOP_N(worker_num) {
         gs->event_workers.workers[i].pool = &gs->event_workers;
         gs->event_workers.workers[i].id = i;
         gs->event_workers.workers[i].type = SW_PROCESS_WORKER;
