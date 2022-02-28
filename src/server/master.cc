@@ -579,7 +579,7 @@ int Server::start() {
      * user worker process
      */
     if (user_worker_list) {
-        i = 0;
+        uint32_t i = 0;
         for (auto worker : *user_worker_list) {
             worker->id = worker_num + task_worker_num + i;
             i++;
