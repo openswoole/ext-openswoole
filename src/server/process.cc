@@ -105,7 +105,7 @@ bool ProcessFactory::start() {
         server_->store_pipe_fd(server_->workers[i].pipe_object);
     }
 
-    server_->set_ipc_max_size();
+    server_->init_ipc_max_size();
     if (server_->create_pipe_buffers() < 0) {
         return false;
     }
