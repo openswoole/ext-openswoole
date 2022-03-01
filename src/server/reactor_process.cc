@@ -348,7 +348,7 @@ static int ReactorProcess_loop(ProcessPool *pool, Worker *worker) {
     // task workers
     if (serv->task_worker_num > 0) {
         if (serv->task_ipc_mode == Server::TASK_IPC_UNIXSOCK) {
-            for (uint32_t i = 0; i < serv->gs->task_workers.worker_num; i++) {
+            SW_LOOP_N(serv->gs->task_workers.worker_num) {
                 serv->gs->task_workers.workers[i].pipe_master->set_nonblock();
             }
         }

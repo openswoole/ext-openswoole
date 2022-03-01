@@ -764,7 +764,7 @@ int Server::start_reactor_threads() {
     // init thread barrier
     pthread_barrier_init(&barrier, nullptr, reactor_num + 1);
 #endif
-    for (i = 0; i < reactor_num; i++) {
+    SW_LOOP_N(reactor_num) {
         thread = &(reactor_threads[i]);
         thread->thread = std::thread(ReactorThread_loop, this, i);
     }
