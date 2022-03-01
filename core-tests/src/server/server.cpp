@@ -302,7 +302,7 @@ TEST(server, task_worker) {
     serv.worker_num = 1;
     serv.task_worker_num = 1;
 
-    swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
         swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
         exit(2);
