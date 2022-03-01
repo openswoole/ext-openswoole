@@ -68,7 +68,7 @@ static std::unordered_map<std::string, ServerEvent> server_event_map({
 
 // server event callback
 static void php_swoole_onPipeMessage(Server *serv, EventData *req);
-static void php_swoole_onStart(Server *);
+static void php_swoole_server_onStart(Server *);
 static void php_swoole_onShutdown(Server *);
 static void php_swoole_server_onWorkerStart(Server *, int worker_id);
 static void php_swoole_server_onBeforeReload(Server *serv);
@@ -553,6 +553,19 @@ void php_swoole_server_minit(int module_number) {
     zend_declare_property_long(swoole_server_ce, ZEND_STRL("worker_pid"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_null(swoole_server_ce, ZEND_STRL("stats_timer"), ZEND_ACC_PUBLIC);
 
+    /**
+     * mode type
+     */
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_BASE", swoole::Server::MODE_BASE);
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_PROCESS", swoole::Server::MODE_PROCESS);
+
+    /**
+     * task ipc mode
+     */
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_IPC_UNSOCK", Server::TASK_IPC_UNIXSOCK);
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_IPC_MSGQUEUE", Server::TASK_IPC_MSGQUEUE);
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_IPC_PREEMPTIVE", Server::TASK_IPC_PREEMPTIVE);
+
     SW_REGISTER_LONG_CONSTANT("SWOOLE_DISPATCH_RESULT_DISCARD_PACKET", Server::DISPATCH_RESULT_DISCARD_PACKET);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_DISPATCH_RESULT_CLOSE_CONNECTION", Server::DISPATCH_RESULT_CLOSE_CONNECTION);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_DISPATCH_RESULT_USERFUNC_FALLBACK", Server::DISPATCH_RESULT_USERFUNC_FALLBACK);
@@ -954,7 +967,7 @@ void ServerObject::register_callback() {
      * optional callback
      */
     if (property->callbacks[SW_SERVER_CB_onStart] != nullptr) {
-        serv->onStart = php_swoole_onStart;
+        serv->onStart = php_swoole_server_onStart;
     }
     serv->onShutdown = php_swoole_onShutdown;
     /**
@@ -1378,7 +1391,7 @@ static int php_swoole_server_onFinish(Server *serv, EventData *req) {
     return SW_OK;
 }
 
-static void php_swoole_onStart(Server *serv) {
+static void php_swoole_server_onStart(Server *serv) {
     serv->lock();
     zval *zserv = (zval *) serv->private_data_2;
     ServerObject *server_object = server_fetch_object(Z_OBJ_P(zserv));

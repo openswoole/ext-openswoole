@@ -104,13 +104,12 @@ static sw_inline bool Worker_discard_data(Server *serv, Connection *conn, EventD
             return false;
         }
     }
-_discard_data : {
+_discard_data:
     swoole_error_log(SW_LOG_WARNING,
                      SW_ERROR_SESSION_DISCARD_TIMEOUT_DATA,
                      "[2] ignore data[%u bytes] received from session#%ld",
                      task->info.len,
                      task->info.fd);
-}
     return true;
 }
 
@@ -352,7 +351,7 @@ void Server::worker_start_callback() {
         }
     }
 
-    for (uint32_t i = 0; i < worker_num + task_worker_num; i++) {
+    SW_LOOP_N(worker_num + task_worker_num) {
         Worker *worker = get_worker(i);
         if (SwooleG.process_id == i) {
             continue;
