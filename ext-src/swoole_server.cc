@@ -2786,7 +2786,7 @@ static PHP_METHOD(swoole_server, stats) {
     add_assoc_long_ex(&stats, ZEND_STRL("task_workers_idle"), task_worker_idle_num);
     add_assoc_long_ex(&stats, ZEND_STRL("tasking_num"), server->gs->tasking_num);
 
-    add_assoc_long_ex(&stats, ZEND_STRL("user_workers_total"), server->user_worker_num);
+    add_assoc_long_ex(&stats, ZEND_STRL("user_workers_total"), server->get_user_worker_num());
     add_assoc_long_ex(&stats, ZEND_STRL("dispatch_total"), server->gs->dispatch_count);
     add_assoc_long_ex(&stats, ZEND_STRL("requests_total"), server->gs->request_count);
 
@@ -2818,7 +2818,7 @@ static PHP_METHOD(swoole_server, stats) {
 
     array_init_size(&event_workers, server->worker_num);
     array_init_size(&task_workers, server->task_worker_num);
-    array_init_size(&user_workers, server->user_worker_num);
+    array_init_size(&user_workers, server->get_user_worker_num());
 
     // worker_num, task_worker_num, task_worker_num
     uint32_t all_worker_num = server->get_all_worker_num();

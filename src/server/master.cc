@@ -417,20 +417,11 @@ int Server::create_task_workers() {
  * @return: SW_OK|SW_ERR
  */
 int Server::create_user_workers() {
-    /**
-     * if Swoole\Server::addProcess is called first,
-     * Server::user_worker_list is initialized in the Server_add_worker function
-     */
-    if (user_worker_list == nullptr) {
-        user_worker_list = new std::vector<Worker *>;
-    }
-
-    user_workers = (Worker *) sw_shm_calloc(user_worker_num, sizeof(Worker));
+    user_workers = (Worker *) sw_shm_calloc(get_user_worker_num(), sizeof(Worker));
     if (user_workers == nullptr) {
         swoole_sys_warning("gmalloc[server->user_workers] failed");
         return SW_ERR;
     }
-
     return SW_OK;
 }
 
@@ -575,16 +566,14 @@ int Server::start() {
         }
     }
 
-    /**
-     * user worker process
-     */
-    if (user_worker_list) {
+    if (!user_worker_list.empty()) {
         uint32_t i = 0;
-        for (auto worker : *user_worker_list) {
+        for (auto worker : user_worker_list) {
             worker->id = worker_num + task_worker_num + i;
             i++;
         }
     }
+
     running = true;
     // factory start
     if (!factory->start()) {
@@ -830,15 +819,6 @@ void Server::destroy() {
         port->close();
     }
 
-    /**
-     * because the Worker in user_worker_list is the memory allocated by emalloc,
-     * the efree function will be called when the user process is destructed,
-     * so there's no need to call the efree here.
-     */
-    if (user_worker_list) {
-        delete user_worker_list;
-        user_worker_list = nullptr;
-    }
     if (user_workers) {
         sw_shm_free(user_workers);
         user_workers = nullptr;
@@ -1355,16 +1335,7 @@ void Server::timer_callback(Timer *timer, TimerNode *tnode) {
 }
 
 int Server::add_worker(Worker *worker) {
-    if (user_worker_list == nullptr) {
-        user_worker_list = new std::vector<Worker *>();
-    }
-    user_worker_num++;
-    user_worker_list->push_back(worker);
-
-    if (!user_worker_map) {
-        user_worker_map = new std::unordered_map<pid_t, Worker *>();
-    }
-
+    user_worker_list.push_back(worker);
     return worker->id;
 }
 
@@ -1589,7 +1560,7 @@ static void Server_signal_handler(int sig) {
         if (sig == SIGRTMIN) {
             uint32_t i;
             Worker *worker;
-            for (i = 0; i < serv->worker_num + serv->task_worker_num + serv->user_worker_num; i++) {
+            for (i = 0; i < serv->worker_num + serv->task_worker_num + serv->get_user_worker_num(); i++) {
                 worker = serv->get_worker(i);
                 swoole_kill(worker->pid, SIGRTMIN);
             }
