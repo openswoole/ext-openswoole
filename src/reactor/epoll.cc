@@ -170,7 +170,7 @@ int ReactorEpoll::set(Socket *socket, int events) {
 }
 
 int ReactorEpoll::wait(struct timeval *timeo) {
-    swEvent event;
+    Event event;
     ReactorHandler handler;
     int i, n, ret;
 
