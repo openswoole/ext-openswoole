@@ -298,7 +298,7 @@ TEST(server, dtls) {
 #endif
 
 TEST(server, task_worker) {
-    swServer serv;
+    Server serv;
     serv.worker_num = 1;
     serv.task_worker_num = 1;
 
