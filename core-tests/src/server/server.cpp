@@ -324,7 +324,7 @@ TEST(server, task_worker) {
 
     usleep(10000);
 
-    swEventData buf;
+    EventData buf;
     memset(&buf.info, 0, sizeof(buf.info));
 
     SW_TASK_TYPE(&buf) |= SW_TASK_NOREPLY;
