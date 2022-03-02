@@ -420,10 +420,7 @@ static void fatal_error(int code, const char *format, ...) {
 }
 
 static void bug_report_message_init() {
-    SwooleG.bug_report_message += swoole::std_string::format(
-        "PHP_VERSION : %s\n",
-        PHP_VERSION
-    );
+    SwooleG.bug_report_message += swoole::std_string::format("PHP_VERSION : %s\n", PHP_VERSION);
 }
 
 /* {{{ PHP_MINIT_FUNCTION
