@@ -27,7 +27,7 @@
 #include "swoole_channel.h"
 #include "swoole_msg_queue.h"
 
-enum swWorker_status {
+enum swWorkerStatus {
     SW_WORKER_BUSY = 1,
     SW_WORKER_IDLE = 2,
     SW_WORKER_EXIT = 3,
@@ -151,7 +151,7 @@ struct Worker {
 
     ssize_t send_pipe_message(const void *buf, size_t n, int flags);
 
-    void set_status(enum swWorker_status _status) {
+    void set_status(enum swWorkerStatus _status) {
         status = _status;
     }
 
