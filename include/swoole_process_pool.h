@@ -136,7 +136,7 @@ struct Worker {
     /**
      * worker id
      */
-    uint32_t id;
+    WorkerId id;
 
     Mutex *lock;
 
