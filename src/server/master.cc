@@ -374,7 +374,7 @@ void Server::store_listen_socket() {
  */
 int Server::create_task_workers() {
     key_t key = 0;
-    swIPC_type ipc_mode;
+    swIPCMode ipc_mode;
 
     if (task_ipc_mode == TASK_IPC_MSGQUEUE || task_ipc_mode == TASK_IPC_PREEMPTIVE) {
         key = message_queue_key;
@@ -1703,7 +1703,7 @@ _find_available_slot:
     return connection;
 }
 
-void Server::set_ipc_max_size() {
+void Server::init_ipc_max_size() {
 #ifdef HAVE_KQUEUE
     ipc_max_size = SW_IPC_MAX_SIZE;
 #else

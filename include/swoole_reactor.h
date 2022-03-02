@@ -168,14 +168,14 @@ class Reactor {
 
     std::function<void(Reactor *)> onBegin;
 
-    int (*write)(Reactor *reactor, network::Socket *socket, const void *buf, size_t n) = nullptr;
-    int (*writev)(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt) = nullptr;
+    ssize_t (*write)(Reactor *reactor, network::Socket *socket, const void *buf, size_t n) = nullptr;
+    ssize_t (*writev)(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt) = nullptr;
     int (*close)(Reactor *reactor, network::Socket *socket) = nullptr;
 
   private:
     ReactorImpl *impl;
     std::map<int, std::function<void(Reactor *)>> end_callbacks;
-    std::map<int, std::function<bool(Reactor *, int &)>> exit_conditions;
+    std::map<int, std::function<bool(Reactor *, size_t &)>> exit_conditions;
 
   public:
     Reactor(int max_event = SW_REACTOR_MAXEVENTS, Type _type = TYPE_AUTO);
@@ -183,7 +183,7 @@ class Reactor {
     bool if_exit();
     void defer(Callback cb, void *data = nullptr);
     void set_end_callback(enum EndCallback id, const std::function<void(Reactor *)> &fn);
-    void set_exit_condition(enum ExitCondition id, const std::function<bool(Reactor *, int &)> &fn);
+    void set_exit_condition(enum ExitCondition id, const std::function<bool(Reactor *, size_t &)> &fn);
     bool set_handler(int _fdtype, ReactorHandler handler);
     void add_destroy_callback(Callback cb, void *data = nullptr);
     void execute_end_callbacks(bool timedout = false);
@@ -326,8 +326,8 @@ class Reactor {
         return false;
     }
 
-    static int _write(Reactor *reactor, network::Socket *socket, const void *buf, size_t n);
-    static int _writev(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt);
+    static ssize_t _write(Reactor *reactor, network::Socket *socket, const void *buf, size_t n);
+    static ssize_t _writev(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt);
     static int _close(Reactor *reactor, network::Socket *socket);
     static int _writable_callback(Reactor *reactor, Event *ev);
 

@@ -304,7 +304,7 @@ struct ListenPort {
     Protocol protocol = {};
     void *ptr = nullptr;
 
-    int (*onRead)(Reactor *reactor, ListenPort *port, swEvent *event) = nullptr;
+    int (*onRead)(Reactor *reactor, ListenPort *port, Event *event) = nullptr;
 
     inline bool is_dgram() {
         return network::Socket::is_dgram(type);
@@ -1253,8 +1253,8 @@ class Server {
     void init_task_workers();
     void init_port_protocol(ListenPort *port);
     void init_signal_handler();
+    void init_ipc_max_size();
 
-    void set_ipc_max_size();
     void set_max_connection(uint32_t _max_connection);
 
     inline uint32_t get_max_connection() {

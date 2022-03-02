@@ -124,7 +124,7 @@ Reactor::Reactor(int max_event, Type _type) {
     });
 
     set_exit_condition(Reactor::EXIT_CONDITION_DEFER_TASK,
-                       [](Reactor *reactor, int &event_num) -> bool { return reactor->defer_tasks == nullptr; });
+                       [](Reactor *reactor, size_t &event_num) -> bool { return reactor->defer_tasks == nullptr; });
 
     set_end_callback(Reactor::PRIORITY_IDLE_TASK, [](Reactor *reactor) {
         if (reactor->idle_task.callback) {
@@ -158,7 +158,7 @@ Reactor::Reactor(int max_event, Type _type) {
 #endif
 
     set_exit_condition(Reactor::EXIT_CONDITION_DEFAULT,
-                       [](Reactor *reactor, int &event_num) -> bool { return event_num == 0; });
+                       [](Reactor *reactor, size_t &event_num) -> bool { return event_num == 0; });
 }
 
 bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
@@ -184,7 +184,7 @@ bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
 }
 
 bool Reactor::if_exit() {
-    int _event_num = event_num;
+    size_t _event_num = event_num;
     for (auto &kv : exit_conditions) {
         if (kv.second(this, _event_num) == false) {
             return false;
@@ -212,7 +212,7 @@ int Reactor::_close(Reactor *reactor, Socket *socket) {
 using SendFunc = std::function<ssize_t(void)>;
 using AppendFunc = std::function<void(Buffer *buffer)>;
 
-static int write_func(
+static ssize_t write_func(
     Reactor *reactor, Socket *socket, const size_t __len, const SendFunc &send_fn, const AppendFunc &append_fn) {
     ssize_t retval;
     Buffer *buffer = socket->out_buffer;
@@ -286,7 +286,7 @@ static int write_func(
     return SW_OK;
 }
 
-int Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_t n) {
+ssize_t Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_t n) {
     ssize_t send_bytes = 0;
     auto send_fn = [&send_bytes, socket, buf, n]() -> ssize_t {
         send_bytes = socket->send(buf, n, 0);
@@ -299,7 +299,7 @@ int Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_t n)
     return write_func(reactor, socket, n, send_fn, append_fn);
 }
 
-int Reactor::_writev(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt) {
+ssize_t Reactor::_writev(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt) {
 #ifdef SW_USE_OPENSSL
     if (socket->ssl) {
         swoole_error_log(SW_LOG_WARNING, SW_ERROR_OPERATION_NOT_SUPPORT, "does not support SSL");
@@ -385,7 +385,7 @@ void Reactor::set_end_callback(enum EndCallback id, const std::function<void(Rea
     end_callbacks[id] = fn;
 }
 
-void Reactor::set_exit_condition(enum ExitCondition id, const std::function<bool(Reactor *, int &)> &fn) {
+void Reactor::set_exit_condition(enum ExitCondition id, const std::function<bool(Reactor *, size_t &)> &fn) {
     exit_conditions[id] = fn;
 }
 

@@ -33,7 +33,7 @@ enum swWorker_status {
     SW_WORKER_EXIT = 3,
 };
 
-enum swIPC_type {
+enum swIPCMode {
     SW_IPC_NONE = 0,
     SW_IPC_UNIXSOCK = 1,
     SW_IPC_MSGQUEUE = 2,
@@ -288,7 +288,7 @@ struct ProcessPool {
     int add_worker(Worker *worker);
     int del_worker(Worker *worker);
     void destroy();
-    int create(uint32_t worker_num, key_t msgqueue_key = 0, swIPC_type ipc_mode = SW_IPC_NONE);
+    int create(uint32_t worker_num, key_t msgqueue_key = 0, swIPCMode ipc_mode = SW_IPC_NONE);
     int listen(const char *socket_file, int blacklog);
     int listen(const char *host, int port, int blacklog);
     int schedule();

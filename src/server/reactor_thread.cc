@@ -764,7 +764,7 @@ int Server::start_reactor_threads() {
     // init thread barrier
     pthread_barrier_init(&barrier, nullptr, reactor_num + 1);
 #endif
-    for (i = 0; i < reactor_num; i++) {
+    SW_LOOP_N(reactor_num) {
         thread = &(reactor_threads[i]);
         thread->thread = std::thread(ReactorThread_loop, this, i);
     }
@@ -826,8 +826,8 @@ static int ReactorThread_init(Server *serv, Reactor *reactor, uint16_t reactor_i
     reactor->max_socket = serv->get_max_connection();
     reactor->close = Server::close_connection;
 
-    reactor->set_exit_condition(Reactor::EXIT_CONDITION_DEFAULT, [thread](Reactor *reactor, int &event_num) -> bool {
-        return event_num == (int) thread->pipe_num;
+    reactor->set_exit_condition(Reactor::EXIT_CONDITION_DEFAULT, [thread](Reactor *reactor, size_t &event_num) -> bool {
+        return event_num == (size_t) thread->pipe_num;
     });
 
     reactor->default_error_handler = ReactorThread_onClose;

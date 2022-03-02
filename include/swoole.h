@@ -665,7 +665,7 @@ struct Global {
     network::Socket *aio_default_socket;
     //-----------------------[Hook]--------------------------
     void *hooks[SW_MAX_HOOK_TYPE];
-    std::function<bool(Reactor *reactor, int &event_num)> user_exit_condition;
+    std::function<bool(Reactor *reactor, size_t &event_num)> user_exit_condition;
 
     // bug report message
     std::string bug_report_message = "";
