@@ -770,9 +770,8 @@ class Server {
     /**
      * user process
      */
-    uint32_t user_worker_num = 0;
-    std::vector<Worker *> *user_worker_list = nullptr;
-    std::unordered_map<pid_t, Worker *> *user_worker_map = nullptr;
+    std::vector<Worker *> user_worker_list;
+    std::unordered_map<pid_t, Worker *> user_worker_map;
     Worker *user_workers = nullptr;
 
     Worker *workers = nullptr;
@@ -1046,7 +1045,7 @@ class Server {
         }
 
         // User Worker
-        uint32_t user_worker_max = task_worker_max + user_worker_num;
+        uint32_t user_worker_max = task_worker_max + user_worker_list.size();
         if (worker_id < user_worker_max) {
             return &(user_workers[worker_id - task_worker_max]);
         }
@@ -1074,7 +1073,11 @@ class Server {
     }
 
     size_t get_all_worker_num() {
-        return worker_num + task_worker_num + user_worker_num;
+        return worker_num + task_worker_num + get_user_worker_num();
+    }
+
+    size_t get_user_worker_num() {
+        return user_worker_list.size();
     }
 
     inline ReactorThread *get_thread(int reactor_id) {
