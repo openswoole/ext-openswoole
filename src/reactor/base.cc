@@ -114,7 +114,7 @@ Reactor::Reactor(int max_event, Type _type) {
         swoole_call_hook(SW_GLOBAL_HOOK_ON_REACTOR_CREATE, this);
     }
 
-    set_end_callback(Reactor::PRIORITY_DEFER_TASK, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_DEFER_TASK, [](Reactor *reactor) {
         CallbackManager *cm = reactor->defer_tasks;
         if (cm) {
             reactor->defer_tasks = nullptr;
@@ -123,10 +123,10 @@ Reactor::Reactor(int max_event, Type _type) {
         }
     });
 
-    set_exit_condition(Reactor::EXIT_CONDITION_DEFER_TASK,
+    set_exit_condition(EXIT_CONDITION_DEFER_TASK,
                        [](Reactor *reactor, size_t &event_num) -> bool { return reactor->defer_tasks == nullptr; });
 
-    set_end_callback(Reactor::PRIORITY_IDLE_TASK, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_IDLE_TASK, [](Reactor *reactor) {
         if (reactor->idle_task.callback) {
             reactor->idle_task.callback(reactor->idle_task.data);
         }
@@ -134,21 +134,21 @@ Reactor::Reactor(int max_event, Type _type) {
 
     swoole_signal_set(SIGPIPE, nullptr);
 
-    set_end_callback(Reactor::PRIORITY_SIGNAL_CALLBACK, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_SIGNAL_CALLBACK, [](Reactor *reactor) {
         if (sw_unlikely(reactor->singal_no)) {
             swoole_signal_callback(reactor->singal_no);
             reactor->singal_no = 0;
         }
     });
 
-    set_end_callback(Reactor::PRIORITY_TRY_EXIT, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_TRY_EXIT, [](Reactor *reactor) {
         if (reactor->wait_exit && reactor->if_exit()) {
             reactor->running = false;
         }
     });
 
 #ifdef SW_USE_MALLOC_TRIM
-    set_end_callback(Reactor::PRIORITY_MALLOC_TRIM, [](Reactor *reactor) {
+    set_end_callback(PRIORITY_MALLOC_TRIM, [](Reactor *reactor) {
         time_t now = ::time(nullptr);
         if (reactor->last_malloc_trim_time < now - SW_MALLOC_TRIM_INTERVAL) {
             malloc_trim(SW_MALLOC_TRIM_PAD);
@@ -157,7 +157,7 @@ Reactor::Reactor(int max_event, Type _type) {
     });
 #endif
 
-    set_exit_condition(Reactor::EXIT_CONDITION_DEFAULT,
+    set_exit_condition(EXIT_CONDITION_DEFAULT,
                        [](Reactor *reactor, size_t &event_num) -> bool { return event_num == 0; });
 }
 
@@ -169,11 +169,11 @@ bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
         return false;
     }
 
-    if (Reactor::isset_read_event(_fdtype)) {
+    if (isset_read_event(_fdtype)) {
         read_handler[fdtype] = handler;
-    } else if (Reactor::isset_write_event(_fdtype)) {
+    } else if (isset_write_event(_fdtype)) {
         write_handler[fdtype] = handler;
-    } else if (Reactor::isset_error_event(_fdtype)) {
+    } else if (isset_error_event(_fdtype)) {
         error_handler[fdtype] = handler;
     } else {
         swoole_warning("unknown fdtype");

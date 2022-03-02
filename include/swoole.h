@@ -567,6 +567,7 @@ namespace swoole {
 typedef long SessionId;
 typedef long TaskId;
 typedef uint8_t ReactorId;
+typedef uint32_t WorkerId;
 typedef enum swEventType EventType;
 typedef enum swSocketType SocketType;
 typedef enum swFdType FdType;
