@@ -1100,6 +1100,10 @@ class Server {
         return gs->start;
     }
 
+    bool is_created() {
+        return factory != nullptr;
+    }
+
     bool is_master() {
         return SwooleG.process_type == SW_PROCESS_MASTER;
     }

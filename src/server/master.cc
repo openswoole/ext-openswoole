@@ -656,7 +656,7 @@ Server::~Server() {
 }
 
 int Server::create() {
-    if (factory) {
+    if (is_created()) {
         return SW_ERR;
     }
 
