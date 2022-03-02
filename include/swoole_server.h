@@ -165,6 +165,18 @@ struct RecvData {
 struct PipeBuffer {
     DataHead info;
     char data[0];
+
+    bool is_begin() {
+        return info.flags & SW_EVENT_DATA_BEGIN;
+    }
+
+    bool is_chunked() {
+        return info.flags & SW_EVENT_DATA_CHUNK;
+    }
+
+    bool is_end() {
+        return info.flags & SW_EVENT_DATA_END;
+    }
 };
 
 struct DgramPacket {
