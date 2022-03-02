@@ -963,45 +963,22 @@ void ServerObject::on_before_start() {
 }
 
 void ServerObject::register_callback() {
-    /*
-     * optional callback
-     */
-    if (property->callbacks[SW_SERVER_CB_onStart] != nullptr) {
-        serv->onStart = php_swoole_server_onStart;
-    }
+    // control plane
+    serv->onStart = php_swoole_server_onStart;
     serv->onShutdown = php_swoole_onShutdown;
-    /**
-     * require callback, set the master/manager/worker PID
-     */
     serv->onWorkerStart = php_swoole_server_onWorkerStart;
-
-    if (property->callbacks[SW_SERVER_CB_onBeforeReload] != nullptr) {
-        serv->onBeforeReload = php_swoole_server_onBeforeReload;
-    }
-
-    if (property->callbacks[SW_SERVER_CB_onAfterReload] != nullptr) {
-        serv->onAfterReload = php_swoole_server_onAfterReload;
-    }
-
-    if (property->callbacks[SW_SERVER_CB_onWorkerStop] != nullptr) {
-        serv->onWorkerStop = php_swoole_server_onWorkerStop;
-    }
+    serv->onWorkerStop = php_swoole_server_onWorkerStop;
     serv->onWorkerExit = php_swoole_server_onWorkerExit;
-    /**
-     * Task Worker
-     */
+    serv->onBeforeReload = php_swoole_server_onBeforeReload;
+    serv->onAfterReload = php_swoole_server_onAfterReload;
+    serv->onManagerStart = php_swoole_server_onManagerStart;
+    serv->onManagerStop = php_swoole_server_onManagerStop;
+    serv->onWorkerError = php_swoole_server_onWorkerError;
+
+    // data plane
     if (property->callbacks[SW_SERVER_CB_onTask] != nullptr) {
         serv->onTask = php_swoole_server_onTask;
         serv->onFinish = php_swoole_server_onFinish;
-    }
-    if (property->callbacks[SW_SERVER_CB_onWorkerError] != nullptr) {
-        serv->onWorkerError = php_swoole_server_onWorkerError;
-    }
-    if (property->callbacks[SW_SERVER_CB_onManagerStart] != nullptr) {
-        serv->onManagerStart = php_swoole_server_onManagerStart;
-    }
-    if (property->callbacks[SW_SERVER_CB_onManagerStop] != nullptr) {
-        serv->onManagerStop = php_swoole_server_onManagerStop;
     }
     if (property->callbacks[SW_SERVER_CB_onPipeMessage] != nullptr) {
         serv->onPipeMessage = php_swoole_onPipeMessage;
