@@ -5,7 +5,7 @@ swoole_http_server_coro: ipv6
 require __DIR__ . '/../include/skipif.inc';
 skip_if_no_ipv6();
 ?>
-<?php die('Deprecated.'); ?>
+<?php skip('Deprecated.'); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
