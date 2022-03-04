@@ -26,7 +26,7 @@ $process1 = new Process(function ($p) use ($lock, $fp) {
     fwrite($fp, "[Child 1] exit\n");
 });
 $process1->start();
-
+usleep(10);
 $process2 = new Process(function ($p) use ($lock, $fp) {
     fwrite($fp, "[Child 2] Sleep\n");
     sleep(1);
