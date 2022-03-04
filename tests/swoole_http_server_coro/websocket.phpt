@@ -2,7 +2,7 @@
 swoole_http_server_coro: websocket greeter and reply twice
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
-<?php die('Deprecated.'); ?>
+<?php skip('Deprecated.'); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
