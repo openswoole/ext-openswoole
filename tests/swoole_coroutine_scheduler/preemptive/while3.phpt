@@ -9,7 +9,7 @@ require __DIR__ . '/../../include/skipif.inc';
 require __DIR__ . '/../../include/bootstrap.php';
 
 $default = 10;
-$max_msec = 10;
+$max_msec = 30;
 co::set(['enable_preemptive_scheduler' => true]);
 
 $start = microtime(true);

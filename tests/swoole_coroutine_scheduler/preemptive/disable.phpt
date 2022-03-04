@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/skipif.inc';
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-$default = 10;
+$default = 30;
 $max_msec = 10;
 
 co::set([
