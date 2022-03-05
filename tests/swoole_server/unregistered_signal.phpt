@@ -11,9 +11,9 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     $pid = file_get_contents(TEST_PID_FILE);
-    usleep(1000);
+    usleep(10000);
     Swoole\Process::kill((int)$pid, SIGPIPE);
-    usleep(1000);
+    usleep(10000);
     $log = file_get_contents(TEST_LOG_FILE);
     echo $log, "\n";
     $pm->kill();

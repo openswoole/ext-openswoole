@@ -126,6 +126,7 @@ static void php_swoole_http_response_free_object(zend_object *object) {
             }
         }
         ctx->response.zobject = nullptr;
+        ctx->end_ = 1;
         ctx->free();
     }
 
