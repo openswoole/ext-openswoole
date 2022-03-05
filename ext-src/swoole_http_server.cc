@@ -41,7 +41,7 @@ static bool http_context_disconnect(HttpContext *ctx);
 
 void php_swoole_http_request_onTimeout(Timer *timer, TimerNode *tnode) {
     HttpContext *ctx = (HttpContext*) tnode->data;
-    if (!ctx || (ctx->end_ || ctx->detached) || !ctx->response.zobject) {
+    if (!ctx || (ctx->end_ || ctx->detached) || !ctx->fd) {
         return;
     }
     ctx->send(ctx, SW_STRL(SW_HTTP_REQUEST_TIMEOUT_PACKET));
