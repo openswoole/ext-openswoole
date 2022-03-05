@@ -51,9 +51,9 @@ SW_EXTERN_C_END
 // clang-format off
 const zend_function_entry swoole_redis_server_methods[] =
 {
-    PHP_ME(swoole_redis_server, setHandler, arginfo_class_Swoole_Redis_Server_setHandler, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_redis_server, getHandler, arginfo_class_Swoole_Redis_Server_getHandler, ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_redis_server, format, arginfo_class_Swoole_Redis_Server_format, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_redis_server, setHandler, arginfo_class_Swoole_Redis_Server_setHandler, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_redis_server, getHandler, arginfo_class_Swoole_Redis_Server_getHandler, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_redis_server, format, arginfo_class_Swoole_Redis_Server_format, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_DEPRECATED)
     PHP_FE_END
 };
 // clang-format on
