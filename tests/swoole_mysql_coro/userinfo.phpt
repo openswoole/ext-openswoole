@@ -4,7 +4,7 @@ swoole_mysql_coro: mysql prepare dtor
 <?php
 require __DIR__ . '/../include/skipif.inc';
 skip_if_pdo_not_support_mysql8();
-die('Swoole\Coroutine\MySQL will be removed in future versions.');
+skip('Swoole\Coroutine\MySQL will be removed in future versions.');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
