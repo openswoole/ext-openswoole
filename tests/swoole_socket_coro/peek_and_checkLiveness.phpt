@@ -29,6 +29,7 @@ $pm->parentFunc = function () use ($pm) {
                 Assert::greaterThan($n, 0);
                 /* clean the socket buffer */
                 $socket->recv();
+                Coroutine::usleep(1000);
                 /* then we check the liveness */
                 Assert::false($socket->checkLiveness());
             });
