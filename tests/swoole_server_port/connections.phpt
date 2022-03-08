@@ -24,6 +24,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $sch->parallel(
         2,
         function () use ($pm) {
+            \Co\System::usleep(1000);
             $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(1));
             $c->upgrade('/');
             $c->recv();
@@ -33,6 +34,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     //all
     $sch->add(
         function () use ($pm) {
+            \Co\System::usleep(1500);
             $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
             $c->upgrade('/');
             $c->push('all');
@@ -47,6 +49,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     //port-0
     $sch->add(
         function () use ($pm) {
+            \Co\System::usleep(1000);
             $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
             $c->upgrade('/');
             $c->push('port-0');
@@ -54,13 +57,14 @@ $pm->parentFunc = function ($pid) use ($pm) {
             Assert::assert(is_object($frame));
             $json = json_decode($frame->data);
             Assert::eq($json->count, 5);
-            Assert::eq($json->list, [1,2,3,6,7]);
+            Assert::eq($json->list, [1,2,3,7,8]);
         }
     );
 
     //port-1
     $sch->add(
         function () use ($pm) {
+            \Co\System::usleep(1000);
             $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(1));
             $c->upgrade('/');
             $c->push('port-1');
@@ -68,7 +72,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             Assert::assert(is_object($frame));
             $json = json_decode($frame->data);
             Assert::eq($json->count, 3);
-            Assert::eq($json->list, [4,5,8]);
+            Assert::eq($json->list, [4,5,6]);
         }
     );
 

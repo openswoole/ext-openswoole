@@ -15,11 +15,13 @@ go(function () {
         'database' => MYSQL_SERVER_DB
     ]);
     for ($n = MAX_REQUESTS; $n--;) {
+        $result = $mysql->query('show status like \'Prepared_stmt_count\'');
+        $counterBeforeNewStmt = $result[0]['Value'];
         $statement = $mysql->prepare('SELECT ?');
         $statement = null;
-        Co::usleep(1000);
+        Co::usleep(1500);
         $result = $mysql->query('show status like \'Prepared_stmt_count\'');
-        assert($result[0]['Value'] === '0');
+        assert($result[0]['Value'] == 0 || $result[0]['Value'] == $counterBeforeNewStmt-1);
     }
 });
 Swoole\Event::wait();

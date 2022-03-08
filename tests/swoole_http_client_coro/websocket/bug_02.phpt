@@ -19,6 +19,7 @@ $pm->parentFunc = function () use ($pm) {
             co::usleep(100000);
         }
         $cli->close();
+        co::usleep(1000);
     });
     swoole_event::wait();
     $pm->kill();
