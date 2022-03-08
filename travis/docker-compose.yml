@@ -23,9 +23,6 @@ services:
   mysql:
     container_name: "mysql"
     image: "openswoole/mysql5"
-    volumes:
-      - ./data/mysql:/var/lib/mysql:rw
-      - ./data/run/mysqld:/var/run/mysqld:rw
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: test
@@ -40,9 +37,6 @@ services:
   redis:
     container_name: "redis"
     image: "openswoole/redis"
-    volumes:
-      - ./data/redis:/var/lib/redis:rw
-      - ./data/run/redis:/var/run/redis:rw
     sysctls:
         net.core.somaxconn: 65535
   httpbin:
