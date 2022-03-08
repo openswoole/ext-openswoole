@@ -40,6 +40,11 @@ $pm->parentFunc = function ($pid) use ($port) {
             $cli->count = 0;
             for ($i = 0; $i < MAX_REQUESTS; $i++) {
                 $data = $cli->recv();
+                if ($data === false) {
+                    // retry this request
+                    $i--;
+                    continue;
+                }
                 global $stats;
                 $wid = trim($data);
                 if (isset($stats[$wid])) {
@@ -58,9 +63,11 @@ $pm->parentFunc = function ($pid) use ($port) {
     Swoole\Process::kill($pid);
     phpt_var_dump($stats);
     Assert::eq(count($stats), WORKER_N);
-    Assert::lessThan($stats[5], MAX_REQUESTS);
-    Assert::lessThan($stats[10], MAX_REQUESTS);
-    Assert::same(array_sum($stats), MAX_REQUESTS * MAX_CONCURRENCY_);
+    $totalRequests = MAX_REQUESTS * MAX_CONCURRENCY_;
+    $maxRequestPerWorker = $totalRequests / WORKER_N;
+    Assert::lessThan($stats[5], $maxRequestPerWorker);
+    Assert::lessThan($stats[10], $maxRequestPerWorker);
+    Assert::same(array_sum($stats), $totalRequests);
     echo "DONE\n";
 };
 
