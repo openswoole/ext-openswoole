@@ -43,11 +43,6 @@ check_docker_dependency(){
     fi
 }
 
-remove_data_files(){
-    cd ${__DIR__} && \
-    rm -rf ../travis/data
-}
-
 start_docker_containers(){
     remove_docker_containers
     cd ${__DIR__} && \
@@ -76,7 +71,6 @@ run_tests_in_docker(){
 
 remove_tests_resources(){
     remove_docker_containers
-    remove_data_files
 }
 
 check_docker_dependency
