@@ -11,7 +11,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 co::set(['enable_preemptive_scheduler' => true]);
 
 Co\run(function() {
-    $maxspan = 30;
+    $maxspan = 60;
     $start = microtime(true);
     echo "start\n";
     $flag = 1;
@@ -30,6 +30,7 @@ Co\run(function() {
         echo "coro 2 set flag = false\n";
         $flag = false;
     });
+    usleep(1000);
     echo "end\n";
 });
 ?>
@@ -37,5 +38,5 @@ Co\run(function() {
 start
 coro 1 start to loop
 coro 2 set flag = false
-end
 coro 1 can exit
+end
