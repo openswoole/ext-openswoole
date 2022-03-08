@@ -18,9 +18,9 @@ $pm->parentFunc = function ($pid) use ($pm) {
         echo "Over flow. errno=" . $client->errCode;
         die("\n");
     }
-    $s1 = time();
+    $s1 = microtime(true);
     Assert::same($client->recv(), '');
-    $s2 = time();
+    $s2 = microtime(true);
     Assert::assert($s2 - $s1 > 1);
     swoole_process::kill($pid);
 };
