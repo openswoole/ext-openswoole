@@ -22,11 +22,13 @@ $pm->parentFunc = function ($pid) use ($pm) {
             exit("connect failed\n");
         }
         $client->send("hello world");
+        Co::usleep(10000);
         $data = $client->recv();
         Assert::assert($data);
         $json = json_decode($data, true);
         Assert::isArray($json);
         Assert::same($json['subject']['O'], 'swoole');
+        Co::usleep(10000);
     });
     Swoole\Event::wait();
     $pm->kill();
