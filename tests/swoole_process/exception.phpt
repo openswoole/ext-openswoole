@@ -21,8 +21,9 @@ abstract class AbstractProcess
             } catch (Throwable $e) {
                 $this->onException($e);
             }
-        });
+        }, true);
         $process->start();
+        echo $process->read();
     }
 }
 
