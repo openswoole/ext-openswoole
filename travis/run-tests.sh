@@ -62,7 +62,7 @@ else
     dir="swoole_*"
 fi
 echo "${dir}" > tests.list
-for i in 1 2 3 4 5 6
+for i in 1 #2 3 4 5 6
 do
     if [ "`has_failures`" ]; then
         if [ ${i} -gt "1" ]; then
