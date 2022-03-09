@@ -43,26 +43,6 @@ check_docker_dependency(){
     fi
 }
 
-prepare_data_files(){
-    cd ${__DIR__} && \
-    remove_data_files && \
-    mkdir -p \
-    data \
-    data/run \
-    data/mysql data/run/mysqld \
-    data/redis data/run/redis && \
-    chmod -R 777 data
-    if [ $? -ne 0 ]; then
-        echo "\n❌ Prepare data files failed!"
-        exit 1
-    fi
-}
-
-remove_data_files(){
-    cd ${__DIR__} && \
-    rm -rf ../travis/data
-}
-
 start_docker_containers(){
     remove_docker_containers
     cd ${__DIR__} && \
@@ -91,13 +71,9 @@ run_tests_in_docker(){
 
 remove_tests_resources(){
     remove_docker_containers
-    remove_data_files
 }
 
 check_docker_dependency
-
-echo "\n📖 Prepare for files...\n"
-prepare_data_files
 
 echo "📦 Start docker containers...\n"
 start_docker_containers # && trap "remove_tests_resources"
