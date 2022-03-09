@@ -20,12 +20,10 @@ $stats = array();
 $count = 0;
 $port = get_one_free_port();
 
-const MAX_CONCURRENCY_ = 128;
-
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($port) {
     global $count, $stats;
-    for ($i = 0; $i < MAX_CONCURRENCY_; $i++) {
+    for ($i = 0; $i < MAX_CONCURRENCY; $i++) {
         go(function () use ($port) {
             $cli = new Client(SWOOLE_SOCK_TCP);
             $cli->set([
@@ -63,11 +61,9 @@ $pm->parentFunc = function ($pid) use ($port) {
     Swoole\Process::kill($pid);
     phpt_var_dump($stats);
     Assert::eq(count($stats), WORKER_N);
-    $totalRequests = MAX_REQUESTS * MAX_CONCURRENCY_;
-    $maxRequestPerWorker = $totalRequests / WORKER_N;
-    Assert::lessThan($stats[5], $maxRequestPerWorker);
-    Assert::lessThan($stats[10], $maxRequestPerWorker);
-    Assert::same(array_sum($stats), $totalRequests);
+    Assert::lessThan($stats[5], MAX_REQUESTS);
+    Assert::lessThan($stats[10], MAX_REQUESTS);
+    Assert::same(array_sum($stats), MAX_REQUESTS * MAX_CONCURRENCY);
     echo "DONE\n";
 };
 
@@ -86,7 +82,7 @@ $pm->childFunc = function () use ($pm, $port) {
     });
     $serv->on('receive', function (Server $serv, $fd, $rid, $data) {
         if ($serv->worker_id == 10 or $serv->worker_id == 5) {
-            usleep(5000);
+            usleep(10000);
         }
         $serv->send($fd, $serv->worker_id . "\r\n\r\n");
     });
