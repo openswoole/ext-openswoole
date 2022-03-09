@@ -25,7 +25,7 @@ $pm->parentFunc = function ($pid) use ($pm, $time1, $time2) {
     }
     sleep(1);
     usleep(200000);
-    Assert::greaterThan($time2->get() - $time1->get(), 10000);
+    Assert::greaterThan($time2->get() - $time1->get(), 9990);
     $data = $client->recv();
     Assert::isEmpty($data);
     $pm->kill();

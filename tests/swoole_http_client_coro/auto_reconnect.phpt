@@ -12,7 +12,12 @@ $pm->parentFunc = function () use ($pm) {
         $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['timeout' => -1]);
         for ($n = MAX_REQUESTS; $n--;) {
-            Assert::assert($cli->get('/'));
+            $res = $cli->get('/');
+            if(false === $res) {
+                $n++;
+                continue;
+            }
+            Assert::assert($res);
             Assert::same($cli->body, $pm->getRandomData(), var_dump_return($cli));
             Co::usleep(5000);
         }

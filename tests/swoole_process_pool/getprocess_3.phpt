@@ -20,8 +20,9 @@ $pool->on('workerStart', function (Swoole\Process\Pool $pool, int $workerId) {
         $process1 = $pool->getProcess(1);
         phpt_var_dump($process1);
         $pid1 = $process1->pid;
-        Process::kill($process1->pid, SIGTERM);
-        usleep(10000);
+        $success = Process::kill($process1->pid, SIGKILL);
+        Assert::true($success);
+        usleep(20000);
         $process2 = $pool->getProcess(1);
         phpt_var_dump($process2);
         $pid2 = $process2->pid;
@@ -36,4 +37,5 @@ $pool->on("message", function ($pool, $data) {
 
 $pool->start();
 ?>
---EXPECT--
+--EXPECTF--
+[%s]	WARNING	ProcessPool::wait(): worker#1 abnormal exit, status=0, signal=9
