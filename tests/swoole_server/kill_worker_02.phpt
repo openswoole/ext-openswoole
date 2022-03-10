@@ -16,10 +16,8 @@ use Swoole\Server;
 $pm->parentFunc = function ($pid) use ($pm) {
     for ($i = 0; $i < 5; $i++)
     {
-        //杀死进程
         kill_process_by_name(WORKER_PROC_NAME);
-        usleep(10000);
-        //判断进程是否存在
+        usleep(30000);
         Assert::assert(get_process_pid_by_name(WORKER_PROC_NAME) > 0);
     }
     $pm->kill();

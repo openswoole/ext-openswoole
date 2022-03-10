@@ -13,6 +13,7 @@ file_put_contents(RES_FILE, "");
 
 $pm = new ProcessManager;
 $pm->setWaitTimeout(-1);
+$pm->setExpectExitSignal([0, SIGTERM, SIGALRM]);
 $pm->parentFunc = function ($pid) use ($pm) {
     $fp = fopen(RES_FILE, "r");
     while (!feof($fp)) {

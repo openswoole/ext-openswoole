@@ -45,7 +45,8 @@ $pm->childFunc = function () use ($pm, $atomic) {
         }
     });
     $serv->on('receive', function (Server $serv, $fd, $tid, $data) {
-        $serv->task(['sleep' => 1,]);
+        $serv->task(['sleep' => 3,]);
+        usleep(10000);
         $serv->task(['fd' => $fd,]);
     });
     $serv->on('Task', function (Server $server, Server\Task $task) {
