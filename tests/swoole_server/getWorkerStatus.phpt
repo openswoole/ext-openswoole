@@ -37,7 +37,7 @@ $pm->childFunc = function () use ($pm) {
     $server->on('receive', function (Swoole\Server $serv, int $fd, int $rid, string $data) {
         $serv->send($fd, json_encode([
             'current_worker' => $serv->getWorkerStatus(), 
-            'another_worker' => $serv->getWorkerStatus(1-$serv->getWorkerId()), 
+            'another_worker' => $serv->getWorkerStatus($serv->getWorkerId() == 0 ? 1 : 0),
         ]));
     });
 
