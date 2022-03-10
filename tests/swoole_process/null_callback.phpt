@@ -7,11 +7,12 @@ swoole_process: null callback
 require __DIR__ . '/../include/bootstrap.php';
 
 $process = new Swoole\Process(function () { });
-array_walk($process, function (&$value) {
-    $value = null;
-});
-$process->start();
+$reflectionClass = new ReflectionClass($process);
+$reflectionClass->getProperty('callback')->setValue($process, null);
 
+$pid = $process->start();
+usleep(100);
+$process->wait();
 ?>
 --EXPECTF--
 Fatal error: Swoole\Process::start(): Illegal callback function of Swoole\Process in %s
