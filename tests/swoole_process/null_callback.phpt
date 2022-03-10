@@ -7,8 +7,9 @@ swoole_process: null callback
 require __DIR__ . '/../include/bootstrap.php';
 
 $process = new Swoole\Process(function () { });
-$reflectionClass = new ReflectionClass($process);
-$reflectionClass->getProperty('callback')->setValue($process, null);
+$p = new ReflectionProperty($process, 'callback');
+$p->setAccessible(true);
+$p->setValue($process, null);
 
 $pid = $process->start();
 usleep(100);
