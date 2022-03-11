@@ -1,5 +1,7 @@
 --TEST--
 swoole_mysql_coro: transaction
+--CONFLICTS--
+swoole_mysql_coro
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
