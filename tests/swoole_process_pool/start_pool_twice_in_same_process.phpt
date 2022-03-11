@@ -1,5 +1,7 @@
 --TEST--
 swoole_process_pool: start pool twice in the same process
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
