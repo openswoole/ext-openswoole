@@ -1,5 +1,7 @@
 --TEST--
 swoole_process_pool: exportSocket
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 ?>
