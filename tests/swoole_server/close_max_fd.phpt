@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: close_max_fd
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

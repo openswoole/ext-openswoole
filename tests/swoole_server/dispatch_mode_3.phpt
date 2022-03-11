@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: dispatch_mode = 3
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
@@ -82,7 +84,7 @@ $pm->childFunc = function () use ($pm, $port) {
     });
     $serv->on('receive', function (Server $serv, $fd, $rid, $data) {
         if ($serv->worker_id == 10 or $serv->worker_id == 5) {
-            sleep(2);
+            usleep(10000);
         }
         $serv->send($fd, $serv->worker_id . "\r\n\r\n");
     });
