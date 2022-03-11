@@ -1,5 +1,7 @@
 --TEST--
 swoole_redis_coro: connect the same target and different
+--CONFLICTS--
+swoole_redis_coro
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

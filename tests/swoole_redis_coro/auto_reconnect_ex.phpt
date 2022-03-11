@@ -1,5 +1,7 @@
 --TEST--
 swoole_redis_coro: auto reconnect after server side close the connection
+--CONFLICTS--
+swoole_redis_coro
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
