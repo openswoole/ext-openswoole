@@ -84,7 +84,7 @@ $pm->childFunc = function () use ($pm, $port) {
     });
     $serv->on('receive', function (Server $serv, $fd, $rid, $data) {
         if ($serv->worker_id == 10 or $serv->worker_id == 5) {
-            usleep(20000);
+            sleep(1);
         }
         $serv->send($fd, $serv->worker_id . "\r\n\r\n");
     });
