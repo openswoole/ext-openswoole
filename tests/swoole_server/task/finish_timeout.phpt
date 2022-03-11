@@ -1,5 +1,7 @@
 --TEST--
 swoole_server/task: finish timeout
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--

@@ -1,5 +1,7 @@
 --TEST--
 swoole_redis_coro: zPopMin zPopMax bzPopMin bzPopMax
+--CONFLICTS--
+swoole_redis_coro
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 skip_if_not_redis5();

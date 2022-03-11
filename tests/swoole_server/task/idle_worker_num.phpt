@@ -1,5 +1,7 @@
 --TEST--
 swoole_server/task: idle_worker_num
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';

@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: register sigint handler with base mode
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

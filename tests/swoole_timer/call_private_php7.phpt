@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: call private method
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 <?php if (PHP_VERSION_ID >= 80000) die("Skipped: php version < 8."); ?>

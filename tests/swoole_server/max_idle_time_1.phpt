@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: max_idle_time
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 skip_if_extension_not_exist('sockets');

@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: stop worker in worker start
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

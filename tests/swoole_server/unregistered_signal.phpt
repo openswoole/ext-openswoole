@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: unregistered signal, ignore SIGPIPE
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

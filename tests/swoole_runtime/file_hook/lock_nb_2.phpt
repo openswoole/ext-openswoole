@@ -1,5 +1,7 @@
 --TEST--
 swoole_runtime/file_hook: file_put_contents with LOCK_NB[2]
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';

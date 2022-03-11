@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: call tick timer in Task-Worker
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

@@ -1,5 +1,7 @@
 --TEST--
 swoole_process_pool: enable coroutine
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 ?>

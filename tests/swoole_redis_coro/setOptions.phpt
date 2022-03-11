@@ -1,5 +1,7 @@
 --TEST--
 swoole_redis_coro: redis client set options
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

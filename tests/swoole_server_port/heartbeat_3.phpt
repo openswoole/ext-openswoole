@@ -1,5 +1,7 @@
 --TEST--
 swoole_server_port: heartbeat 3
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

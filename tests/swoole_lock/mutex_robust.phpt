@@ -1,5 +1,7 @@
 --TEST--
 swoole_lock: mutex robust
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

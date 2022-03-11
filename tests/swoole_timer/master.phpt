@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: timer in master
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

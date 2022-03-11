@@ -1,5 +1,7 @@
 --TEST--
 swoole_mysql_coro: select and insert huge data from db (10M~64M)
+--CONFLICTS--
+swoole_mysql_coro
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

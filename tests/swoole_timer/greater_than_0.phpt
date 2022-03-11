@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: Timer must be greater than 0
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: close_max_fd
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
@@ -18,16 +20,18 @@ $pm->parentFunc = function () use ($pm) {
             $client->recv();
             Co::sleep(2);
             $client->send('ping');
-            Co::sleep(2);
+            Co::sleep(3);
             $pm->kill();
         });
         go(function() use ($pm) {
             $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli->close();
         });
         go(function() use ($pm) {
             $client = new Co\Client(SWOOLE_SOCK_TCP);
             Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
             $client->send('test2');
+            $client->close();
         });
     });
 };

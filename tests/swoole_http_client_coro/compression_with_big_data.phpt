@@ -1,5 +1,7 @@
 --TEST--
 swoole_http_client_coro: compression with big data
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

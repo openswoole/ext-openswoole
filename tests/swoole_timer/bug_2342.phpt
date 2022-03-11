@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: bug Github#2342
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

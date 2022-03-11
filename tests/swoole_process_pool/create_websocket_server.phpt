@@ -1,5 +1,7 @@
 --TEST--
 swoole_process_pool: create websocket server in process pool
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

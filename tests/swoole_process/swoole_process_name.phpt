@@ -1,5 +1,7 @@
 --TEST--
 swoole_process: name
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

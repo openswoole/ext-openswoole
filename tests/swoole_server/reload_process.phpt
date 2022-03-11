@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: reload in process mode
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

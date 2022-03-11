@@ -1,5 +1,7 @@
 --TEST--
 swoole_runtime/sockets: tcp server
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';

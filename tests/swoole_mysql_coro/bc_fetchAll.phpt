@@ -1,5 +1,7 @@
 --TEST--
 swoole_mysql_coro: mysql fetchAll should return empty array (#2674)
+--CONFLICTS--
+swoole_mysql_coro
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

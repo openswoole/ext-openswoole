@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: dispatch_mode = 9 [co req lb]
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

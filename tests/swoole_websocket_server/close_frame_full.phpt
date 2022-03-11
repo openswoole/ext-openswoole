@@ -1,5 +1,7 @@
 --TEST--
 swoole_websocket_server: websocket server send and recv close frame full test
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

@@ -1,5 +1,7 @@
 --TEST--
 swoole_mysql_coro: mysql prepare dtor
+--CONFLICTS--
+swoole_mysql_coro
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
@@ -15,13 +17,11 @@ go(function () {
         'database' => MYSQL_SERVER_DB
     ]);
     for ($n = MAX_REQUESTS; $n--;) {
-        $result = $mysql->query('show status like \'Prepared_stmt_count\'');
-        $counterBeforeNewStmt = $result[0]['Value'];
         $statement = $mysql->prepare('SELECT ?');
         $statement = null;
-        Co::usleep(1500);
+        Co::usleep(1000);
         $result = $mysql->query('show status like \'Prepared_stmt_count\'');
-        assert($result[0]['Value'] == 0 || $result[0]['Value'] == $counterBeforeNewStmt-1);
+        assert($result[0]['Value'] === '0');
     }
 });
 Swoole\Event::wait();

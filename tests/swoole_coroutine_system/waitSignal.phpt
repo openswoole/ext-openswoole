@@ -1,5 +1,7 @@
 --TEST--
 swoole_coroutine_system: waitSignal
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

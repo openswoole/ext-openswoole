@@ -1,5 +1,7 @@
 --TEST--
 swoole_runtime/ssl: client with local_cert/local_pk
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
