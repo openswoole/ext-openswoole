@@ -1,5 +1,7 @@
 --TEST--
 swoole_channel_coro: coroutine wait
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 skip_if_offline();
