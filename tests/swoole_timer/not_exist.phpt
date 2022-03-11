@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: clear timer not exist
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

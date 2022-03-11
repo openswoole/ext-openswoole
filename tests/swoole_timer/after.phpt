@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: swoole_timer_after,swoole_timer_exists,swoole_timer_clear
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

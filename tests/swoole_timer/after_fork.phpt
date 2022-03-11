@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: after fork
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

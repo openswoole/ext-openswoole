@@ -1,5 +1,7 @@
 --TEST--
 swoole_timer: Timer callback
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
