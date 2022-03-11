@@ -1,5 +1,7 @@
 --TEST--
 swoole_server: discard timeout packet
+--CONFLICTS--
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
