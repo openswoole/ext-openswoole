@@ -1,5 +1,7 @@
 --TEST--
 swoole_runtime: socket persistent then destruct
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';

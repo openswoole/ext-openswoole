@@ -1,7 +1,7 @@
 --TEST--
 swoole_redis_coro: do not retry after server down
 --CONFLICTS--
-swoole_redis_coro
+all
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
