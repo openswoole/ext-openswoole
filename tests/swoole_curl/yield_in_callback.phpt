@@ -1,5 +1,7 @@
 --TEST--
 swoole_curl: suspend in callback
+--CONFLICTS--
+all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
