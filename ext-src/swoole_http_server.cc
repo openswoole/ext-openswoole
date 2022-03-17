@@ -280,7 +280,8 @@ HttpContext *php_swoole_http_request_get_and_check_context(zval *zobject) {
 HttpContext *php_swoole_http_response_get_and_check_context(zval *zobject) {
     HttpContext *ctx = php_swoole_http_response_get_context(zobject);
     if (!ctx || (ctx->end_ || ctx->detached)) {
-        zend_throw_exception(swoole_exception_ce, "http response is unavailable (maybe it has been ended or detached)", SW_ERROR_SERVER_NO_RESPONSE_CONTEXT);
+        php_swoole_fatal_error(E_WARNING, "http response is unavailable (maybe it has been ended or detached)");
+        // TODO: break out and throw exception
         return nullptr;
     }
     return ctx;
