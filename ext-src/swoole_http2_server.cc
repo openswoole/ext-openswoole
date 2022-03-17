@@ -849,7 +849,7 @@ int swoole_http2_server_parse(Http2Session *client, const char *buf) {
     Http2Stream *stream = nullptr;
     int type = buf[3];
     int flags = buf[4];
-    int retval = SW_ERR;
+    int retval = SW_OK;
     uint32_t stream_id = ntohl((*(int *) (buf + 5))) & 0x7fffffff;
 
     if (stream_id > client->last_stream_id) {
@@ -1106,6 +1106,9 @@ int swoole_http2_server_onFrame(Server *serv, Connection *conn, RecvData *req) {
     zval zdata;
     php_swoole_get_recv_data(serv, &zdata, req);
     int retval = swoole_http2_server_parse(client, Z_STRVAL(zdata));
+    if(retval != SW_OK) {
+        client->default_ctx->close(client->default_ctx);
+    }
     zval_ptr_dtor(&zdata);
 
     return retval;
