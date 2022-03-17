@@ -748,6 +748,21 @@ int Server::create() {
 }
 
 void Server::clear_timer() {
+    if (SwooleTG.timer) {
+        size_t num = SwooleTG.timer->count(), index = 0;
+        TimerNode **list = (TimerNode **) malloc(num * sizeof(TimerNode *));
+        for (auto &kv : SwooleTG.timer->get_map()) {
+            TimerNode *tnode = kv.second;
+            if (tnode->type == TimerNode::TYPE_PHP) {
+                list[index++] = tnode;
+            }
+        }
+
+        while (index--) {
+            swoole_timer_del(list[index]);
+        }
+        free(list);
+    }
     if (master_timer) {
         swoole_timer_del(master_timer);
         master_timer = nullptr;
