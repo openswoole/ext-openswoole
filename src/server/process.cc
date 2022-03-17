@@ -183,6 +183,8 @@ bool ProcessFactory::dispatch(SendData *task) {
         // converted fd to session_id
         task->info.fd = conn->session_id;
         task->info.server_fd = conn->server_fd;
+        
+        conn->worker_id = target_worker_id;
     }
 
     Worker *worker = server_->get_worker(target_worker_id);

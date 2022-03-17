@@ -1135,7 +1135,7 @@ class Server {
 
     // can only be used in the main process
     inline bool is_valid_connection(Connection *conn) {
-        return (conn && conn->socket && conn->active && conn->socket->fd_type == SW_FD_SESSION);
+        return (conn && conn->socket && conn->active /* && conn->socket->fd_type == SW_FD_SESSION */);
     }
 
     bool is_healthy_connection(double now, Connection *conn);
