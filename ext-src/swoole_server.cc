@@ -94,6 +94,21 @@ void php_swoole_server_rshutdown() {
     Server *serv = sw_server();
     serv->drain_worker_pipe();
 
+#ifdef SW_USE_HTTP2
+    int worker_id = SwooleG.process_id;
+    serv->foreach_connection([serv, worker_id](Connection *conn) {
+        swoole_trace("check fd=%d, worker_id=%d, conn->worker_id=%d, conn->http2_stream=%d", conn->fd, worker_id, conn->worker_id, conn->http2_stream);
+        SessionId session_id = conn->session_id;
+        if (session_id <= 0) {
+            return;
+        }
+        if (conn->http2_stream && worker_id == conn->worker_id) {
+            conn->close_force = 1;
+            serv->close(session_id, false);
+        }
+    });
+#endif
+
     if (serv->is_started() && !serv->is_user_worker()) {
         if (php_swoole_is_fatal_error()) {
             swoole_error_log(SW_LOG_ERROR,
