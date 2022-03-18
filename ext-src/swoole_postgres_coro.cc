@@ -1607,6 +1607,7 @@ static PHP_METHOD(swoole_postgresql_coro, escapeIdentifier) {
 // connection status
 static PHP_METHOD(swoole_postgresql_coro, status) {
     PGconn *pgsql;
+    ConnStatusType status;
 
     PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
     if (!object || !object->conn) {
@@ -1614,7 +1615,7 @@ static PHP_METHOD(swoole_postgresql_coro, status) {
     }
     pgsql = object->conn;
 
-    ConnStatusType status = PQstatus(pgsql);
+    status = PQstatus(pgsql);
 
     RETVAL_LONG(ConnStatusType(status));
 }
