@@ -1059,7 +1059,7 @@ int swoole_pgsql_result2array(PGresult *pg_result, zval *ret_array, long result_
     uint32_t i;
     assert(Z_TYPE_P(ret_array) == IS_ARRAY);
 
-    if ((pg_numrows = PQntuples(pg_result)) <= 0) {
+    if ((pg_numrows = PQntuples(pg_result)) < 0) {
         return FAILURE;
     }
     for (pg_row = 0; pg_row < pg_numrows; pg_row++) {
