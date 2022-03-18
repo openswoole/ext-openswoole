@@ -134,6 +134,8 @@ static PHP_METHOD(swoole_postgresql_coro, fetchObject);
 static PHP_METHOD(swoole_postgresql_coro, fetchAssoc);
 static PHP_METHOD(swoole_postgresql_coro, fetchArray);
 static PHP_METHOD(swoole_postgresql_coro, fetchRow);
+static PHP_METHOD(swoole_postgresql_coro, status);
+static PHP_METHOD(swoole_postgresql_coro, reset);
 
 static void php_pgsql_fetch_hash(INTERNAL_FUNCTION_PARAMETERS, zend_long result_type, int into_object);
 
@@ -238,6 +240,8 @@ static const zend_function_entry openswoole_postgresql_coro_methods[] =
     PHP_ME(swoole_postgresql_coro, fetchAssoc, arginfo_pg_fetch_assoc, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_postgresql_coro, fetchArray, arginfo_pg_fetch_array, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_postgresql_coro, fetchRow, arginfo_pg_fetch_row, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_postgresql_coro, status, arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_postgresql_coro, reset, arginfo_swoole_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_postgresql_coro, __destruct, arginfo_swoole_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
@@ -279,6 +283,9 @@ void php_swoole_postgresql_coro_minit(int module_number) {
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_BAD_RESPONSE", PGRES_BAD_RESPONSE);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_NONFATAL_ERROR", PGRES_NONFATAL_ERROR);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_FATAL_ERROR", PGRES_FATAL_ERROR);
+
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_CONNECTION_OK", CONNECTION_OK);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_CONNECTION_BAD", CONNECTION_BAD);
 }
 
 static char *_php_pgsql_trim_message(const char *message, size_t *len) {
@@ -1595,6 +1602,36 @@ static PHP_METHOD(swoole_postgresql_coro, escapeIdentifier) {
 
     RETVAL_STRING(tmp);
     PQfreemem(tmp);
+}
+
+// connection status
+static PHP_METHOD(swoole_postgresql_coro, status) {
+    PGconn *pgsql;
+
+    PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
+    if (!object || !object->conn) {
+        RETURN_FALSE;
+    }
+    pgsql = object->conn;
+
+    ConnStatusType status = PQstatus(pgsql);
+
+    RETVAL_LONG(ConnStatusType(status));
+}
+
+// reset connection
+static PHP_METHOD(swoole_postgresql_coro, reset) {
+    PGconn *pgsql;
+
+    PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
+    if (!object || !object->conn) {
+        RETURN_FALSE;
+    }
+    pgsql = object->conn;
+
+    PQreset(pgsql);
+
+    RETURN_TRUE;
 }
 
 #endif
