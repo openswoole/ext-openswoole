@@ -1608,12 +1608,17 @@ static PHP_METHOD(swoole_postgresql_coro, escapeIdentifier) {
 static PHP_METHOD(swoole_postgresql_coro, status) {
     PGconn *pgsql;
     ConnStatusType status;
+    PGresult *pgsql_result;
 
     PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
     if (!object || !object->conn) {
         RETURN_FALSE;
     }
     pgsql = object->conn;
+
+    while ((pgsql_result = PQgetResult(pgsql))) {
+        PQclear(pgsql_result);
+    }
 
     status = PQstatus(pgsql);
 
