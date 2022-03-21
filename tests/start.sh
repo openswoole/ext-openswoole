@@ -54,7 +54,7 @@ else
 fi
 
 if [ $? -eq 0 ]; then
-    PHPT=1 TEST_PHP_JUNIT=${__DIR__}/test-result.xml ${TEST_PHP_EXECUTABLE} -d "memory_limit=1024m" ${__DIR__}/run-tests ${glob}
+    PHPT=1 ${TEST_PHP_EXECUTABLE} -d "memory_limit=1024m" ${__DIR__}/run-tests ${glob}
 fi
 
 # after tests
