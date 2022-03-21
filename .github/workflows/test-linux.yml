@@ -47,7 +47,7 @@ jobs:
         path: tests/test-results.xml
 
   publish-test-results:
-    name: "Publish Unit Tests Results"
+    name: "Publish PHP Unit Tests Results"
     needs: test-linux
     runs-on: ubuntu-latest
     if: always()
@@ -58,7 +58,8 @@ jobs:
         with:
           path: artifacts
 
-      - name: Publish Unit Test Results
+      - name: Publish PHP Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         with:
+          check_name: PHP Test Results
           files: artifacts/**/*.xml

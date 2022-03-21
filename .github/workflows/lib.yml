@@ -51,8 +51,9 @@ jobs:
 #         files: ./coverage.info
 #         fail_ci_if_error: true
 
-    - name: Publish Core Unit Test Results
+    - name: Publish Core Test Results
       if: always()
       uses: EnricoMi/publish-unit-test-result-action@v1
       with:
+        check_name: Core Test Results
         files: core-tests/test-result.xml
