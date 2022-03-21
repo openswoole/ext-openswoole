@@ -55,4 +55,4 @@ jobs:
       if: always()
       uses: EnricoMi/publish-unit-test-result-action@v1
       with:
-        files: /tmp/test-result.xml
+        files: core-tests/test-result.xml
