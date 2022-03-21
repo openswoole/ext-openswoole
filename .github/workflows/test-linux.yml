@@ -44,7 +44,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: PHP ${{ matrix.php }}
-        path: tests/test-result.xml
+        path: tests/test-results.xml
 
   publish-test-results:
     name: "Publish Unit Tests Results"

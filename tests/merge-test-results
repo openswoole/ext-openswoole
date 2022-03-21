@@ -1,0 +1,144 @@
+#!/usr/bin/env php
+<?php
+function escape_xml($attribute) {
+    return htmlspecialchars($attribute, ENT_QUOTES, 'UTF-8');
+}
+
+$test_results = [];
+
+$i=1;
+
+while(file_exists("test-result-$i.xml")) {
+    $xmldata = simplexml_load_file("test-result-$i.xml") or die("Failed to load");
+
+    foreach($xmldata->testsuite as $testsuite) {
+        $testsuite_name = (string)$testsuite['name'];
+        $testsuite_tests = $testsuite['tests'];
+        $testsuite_failures = $testsuite['failures'];
+        $testsuite_errors = $testsuite['errors'];
+        $testsuite_skip = $testsuite['skip'];
+        $testsuite_time = $testsuite['time'];
+
+        if(!array_key_exists($testsuite_name, $test_results))
+            $test_results[$testsuite_name] = [];
+
+        foreach($testsuite->testcase as $testcase) {
+            $testcase_name = (string)$testcase['name'];
+            $testcase_time = (string)$testcase['time'];
+
+            $children = $testcase->children();
+            if(count($children) > 0) {
+                $result = (string)$children[0]->getName();
+                $type = (string)$children[0]['type'];
+                $message = (string)$children[0]['message'];
+                $content = (string)$children[0][0];
+            } else {
+                $result = "success";
+                $type = $message = $content = "";
+            }
+
+            $test_results[$testsuite_name][$testcase_name] = [
+                'time' => $testcase_time,
+                'result' => $result,
+                'type' => $type,
+                'message' => $message,
+                'content' => $content
+            ];
+        }
+    }
+
+    $i++;
+}
+
+
+$test_total = 0;
+$test_fail = 0;
+$test_error = 0;
+$test_skip = 0;
+$execution_time = 0;
+
+$testsuite_results_xml = "";
+
+foreach($test_results as $testsuite_name => $testsuite_results) {
+    $testsuite_test_count = 0;
+    $testsuite_fail_count = 0;
+    $testsuite_error_count = 0;
+    $testsuite_skip_count = 0;
+    $testsuite_execution_time = 0;
+
+    $testsuite_results_inner_xml = "";
+
+    foreach($testsuite_results as $testcase_name => $testcase_results) {
+        $testsuite_test_count++;
+        $testsuite_execution_time += $testcase_results['time'];
+
+        $testsuite_results_inner_xml .= sprintf(
+               '    <testcase name="%s" time="%s">' . PHP_EOL,
+               escape_xml($testcase_name),
+               escape_xml($testcase_results['time'])
+           );
+
+       switch($testcase_results['result']) {
+            case 'error':
+                $testsuite_results_inner_xml .= sprintf('      <error type="%s" message="%s">%s</error>'.PHP_EOL,
+                    escape_xml($testcase_results['type']), escape_xml($testcase_results['message']), escape_xml($testcase_results['content'])
+                );
+                $testsuite_error_count++;
+                break;
+            case 'skipped':
+                $testsuite_results_inner_xml .= sprintf('      <skipped>%s</skipped>'.PHP_EOL,
+                    escape_xml($testcase_results['content'])
+                );
+                $testsuite_skip_count++;
+                break;
+            case 'warning':
+                $testsuite_results_inner_xml .= sprintf('      <warning>%s</warning>'.PHP_EOL,
+                    escape_xml($testcase_results['content'])
+                );
+                break;
+            case 'failure':
+                $testsuite_results_inner_xml .= sprintf('      <failure type="%s" message="%s">%s</failure>'.PHP_EOL,
+                    escape_xml($testcase_results['type']), escape_xml($testcase_results['message']), escape_xml($testcase_results['content'])
+                );
+                $testsuite_error_count++;
+       }
+
+       $testsuite_results_inner_xml .= '    </testcase>' . PHP_EOL;
+    }
+
+
+    $testsuite_results_xml .= sprintf(
+            '  <testsuite name="%s" tests="%s" failures="%d" errors="%d" skip="%d" time="%s">' . PHP_EOL,
+            $testsuite_name,
+            $testsuite_test_count,
+            $testsuite_fail_count,
+            $testsuite_skip_count,
+            $testsuite_skip_count,
+            $testsuite_execution_time
+        );
+
+    $testsuite_results_xml .= $testsuite_results_inner_xml;
+    $testsuite_results_xml .= '  </testsuite>' . PHP_EOL;
+
+    $test_total += $testsuite_test_count;
+    $test_fail += $testsuite_fail_count;
+    $test_error += $testsuite_error_count;
+    $test_skip += $testsuite_skip_count;
+    $execution_time += $testsuite_execution_time;
+
+}
+
+$xml = '<' . '?' . 'xml version="1.0" encoding="UTF-8"' . '?' . '>' . PHP_EOL;
+$xml .= sprintf(
+    '<testsuites name="%s" tests="%s" failures="%d" errors="%d" skip="%d" time="%s">' . PHP_EOL,
+    'PHP',
+    $test_total,
+    $test_fail,
+    $test_error,
+    $test_skip,
+    $execution_time
+);
+$xml .= $testsuite_results_xml;
+$xml .= '</testsuites>';
+
+echo $xml;

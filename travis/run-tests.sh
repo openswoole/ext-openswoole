@@ -26,12 +26,13 @@ do
     fi
 done
 
-# run tests @params($1=list_file, $2=options)
+# run tests @params($1=testrun, $2=list_file, $3=options)
 run_tests(){
+    export TEST_PHP_JUNIT=test-result-${1}.xml
     ./start.sh \
-    "`tr '\n' ' ' < ${1} | xargs`" \
-    -w ${1} \
-    ${2}
+    "`tr '\n' ' ' < ${2} | xargs`" \
+    -w ${2} \
+    ${3}
 }
 
 has_failures(){
@@ -72,11 +73,12 @@ do
         cat tests.list
         timeout=`echo | expr ${i} \* 15 + 15`
         options="${options} --set-timeout ${timeout}"
-        run_tests tests.list "${options}"
+        run_tests ${i} tests.list "${options}"
     else
         break
     fi
 done
+./merge-test-results >test-results.xml
 if [ "`should_exit_with_error`" ]; then
     exit 255
 fi
