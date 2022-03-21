@@ -1,4 +1,5 @@
 #!/bin/bash
+export GTEST_OUTPUT="xml:/tmp/test-result.xml"
 cmake .
 make -j8
 ipcs -q
