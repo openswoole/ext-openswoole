@@ -27,7 +27,8 @@ const char *swoole_strerror(int code) {
         return strerror(code);
     }
     /* swstrerror {{{*/
-    switch (code) {
+    switch(code)
+    {
     case SW_ERROR_MALLOC_FAIL:
         return "Malloc fail";
     case SW_ERROR_SYSTEM_CALL_FAIL:
@@ -192,6 +193,8 @@ const char *swoole_strerror(int code) {
         return "Server worker abnormal pipe data";
     case SW_ERROR_SERVER_WORKER_UNPROCESSED_DATA:
         return "Server worker unprocessed data";
+    case SW_ERROR_SERVER_NO_RESPONSE_CONTEXT:
+        return "Server no response context";
     case SW_ERROR_CO_OUT_OF_COROUTINE:
         return "Coroutine out of coroutine";
     case SW_ERROR_CO_HAS_BEEN_BOUND:
@@ -237,7 +240,7 @@ const char *swoole_strerror(int code) {
 #endif
         return buffer;
     }
-    /*}}}*/
+/*}}}*/
 }
 
 void swoole_throw_error(int code) {
