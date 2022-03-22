@@ -17,12 +17,16 @@ Co\run(function() {
     Assert::false($pg->prepare('', ''));
     Assert::false($pg->execute('', []));
     Assert::false($pg->metaData(''));
+    Assert::false($pg->status());
+    Assert::false($pg->reset());
 
     $conn = $pg->connect(PG_CONN);
     Assert::assert($conn);
     Assert::same((string)$pg->error, '');
     $result = $pg->escape("' or 1=1 & 2");
     Assert::same($result, "'' or 1=1 & 2");
+    $status = $pg->status();
+    Assert::same($status, OPENSWOOLE_PGRES_CONNECTION_OK);
 
     //
 
@@ -49,6 +53,15 @@ Co\run(function() {
         var_dump($retval, $pg->error, $pg->notices);
     }
 
+    $retval = $pg->query('SELECT * FROM weather');
+
+    if (!$retval) {
+        var_dump($retval, $pg->error, $pg->notices);
+    }
+
+    $empty = $pg->fetchAll($retval);
+    Assert::same($empty, []);
+
     $retval = $pg->query("INSERT INTO weather(city, temp_lo, temp_hi, prcp, date) VALUES ('San Francisco', 46, 50, 0.25, '1994-11-27') RETURNING id;");
     if (!$retval) {
         var_dump($retval, $pg->error, $pg->notices);
@@ -61,6 +74,18 @@ Co\run(function() {
     $arr = $pg->fetchAll($result);
 
     Assert::same($arr[0]['city'], 'San Francisco');
+
+    $reset = $pg->reset();
+    Assert::true($reset);
+    $status = $pg->status();
+    Assert::same($status, OPENSWOOLE_PGRES_CONNECTION_OK);
+
+    $result = $pg->query('SELECT 11, 22');
+    $arr = $pg->fetchAll($result);
+
+    Assert::same($arr[0]['?column?'], 11);
+    Assert::same($arr[0]['?column?1'], 22);
+
 });
 ?>
 --EXPECT--

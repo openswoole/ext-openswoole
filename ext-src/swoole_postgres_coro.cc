@@ -134,6 +134,8 @@ static PHP_METHOD(swoole_postgresql_coro, fetchObject);
 static PHP_METHOD(swoole_postgresql_coro, fetchAssoc);
 static PHP_METHOD(swoole_postgresql_coro, fetchArray);
 static PHP_METHOD(swoole_postgresql_coro, fetchRow);
+static PHP_METHOD(swoole_postgresql_coro, status);
+static PHP_METHOD(swoole_postgresql_coro, reset);
 
 static void php_pgsql_fetch_hash(INTERNAL_FUNCTION_PARAMETERS, zend_long result_type, int into_object);
 
@@ -238,6 +240,8 @@ static const zend_function_entry openswoole_postgresql_coro_methods[] =
     PHP_ME(swoole_postgresql_coro, fetchAssoc, arginfo_pg_fetch_assoc, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_postgresql_coro, fetchArray, arginfo_pg_fetch_array, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_postgresql_coro, fetchRow, arginfo_pg_fetch_row, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_postgresql_coro, status, arginfo_swoole_void, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_postgresql_coro, reset, arginfo_swoole_void, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_postgresql_coro, __destruct, arginfo_swoole_void, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
@@ -279,6 +283,9 @@ void php_swoole_postgresql_coro_minit(int module_number) {
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_BAD_RESPONSE", PGRES_BAD_RESPONSE);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_NONFATAL_ERROR", PGRES_NONFATAL_ERROR);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_FATAL_ERROR", PGRES_FATAL_ERROR);
+
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_CONNECTION_OK", CONNECTION_OK);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_CONNECTION_BAD", CONNECTION_BAD);
 }
 
 static char *_php_pgsql_trim_message(const char *message, size_t *len) {
@@ -1595,6 +1602,104 @@ static PHP_METHOD(swoole_postgresql_coro, escapeIdentifier) {
 
     RETVAL_STRING(tmp);
     PQfreemem(tmp);
+}
+
+// connection status
+static PHP_METHOD(swoole_postgresql_coro, status) {
+    PGconn *pgsql;
+    ConnStatusType status;
+    PGresult *pgsql_result;
+
+    PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
+    if (!object || !object->conn) {
+        RETURN_FALSE;
+    }
+    pgsql = object->conn;
+
+    while ((pgsql_result = PQgetResult(pgsql))) {
+        PQclear(pgsql_result);
+    }
+
+    status = PQstatus(pgsql);
+
+    RETVAL_LONG(ConnStatusType(status));
+}
+
+// reset connection
+static PHP_METHOD(swoole_postgresql_coro, reset) {
+    PGconn *pgsql;
+    double timeout = Socket::default_connect_timeout;
+
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_DOUBLE(timeout)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
+    if (!object || !object->conn) {
+        RETURN_FALSE;
+    }
+    pgsql = object->conn;
+
+    int reset_status = PQresetStart(pgsql);
+    if (reset_status == 0) {
+        RETURN_FALSE;
+    }
+
+    php_swoole_check_reactor();
+
+    if (!swoole_event_isset_handler(PHP_SWOOLE_FD_POSTGRESQL)) {
+        swoole_event_set_handler(PHP_SWOOLE_FD_POSTGRESQL | SW_EVENT_READ, swoole_pgsql_coro_onReadable);
+        swoole_event_set_handler(PHP_SWOOLE_FD_POSTGRESQL | SW_EVENT_WRITE, swoole_pgsql_coro_onWritable);
+        swoole_event_set_handler(PHP_SWOOLE_FD_POSTGRESQL | SW_EVENT_ERROR, swoole_pgsql_coro_onError);
+    }
+
+    object->status = CONNECTION_STARTED;
+    object->connected = false;
+
+    ON_SCOPE_EXIT {
+        if (!object->connected) {
+            object->conn = NULL;
+        }
+    };
+
+    if (pgsql == NULL || PQstatus(pgsql) == CONNECTION_BAD) {
+        swoole_warning("Unable to connect to PostgreSQL server: [%s]", PQhost(pgsql));
+        if (pgsql) {
+            PQfinish(pgsql);
+        }
+        RETURN_FALSE;
+    }
+
+    if (!object->yield(return_value, SW_EVENT_WRITE, timeout)) {
+        const char *feedback;
+
+        switch (PQstatus(pgsql)) {
+        case CONNECTION_STARTED:
+            feedback = "connection time out...please make sure your host,dbname,user and password is correct ";
+            break;
+        case CONNECTION_MADE:
+            feedback = "Connected to server..";
+            break;
+        default:
+            feedback = " time out..";
+            break;
+        }
+
+        char *err_msg = PQerrorMessage(object->conn);
+        if (pgsql == NULL || PQstatus(pgsql) == CONNECTION_STARTED) {
+            swoole_warning(" [%s, %s] ", feedback, err_msg);
+        } else if (PQstatus(pgsql) == CONNECTION_MADE) {
+            PQfinish(pgsql);
+        }
+        zend_update_property_string(swoole_postgresql_coro_ce,
+                                    SW_Z8_OBJ_P(ZEND_THIS),
+                                    ZEND_STRL("error"),
+                                    swoole_strerror(swoole_get_last_error()));
+        RETURN_FALSE;
+    }
+
+    ZVAL_BOOL(return_value, object->connected);
 }
 
 #endif
