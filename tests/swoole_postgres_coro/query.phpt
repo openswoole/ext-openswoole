@@ -26,7 +26,7 @@ Co\run(function() {
     $result = $pg->escape("' or 1=1 & 2");
     Assert::same($result, "'' or 1=1 & 2");
     $status = $pg->status();
-    Assert::same($status, OPENSWOOLE_PGRES_CONNECTION_OK);
+    Assert::same($status, OPENSWOOLE_PG_CONNECTION_OK);
 
     //
 
@@ -78,7 +78,7 @@ Co\run(function() {
     $reset = $pg->reset();
     Assert::true($reset);
     $status = $pg->status();
-    Assert::same($status, OPENSWOOLE_PGRES_CONNECTION_OK);
+    Assert::same($status, OPENSWOOLE_PG_CONNECTION_OK);
 
     $result = $pg->query('SELECT 11, 22');
     $arr = $pg->fetchAll($result);

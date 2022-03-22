@@ -1,4 +1,20 @@
 # 4.11.0
 
- . Allow HTTP2 client and server to set custom HTTP2 settings: http2_header_table_size, http2_initial_window_size, http2_max_concurrent_streams, http2_max_frame_size, http2_max_header_list_size
- . Added new server exception: NO_RESPONSE_CONTEXT
+ . HTTP2 server: allow HTTP2 client and server to set custom HTTP2 settings: http2_header_table_size, http2_initial_window_size, http2_max_concurrent_streams, http2_max_frame_size, http2_max_header_list_size
+ . Support static compile
+ . New feature: support http_index_files at HTTP2 server
+ . CI: Remove PHP7.2/7.3 support as they are not supported by the PHP team
+ . Bug fixed: Fix HTTP2 client and respect max_concurrent_streams settings
+ . HTTP2: Update HTTP2 default max concurrent streams per connection to be 1280
+ . Bug fixed: Respect server side settings at HTTP2 client
+ . Optimize signal-driven timer code (@hauptmedia)
+ . Bug fixed: $server->getWorkerPid does not return the correct worker pid when being called from another worker context
+ . Bug fixed: init window size in http2 server
+ . Deprecated: redis server
+ . Bug fixed: close HTTP2 connection when there are errors
+ . Close connection when a process is stopped and it is managing http2 sessions 
+ . Bug fixed: fix user land timer is not stopping when the server is shutting down 
+ . Postgres client: return empty array if the result set is empty
+ . Postgres client: provide constant enums for $connection->resultStatus
+ . Postgres client: added new API $pg->reset() and $pg->status() (@RedChops)
+ . CI and tests: fixed many bugs in tests and improved the CI and testing (@hauptmedia)
