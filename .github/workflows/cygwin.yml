@@ -22,9 +22,9 @@ jobs:
       - name: Get Swoole Info
         id: swoole_info
         run: |
-          wget https://api.github.com/repos/openswoole/swoole-src/releases/latest -O latest
-          $g=cat .\latest | ConvertFrom-Json
-          $version=$g.tag_name
+          wget https://api.github.com/repos/openswoole/swoole-src/releases -O releases
+          $g=cat .\releases | ConvertFrom-Json
+          $version=$g[0].tag_name
           $upload_url=$g.upload_url
           echo $version
           echo $upload_url
