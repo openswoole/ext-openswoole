@@ -36,8 +36,8 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-         . HTTP2 server: allow HTTP2 client and server to set custom HTTP2 settings: http2_header_table_size, http2_initial_window_size, http2_max_concurrent_streams, http2_max_frame_size, http2_max_header_list_size
-         . Support static compile
+         . HTTP2 server: allow HTTP2 client and server to set custom HTTP2 settings
+         . Support static compile with PHP CLI
          . New feature: support http_index_files at HTTP2 server
          . CI: Remove PHP7.2/7.3 support as they are not supported by the PHP team
          . Bug fixed: Fix HTTP2 client and respect max_concurrent_streams settings
@@ -54,6 +54,7 @@
          . Postgres client: provide constant enums for $connection->resultStatus
          . Postgres client: added new API $pg->reset() and $pg->status() (@RedChops)
          . CI and tests: fixed many bugs in tests and improved the CI and testing (@hauptmedia)
+         . Build fix for gcc < 4.9 (@dmz-uk)
     </notes>
     <contents>
         <dir name="/">

@@ -18,3 +18,4 @@
  . Postgres client: provide constant enums for $connection->resultStatus
  . Postgres client: added new API $pg->reset() and $pg->status() (@RedChops)
  . CI and tests: fixed many bugs in tests and improved the CI and testing (@hauptmedia)
+ . Build fix for gcc < 4.9 (@dmz-uk)
