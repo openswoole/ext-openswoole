@@ -41,11 +41,13 @@ Download the source packages from [Releases](https://github.com/openswoole/swool
 ```shell
 git clone https://github.com/openswoole/swoole-src.git && \
 cd swoole-src
-git checkout v4.9.1
+git checkout v4.11.0
 phpize && \
 ./configure && \
 make && make install
 ```
+
+You can find how to fix [Common Installation Errors](https://openswoole.com/docs/get-started/common-install-errors) if there are errors in the installation.
 
 #### Compile configurations
 
