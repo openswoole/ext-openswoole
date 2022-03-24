@@ -24,8 +24,8 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <date>2022-03-23</date>
-    <time>06:00:00</time>
+    <date>2022-03-24</date>
+    <time>15:00:00</time>
     <version>
         <release>4.11.0</release>
         <api>4.0</api>
@@ -54,7 +54,7 @@
          . Postgres client: provide constant enums for $connection->resultStatus
          . Postgres client: added new API $pg->reset() and $pg->status() (@RedChops)
          . CI and tests: fixed many bugs in tests and improved the CI and testing (@hauptmedia)
-         . Build fix for gcc < 4.9 (@dmz-uk)
+         . Build fix for gcc version lower than 4.9 (@dmz-uk)
     </notes>
     <contents>
         <dir name="/">

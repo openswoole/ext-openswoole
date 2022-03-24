@@ -195,7 +195,7 @@ if (!$success) {
 }
 
 // update date
-date_default_timezone_set('Asia/Shanghai');
+date_default_timezone_set("Europe/London");
 $date_tag = date('Y-m-d');
 $content = preg_replace('/(<date\>)\d+?-\d+?-\d+?(<\/date>)/', '${1}' . $date_tag . '${2}', $content, $success);
 if (!$success) {
