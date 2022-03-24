@@ -24,10 +24,10 @@
         <email>lufei@php.net</email>
         <active>yes</active>
     </developer>
-    <date>2022-01-25</date>
-    <time>07:00:00</time>
+    <date>2022-03-24</date>
+    <time>15:00:00</time>
     <version>
-        <release>4.10.0</release>
+        <release>4.11.0</release>
         <api>4.0</api>
     </version>
     <stability>
@@ -36,14 +36,29 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-        - New feature: Co::select, the non-blocking coroutine channel selector
-        - New feature: HTTP2 SSE server-sent events
-        - New feature: Improved channel stats
-        - Bug fixed: Argument data type fixed at sleep() and usleep() API by @Hailong
-        - Bug fixed: HTTP2 and TLS bug fixes
+         . HTTP2 server: allow HTTP2 client and server to set custom HTTP2 settings
+         . Support static compile with PHP CLI
+         . New feature: support http_index_files at HTTP2 server
+         . CI: Remove PHP7.2/7.3 support as they are not supported by the PHP team
+         . Bug fixed: Fix HTTP2 client and respect max_concurrent_streams settings
+         . HTTP2: Update HTTP2 default max concurrent streams per connection to be 1280
+         . Bug fixed: Respect server side settings at HTTP2 client
+         . Optimize signal-driven timer code (@hauptmedia)
+         . Bug fixed: $server->getWorkerPid does not return the correct worker pid when being called from another worker context
+         . Bug fixed: init window size in http2 server
+         . Deprecated: redis server
+         . Bug fixed: close HTTP2 connection when there are errors
+         . Close connection when a process is stopped and it is managing http2 sessions
+         . Bug fixed: fix user land timer is not stopping when the server is shutting down
+         . Postgres client: return empty array if the result set is empty
+         . Postgres client: provide constant enums for $connection->resultStatus
+         . Postgres client: added new API $pg->reset() and $pg->status() (@RedChops)
+         . CI and tests: fixed many bugs in tests and improved the CI and testing (@hauptmedia)
+         . Build fix for gcc version lower than 4.9 (@dmz-uk)
     </notes>
     <contents>
         <dir name="/">
+            <file role="doc" name="CHANGELOG" />
             <file role="src" name="CMakeLists.txt" />
             <file role="doc" name="CODE-STYLE.md" />
             <file role="src" name="CPPLINT.cfg" />
@@ -282,6 +297,7 @@
             <file role="doc" name="examples/http/static_handler.php" />
             <file role="doc" name="examples/http/test.txt" />
             <file role="doc" name="examples/http/upload_file.php" />
+            <file role="doc" name="examples/http2/exception_example.php" />
             <file role="doc" name="examples/http2/http2.php" />
             <file role="doc" name="examples/http2/sse.html" />
             <file role="doc" name="examples/http2/sse.php" />
@@ -807,6 +823,7 @@
             <file role="test" name="tests/include/ssl_certs/sni_server_us_cert.pem" />
             <file role="test" name="tests/include/ssl_certs/sni_server_us_key.pem" />
             <file role="test" name="tests/init" />
+            <file role="test" name="tests/merge-test-results" />
             <file role="test" name="tests/new" />
             <file role="test" name="tests/run-tests" />
             <file role="test" name="tests/start.sh" />
@@ -1226,6 +1243,7 @@
             <file role="test" name="tests/swoole_http2_client_coro/cookies.phpt" />
             <file role="test" name="tests/swoole_http2_client_coro/error.phpt" />
             <file role="test" name="tests/swoole_http2_client_coro/goaway.phpt" />
+            <file role="test" name="tests/swoole_http2_client_coro/h2_settings.phpt" />
             <file role="test" name="tests/swoole_http2_client_coro/headers.phpt" />
             <file role="test" name="tests/swoole_http2_client_coro/host.phpt" />
             <file role="test" name="tests/swoole_http2_client_coro/http_proxy.phpt" />
@@ -1245,7 +1263,9 @@
             <file role="test" name="tests/swoole_http2_server/big_data.phpt" />
             <file role="test" name="tests/swoole_http2_server/compression.phpt" />
             <file role="test" name="tests/swoole_http2_server/goaway.phpt" />
+            <file role="test" name="tests/swoole_http2_server/h2_settings.phpt" />
             <file role="test" name="tests/swoole_http2_server/http2_headers.phpt" />
+            <file role="test" name="tests/swoole_http2_server/index_file.phpt" />
             <file role="test" name="tests/swoole_http2_server/issue_4365.phpt" />
             <file role="test" name="tests/swoole_http2_server/nghttp2_big_data.phpt" />
             <file role="test" name="tests/swoole_http2_server/no_compression.phpt" />
@@ -1873,6 +1893,7 @@
             <file role="test" name="tests/swoole_server/task/task_pack.phpt" />
             <file role="test" name="tests/swoole_server/task/task_queue.phpt" />
             <file role="test" name="tests/swoole_server/task/task_wait.phpt" />
+            <file role="test" name="tests/swoole_server/task/timer.phpt" />
             <file role="test" name="tests/swoole_server/task/without_onfinish.phpt" />
             <file role="test" name="tests/swoole_server/taskWaitMulti.phpt" />
             <file role="test" name="tests/swoole_server/taskwait_01.phpt" />
