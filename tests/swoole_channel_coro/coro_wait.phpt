@@ -18,8 +18,8 @@ $pm->parentFunc = function () use ($pm) {
         Assert::assert(!empty($data));
         $json = json_decode($data, true);
         Assert::assert(is_array($json));
-        Assert::true(isset($json['www.qq.com']) and $json['www.qq.com'] > 1024);
-        Assert::true(isset($json['www.163.com']) and $json['www.163.com'] > 1024);
+        Assert::true(isset($json['openswoole.com']) and $json['openswoole.com'] > 1024);
+        Assert::true(isset($json['www.google.com']) and $json['www.google.com'] > 1024);
         $pm->kill();
     });
     Swoole\Event::wait();
@@ -36,10 +36,10 @@ $pm->childFunc = function () use ($pm)
 
         $chan = new chan(2);
         go(function () use ($chan) {
-            $cli = new Swoole\Coroutine\Http\Client('www.qq.com', 443, true);
+            $cli = new Swoole\Coroutine\Http\Client('openswoole.com', 443, true);
             $cli->set(['timeout' => 10]);
             $cli->setHeaders([
-                'Host' => "www.qq.com",
+                'Host' => "openswoole.com",
                 "User-Agent" => 'Chrome/49.0.2587.3',
                 'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Accept-Encoding' => 'gzip',
@@ -47,19 +47,19 @@ $pm->childFunc = function () use ($pm)
             $ret = $cli->get('/');
             if ($ret)
             {
-                $chan->push(['www.qq.com' => strlen($cli->body)]);
+                $chan->push(['openswoole.com' => strlen($cli->body)]);
             }
             else
             {
-                $chan->push(['www.qq.com' => 0]);
+                $chan->push(['openswoole.com' => 0]);
             }
         });
 
         go(function () use ($chan) {
-            $cli = new Swoole\Coroutine\Http\Client('www.163.com', 443, true);
+            $cli = new Swoole\Coroutine\Http\Client('www.google.com', 443, true);
             $cli->set(['timeout' => 10]);
             $cli->setHeaders([
-                'Host' => "www.163.com",
+                'Host' => "www.google.com",
                 "User-Agent" => 'Chrome/49.0.2587.3',
                 'Accept' => 'text/html,application/xhtml+xml,application/xml',
                 'Accept-Encoding' => 'gzip',
@@ -67,11 +67,11 @@ $pm->childFunc = function () use ($pm)
             $ret = $cli->get('/');
             if ($ret)
             {
-                $chan->push(['www.163.com' => strlen($cli->body)]);
+                $chan->push(['www.google.com' => strlen($cli->body)]);
             }
             else
             {
-                $chan->push(['www.163.com' => 0]);
+                $chan->push(['www.google.com' => 0]);
             }
         });
 

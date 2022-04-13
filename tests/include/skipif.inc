@@ -13,7 +13,7 @@ skip(
     SWOOLE_COLOR_RED
 );
 skip(
-    'Swoole extension is required',
+    'openswoole extension is required',
     !extension_loaded('openswoole'),
     SWOOLE_COLOR_RED
 );
@@ -65,7 +65,7 @@ function skip_if_php_version_between($a, $b)
 
 function skip_if_not_debug_version()
 {
-    skip('only in swoole debug version', !SWOOLE_DEBUG);
+    skip('only in openswoole debug version', !SWOOLE_DEBUG);
 }
 
 function skip_if_ini_bool_equal_to(string $name, bool $value)

@@ -937,13 +937,13 @@ function save_or_mail_results()
     if (!getenv('NO_INTERACTION') && !TRAVIS_CI) {
         $fp = fopen("php://stdin", "r+");
         if ($sum_results['FAILED'] || $sum_results['BORKED'] || $sum_results['WARNED'] || $sum_results['LEAKED']) {
-            echo "\nYou may have found a problem in PHP.";
+            echo "\nYou may have found a problem in OpenSwoole.";
         }
-        echo "\nThis report can be automatically sent to the PHP QA team at\n";
-        echo QA_REPORTS_PAGE . " and http://news.php.net/php.qa.reports\n";
-        echo "This gives us a better understanding of PHP's behavior.\n";
+        echo "\nThis report can be automatically sent to the OpenSwoole team at\n";
+        echo "https://github.com/openswoole/swoole-src/issues\n";
+        echo "This gives us a better understanding of OpenSwoole's behavior.\n";
         echo "If you don't want to send the report immediately you can choose\n";
-        echo "option \"s\" to save it.	You can then email it to " . PHP_QA_EMAIL . " later.\n";
+        echo "option \"s\" to save it.	You can then email it to hello@openswoole.com later.\n";
         echo "Do you want to send this report now? [Yns]: ";
         flush();
 
