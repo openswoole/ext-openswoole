@@ -86,6 +86,11 @@ Co\run(function() {
     Assert::same($arr[0]['?column?'], 11);
     Assert::same($arr[0]['?column?1'], 22);
 
+    $meta1 = $pg->metaData('weather');
+    $connection = pg_connect(PG_CONN);
+    $meta2 = pg_meta_data($connection, 'weather');
+    Assert::assertSame($meta2, $meta1)
+    
 });
 ?>
 --EXPECT--
