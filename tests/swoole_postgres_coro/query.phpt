@@ -89,7 +89,7 @@ Co\run(function() {
     $meta1 = $pg->metaData('weather');
     $connection = pg_connect(PG_CONN);
     $meta2 = pg_meta_data($connection, 'weather');
-    Assert::assertSame($meta2, $meta1)
+    Assert::same($meta2, $meta1)
     
 });
 ?>
