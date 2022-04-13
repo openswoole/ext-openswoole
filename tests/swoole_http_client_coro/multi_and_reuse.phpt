@@ -32,17 +32,17 @@ go(function () {
     $swoole->recv(10);
     $google->recv(10);
     Assert::same($swoole->statusCode, 200);
-    Assert::assert(stripos($swoole->body, 'Swoole') !== false);
+    Assert::assert(stripos($swoole->body, 'OpenSwoole') !== false);
     Assert::same($google->statusCode, 200);
     Assert::assert(stripos($google->body, 'google') !== false);
 
     //reuse
-    $swoole->get('/docs/');
+    $swoole->get('/docs');
     $google->get('/help');
     $swoole->recv(10);
     $google->recv(10);
     Assert::same($swoole->statusCode, 200);
-    Assert::assert(stripos($swoole->body, 'Swoole') !== false);
+    Assert::assert(stripos($swoole->body, 'OpenSwoole') !== false);
     Assert::same($google->statusCode, 404);
     Assert::assert(stripos($google->body, 'google') !== false);
 });
