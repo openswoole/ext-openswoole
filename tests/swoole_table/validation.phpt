@@ -1,7 +1,7 @@
 --TEST--
 swoole_table: validation
 --SKIPIF--
-<?php // require  __DIR__ . '/../include/skipif.inc'; ?>
+<?php require  __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
