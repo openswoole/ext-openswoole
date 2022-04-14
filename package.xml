@@ -12,8 +12,8 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2022-03-24</date>
-    <time>15:00:00</time>
+    <date>2022-04-14</date>
+    <time>22:00:00</time>
     <version>
         <release>4.11.0</release>
         <api>4.0</api>
@@ -1337,6 +1337,7 @@
             <file role="test" name="tests/swoole_http_server/bug_2947.phpt" />
             <file role="test" name="tests/swoole_http_server/bug_2988.phpt" />
             <file role="test" name="tests/swoole_http_server/bug_compression_level.phpt" />
+            <file role="test" name="tests/swoole_http_server/bug_cookie_parse.phpt" />
             <file role="test" name="tests/swoole_http_server/bug_get_request_data_after_end.phpt" />
             <file role="test" name="tests/swoole_http_server/callback_new_obj_method.phpt" />
             <file role="test" name="tests/swoole_http_server/callback_new_static_method.phpt" />
