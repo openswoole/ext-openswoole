@@ -12,18 +12,6 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <developer>
-        <name>Shen Zhe</name>
-        <user>shenzhe</user>
-        <email>shenzhe163@gmail.com</email>
-        <active>yes</active>
-    </developer>
-    <developer>
-        <name>Lu Fei</name>
-        <user>lufei</user>
-        <email>lufei@php.net</email>
-        <active>yes</active>
-    </developer>
     <date>2022-03-24</date>
     <time>15:00:00</time>
     <version>
