@@ -12,7 +12,7 @@ go(function () {
     $cli = new Swoole\Coroutine\Http2\Client('nghttp2.org', 443, true);
     $cli->set(['timeout' => 5,]);
     if (!$cli->connect()) {
-        return; // we can't connect to this website without proxy in China so we skip it.
+        return;
     }
     $ret = $cli->ping();
     Assert::assert($ret);

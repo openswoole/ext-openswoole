@@ -15,7 +15,7 @@ go(function () {
         'ssl_host_name' => $domain
     ]);
     if (!$cli->connect()) {
-        return; // we can't connect to this website without proxy in China so we skip it.
+        return;
     }
     $cli->goaway(SWOOLE_HTTP2_ERROR_NO_ERROR, '[GOAWAY] nothing~bye~bye~');
     Assert::assert(!$cli->recv(-1));
