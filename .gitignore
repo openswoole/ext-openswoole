@@ -109,3 +109,6 @@ tools/PHP-Parser-*/
 /html
 /tests/include/lib/vendor/
 travis/octane/
+
+# package
+openswoole-*.tgz
