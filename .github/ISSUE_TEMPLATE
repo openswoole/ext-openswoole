@@ -1,21 +1,31 @@
-Please answer these questions before submitting your issue.
-
 1. What did you do? If possible, provide a simple script for reproducing the error.
+```
 
 
-
+```
 2. What did you expect to see?
+```
 
 
-
+```
 3. What did you see instead?
+```
 
 
-
+```
 4. What version of OpenSwoole are you using (show your `php --ri openswoole`)?
+```
 
 
-
+```
 5. What is your machine environment used (show your `uname -a` & `php -v` & `gcc -v`) ?
+```
 
 
+```
+
+You can also try the following OpenSwoole support channels:
+
+* [Documentation](https://openswoole.com/docs) - Documentation for Open Swoole
+* [Slack](https://goo.gl/forms/wooTTDmhbu30x4qC3) - Slack channel of Open Swoole
+* [Discord](https://discord.gg/5QC57RNPpw) - Discord server of Open Swoole
