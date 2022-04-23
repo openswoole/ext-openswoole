@@ -58,7 +58,6 @@ class Multi {
     int last_sockfd;
     int event_count_ = 0;
     bool defer_callback = false;
-    bool init = false;
     std::unique_ptr<Selector> selector;
 
     CURLcode read_info();
@@ -101,7 +100,6 @@ class Multi {
 
   public:
     Multi() {
-        init = true;
         multi_handle_ = curl_multi_init();
         co = nullptr;
         curl_multi_setopt(multi_handle_, CURLMOPT_SOCKETFUNCTION, handle_socket);
@@ -111,9 +109,7 @@ class Multi {
     }
 
     ~Multi() {
-        if(init) {
-            curl_multi_cleanup(multi_handle_);
-        }
+        curl_multi_cleanup(multi_handle_);
     }
 
     CURLM *get_multi_handle() {
@@ -122,10 +118,6 @@ class Multi {
 
     int get_running_handles() {
         return running_handles_;
-    }
-
-    bool is_init() {
-        return init;
     }
 
     void set_selector(Selector *_selector) {

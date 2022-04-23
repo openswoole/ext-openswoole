@@ -34,6 +34,24 @@ SW_EXTERN_C_BEGIN
 
 #define SAVE_CURLM_ERROR(__handle, __err) (__handle)->err.no = (int) __err;
 
+void swoole_curlm_set_is_co(php_curlm *mh, bool value) {
+#if PHP_VERSION_ID >= 80000
+    zend_update_property_bool(nullptr, &mh->std, ZEND_STRL("is_co"), value);
+#else
+    mh->is_co = value;
+#endif
+}
+
+bool swoole_curlm_is_co(php_curlm *mh) {
+#if PHP_VERSION_ID >= 80000
+    zval rv;
+    zval *zv = zend_read_property_ex(nullptr, &mh->std, SW_ZSTR_KNOWN(SW_ZEND_STR_IS_CO), 1, &rv);
+    return zval_is_true(zv);
+#else
+    return mh->is_co;
+#endif
+}
+
 #if PHP_VERSION_ID >= 80000
 /* CurlMultiHandle class */
 
@@ -80,6 +98,7 @@ PHP_FUNCTION(swoole_native_curl_multi_init) {
 #if PHP_VERSION_ID < 80100
     mh->handlers = (php_curlm_handlers *) ecalloc(1, sizeof(php_curlm_handlers));
 #endif
+    swoole_curlm_set_is_co(mh, true);
     zend_llist_init(&mh->easyh, sizeof(zval), swoole_curl_multi_cleanup_list, 0);
 }
 /* }}} */
@@ -362,6 +381,8 @@ PHP_FUNCTION(swoole_native_curl_multi_close) {
 
     mh = Z_CURL_MULTI_P(z_mh);
 
+    bool is_co = swoole_curlm_is_co(mh);
+
     for (pz_ch = (zval *) zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
          pz_ch = (zval *) zend_llist_get_next_ex(&mh->easyh, &pos)) {
 #if PHP_VERSION_ID < 80000
@@ -374,7 +395,11 @@ PHP_FUNCTION(swoole_native_curl_multi_close) {
             continue;
         }
         swoole_curl_verify_handlers(ch, 1);
-        mh->multi->remove_handle(ch->cp);
+        if (mh->multi && is_co) {
+            mh->multi->remove_handle(ch->cp);
+        } else {
+            curl_multi_remove_handle(mh->multi, ch->cp);
+        }
     }
     zend_llist_clean(&mh->easyh);
 }
@@ -724,6 +749,7 @@ void curl_multi_register_class(const zend_function_entry *method_entries) {
     swoole_coroutine_curl_multi_handle_handlers.clone_obj = NULL;
     swoole_coroutine_curl_multi_handle_handlers.cast_object = swoole_curl_cast_object;
     swoole_coroutine_curl_multi_handle_handlers.compare = zend_objects_not_comparable;
+    zend_declare_property_bool(swoole_coroutine_curl_multi_handle_ce, ZEND_STRL("is_co"), 0, ZEND_ACC_PUBLIC);
 }
 #else
 /* PHP 7 curl zend_resource */
@@ -745,6 +771,8 @@ zend_llist_position pos;
 php_curl *ch;
 zval    *pz_ch;
 
+bool is_co = swoole_curlm_is_co(mh);
+
 #if PHP_VERSION_ID < 80000
 
 for (pz_ch = (zval *)zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
@@ -761,12 +789,14 @@ for (pz_ch = (zval *)zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
 #endif
     if ((ch = swoole_curl_get_handle(pz_ch, true, false))) {
         swoole_curl_verify_handlers(ch, 0);
-        mh->multi->remove_handle(ch->cp);
+        if (mh->multi && is_co) {
+            mh->multi->remove_handle(ch->cp);
+        }
     }
 }
 
 if (mh->multi) {
-    if (mh->multi && mh->multi->is_init()) {
+    if (mh->multi && is_co) {
         delete mh->multi;
     } else {
         curl_multi_cleanup(mh->multi);
@@ -790,15 +820,19 @@ for (pz_ch = (zval *)zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
     if (!(OBJ_FLAGS(Z_OBJ_P(pz_ch)) & IS_OBJ_FREE_CALLED)) {
         ch = Z_CURL_P(pz_ch);
         swoole_curl_verify_handlers(ch, /* reporterror */ false);
-        mh->multi->remove_handle(ch->cp);
+        if (mh->multi && is_co) {
+            mh->multi->remove_handle(ch->cp);
+        }
     }
 }
 
 if (mh->multi) {
-    if (mh->multi && mh->multi->is_init()) {
+    if (mh->multi && is_co) {
         delete mh->multi;
     } else {
+        #if PHP_VERSION_ID >= 80100 // 8.0 ?
         curl_multi_cleanup(mh->multi);
+        #endif
     }
     mh->multi = nullptr;
 }
