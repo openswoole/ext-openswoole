@@ -1,4 +1,4 @@
-name: lib-openswoole
+name: core-openswoole
 
 on: [push, pull_request]
 
