@@ -171,6 +171,8 @@ typedef struct {
 	} err;
 #if PHP_VERSION_ID >= 80000
 	zend_object std;
+#else
+	bool is_co;
 #endif
 } php_curlm;
 
