@@ -2782,6 +2782,10 @@ static void _php_curl_free(php_curl *ch) {
         handle = nullptr;
     }
 
+    if(!ch->clone) {
+        return;
+    }
+
     /* cURL destructors should be invoked only by last curl handle */
     if (--(*ch->clone) == 0) {
 #if PHP_VERSION_ID < 80100
