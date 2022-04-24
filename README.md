@@ -1,4 +1,4 @@
-<p align="center"><a href="https://openswoole.com" target="_blank"><img src="https://openswoole.com/images/swoole-logo-white.svg#gh-light-mode-only" width="200" /><img src="https://openswoole.com/images/swoole-logo.svg#gh-light-mode-only" width="200" /></a></p>
+<p align="center"><a href="https://openswoole.com" target="_blank"><img src="https://openswoole.com/images/swoole-logo.svg#gh-light-mode-only" width="200" /></a></p>
 
 
 <p align="center"><a href="https://github.com/openswoole/swoole-src/actions?query=workflow%3Alib-openswoole"><img src="https://github.com/openswoole/swoole-src/workflows/lib-openswoole/badge.svg" alt="lib-openswoole" style="max-width: 100%;"></a>
