@@ -124,9 +124,7 @@ typedef struct {
 	struct _php_curl_error        err;
 	zend_bool                     in_callback;
 	uint32_t*                     clone;
-#if LIBCURL_VERSION_NUM >= 0x073800 /* 7.56.0 */
 	zval                          postfields;
-#endif
 
 #if PHP_VERSION_ID >= 80100
 	/* For CURLOPT_PRIVATE */

@@ -12,8 +12,8 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2022-04-14</date>
-    <time>22:00:00</time>
+    <date>2022-04-24</date>
+    <time>20:00:00</time>
     <version>
         <release>4.11.0</release>
         <api>4.0</api>
@@ -1113,6 +1113,8 @@
             <file role="test" name="tests/swoole_curl/cancel.phpt" />
             <file role="test" name="tests/swoole_curl/close_before_resume.phpt" />
             <file role="test" name="tests/swoole_curl/concurrent.phpt" />
+            <file role="test" name="tests/swoole_curl/curlmulti2.phpt" />
+            <file role="test" name="tests/swoole_curl/curlmulti3.phpt" />
             <file role="test" name="tests/swoole_curl/curlmultil.phpt" />
             <file role="test" name="tests/swoole_curl/error.phpt" />
             <file role="test" name="tests/swoole_curl/exec_twice.phpt" />

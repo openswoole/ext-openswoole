@@ -819,7 +819,7 @@ for (pz_ch = (zval *)zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
     pz_ch = (zval *)zend_llist_get_next_ex(&mh->easyh, &pos)) {
     if (!(OBJ_FLAGS(Z_OBJ_P(pz_ch)) & IS_OBJ_FREE_CALLED)) {
         ch = Z_CURL_P(pz_ch);
-        swoole_curl_verify_handlers(ch, /* reporterror */ false);
+        swoole_curl_verify_handlers(ch, 0);
         if (mh->multi && is_co) {
             mh->multi->remove_handle(ch->cp);
         }
