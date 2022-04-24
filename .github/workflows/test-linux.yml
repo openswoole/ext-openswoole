@@ -35,7 +35,7 @@ jobs:
     - name: Run simple-compile-on-github.sh
       run: |
         sudo ${{runner.workspace}}/swoole-src/travis/simple-compile-on-github.sh
-    - name: Run Swoole test
+    - name: Run Openswoole test
       run: |
         export TRAVIS_BRANCH=${GITHUB_REF##*/}
         ${{runner.workspace}}/swoole-src/travis/route.sh
