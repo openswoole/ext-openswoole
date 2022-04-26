@@ -124,6 +124,9 @@ php_curl *swoole_curl_get_handle(zval *zid, bool exclusive, bool required) {
         return nullptr;
     }
 #endif
+    if (SWOOLE_G(req_status) == PHP_SWOOLE_RSHUTDOWN_END) {
+        exclusive = false;
+    }
     if (exclusive) {
         swoole::curl::Handle *handle = nullptr;
         curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle);
@@ -2774,10 +2777,10 @@ static void _php_curl_free(php_curl *ch) {
     curl_easy_setopt(ch->cp, CURLOPT_WRITEFUNCTION, curl_write_nothing);
 
     swoole::curl::Handle *handle = nullptr;
-    curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle);
-
-    if (handle && handle->multi) {
-        handle->multi->remove_handle(ch);
+    if (curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle) && handle) {
+        if (handle->multi) {
+            handle->multi->remove_handle(ch);
+        }
     } else {
         handle = nullptr;
     }
