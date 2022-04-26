@@ -1,3 +1,10 @@
+# 4.11.1
+
+ . Fix postgres client metaData api bugs
+ . Fix cookie parsing bug causing cookie errors
+ . Fix memory leak in swoole_stream_select
+ . Fix compatible issues with old libcurl on centos 7
+
 # 4.11.0
 
  . HTTP2 server: allow HTTP2 client and server to set custom HTTP2 settings: http2_header_table_size, http2_initial_window_size, http2_max_concurrent_streams, http2_max_frame_size, http2_max_header_list_size
