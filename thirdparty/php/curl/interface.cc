@@ -137,8 +137,7 @@ php_curl *swoole_curl_get_handle(zval *zid, bool exclusive, bool required) {
     return ch;
 }
 
-#if PHP_VERSION_ID < 80100
-
+#if PHP_VERSION_ID < 80000
 static long php_curl_easy_setopt_str(php_curl *ch, CURLoption option, const char *str) {
     if (option == CURLOPT_PRIVATE) {
         ch->private_data = str;
@@ -156,7 +155,14 @@ static long php_curl_easy_getinfo_str(php_curl *ch, CURLINFO option, char **valu
         return curl_easy_getinfo(ch->cp, option, value);
     }
 }
+#elif PHP_VERSION_ID < 80100
+static long php_curl_easy_setopt_str(php_curl *ch, CURLoption option, const char *str) {
+    return curl_easy_setopt(ch->cp, option, str);
+}
 
+static long php_curl_easy_getinfo_str(php_curl *ch, CURLINFO option, char **value) {
+    return curl_easy_getinfo(ch->cp, option, value);
+}
 #endif
 
 static int php_curl_option_str(php_curl *ch, zend_long option, const char *str, const size_t len, zend_bool make_copy) {
