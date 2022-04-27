@@ -129,7 +129,7 @@ typedef struct {
 #if PHP_VERSION_ID >= 80100
 	/* For CURLOPT_PRIVATE */
     zval private_data;
-#else
+#elif PHP_VERSION_ID < 80000
     const char *private_data;
 #endif
     

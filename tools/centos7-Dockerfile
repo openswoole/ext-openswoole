@@ -1,0 +1,27 @@
+FROM centos:7
+
+RUN rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm \
+    && rpm -Uvh https://mirror.webtatic.com/yum/el7/webtatic-release.rpm \
+    && rpm -Uvh http://rpms.famillecollet.com/enterprise/remi-release-7.rpm
+
+RUN yum-config-manager --enable remi-php81 \
+    && yum install -y git zip unzip \
+    php php-intl php-opcache php-mbstring php-dom \
+    php-pdo php-mysqlnd \
+    php-bcmath php-zip php-ast php-fpm
+
+RUN yum update -y
+
+RUN echo 'date.timezone=Europe/London' > /etc/php.d/00-docker-php-date-timezone.ini
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
+
+RUN yum install php-pear -y && yum install php-devel -y && yum install postgresql-devel -y && yum install curl-devel -y && yum install c-ares-devel -y && yum install gdb -y
+
+RUN rm -rf /tmp/*
+
+WORKDIR /opt/app-root/src
+
+CMD ["php"]
+
+EXPOSE 9000

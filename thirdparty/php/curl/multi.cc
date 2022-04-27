@@ -45,7 +45,7 @@ void swoole_curlm_set_is_co(php_curlm *mh, bool value) {
 bool swoole_curlm_is_co(php_curlm *mh) {
 #if PHP_VERSION_ID >= 80000
     zval rv;
-    zval *zv = zend_read_property_ex(nullptr, &mh->std, SW_ZSTR_KNOWN(SW_ZEND_STR_IS_CO), 1, &rv);
+    zval *zv = zend_read_property_ex(nullptr, &mh->std, SW_ZSTR_KNOWN(SW_ZEND_STR_CURL_IS_CO), 1, &rv);
     return zval_is_true(zv);
 #else
     return mh->is_co;
