@@ -156,12 +156,14 @@ static long php_curl_easy_getinfo_str(php_curl *ch, CURLINFO option, char **valu
     }
 }
 #elif PHP_VERSION_ID < 80100
-static long php_curl_easy_setopt_str(php_curl *ch, CURLoption option, const char *str) {
-    return curl_easy_setopt(ch->cp, option, str);
+void php_curl_setopt_val(php_curl *ch, zval *zvalue) {
+    zend_update_property_ex(nullptr, &ch->std, SW_ZSTR_KNOWN(SW_ZEND_STR_CURL_OPTION), zvalue);
 }
 
-static long php_curl_easy_getinfo_str(php_curl *ch, CURLINFO option, char **value) {
-    return curl_easy_getinfo(ch->cp, option, value);
+void php_curl_getopt_val(php_curl *ch, zval *return_value) {
+    zval rv;
+    zval *zv = zend_read_property_ex(nullptr, &ch->std, SW_ZSTR_KNOWN(SW_ZEND_STR_CURL_OPTION), 1, &rv);
+    RETURN_COPY(zv);
 }
 #endif
 
@@ -177,7 +179,7 @@ static int php_curl_option_str(php_curl *ch, zend_long option, const char *str, 
         return FAILURE;
     }
 
-#if PHP_VERSION_ID >= 80100
+#if PHP_VERSION_ID >= 80000
     error = curl_easy_setopt(ch->cp, (CURLoption) option, str);
     SAVE_CURL_ERROR(ch, error);
     return error == CURLE_OK ? SUCCESS : FAILURE;
@@ -349,6 +351,7 @@ void swoole_native_curl_minit(int module_number) {
     swoole_coroutine_curl_handle_handlers.clone_obj = swoole_curl_clone_obj;
     swoole_coroutine_curl_handle_handlers.cast_object = swoole_curl_cast_object;
     swoole_coroutine_curl_handle_handlers.compare = zend_objects_not_comparable;
+    zend_declare_property_null(swoole_coroutine_curl_handle_ce, ZEND_STRL("option"), ZEND_ACC_PUBLIC);
 //#endif
     curl_multi_register_class(nullptr);
 
@@ -1820,6 +1823,9 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue) /* {{{
         zval_ptr_dtor(&ch->private_data);
         ZVAL_COPY(&ch->private_data, zvalue);
         return SUCCESS;
+#elif PHP_VERSION_ID >= 80000
+        php_curl_setopt_val(ch, zvalue);
+        return SUCCESS;
 #else
         zend_string *str = zval_get_string(zvalue);
         int ret = php_curl_option_str(ch, option, ZSTR_VAL(str), ZSTR_LEN(str), 1);
@@ -2608,6 +2614,9 @@ PHP_FUNCTION(swoole_native_curl_getinfo) {
     } else {
         RETURN_FALSE;
     }
+#elif PHP_VERSION_ID >= 80000
+        php_curl_getopt_val(ch, return_value);
+        return;
 #else
     char *s_code = NULL;
     if (php_curl_easy_getinfo_str(ch, (CURLINFO) option, &s_code) == CURLE_OK && s_code) {
