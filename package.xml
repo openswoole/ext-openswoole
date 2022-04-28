@@ -12,10 +12,10 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2022-04-24</date>
-    <time>20:00:00</time>
+    <date>2022-04-28</date>
+    <time>16:00:00</time>
     <version>
-        <release>4.11.0</release>
+        <release>4.11.1</release>
         <api>4.0</api>
     </version>
     <stability>
@@ -24,25 +24,11 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-         . HTTP2 server: allow HTTP2 client and server to set custom HTTP2 settings
-         . Support static compile with PHP CLI
-         . New feature: support http_index_files at HTTP2 server
-         . CI: Remove PHP7.2/7.3 support as they are not supported by the PHP team
-         . Bug fixed: Fix HTTP2 client and respect max_concurrent_streams settings
-         . HTTP2: Update HTTP2 default max concurrent streams per connection to be 1280
-         . Bug fixed: Respect server side settings at HTTP2 client
-         . Optimize signal-driven timer code (@hauptmedia)
-         . Bug fixed: $server->getWorkerPid does not return the correct worker pid when being called from another worker context
-         . Bug fixed: init window size in http2 server
-         . Deprecated: redis server
-         . Bug fixed: close HTTP2 connection when there are errors
-         . Close connection when a process is stopped and it is managing http2 sessions
-         . Bug fixed: fix user land timer is not stopping when the server is shutting down
-         . Postgres client: return empty array if the result set is empty
-         . Postgres client: provide constant enums for $connection->resultStatus
-         . Postgres client: added new API $pg->reset() and $pg->status() (@RedChops)
-         . CI and tests: fixed many bugs in tests and improved the CI and testing (@hauptmedia)
-         . Build fix for gcc version lower than 4.9 (@dmz-uk)
+         . Fix postgres client metaData api bugs
+         . Fix cookie parsing bug causing cookie errors
+         . Fix memory leak in swoole_stream_select
+         . Fix compatible issues with old libcurl on centos 7
+         . Fix compatible issues for PHP 8.0 and Fedora, Centos 7
     </notes>
     <contents>
         <dir name="/">
@@ -2141,10 +2127,12 @@
             <file role="src" name="tools/arginfo-check.php" />
             <file role="src" name="tools/bootstrap.php" />
             <file role="src" name="tools/build-library.php" />
+            <file role="doc" name="tools/centos7-Dockerfile" />
             <file role="src" name="tools/code-generator.php" />
             <file role="src" name="tools/config-generator.php" />
             <file role="src" name="tools/constant-generator.php" />
             <file role="src" name="tools/export.php" />
+            <file role="doc" name="tools/fedora-Dockerfile" />
             <file role="src" name="tools/gen-data.php" />
             <file role="src" name="tools/gen_func_stub.php" />
             <file role="src" name="tools/gen_stub.php" />
