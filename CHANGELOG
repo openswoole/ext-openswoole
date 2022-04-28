@@ -4,6 +4,7 @@
  . Fix cookie parsing bug causing cookie errors
  . Fix memory leak in swoole_stream_select
  . Fix compatible issues with old libcurl on centos 7
+ . Fix compatible issues for PHP 8.0 and Fedora, Centos 7
 
 # 4.11.0
 

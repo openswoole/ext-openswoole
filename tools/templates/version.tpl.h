@@ -23,5 +23,5 @@
 #define SWOOLE_BUG_REPORT                                                                                              \
     "A bug occurred in OpenSwoole-v" SWOOLE_VERSION ", please report it.\n"                                            \
     "Please submit bug report at:\n"                                                                                   \
-    ">> https://github.com/openswoole/swoole-src/issues \n"                                                            \
+    ">> https://github.com/openswoole/swoole-src/issues \n"
 #endif
