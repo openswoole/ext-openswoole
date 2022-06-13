@@ -1,19 +1,13 @@
 {
   "name": "swoole_tests/lib",
   "description": "for swoole tests",
-  "authors": [
-    {
-      "name": "tianfeng.han",
-      "email": "rango@swoole.com"
-    }
-  ],
   "autoload": {
     "psr-4": {
       "SwooleTest\\": "src"
     }
   },
   "require": {
-    "guzzlehttp/guzzle": "^7.3",
+    "guzzlehttp/guzzle": "7.4.4",
     "guzzlehttp/promises": "^1.4",
     "guzzlehttp/psr7": "^1.7",
     "php-http/async-client-implementation": "^1.0",
