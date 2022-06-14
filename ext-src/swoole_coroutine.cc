@@ -66,7 +66,12 @@ bool PHPCoroutine::interrupt_thread_running = false;
 
 extern void php_swoole_load_library();
 
+#if PHP_VERSION_ID < 80200
 static zend_bool *zend_vm_interrupt = nullptr;
+#else
+static zend_atomic_bool *zend_vm_interrupt = nullptr;
+#endif
+
 static user_opcode_handler_t ori_exit_handler = nullptr;
 static user_opcode_handler_t ori_begin_silence_handler = nullptr;
 static user_opcode_handler_t ori_end_silence_handler = nullptr;
@@ -411,7 +416,11 @@ void PHPCoroutine::interrupt_thread_start() {
     interrupt_thread = std::thread([]() {
         swoole_signal_block_all();
         while (interrupt_thread_running) {
+#if PHP_VERSION_ID < 80200
             *zend_vm_interrupt = 1;
+#else
+            zend_atomic_bool_store_ex(zend_vm_interrupt, true);
+#endif
             std::this_thread::sleep_for(std::chrono::milliseconds(MAX_EXEC_MSEC / 2));
         }
     });
