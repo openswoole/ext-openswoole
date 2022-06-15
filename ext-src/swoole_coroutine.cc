@@ -411,7 +411,9 @@ void PHPCoroutine::interrupt_thread_start() {
     if (interrupt_thread_running) {
         return;
     }
+#if PHP_VERSION_ID < 80200
     zend_vm_interrupt = &EG(vm_interrupt);
+#endif
     interrupt_thread_running = true;
     interrupt_thread = std::thread([]() {
         swoole_signal_block_all();
@@ -419,7 +421,7 @@ void PHPCoroutine::interrupt_thread_start() {
 #if PHP_VERSION_ID < 80200
             *zend_vm_interrupt = 1;
 #else
-            zend_atomic_bool_store_ex(zend_vm_interrupt, true);
+            zend_atomic_bool_store_ex(&EG(vm_interrupt), true);
 #endif
             std::this_thread::sleep_for(std::chrono::milliseconds(MAX_EXEC_MSEC / 2));
         }
