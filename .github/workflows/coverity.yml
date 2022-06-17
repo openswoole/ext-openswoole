@@ -7,7 +7,7 @@ on:
 
 env:
   COVERITY_SCAN_TOKEN: ${{ secrets.COVERITY_SCAN_TOKEN }}
-  COVERITY_SCAN_EMAIL: hello@swoole.co.uk
+  COVERITY_SCAN_EMAIL: hello@openswoole.com
   COVERITY_PROJECT: open-swoole-src
   COV_TOOLS_DIR: ${{ github.workspace }}/cov-analysis-linux64
   COV_BUILD_DIR: ${{ github.workspace }}

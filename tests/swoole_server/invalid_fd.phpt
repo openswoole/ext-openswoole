@@ -32,7 +32,7 @@ $pm->childFunc = function () use ($pm) {
     });
     $server->on('receive', function (Swoole\Server $serv, int $fd, int $rid, string $data) {
         $to_fd = null;
-        eval("\$to_fd = ${data};");
+        eval("\$to_fd = {$data};");
         $serv->send($to_fd, "hello {$fd}" . EOF);
     });
     $server->start();
