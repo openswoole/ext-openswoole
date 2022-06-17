@@ -85,6 +85,9 @@ static zend_object_handlers swoole_native_curl_exception_handlers;
 #if PHP_VERSION_ID < 80000
 static int le_curl;
 static int le_curl_multi_handle;
+static int le_curl_share_handle;
+#define le_curl_share_handle_name "cURL Share Handle"
+
 
 int swoole_curl_get_le_curl() {
     return le_curl;
@@ -453,6 +456,14 @@ static HashTable *swoole_curl_get_gc(zend_object *object, zval **table, int *n) 
         if (curl_handlers(curl)->progress) {
             zend_get_gc_buffer_add_zval(gc_buffer, &curl_handlers(curl)->progress->func_name);
         }
+
+#if PHP_VERSION_ID >= 80200
+#if LIBCURL_VERSION_NUM >= 0x072000
+        if (curl->handlers.xferinfo) {
+            zend_get_gc_buffer_add_zval(gc_buffer, &curl_handlers(curl)->xferinfo->func_name);
+        }
+#endif
+#endif
 
 #if LIBCURL_VERSION_NUM >= 0x071500
         if (curl_handlers(curl)->fnmatch) {
@@ -928,6 +939,11 @@ php_curl *swoole_curl_alloc_handle()
     curl_handlers(ch)->write_header = (php_curl_write *) ecalloc(1, sizeof(php_curl_write));
     curl_handlers(ch)->read = (php_curl_read *) ecalloc(1, sizeof(php_curl_read));
     curl_handlers(ch)->progress = NULL;
+#if PHP_VERSION_ID >= 80200
+#if LIBCURL_VERSION_NUM >= 0x072000
+    curl_handlers(ch)->xferinfo = NULL;
+#endif
+#endif
 #if LIBCURL_VERSION_NUM >= 0x071500 /* Available since 7.21.0 */
     curl_handlers(ch)->fnmatch = NULL;
 #endif
@@ -2147,6 +2163,7 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue) /* {{{
     /* Curl off_t options */
     case CURLOPT_MAX_RECV_SPEED_LARGE:
     case CURLOPT_MAX_SEND_SPEED_LARGE:
+    case CURLOPT_MAXFILESIZE_LARGE:
 #if LIBCURL_VERSION_NUM >= 0x073b00 /* Available since 7.59.0 */
     case CURLOPT_TIMEVALUE_LARGE:
 #endif
@@ -2206,9 +2223,25 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue) /* {{{
         }
         break;
 
-    case CURLOPT_SHARE: {
-        php_error_docref(NULL, E_WARNING, "CURLOPT_SHARE option is not supported");
-    } break;
+    case CURLOPT_SHARE:
+#if PHP_VERSION_ID >= 80000
+        if (Z_TYPE_P(zvalue) == IS_OBJECT && Z_OBJCE_P(zvalue) == curl_share_ce) {
+            php_curlsh *sh = Z_CURL_SHARE_P(zvalue);
+            curl_easy_setopt(ch->cp, CURLOPT_SHARE, sh->share);
+
+            if (ch->share) {
+                OBJ_RELEASE(&ch->share->std);
+            }
+            GC_ADDREF(&sh->std);
+            ch->share = sh;
+        }
+#else
+        php_curlsh *sh;
+        if ((sh = (php_curlsh *) zend_fetch_resource_ex(zvalue, le_curl_share_handle_name, le_curl_share_handle))) {
+            curl_easy_setopt(ch->cp, CURLOPT_SHARE, sh->share);
+        }
+#endif
+        break;
 
 #if LIBCURL_VERSION_NUM >= 0x071500 /* Available since 7.21.0 */
     case CURLOPT_FNMATCH_FUNCTION:
@@ -2852,6 +2885,15 @@ static void _php_curl_free(php_curl *ch) {
         efree(curl_handlers(ch)->progress);
     }
 
+#if PHP_VERSION_ID >= 80200
+#if LIBCURL_VERSION_NUM >= 0x072000
+    if (curl_handlers(ch)->xferinfo) {
+        zval_ptr_dtor(&curl_handlers(ch)->xferinfo->func_name);
+        efree(curl_handlers(ch)->xferinfo);
+    }
+#endif
+#endif
+
 #if LIBCURL_VERSION_NUM >= 0x071500
     if (curl_handlers(ch)->fnmatch) {
         zval_ptr_dtor(&curl_handlers(ch)->fnmatch->func_name);
@@ -2956,6 +2998,15 @@ static void _php_curl_reset_handlers(php_curl *ch) {
         efree(curl_handlers(ch)->progress);
         curl_handlers(ch)->progress = NULL;
     }
+
+#if PHP_VERSION_ID >= 80200
+#if LIBCURL_VERSION_NUM >= 0x072000
+    if (curl_handlers(ch)->xferinfo) {
+        zval_ptr_dtor(&curl_handlers(ch)->xferinfo->func_name);
+        efree(curl_handlers(ch)->xferinfo);
+    }
+#endif
+#endif
 
 #if LIBCURL_VERSION_NUM >= 0x071500 /* Available since 7.21.0 */
     if (curl_handlers(ch)->fnmatch) {
