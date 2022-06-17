@@ -33,7 +33,7 @@ Please check [Open Swoole Installation Guide](https://openswoole.com/docs/get-st
 #### Compiling requirements
 
 + Linux, OS X or Cygwin, WSL
-+ PHP 7.2.0 or later (The higher the version, the better the performance.)
++ PHP 7.4.0 or later (The higher the version, the better the performance.)
 + GCC 4.8 or later
 
 Download the source packages from [Releases](https://github.com/openswoole/swoole-src/releases) or:
