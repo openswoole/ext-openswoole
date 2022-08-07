@@ -395,7 +395,7 @@ static void http_build_header(HttpContext *ctx, String *response, size_t body_le
         SW_HASHTABLE_FOREACH_END();
     }
 
-    if (!(header_flags & HTTP_HEADER_SERVER)) {
+    if (!(header_flags & HTTP_HEADER_SERVER) && SwooleG.enable_server_token) {
         response->append(ZEND_STRL("Server: " SW_HTTP_SERVER_SOFTWARE "\r\n"));
     }
 

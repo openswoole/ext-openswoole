@@ -646,6 +646,7 @@ struct Global {
     struct utsname uname;
     uint32_t max_sockets;
     uint32_t max_concurrency;
+    bool enable_server_token;
     //-----------------------[Memory]--------------------------
     MemoryPool *memory_pool;
     Allocator std_allocator;
