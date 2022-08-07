@@ -1,3 +1,7 @@
+# 4.11.2
+
+ . New server option: `enable_server_token`, disable by default
+
 # 4.11.1
 
  . Fix postgres client metaData api bugs

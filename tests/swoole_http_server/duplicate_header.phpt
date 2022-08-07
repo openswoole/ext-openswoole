@@ -23,6 +23,7 @@ $pm->childFunc = function () use ($pm) {
     $http->set([
         'worker_num' => 1,
         'enable_coroutine' => false,
+        'enable_server_token' => true,
         'log_file' => '/dev/null'
     ]);
     $http->on('workerStart', function () use ($pm) {

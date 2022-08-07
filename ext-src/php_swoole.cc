@@ -389,6 +389,9 @@ void php_swoole_set_global_option(HashTable *vht) {
     if (php_swoole_array_get_value(vht, "max_concurrency", ztmp)) {
         SwooleG.max_concurrency = (uint32_t) SW_MAX(0, zval_get_long(ztmp));
     }
+    if (php_swoole_array_get_value(vht, "enable_server_token", ztmp) && zval_is_true(ztmp)) {
+        SwooleG.enable_server_token = zval_is_true(ztmp);
+    }
 }
 
 void php_swoole_register_rshutdown_callback(swoole::Callback cb, void *private_data) {
