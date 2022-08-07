@@ -483,6 +483,7 @@ static HashTable *swoole_curl_get_gc(zend_object *object, zval **table, int *n) 
     return zend_std_get_properties(object);
 }
 
+#if PHP_VERSION_ID < 80200
 int swoole_curl_cast_object(zend_object *obj, zval *result, int type) {
     if (type == IS_LONG) {
         /* For better backward compatibility, make (int) $curl_handle return the object ID,
@@ -493,6 +494,19 @@ int swoole_curl_cast_object(zend_object *obj, zval *result, int type) {
 
     return zend_std_cast_object_tostring(obj, result, type);
 }
+#else
+zend_result swoole_curl_cast_object(zend_object *obj, zval *result, int type) {
+    if (type == IS_LONG) {
+        /* For better backward compatibility, make (int) $curl_handle return the object ID,
+         * similar to how it previously returned the resource ID. */
+        ZVAL_LONG(result, obj->handle);
+        return SUCCESS;
+    }
+
+    return zend_std_cast_object_tostring(obj, result, type);
+}
+#endif
+
 #endif
 
 void swoole_native_curl_mshutdown() {}
