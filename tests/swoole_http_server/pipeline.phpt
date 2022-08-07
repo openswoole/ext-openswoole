@@ -52,7 +52,7 @@ HTTP;
 
 $pm->childFunc = function () use ($pm) {
     $http = new swoole_http_server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
-    $http->set(['log_file' => '/dev/null']);
+    $http->set(['log_file' => '/dev/null', 'enable_server_token' => true,]);
     $http->on("WorkerStart", function ($serv, $wid) {
         global $pm;
         $pm->wakeup();
