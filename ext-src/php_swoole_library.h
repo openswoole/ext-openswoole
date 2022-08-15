@@ -7107,27 +7107,6 @@ static const char* swoole_library_source_core_coroutine_functions =
     "\n"
     "use Swoole\\Coroutine;\n"
     "\n"
-    "function run(callable $fn, ...$args)\n"
-    "{\n"
-    "    $s = new Scheduler();\n"
-    "    $options = Coroutine::getOptions();\n"
-    "    if (!isset($options['hook_flags'])) {\n"
-    "        $s->set(['hook_flags' => SWOOLE_HOOK_ALL]);\n"
-    "    }\n"
-    "    $s->add($fn, ...$args);\n"
-    "    return $s->start();\n"
-    "}\n"
-    "\n"
-    "function go(callable $fn, ...$args)\n"
-    "{\n"
-    "    return Coroutine::create($fn, ...$args);\n"
-    "}\n"
-    "\n"
-    "function defer(callable $fn)\n"
-    "{\n"
-    "    Coroutine::defer($fn);\n"
-    "}\n"
-    "\n"
     "function batch(array $tasks, float $timeout = -1): array\n"
     "{\n"
     "    $wg = new WaitGroup(count($tasks));\n"
@@ -7669,39 +7648,6 @@ static const char* swoole_library_source_alias =
     "\n"
     "class_alias(Swoole\\Process\\Manager::class, Swoole\\Process\\ProcessManager::class, true);\n";
 
-static const char* swoole_library_source_alias_ns =
-    "\n"
-    "/**\n"
-    " * This file is part of Open Swoole.\n"
-    " *\n"
-    " * @link     https://www.swoole.co.uk\n"
-    " * @contact  hello@swoole.co.uk\n"
-    " * @license  https://github.com/openswoole/library/blob/master/LICENSE\n"
-    " */\n"
-    "\n"
-    "declare(strict_types=1);\n"
-    "\n"
-    "namespace Co;\n"
-    "\n"
-    "use Swoole\\Coroutine;\n"
-    "\n"
-    "if (SWOOLE_USE_SHORTNAME) {\n"
-    "    function run(callable $fn, ...$args)\n"
-    "    {\n"
-    "        return \\Swoole\\Coroutine\\run($fn, ...$args);\n"
-    "    }\n"
-    "\n"
-    "    function go(callable $fn, ...$args)\n"
-    "    {\n"
-    "        return Coroutine::create($fn, ...$args);\n"
-    "    }\n"
-    "\n"
-    "    function defer(callable $fn)\n"
-    "    {\n"
-    "        Coroutine::defer($fn);\n"
-    "    }\n"
-    "}\n";
-
 void php_swoole_load_library()
 {
     zend::eval(swoole_library_source_constants, "@swoole-src/library/constants.php");
@@ -7762,5 +7708,4 @@ void php_swoole_load_library()
     zend::eval(swoole_library_source_ext_sockets, "@swoole-src/library/ext/sockets.php");
     zend::eval(swoole_library_source_functions, "@swoole-src/library/functions.php");
     zend::eval(swoole_library_source_alias, "@swoole-src/library/alias.php");
-    zend::eval(swoole_library_source_alias_ns, "@swoole-src/library/alias_ns.php");
 }

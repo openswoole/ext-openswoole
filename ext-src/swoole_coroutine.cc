@@ -121,6 +121,7 @@ static PHP_METHOD(swoole_coroutine, list);
 static PHP_METHOD(swoole_coroutine, enableScheduler);
 static PHP_METHOD(swoole_coroutine, disableScheduler);
 static PHP_METHOD(swoole_coroutine, select);
+static PHP_METHOD(swoole_coroutine, run);
 PHP_METHOD(swoole_coroutine_system, exec);
 PHP_METHOD(swoole_coroutine_system, sleep);
 PHP_METHOD(swoole_coroutine_system, usleep);
@@ -169,6 +170,7 @@ static const zend_function_entry swoole_coroutine_methods[] =
     PHP_MALIAS(swoole_coroutine, listCoroutines, list, arginfo_class_Swoole_Coroutine_list, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, enableScheduler, arginfo_class_Swoole_Coroutine_enableScheduler, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine, disableScheduler, arginfo_class_Swoole_Coroutine_disableScheduler, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_coroutine, run, arginfo_class_Swoole_Coroutine_run, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 
     ZEND_FENTRY(gethostbyname, ZEND_FN(swoole_coroutine_gethostbyname), arginfo_class_Swoole_Coroutine_gethostbyname, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     ZEND_FENTRY(dnsLookup, ZEND_FN(swoole_async_dns_lookup_coro), arginfo_class_Swoole_Coroutine_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -985,6 +987,35 @@ static PHP_METHOD(swoole_coroutine, stats) {
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_num"), Coroutine::count());
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_peak_num"), Coroutine::get_peak_num());
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_last_cid"), Coroutine::get_last_cid());
+}
+
+
+static PHP_METHOD(swoole_coroutine, run) {
+
+    zend_fcall_info fci;
+    zend_fcall_info_cache fci_cache;
+
+    ZEND_PARSE_PARAMETERS_START(1, -1)
+    Z_PARAM_FUNC(fci, fci_cache)
+    Z_PARAM_VARIADIC('*', fci.params, fci.param_count)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if(!PHPCoroutine::get_hook_flags()) {
+        PHPCoroutine::set_hook_flags(PHPCoroutine::HOOK_ALL);
+    }
+
+    if (SwooleTG.reactor) {
+        php_swoole_fatal_error(
+            E_WARNING, "eventLoop has already been created. unable to start %s", SW_Z_OBJCE_NAME_VAL_P(ZEND_THIS));
+        RETURN_FALSE;
+    }
+    if (php_swoole_reactor_init() < 0) {
+        RETURN_FALSE;
+    }
+
+    PHPCoroutine::create(&fci_cache, fci.param_count, fci.params);
+    php_swoole_event_wait();
+    RETURN_TRUE;
 }
 
 PHP_METHOD(swoole_coroutine, getCid) {
