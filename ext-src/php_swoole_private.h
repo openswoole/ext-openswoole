@@ -45,6 +45,7 @@ BEGIN_EXTERN_C()
 #define PHP_SWOOLE_VERSION SWOOLE_VERSION
 #define OPENSWOOLE_VERSION "OpenSwoole-" SWOOLE_VERSION
 #define PHP_SWOOLE_CLIENT_USE_POLL
+#define OPENSWOOLE_NS_PREFIX "Open"
 
 extern PHPAPI int php_array_merge(zend_array *dest, zend_array *src);
 
@@ -598,8 +599,9 @@ static sw_inline void add_assoc_ulong_safe(zval *arg, const char *key, zend_ulon
 #define SW_INIT_CLASS_ENTRY_BASE(module, namespace_name, snake_name, short_name, methods, parent_ce)                   \
     do {                                                                                                               \
         zend_class_entry _##module##_ce = {};                                                                          \
-        INIT_CLASS_ENTRY(_##module##_ce, namespace_name, methods);                                                     \
+        INIT_CLASS_ENTRY(_##module##_ce, OPENSWOOLE_NS_PREFIX namespace_name, methods);                                \
         module##_ce = zend_register_internal_class_ex(&_##module##_ce, parent_ce);                                     \
+        SW_CLASS_ALIAS(namespace_name, module);                                                                        \
         if (snake_name) SW_CLASS_ALIAS(snake_name, module);                                                            \
         if (short_name) SW_CLASS_ALIAS_SHORT_NAME(short_name, module);                                                 \
     } while (0)
