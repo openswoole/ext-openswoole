@@ -2866,15 +2866,29 @@ static PHP_METHOD(swoole_server, stats) {
     add_assoc_zval(&stats, "top_classes", &topc);
 
     if(mode == 1) {
+        zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+        if (zend_lookup_class(class_name) == NULL) {
+            php_swoole_fatal_error(E_WARNING, "composer dependency requireD: composer install openswoole/core");
+            efree(class_name);
+            RETURN_FALSE;
+        }
+        efree(class_name);
         zval args[1];
         args[0] = stats;
-        zend::function::ReturnValue retval = zend::function::call("\\Swoole\\Server\\Helper::statsToJSON", 1, args);
+        zend::function::ReturnValue retval = zend::function::call("\\OpenSwoole\\Core\\Helper::statsToJSON", 1, args);
         zval_ptr_dtor(&args[0]);
         RETURN_ZVAL(&retval.value, 1, 0);
     } else if(mode == 2) {
+        zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+        if (zend_lookup_class(class_name) == NULL) {
+            php_swoole_fatal_error(E_WARNING, "composer dependency requireD: composer install openswoole/core");
+            efree(class_name);
+            RETURN_FALSE;
+        }
+        efree(class_name);
         zval args[1];
         args[0] = stats;
-        zend::function::ReturnValue retval = zend::function::call("\\Swoole\\Server\\Helper::statsToOpenMetrics", 1, args);
+        zend::function::ReturnValue retval = zend::function::call("\\OpenSwoole\\Core\\Helper::statsToOpenMetrics", 1, args);
         zval_ptr_dtor(&args[0]);
         RETURN_ZVAL(&retval.value, 1, 0);
     }

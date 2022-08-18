@@ -29,6 +29,7 @@
 #include "zend_interfaces.h"
 #include "zend_closures.h"
 #include "zend_exceptions.h"
+#include "zend_API.h"
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
