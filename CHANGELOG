@@ -1,3 +1,12 @@
+# ???
+
+ . Rename `co\run` to be `co::run`
+ . Remove embeded PHP codes, hot code execution with eval and remove ini option `enable_library`
+ . Added server Constants class: OpenSwoole\\Constant
+ . Use \OpenSwoole as the main namespace, altough \Swoole is still supported
+ . Pre-check server options
+
+
 # 4.11.1
 
  . Fix postgres client metaData api bugs
