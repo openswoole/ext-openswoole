@@ -1476,10 +1476,6 @@ static void php_swoole_server_onWorkerStart(Server *serv, int worker_id) {
     args[0] = *zserv;
     ZVAL_LONG(&args[1], worker_id);
 
-    if (SWOOLE_G(enable_library)) {
-        zend::function::call("\\Swoole\\Server\\Helper::onWorkerStart", 2, args);
-    }
-
     if (fci_cache) {
         if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, serv->is_enable_coroutine()))) {
             php_swoole_error(E_WARNING, "%s->onWorkerStart handler error", SW_Z_OBJCE_NAME_VAL_P(zserv));
@@ -1528,10 +1524,6 @@ static void php_swoole_server_onWorkerStop(Server *serv, int worker_id) {
     args[0] = *zserv;
     ZVAL_LONG(&args[1], worker_id);
 
-    if (SWOOLE_G(enable_library)) {
-        zend::function::call("\\Swoole\\Server\\Helper::onWorkerStop", 2, args);
-    }
-
     if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, false))) {
         php_swoole_error(E_WARNING, "%s->onWorkerStop handler error", SW_Z_OBJCE_NAME_VAL_P(zserv));
     }
@@ -1545,10 +1537,6 @@ static void php_swoole_server_onWorkerExit(Server *serv, int worker_id) {
     zval args[2];
     args[0] = *zserv;
     ZVAL_LONG(&args[1], worker_id);
-
-    if (SWOOLE_G(enable_library)) {
-        zend::function::call("\\Swoole\\Server\\Helper::onWorkerExit", 2, args);
-    }
 
     if (fci_cache) {
         if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, false))) {

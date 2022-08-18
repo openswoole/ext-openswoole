@@ -14,7 +14,7 @@
   +----------------------------------------------------------------------+
 */
 #include "php_swoole_cxx.h"
-#include "php_swoole_library.h"
+// #include "php_swoole_library.h"
 #include "php_swoole_process.h"
 
 #if (HAVE_PCRE || HAVE_BUNDLED_PCRE) && !defined(COMPILE_DL_PCRE)
@@ -274,7 +274,7 @@ PHP_INI_BEGIN()
  * enable swoole coroutine
  */
 STD_ZEND_INI_BOOLEAN("swoole.enable_coroutine", "On", PHP_INI_ALL, OnUpdateBool, enable_coroutine, zend_openswoole_globals, openswoole_globals)
-STD_ZEND_INI_BOOLEAN("swoole.enable_library", "On", PHP_INI_ALL, OnUpdateBool, enable_library, zend_openswoole_globals, openswoole_globals)
+// STD_ZEND_INI_BOOLEAN("swoole.enable_library", "On", PHP_INI_ALL, OnUpdateBool, enable_library, zend_openswoole_globals, openswoole_globals)
 /**
  * enable swoole coroutine epreemptive scheduler
  */
@@ -296,7 +296,7 @@ PHP_INI_END()
 
 static void php_swoole_init_globals(zend_openswoole_globals *openswoole_globals) {
     openswoole_globals->enable_coroutine = 1;
-    openswoole_globals->enable_library = 1;
+    // openswoole_globals->enable_library = 1;
     openswoole_globals->enable_preemptive_scheduler = 0;
     openswoole_globals->socket_buffer_size = SW_SOCKET_BUFFER_SIZE;
     openswoole_globals->display_errors = 1;
@@ -1242,14 +1242,14 @@ PHP_RINIT_FUNCTION(openswoole) {
 
     php_swoole_register_shutdown_function("swoole_internal_call_user_shutdown_begin");
 
-    if (SWOOLE_G(enable_library)
-#ifdef ZEND_COMPILE_PRELOAD
-        /* avoid execution of the code during RINIT of preloader */
-        && !(CG(compiler_options) & ZEND_COMPILE_PRELOAD)
-#endif
-    ) {
-        php_swoole_load_library();
-    }
+//     if (SWOOLE_G(enable_library)
+// #ifdef ZEND_COMPILE_PRELOAD
+//          avoid execution of the code during RINIT of preloader 
+//         && !(CG(compiler_options) & ZEND_COMPILE_PRELOAD)
+// #endif
+//     ) {
+//         php_swoole_load_library();
+//     }
 
 #ifdef ZEND_SIGNALS
     /* Disable warning even in ZEND_DEBUG because we may register our own signal handlers  */
