@@ -19,8 +19,13 @@
 #include "php_swoole_process.h"
 #include "swoole_msg_queue.h"
 
+BEGIN_EXTERN_C()
 #include "ext/standard/php_var.h"
 #include "zend_smart_str.h"
+#ifdef SW_USE_JSON
+#include "ext/json/php_json.h"
+#endif
+END_EXTERN_C()
 
 #if PHP_VERSION_ID >= 80000
 #include "swoole_server_arginfo.h"
@@ -2866,18 +2871,24 @@ static PHP_METHOD(swoole_server, stats) {
     add_assoc_zval(&stats, "top_classes", &topc);
 
     if(mode == 1) {
-        zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
-        if (zend_lookup_class(class_name) == NULL) {
-            php_swoole_fatal_error(E_WARNING, "composer dependency requireD: composer install openswoole/core");
-            efree(class_name);
-            RETURN_FALSE;
-        }
-        efree(class_name);
-        zval args[1];
+        // return json_encode($stats, \JSON_PRETTY_PRINT);
+#if PHP_VERSION_ID < 80000
+        zval args[2];
         args[0] = stats;
-        zend::function::ReturnValue retval = zend::function::call("\\OpenSwoole\\Core\\Helper::statsToJSON", 1, args);
+        ZVAL_LONG(&args[1], 128);
+        zend::function::ReturnValue retval = zend::function::call("json_encode", 2, args);
         zval_ptr_dtor(&args[0]);
+        zval_ptr_dtor(&args[1]);
         RETURN_ZVAL(&retval.value, 1, 0);
+#else
+        zval retval;
+        smart_str json_encode_string_buffer = {0};
+        php_json_encode(&json_encode_string_buffer, &stats, 128);
+        smart_str_0(&json_encode_string_buffer);
+        ZVAL_STR_COPY(&retval, json_encode_string_buffer.s);
+        smart_str_free(&json_encode_string_buffer);
+        RETURN_ZVAL(&retval, 1, 0);
+#endif
     } else if(mode == 2) {
         zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
         if (zend_lookup_class(class_name) == NULL) {
