@@ -274,9 +274,8 @@ void swoole_websocket_onRequest(HttpContext *ctx) {
                               "Connection: close\r\n"
                               "Content-Type: text/html; charset=UTF-8\r\n"
                               "Cache-Control: must-revalidate,no-cache,no-store\r\n"
-                              "Content-Length: 83\r\n"
-                              "Server: " SW_HTTP_SERVER_SOFTWARE "\r\n\r\n"
-                              "<html><body><h2>HTTP 400 Bad Request</h2><hr><i>Powered by Swoole</i></body></html>";
+                              "Content-Length: 55\r\n\r\n"
+                              "<html><body><h2>HTTP 400 Bad Request</h2></body></html>";
 
     ctx->send(ctx, (char *) bad_request, strlen(bad_request));
     ctx->end_ = 1;

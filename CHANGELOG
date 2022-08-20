@@ -5,7 +5,7 @@
  . Added server Constants class: OpenSwoole\\Constant
  . Use \OpenSwoole as the main namespace, altough \Swoole is still supported
  . Pre-check server options
-
+ . New server option: `enable_server_token`, disable by default
 
 # 4.11.1
 
