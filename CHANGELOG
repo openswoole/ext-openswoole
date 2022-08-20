@@ -6,6 +6,7 @@
  . Use \OpenSwoole as the main namespace, altough \Swoole is still supported
  . Pre-check server options
  . New server option: `enable_server_token`, disable by default
+ . Built in Psr7 API support added
 
 # 4.11.1
 
