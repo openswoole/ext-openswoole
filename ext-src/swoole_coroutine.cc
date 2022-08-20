@@ -297,11 +297,6 @@ void PHPCoroutine::activate() {
             "Using Xdebug in coroutines is extremely dangerous, please notice that it may lead to coredump!");
     }
 
-    // zval *enable_library = zend_get_constant_str(ZEND_STRL("SWOOLE_LIBRARY"));
-    // if (enable_library == NULL || !zval_is_true(enable_library)) {
-    //     php_swoole_load_library();
-    // }
-
     /* init reactor and register event wait */
     php_swoole_check_reactor();
 
@@ -396,15 +391,6 @@ void PHPCoroutine::deadlock_check() {
                "\n [FATAL ERROR]: all coroutines (count: %lu) are asleep - deadlock!"
                "\n===================================================================\n",
                Coroutine::count());
-    
-    // if (SWOOLE_G(enable_library)) {
-    //     zend::function::call("\\Swoole\\Coroutine\\deadlock_check", 0, nullptr);
-    // } else {
-    //     printf("\n==================================================================="
-    //            "\n [FATAL ERROR]: all coroutines (count: %lu) are asleep - deadlock!"
-    //            "\n===================================================================\n",
-    //            Coroutine::count());
-    // }
 }
 
 void PHPCoroutine::interrupt_thread_stop() {
