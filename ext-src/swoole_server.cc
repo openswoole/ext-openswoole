@@ -327,6 +327,7 @@ static PHP_METHOD(swoole_server, __construct);
 static PHP_METHOD(swoole_server, __destruct);
 static PHP_METHOD(swoole_server, set);
 static PHP_METHOD(swoole_server, on);
+static PHP_METHOD(swoole_server, handle);
 static PHP_METHOD(swoole_server, getCallback);
 static PHP_METHOD(swoole_server, listen);
 static PHP_METHOD(swoole_server, sendMessage);
@@ -394,6 +395,7 @@ static zend_function_entry swoole_server_methods[] = {
     PHP_ME(swoole_server, listen, arginfo_class_Swoole_Server_listen, ZEND_ACC_PUBLIC)
     PHP_MALIAS(swoole_server, addlistener, listen, arginfo_class_Swoole_Server_listen, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, on, arginfo_class_Swoole_Server_on, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server, handle, arginfo_class_Swoole_Server_handle, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, getCallback, arginfo_class_Swoole_Server_getCallback, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, set, arginfo_class_Swoole_Server_set, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, start, arginfo_class_Swoole_Server_start, ZEND_ACC_PUBLIC)
@@ -874,7 +876,7 @@ void ServerObject::on_before_start() {
                 return;
             }
         } else if (!isset_callback(primary_port, SW_SERVER_CB_onRequest)) {
-            php_swoole_fatal_error(E_ERROR, "require onRequest callback");
+            php_swoole_fatal_error(E_ERROR, "require onRequest callback or handle callback");
             return;
         }
 
@@ -958,7 +960,7 @@ void ServerObject::on_before_start() {
                 }
             } else if (port->open_http_protocol && !isset_callback(port, SW_SERVER_CB_onRequest) &&
                        !isset_callback(port, SW_SERVER_CB_onReceive)) {
-                php_swoole_fatal_error(E_ERROR, "require onRequest callback");
+                php_swoole_fatal_error(E_ERROR, "require onRequest callback or handle callback");
                 return;
             }
             if (!is_http_server() && isset_callback(port, SW_SERVER_CB_onRequest)) {
@@ -2362,6 +2364,35 @@ static PHP_METHOD(swoole_server, on) {
 
         RETURN_TRUE;
     }
+}
+
+static PHP_METHOD(swoole_server, handle) {
+    Server *serv = php_swoole_server_get_and_check_server(ZEND_THIS);
+    if (serv->is_started()) {
+        php_swoole_fatal_error(E_WARNING, "server is running, unable to register event callback function");
+        RETURN_FALSE;
+    }
+
+    zval *cb;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &cb) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    char *func_name = nullptr;
+    zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+    if (!sw_zend_is_callable_ex(cb, nullptr, 0, &func_name, nullptr, fci_cache, nullptr)) {
+        php_swoole_fatal_error(E_ERROR, "function '%s' is not callable", func_name);
+        return;
+    }
+    efree(fci_cache);
+    efree(func_name);
+
+    zval *zserv = (zval *) serv->private_data_2;
+    zval args[2];
+    args[0] = *zserv;
+    args[1] = *cb;
+    zend::function::call("\\OpenSwoole\\Core\\Helper::handle", 2, args);
 }
 
 static PHP_METHOD(swoole_server, getCallback) {

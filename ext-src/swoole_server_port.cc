@@ -269,6 +269,7 @@ SW_EXTERN_C_BEGIN
 static PHP_METHOD(swoole_server_port, __construct);
 static PHP_METHOD(swoole_server_port, __destruct);
 static PHP_METHOD(swoole_server_port, on);
+static PHP_METHOD(swoole_server_port, handle);
 static PHP_METHOD(swoole_server_port, set);
 static PHP_METHOD(swoole_server_port, getCallback);
 
@@ -285,6 +286,7 @@ const zend_function_entry swoole_server_port_methods[] =
     PHP_ME(swoole_server_port, __destruct,      arginfo_class_Swoole_Server_Port___destruct,                    ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, set,             arginfo_class_Swoole_Server_Port_set,         ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, on,              arginfo_class_Swoole_Server_Port_on,          ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server_port, handle,              arginfo_class_Swoole_Server_Port_handle,          ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, getCallback,     arginfo_class_Swoole_Server_Port_getCallback, ZEND_ACC_PUBLIC)
 #ifdef SWOOLE_SOCKETS_SUPPORT
     PHP_ME(swoole_server_port, getSocket,       arginfo_class_Swoole_Server_Port_getSocket, ZEND_ACC_PUBLIC)
@@ -758,6 +760,40 @@ static PHP_METHOD(swoole_server_port, set) {
     zval *zsetting = sw_zend_read_and_convert_property_array(swoole_server_port_ce, ZEND_THIS, ZEND_STRL("setting"), 0);
     php_array_merge(Z_ARRVAL_P(zsetting), Z_ARRVAL_P(zset));
     property->zsetting = zsetting;
+}
+
+static PHP_METHOD(swoole_server_port, handle) {
+
+    zval *cb;
+
+    ServerPortProperty *property = php_swoole_server_port_get_and_check_property(ZEND_THIS);
+    Server *serv = property->serv;
+    if (serv->is_started()) {
+        php_swoole_fatal_error(E_WARNING, "can't register event callback function after server started");
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &cb) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    char *func_name = nullptr;
+    zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+    if (!sw_zend_is_callable_ex(cb, nullptr, 0, &func_name, nullptr, fci_cache, nullptr)) {
+        php_swoole_fatal_error(E_ERROR, "function '%s' is not callable", func_name);
+        return;
+    }
+    efree(func_name);
+
+    zval *zserv = (zval *) serv->private_data_2;
+    zval args[2];
+    args[0] = *zserv;
+    args[1] = *cb;
+    zend::function::call("\\OpenSwoole\\Core\\Helper::handle", 2, args);
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&args[1]);
+
+    RETURN_TRUE;
 }
 
 static PHP_METHOD(swoole_server_port, on) {
