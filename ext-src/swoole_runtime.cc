@@ -1863,6 +1863,15 @@ static void hook_func(const char *name, size_t l_name, zif_handler handler, zend
     if (zf == nullptr) {
         return;
     }
+
+    zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    if (zend_lookup_class(class_name) == NULL) {
+        php_swoole_fatal_error(E_WARNING, "composer dependency required: composer install openswoole/core");
+        efree(class_name);
+        return;
+    }
+    efree(class_name);
+
 #if PHP_VERSION_ID < 80000
     if (zf->internal_function.handler == ZEND_FN(display_disabled_function)) {
         return;
@@ -1881,15 +1890,16 @@ static void hook_func(const char *name, size_t l_name, zif_handler handler, zend
 
     if (use_php_func) {
         char func[128];
-        memcpy(func, ZEND_STRL("swoole_"));
-        memcpy(func + 7, zf->common.function_name->val, zf->common.function_name->len);
+        memcpy(func, ZEND_STRL("\\OpenSwoole\\Core\\Coroutine\\"));
+        memcpy(func + 27, zf->common.function_name->val, zf->common.function_name->len);
 
-        ZVAL_STRINGL(&rf->name, func, zf->common.function_name->len + 7);
+        ZVAL_STRINGL(&rf->name, func, zf->common.function_name->len + 27);
 
         char *func_name;
         zend_fcall_info_cache *func_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
         if (!sw_zend_is_callable_ex(&rf->name, nullptr, 0, &func_name, nullptr, func_cache, nullptr)) {
-            php_swoole_fatal_error(E_ERROR, "function '%s' is not callable", func_name);
+            php_swoole_fatal_error(E_ERROR, "Coroutine hook function '%s' is not callable, composer install openswoole/core", func_name);
+            efree(func_name);
             return;
         }
         efree(func_name);
