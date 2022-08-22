@@ -741,6 +741,7 @@ if test "$PHP_SWOOLE" != "no"; then
         thirdparty/nghttp2/nghttp2_hd_huffman.c \
         thirdparty/nghttp2/nghttp2_hd_huffman_data.c"
 
+    SW_ASM_DIR_V1="thirdparty/boost/asmv1/"
     SW_ASM_DIR="thirdparty/boost/asm/"
     SW_USE_ASM_CONTEXT="yes"
 
@@ -827,6 +828,8 @@ if test "$PHP_SWOOLE" != "no"; then
 
     if test "$SW_USE_ASM_CONTEXT" = "yes"; then
         swoole_source_file="$swoole_source_file \
+            ${SW_ASM_DIR_V1}make_${SW_CONTEXT_ASM_FILE} \
+            ${SW_ASM_DIR_V1}jump_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}make_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}jump_${SW_CONTEXT_ASM_FILE} "
         AC_DEFINE(SW_USE_ASM_CONTEXT, 1, [use boost asm context])
@@ -877,6 +880,7 @@ if test "$PHP_SWOOLE" != "no"; then
     PHP_ADD_BUILD_DIR($ext_builddir/src/coroutine)
     PHP_ADD_BUILD_DIR($ext_builddir/src/wrapper)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost)
+    PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asmv1)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asm)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/hiredis)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/nghttp2)

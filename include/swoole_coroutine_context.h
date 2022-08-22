@@ -30,6 +30,7 @@
 #include <ucontext.h>
 #else
 #define USE_ASM_CONTEXT 1
+#define USE_BOOST_V2 1
 #include "swoole_asm_context.h"
 #endif
 
@@ -80,7 +81,11 @@ class Context {
     void *private_data_;
     bool end_;
 
+#if USE_BOOST_V2
+    static void context_func_v2(transfer_t transfer);
+#else
     static void context_func(void *arg);
+#endif
 };
 
 }  // namespace coroutine

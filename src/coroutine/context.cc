@@ -68,7 +68,12 @@ Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
     ctx_.uc_link = nullptr;
     makecontext(&ctx_, (void (*)(void)) & context_func, 1, this);
 #else
+
+#if USE_BOOST_V2
+    ctx_ = make_fcontext(sp, stack_size_, context_func_v2);
+#else
     ctx_ = make_fcontext_v1(sp, stack_size_, (void (*)(intptr_t)) & context_func);
+#endif
     swap_ctx_ = nullptr;
 #endif
 
@@ -123,7 +128,13 @@ bool Context::swap_in() {
 #if USE_UCONTEXT
     return 0 == swapcontext(&swap_ctx_, &ctx_);
 #else
+
+#if USE_BOOST_V2
+    transfer_t t = jump_fcontext(ctx_, this);
+    ctx_ = t.fctx;
+#else
     jump_fcontext_v1(&swap_ctx_, ctx_, (intptr_t) this, true);
+#endif
     return true;
 #endif
 }
@@ -132,10 +143,27 @@ bool Context::swap_out() {
 #if USE_UCONTEXT
     return 0 == swapcontext(&ctx_, &swap_ctx_);
 #else
+#if USE_BOOST_V2
+    transfer_t t = jump_fcontext(swap_ctx_, this);
+    swap_ctx_= t.fctx;
+#else
     jump_fcontext_v1(&ctx_, swap_ctx_, (intptr_t) this, true);
+#endif
     return true;
 #endif
 }
+
+#if USE_BOOST_V2
+
+void Context::context_func_v2(transfer_t transfer) {
+    Context *_this = (Context *) transfer.data;
+    _this->swap_ctx_ = transfer.fctx;
+    _this->fn_(_this->private_data_);
+    _this->end_ = true;
+    _this->swap_out();
+}
+
+#else
 
 void Context::context_func(void *arg) {
     Context *_this = (Context *) arg;
@@ -143,6 +171,10 @@ void Context::context_func(void *arg) {
     _this->end_ = true;
     _this->swap_out();
 }
+
+#endif
+
+
 }  // namespace coroutine
 }  // namespace swoole
 #endif

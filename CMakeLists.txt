@@ -43,6 +43,7 @@ if(CODE_COVERAGE)
 endif(CODE_COVERAGE)
 
 file(GLOB_RECURSE SRC_LIST FOLLOW_SYMLINKS src/*.c src/*.cc
+            thirdparty/boost/asmv1/combined.S
             thirdparty/boost/asm/combined.S
             thirdparty/hiredis/alloc.c
             thirdparty/hiredis/async.c
