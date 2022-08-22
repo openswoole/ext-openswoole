@@ -1,5 +1,5 @@
 /*
-            Copyright Edward Nevill 2015
+            Copyright Edward Nevill + Oliver Kowalke 2015
    Distributed under the Boost Software License, Version 1.0.
       (See accompanying file LICENSE_1_0.txt or copy at
           http://www.boost.org/LICENSE_1_0.txt)
@@ -51,19 +51,19 @@
  *                                                     *
  *******************************************************/
 
-.cpu    generic+fp+simd
+.file "make_arm64_aapcs_elf_gas.S"
 .text
 .align  2
-.global make_fcontext_v1
-.type   make_fcontext_v1, %function
-make_fcontext_v1:
+.global make_fcontext
+.type   make_fcontext, %function
+make_fcontext:
     # shift address in x0 (allocated stack) to lower 16 byte boundary
     and x0, x0, ~0xF
 
     # reserve space for context-data on context-stack
     sub  x0, x0, #0xb0
 
-    # third arg of make_fcontext_v1() == address of context-function
+    # third arg of make_fcontext() == address of context-function
     # store address as a PC to jump in
     str  x2, [x0, #0xa0]
 
@@ -80,8 +80,6 @@ finish:
     # exit application
     bl  _exit
 
-.size   make_fcontext_v1,.-make_fcontext_v1
-#ifndef __NetBSD__
+.size   make_fcontext,.-make_fcontext
 # Mark that we don't need executable stack.
 .section .note.GNU-stack,"",%progbits
-#endif

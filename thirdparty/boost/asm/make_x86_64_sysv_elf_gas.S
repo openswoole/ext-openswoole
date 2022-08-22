@@ -21,57 +21,70 @@
  *  ----------------------------------------------------------------------------------  *
  *  |        R15        |        RBX        |         RBP        |        RIP        |  *
  *  ----------------------------------------------------------------------------------  *
- *  ----------------------------------------------------------------------------------  *
- *  |    16   |   17    |                                                            |  *
- *  ----------------------------------------------------------------------------------  *
- *  |   0x40  |   0x44  |                                                            |  *
- *  ----------------------------------------------------------------------------------  *
- *  |        EXIT       |                                                            |  *
- *  ----------------------------------------------------------------------------------  *
  *                                                                                      *
  ****************************************************************************************/
 
+# if defined __CET__
+#  include <cet.h>
+# else
+#  define _CET_ENDBR
+# endif
+.file "make_x86_64_sysv_elf_gas.S"
 .text
-.globl make_fcontext_v1
-.type make_fcontext_v1,@function
+.globl make_fcontext
+.type make_fcontext,@function
 .align 16
-make_fcontext_v1:
-    /* first arg of make_fcontext_v1() == top of context-stack */
+make_fcontext:
+    _CET_ENDBR
+    /* first arg of make_fcontext() == top of context-stack */
     movq  %rdi, %rax
 
     /* shift address in RAX to lower 16 byte boundary */
     andq  $-16, %rax
 
     /* reserve space for context-data on context-stack */
-    /* size for fc_mxcsr .. RIP + return-address for context-function */
     /* on context-function entry: (RSP -0x8) % 16 == 0 */
-    leaq  -0x48(%rax), %rax
+    leaq  -0x40(%rax), %rax
 
-    /* third arg of make_fcontext_v1() == address of context-function */
-    movq  %rdx, 0x38(%rax)
+    /* third arg of make_fcontext() == address of context-function */
+    /* stored in RBX */
+    movq  %rdx, 0x28(%rax)
 
     /* save MMX control- and status-word */
     stmxcsr  (%rax)
     /* save x87 control-word */
     fnstcw   0x4(%rax)
 
+    /* compute abs address of label trampoline */
+    leaq  trampoline(%rip), %rcx
+    /* save address of trampoline as return-address for context-function */
+    /* will be entered after calling jump_fcontext() first time */
+    movq  %rcx, 0x38(%rax)
+
     /* compute abs address of label finish */
     leaq  finish(%rip), %rcx
     /* save address of finish as return-address for context-function */
     /* will be entered after context-function returns */
-    movq  %rcx, 0x40(%rax)
+    movq  %rcx, 0x30(%rax)
 
     ret /* return pointer to context-data */
 
+trampoline:
+    /* store return address on stack */
+    /* fix stack alignment */
+    _CET_ENDBR
+    push %rbp
+    /* jump to context-function */
+    jmp *%rbx
+
 finish:
+    _CET_ENDBR
     /* exit code is zero */
     xorq  %rdi, %rdi
     /* exit application */
     call  _exit@PLT
     hlt
-.size make_fcontext_v1,.-make_fcontext_v1
+.size make_fcontext,.-make_fcontext
 
-#ifndef __NetBSD__
 /* Mark that we don't need executable stack. */
 .section .note.GNU-stack,"",%progbits
-#endif
