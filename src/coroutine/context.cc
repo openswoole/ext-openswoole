@@ -71,8 +71,10 @@ Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
 
 #if USE_BOOST_V2
     ctx_ = make_fcontext(sp, stack_size_, context_func_v2);
+    swoole_trace_log(SW_TRACE_COROUTINE, "========v2");
 #else
     ctx_ = make_fcontext_v1(sp, stack_size_, (void (*)(intptr_t)) & context_func);
+    swoole_trace_log(SW_TRACE_COROUTINE, "========v1");
 #endif
     swap_ctx_ = nullptr;
 #endif

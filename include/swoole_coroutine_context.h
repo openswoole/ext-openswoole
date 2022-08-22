@@ -30,7 +30,6 @@
 #include <ucontext.h>
 #else
 #define USE_ASM_CONTEXT 1
-#define USE_BOOST_V2 1
 #include "swoole_asm_context.h"
 #endif
 

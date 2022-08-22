@@ -23,6 +23,8 @@
 #include "php_config.h"
 #endif
 
+#define USE_BOOST_V2 1
+
 #ifdef __cplusplus
 #define SW_EXTERN_C_BEGIN extern "C" {
 #define SW_EXTERN_C_END }
