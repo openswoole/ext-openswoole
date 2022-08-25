@@ -270,6 +270,7 @@ static PHP_METHOD(swoole_server_port, __construct);
 static PHP_METHOD(swoole_server_port, __destruct);
 static PHP_METHOD(swoole_server_port, on);
 static PHP_METHOD(swoole_server_port, handle);
+static PHP_METHOD(swoole_server_port, setHandler);
 static PHP_METHOD(swoole_server_port, set);
 static PHP_METHOD(swoole_server_port, getCallback);
 
@@ -286,7 +287,8 @@ const zend_function_entry swoole_server_port_methods[] =
     PHP_ME(swoole_server_port, __destruct,      arginfo_class_Swoole_Server_Port___destruct,                    ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, set,             arginfo_class_Swoole_Server_Port_set,         ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, on,              arginfo_class_Swoole_Server_Port_on,          ZEND_ACC_PUBLIC)
-    PHP_ME(swoole_server_port, handle,              arginfo_class_Swoole_Server_Port_handle,          ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server_port, handle,          arginfo_class_Swoole_Server_Port_handle,          ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server_port, setHandler,      arginfo_class_Swoole_Server_Port_setHandler,          ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, getCallback,     arginfo_class_Swoole_Server_Port_getCallback, ZEND_ACC_PUBLIC)
 #ifdef SWOOLE_SOCKETS_SUPPORT
     PHP_ME(swoole_server_port, getSocket,       arginfo_class_Swoole_Server_Port_getSocket, ZEND_ACC_PUBLIC)
@@ -794,6 +796,25 @@ static PHP_METHOD(swoole_server_port, handle) {
     zval_ptr_dtor(&args[1]);
 
     RETURN_TRUE;
+}
+
+static PHP_METHOD(swoole_server_port, setHandler) {
+    Server *serv = php_swoole_server_get_and_check_server(ZEND_THIS);
+    if (serv->is_started()) {
+        php_swoole_fatal_error(E_WARNING, "server is running, unable to register event callback function");
+        RETURN_FALSE;
+    }
+
+    zval *handler;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(handler)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    zval *zserv = (zval *) serv->private_data_2;
+    zval args[2];
+    args[0] = *zserv;
+    args[1] = *handler;
+    zend::function::call("\\OpenSwoole\\Core\\Helper::setHandler", 2, args);
 }
 
 static PHP_METHOD(swoole_server_port, on) {

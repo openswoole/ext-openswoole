@@ -23,6 +23,7 @@ namespace Swoole {
         public function addlistener(string $host, int $port, int $sockType): false|Server\Port {}
         public function on(string $event, callable $callback): bool {}
         public function handle(callable $callback): bool {}
+        public function setHandler(mixed $handler): bool {}
         public function getCallback(string $event): mixed {}
         public function set(array $settings): bool {}
         public function start(): bool {}

@@ -1,12 +1,17 @@
 # ???
 
  . Rename `co\run` to be `co::run`
- . Remove embeded PHP codes, hot code execution with eval and remove ini option `enable_library`
- . Added server Constants class: OpenSwoole\\Constant
+ . Security update: Remove embeded PHP codes, hot code execution with eval and remove ini option `enable_library`
+ . Added server Constants class: OpenSwoole\Constant
  . Use \OpenSwoole as the main namespace, altough \Swoole is still supported
  . Pre-check server options
- . New server option: `enable_server_token`, disable by default
+ . Security update: New server option `enable_server_token`, disable by default
  . Built in Psr7 API support added
+ . Boost ASM library upgrade
+ . New Psr API: $server->setHandler(\Psr\Http\Server\RequestHandlerInterface $handler)
+ . New Psr API: $server->handle(callable $callback)
+ . Redis Server API: $server->setHandler() -> $server->addCommand()
+ . Redis Server API: $server->getHandler() -> $server->getCommand()
 
 # 4.11.1
 

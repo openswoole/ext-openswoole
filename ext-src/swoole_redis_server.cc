@@ -43,16 +43,16 @@ zend_object_handlers swoole_redis_server_handlers;
 static std::unordered_map<std::string, zend_fcall_info_cache> redis_handlers;
 
 SW_EXTERN_C_BEGIN
-static PHP_METHOD(swoole_redis_server, setHandler);
-static PHP_METHOD(swoole_redis_server, getHandler);
+static PHP_METHOD(swoole_redis_server, addCommand);
+static PHP_METHOD(swoole_redis_server, getCommand);
 static PHP_METHOD(swoole_redis_server, format);
 SW_EXTERN_C_END
 
 // clang-format off
 const zend_function_entry swoole_redis_server_methods[] =
 {
-    PHP_ME(swoole_redis_server, setHandler, arginfo_class_Swoole_Redis_Server_setHandler, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
-    PHP_ME(swoole_redis_server, getHandler, arginfo_class_Swoole_Redis_Server_getHandler, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_redis_server, addCommand, arginfo_class_Swoole_Redis_Server_addCommand, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_redis_server, getCommand, arginfo_class_Swoole_Redis_Server_getCommand, ZEND_ACC_PUBLIC | ZEND_ACC_DEPRECATED)
     PHP_ME(swoole_redis_server, format, arginfo_class_Swoole_Redis_Server_format, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_DEPRECATED)
     PHP_FE_END
 };
@@ -199,7 +199,7 @@ int php_swoole_redis_server_onReceive(Server *serv, RecvData *req) {
     return SW_OK;
 }
 
-static PHP_METHOD(swoole_redis_server, setHandler) {
+static PHP_METHOD(swoole_redis_server, addCommand) {
     char *command;
     size_t command_len;
     zval *zcallback;
@@ -239,7 +239,7 @@ static PHP_METHOD(swoole_redis_server, setHandler) {
     RETURN_TRUE;
 }
 
-static PHP_METHOD(swoole_redis_server, getHandler) {
+static PHP_METHOD(swoole_redis_server, getCommand) {
     char *command;
     size_t command_len;
 

@@ -15,6 +15,10 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server_Port_handle, 0, 0, 1)
     ZEND_ARG_CALLABLE_INFO(0, callback, 0)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server_Port_setHandler, 0, 0, 1)
+    ZEND_ARG_CALLABLE_INFO(0, handler, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server_Port_getCallback, 0, 0, 1)
     ZEND_ARG_INFO(0, event_name)
 ZEND_END_ARG_INFO()
