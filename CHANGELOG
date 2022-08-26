@@ -16,6 +16,7 @@
  . Remove deprecated custom coroutine mysql client, prefer the hooked native coroutine mysql client
  . Remove deprecated custom coroutine redis client, prefer the hooked native coroutine redis client
  . Remove deprecated experimental coroutine http server
+ . Remove deprecated experimental redis protocol server
 
 # 4.11.1
 
