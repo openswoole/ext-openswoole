@@ -110,12 +110,7 @@ class PHPCoroutine {
         HOOK_BLOCKING_FUNCTION = 1u << 13,
         HOOK_SOCKETS           = 1u << 14,
         HOOK_STDIO             = 1u << 15,
-// Remove HOOK_CURL
-// #ifdef SW_USE_CURL
         HOOK_ALL               = 0x7fffffff ^ HOOK_CURL ^ HOOK_BLOCKING_FUNCTION ^ HOOK_SOCKETS,
-// #else
-        // HOOK_ALL               = 0x7fffffff ^ HOOK_NATIVE_CURL,
-// #endif
     };
 
     static const uint8_t MAX_EXEC_MSEC = 10;
