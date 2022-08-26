@@ -26,8 +26,6 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_yield, 0, 0, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_Swoole_Coroutine_suspend arginfo_class_Swoole_Coroutine_yield
-
 #define arginfo_class_Swoole_Coroutine_cancel arginfo_class_Swoole_Coroutine_exists
 
 #define arginfo_class_Swoole_Coroutine_isCanceled arginfo_class_Swoole_Coroutine_yield
