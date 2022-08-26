@@ -1473,36 +1473,6 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
         }
     }
 #endif
-
-    // Remove HOOK_CURL
-    // if (flags & PHPCoroutine::HOOK_CURL) {
-    //     if (!(runtime_hook_flags & PHPCoroutine::HOOK_CURL)) {
-    //         hook_func(ZEND_STRL("curl_init"));
-    //         hook_func(ZEND_STRL("curl_setopt"));
-    //         hook_func(ZEND_STRL("curl_setopt_array"));
-    //         hook_func(ZEND_STRL("curl_exec"));
-    //         hook_func(ZEND_STRL("curl_getinfo"));
-    //         hook_func(ZEND_STRL("curl_errno"));
-    //         hook_func(ZEND_STRL("curl_error"));
-    //         hook_func(ZEND_STRL("curl_reset"));
-    //         hook_func(ZEND_STRL("curl_close"));
-    //         hook_func(ZEND_STRL("curl_multi_getcontent"));
-    //     }
-    // } else {
-    //     if (runtime_hook_flags & PHPCoroutine::HOOK_CURL) {
-    //         SW_UNHOOK_FUNC(curl_init);
-    //         SW_UNHOOK_FUNC(curl_setopt);
-    //         SW_UNHOOK_FUNC(curl_setopt_array);
-    //         SW_UNHOOK_FUNC(curl_exec);
-    //         SW_UNHOOK_FUNC(curl_getinfo);
-    //         SW_UNHOOK_FUNC(curl_errno);
-    //         SW_UNHOOK_FUNC(curl_error);
-    //         SW_UNHOOK_FUNC(curl_reset);
-    //         SW_UNHOOK_FUNC(curl_close);
-    //         SW_UNHOOK_FUNC(curl_multi_getcontent);
-    //     }
-    // }
-
     runtime_hook_flags = flags;
     return true;
 }
