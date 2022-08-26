@@ -27,7 +27,6 @@ namespace Swoole {
 		public static function cycle(callable $callback, bool $before = false): bool {}
 		public static function write(mixed $sock, string $data): bool {}
 		public static function wait(): void {}
-		public static function rshutdown(): void {}
 		public static function exit(): void {}
 	}
 }

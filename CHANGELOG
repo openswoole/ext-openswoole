@@ -18,6 +18,7 @@
  . Remove deprecated experimental coroutine http server
  . Remove deprecated experimental redis protocol server
  . Remove deprecated function `swoole_timer_set()` and `Timer->set()`
+ . Remove deprecated function `swoole_event_rshutdown`
 
 # 4.11.1
 

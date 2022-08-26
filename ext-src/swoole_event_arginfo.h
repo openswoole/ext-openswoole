@@ -44,6 +44,4 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Event_wait, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()
 
-#define arginfo_class_Swoole_Event_rshutdown arginfo_class_Swoole_Event_wait
-
 #define arginfo_class_Swoole_Event_exit arginfo_class_Swoole_Event_wait
