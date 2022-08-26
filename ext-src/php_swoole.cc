@@ -440,6 +440,10 @@ PHP_MINIT_FUNCTION(openswoole) {
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_MINOR_VERSION", SWOOLE_MINOR_VERSION);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_RELEASE_VERSION", SWOOLE_RELEASE_VERSION);
     SW_REGISTER_STRING_CONSTANT("OPENSWOOLE_EXTRA_VERSION", SWOOLE_EXTRA_VERSION);
+
+    SW_INIT_CLASS_ENTRY(openswoole_constants, "Swoole\\Constant", nullptr, nullptr, nullptr);
+    openswoole_constants_ce->ce_flags |= ZEND_ACC_FINAL;
+
 #ifndef SW_DEBUG
     zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("HAVE_DEBUG"), 0);
 #else
@@ -735,9 +739,6 @@ PHP_MINIT_FUNCTION(openswoole) {
         SW_FUNCTION_ALIAS(CG(function_table), "swoole_coroutine_create", CG(function_table), "go");
         SW_FUNCTION_ALIAS(CG(function_table), "swoole_coroutine_defer", CG(function_table), "defer");
     }
-
-    SW_INIT_CLASS_ENTRY(openswoole_constants, "Swoole\\Constant", nullptr, nullptr, nullptr);
-    openswoole_constants_ce->ce_flags |= ZEND_ACC_FINAL;
 
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("EVENT_START"), "start");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("EVENT_SHUTDOWN"), "shutdown");
