@@ -235,7 +235,6 @@ void php_swoole_server_port_minit(int module_number);
 void php_swoole_http_request_minit(int module_number);
 void php_swoole_http_response_minit(int module_number);
 void php_swoole_http_server_minit(int module_number);
-void php_swoole_http_server_coro_minit(int module_number);
 void php_swoole_websocket_server_minit(int module_number);
 void php_swoole_redis_server_minit(int module_number);
 // other
