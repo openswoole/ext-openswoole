@@ -158,23 +158,23 @@ void php_swoole_runtime_minit(int module_number) {
         swoole_runtime, "Swoole\\Runtime", "swoole_runtime", nullptr, swoole_runtime_methods, nullptr);
     SW_SET_CLASS_CREATE(swoole_runtime, sw_zend_create_object_deny);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_TCP", PHPCoroutine::HOOK_TCP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_UDP", PHPCoroutine::HOOK_UDP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_UNIX", PHPCoroutine::HOOK_UNIX);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_UDG", PHPCoroutine::HOOK_UDG);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_SSL", PHPCoroutine::HOOK_SSL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_TLS", PHPCoroutine::HOOK_TLS);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_STREAM_FUNCTION", PHPCoroutine::HOOK_STREAM_FUNCTION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_STREAM_SELECT", PHPCoroutine::HOOK_STREAM_FUNCTION);  // backward compatibility
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_FILE", PHPCoroutine::HOOK_FILE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_STDIO", PHPCoroutine::HOOK_STDIO);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_SLEEP", PHPCoroutine::HOOK_SLEEP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_PROC", PHPCoroutine::HOOK_PROC);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_CURL", PHPCoroutine::HOOK_CURL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_NATIVE_CURL", PHPCoroutine::HOOK_NATIVE_CURL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_BLOCKING_FUNCTION", PHPCoroutine::HOOK_BLOCKING_FUNCTION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_SOCKETS", PHPCoroutine::HOOK_SOCKETS);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_ALL", PHPCoroutine::HOOK_ALL);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_TCP"), PHPCoroutine::HOOK_TCP);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_UDP"), PHPCoroutine::HOOK_UDP);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_UNIX"), PHPCoroutine::HOOK_UNIX);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_UDG"), PHPCoroutine::HOOK_UDG);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_SSL"), PHPCoroutine::HOOK_SSL);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_TLS"), PHPCoroutine::HOOK_TLS);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_STREAM_FUNCTION"), PHPCoroutine::HOOK_STREAM_FUNCTION);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_STREAM_SELECT"), PHPCoroutine::HOOK_STREAM_FUNCTION);  // backward compatibility
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_FILE"), PHPCoroutine::HOOK_FILE);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_STDIO"), PHPCoroutine::HOOK_STDIO);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_SLEEP"), PHPCoroutine::HOOK_SLEEP);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_PROC"), PHPCoroutine::HOOK_PROC);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_CURL"), PHPCoroutine::HOOK_CURL);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_NATIVE_CURL"), PHPCoroutine::HOOK_NATIVE_CURL);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_BLOCKING_FUNCTION"), PHPCoroutine::HOOK_BLOCKING_FUNCTION);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_SOCKETS"), PHPCoroutine::HOOK_SOCKETS);
+    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_ALL"), PHPCoroutine::HOOK_ALL);
 #ifdef SW_USE_CURL
     swoole_native_curl_minit(module_number);
 #endif
