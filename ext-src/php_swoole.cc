@@ -441,97 +441,97 @@ PHP_MINIT_FUNCTION(openswoole) {
     SW_REGISTER_LONG_CONSTANT("SWOOLE_RELEASE_VERSION", SWOOLE_RELEASE_VERSION);
     SW_REGISTER_STRING_CONSTANT("SWOOLE_EXTRA_VERSION", SWOOLE_EXTRA_VERSION);
 #ifndef SW_DEBUG
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_DEBUG", 0);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("HAVE_DEBUG"), 0);
 #else
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_DEBUG", 1);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("HAVE_DEBUG"), 1);
 #endif
 
 #ifdef SW_HAVE_COMPRESSION
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_HAVE_COMPRESSION", 1);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("HAVE_COMPRESSION"), 1);
 #endif
 #ifdef SW_HAVE_ZLIB
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_HAVE_ZLIB", 1);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("HAVE_ZLIB"), 1);
 #endif
 #ifdef SW_HAVE_BROTLI
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_HAVE_BROTLI", 1);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("HAVE_BROTLI"), 1);
 #endif
 #ifdef SW_USE_HTTP2
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_USE_HTTP2", 1);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("USE_HTTP2"), 1);
 #endif
 #ifdef SW_USE_POSTGRES
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_USE_POSTGRES", 1);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("USE_POSTGRES"), 1);
 #endif
 
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_USE_SHORTNAME", SWOOLE_G(use_shortname));
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("USE_SHORTNAME"), SWOOLE_G(use_shortname));
 
     /**
      * socket type
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SOCK_TCP", SW_SOCK_TCP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SOCK_TCP6", SW_SOCK_TCP6);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SOCK_UDP", SW_SOCK_UDP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SOCK_UDP6", SW_SOCK_UDP6);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SOCK_UNIX_DGRAM", SW_SOCK_UNIX_DGRAM);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SOCK_UNIX_STREAM", SW_SOCK_UNIX_STREAM);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SOCK_TCP"), SW_SOCK_TCP);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SOCK_TCP6"), SW_SOCK_TCP6);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SOCK_UDP"), SW_SOCK_UDP);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SOCK_UDP6"), SW_SOCK_UDP6);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SOCK_UNIX_DGRAM"), SW_SOCK_UNIX_DGRAM);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SOCK_UNIX_STREAM"), SW_SOCK_UNIX_STREAM);
 
     /**
      * simple socket type alias
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TCP", SW_SOCK_TCP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TCP6", SW_SOCK_TCP6);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_UDP", SW_SOCK_UDP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_UDP6", SW_SOCK_UDP6);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_UNIX_DGRAM", SW_SOCK_UNIX_DGRAM);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_UNIX_STREAM", SW_SOCK_UNIX_STREAM);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TCP"), SW_SOCK_TCP);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TCP6"), SW_SOCK_TCP6);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("UDP"), SW_SOCK_UDP);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("UDP6"), SW_SOCK_UDP6);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("UNIX_DGRAM"), SW_SOCK_UNIX_DGRAM);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("UNIX_STREAM"), SW_SOCK_UNIX_STREAM);
 
     /**
      * simple api
      */
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_SOCK_SYNC", 0);
-    SW_REGISTER_BOOL_CONSTANT("SWOOLE_SOCK_ASYNC", 1);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("SOCK_SYNC"), 0);
+    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("SOCK_ASYNC"), 1);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SYNC", SW_FLAG_SYNC);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_ASYNC", SW_FLAG_ASYNC);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_KEEP", SW_FLAG_KEEP);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SYNC"), SW_FLAG_SYNC);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("ASYNC"), SW_FLAG_ASYNC);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("KEEP"), SW_FLAG_KEEP);
 
 #ifdef SW_USE_OPENSSL
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL", SW_SOCK_SSL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL"), SW_SOCK_SSL);
 
     /**
      * SSL methods
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSLv3_METHOD", SW_SSLv3_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSLv3_SERVER_METHOD", SW_SSLv3_SERVER_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSLv3_CLIENT_METHOD", SW_SSLv3_CLIENT_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSLv3_METHOD"), SW_SSLv3_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSLv3_SERVER_METHOD"), SW_SSLv3_SERVER_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSLv3_CLIENT_METHOD"), SW_SSLv3_CLIENT_METHOD);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_METHOD", SW_TLSv1_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_SERVER_METHOD", SW_TLSv1_SERVER_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_CLIENT_METHOD", SW_TLSv1_CLIENT_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_METHOD"), SW_TLSv1_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_SERVER_METHOD"), SW_TLSv1_SERVER_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_CLIENT_METHOD"), SW_TLSv1_CLIENT_METHOD);
 
 #ifdef TLS1_1_VERSION
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_1_METHOD", SW_TLSv1_1_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_1_SERVER_METHOD", SW_TLSv1_1_SERVER_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_1_CLIENT_METHOD", SW_TLSv1_1_CLIENT_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_1_METHOD"), SW_TLSv1_1_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_1_SERVER_METHOD"), SW_TLSv1_1_SERVER_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_1_CLIENT_METHOD"), SW_TLSv1_1_CLIENT_METHOD);
 #endif
 
 #ifdef TLS1_2_VERSION
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_2_METHOD", SW_TLSv1_2_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_2_SERVER_METHOD", SW_TLSv1_2_SERVER_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLSv1_2_CLIENT_METHOD", SW_TLSv1_2_CLIENT_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_2_METHOD"), SW_TLSv1_2_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_2_SERVER_METHOD"), SW_TLSv1_2_SERVER_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLSv1_2_CLIENT_METHOD"), SW_TLSv1_2_CLIENT_METHOD);
 #endif
 
 #ifdef SW_SUPPORT_DTLS
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_DTLS_SERVER_METHOD", SW_DTLS_SERVER_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_DTLS_CLIENT_METHOD", SW_DTLS_CLIENT_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("DTLS_SERVER_METHOD"), SW_DTLS_SERVER_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("DTLS_CLIENT_METHOD"), SW_DTLS_CLIENT_METHOD);
 #endif
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSLv23_METHOD", SW_SSLv23_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSLv23_SERVER_METHOD", SW_SSLv23_SERVER_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSLv23_CLIENT_METHOD", SW_SSLv23_CLIENT_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSLv23_METHOD"), SW_SSLv23_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSLv23_SERVER_METHOD"), SW_SSLv23_SERVER_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSLv23_CLIENT_METHOD"), SW_SSLv23_CLIENT_METHOD);
     /* SSLv23_method have been renamed to TLS_method */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLS_METHOD", SW_SSLv23_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLS_SERVER_METHOD", SW_SSLv23_SERVER_METHOD);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TLS_CLIENT_METHOD", SW_SSLv23_CLIENT_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLS_METHOD"), SW_SSLv23_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLS_SERVER_METHOD"), SW_SSLv23_SERVER_METHOD);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TLS_CLIENT_METHOD"), SW_SSLv23_CLIENT_METHOD);
 
     /**
      * SSL protocols
@@ -735,7 +735,7 @@ PHP_MINIT_FUNCTION(openswoole) {
     /**
      * limit
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_IOV_MAX", IOV_MAX);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("IOV_MAX", IOV_MAX);
 
     // clang-format on
 
