@@ -17,6 +17,7 @@
  . Remove deprecated custom coroutine redis client, prefer the hooked native coroutine redis client
  . Remove deprecated experimental coroutine http server
  . Remove deprecated experimental redis protocol server
+ . Remove deprecated function `swoole_timer_set()` and `Timer->set()`
 
 # 4.11.1
 

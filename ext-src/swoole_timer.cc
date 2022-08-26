@@ -36,7 +36,6 @@ static zend_object_handlers swoole_timer_handlers;
 static zend_class_entry *swoole_timer_iterator_ce;
 
 SW_EXTERN_C_BEGIN
-static PHP_FUNCTION(swoole_timer_set);
 static PHP_FUNCTION(swoole_timer_after);
 static PHP_FUNCTION(swoole_timer_tick);
 static PHP_FUNCTION(swoole_timer_exists);
@@ -50,8 +49,6 @@ SW_EXTERN_C_END
 // clang-format off
 static const zend_function_entry swoole_timer_methods[] =
 {
-    ZEND_FENTRY(set, ZEND_FN(swoole_timer_set), arginfo_class_Swoole_Timer_set,
-                ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_DEPRECATED)
     ZEND_FENTRY(after, ZEND_FN(swoole_timer_after), arginfo_class_Swoole_Timer_after, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     ZEND_FENTRY(tick, ZEND_FN(swoole_timer_tick), arginfo_class_Swoole_Timer_tick, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     ZEND_FENTRY(exists, ZEND_FN(swoole_timer_exists), arginfo_class_Swoole_Timer_exists, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -75,7 +72,6 @@ void php_swoole_timer_minit(int module_number) {
                              nullptr,
                              spl_ce_ArrayIterator);
 
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "set", CG(function_table), "swoole_timer_set");
     SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "after", CG(function_table), "swoole_timer_after");
     SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "tick", CG(function_table), "swoole_timer_tick");
     SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "exists", CG(function_table), "swoole_timer_exists");
@@ -184,21 +180,6 @@ static void timer_add(INTERNAL_FUNCTION_PARAMETERS, bool persistent) {
     }
     sw_zend_fci_cache_persist(&fci->fci_cache);
     RETURN_LONG(tnode->id);
-}
-
-static PHP_FUNCTION(swoole_timer_set) {
-    zval *settings = nullptr;
-    zval *ztmp;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_ARRAY(settings)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    HashTable *vht = Z_ARRVAL_P(settings);
-
-    if (php_swoole_array_get_value(vht, "enable_coroutine", ztmp)) {
-        SWOOLE_G(enable_coroutine) = zval_is_true(ztmp);
-    }
 }
 
 static PHP_FUNCTION(swoole_timer_after) {
