@@ -576,32 +576,32 @@ void php_swoole_server_minit(int module_number) {
     /**
      * mode type
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_BASE", swoole::Server::MODE_BASE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_PROCESS", swoole::Server::MODE_PROCESS);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("BASE"), swoole::Server::MODE_BASE);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("PROCESS"), swoole::Server::MODE_PROCESS);
 
     /**
      * task ipc mode
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_IPC_UNSOCK", Server::TASK_IPC_UNIXSOCK);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_IPC_MSGQUEUE", Server::TASK_IPC_MSGQUEUE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_IPC_PREEMPTIVE", Server::TASK_IPC_PREEMPTIVE);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("IPC_UNSOCK"), Server::TASK_IPC_UNIXSOCK);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("IPC_MSGQUEUE"), Server::TASK_IPC_MSGQUEUE);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("IPC_PREEMPTIVE"), Server::TASK_IPC_PREEMPTIVE);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_DISPATCH_RESULT_DISCARD_PACKET", Server::DISPATCH_RESULT_DISCARD_PACKET);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_DISPATCH_RESULT_CLOSE_CONNECTION", Server::DISPATCH_RESULT_CLOSE_CONNECTION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_DISPATCH_RESULT_USERFUNC_FALLBACK", Server::DISPATCH_RESULT_USERFUNC_FALLBACK);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_DISCARD_PACKET"), Server::DISPATCH_RESULT_DISCARD_PACKET);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_CLOSE_CONNECTION"), Server::DISPATCH_RESULT_CLOSE_CONNECTION);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_USERFUNC_FALLBACK"), Server::DISPATCH_RESULT_USERFUNC_FALLBACK);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_TMPFILE", SW_TASK_TMPFILE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_SERIALIZE", SW_TASK_SERIALIZE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_NONBLOCK", SW_TASK_NONBLOCK);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_CALLBACK", SW_TASK_CALLBACK);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_WAITALL", SW_TASK_WAITALL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_COROUTINE", SW_TASK_COROUTINE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_PEEK", SW_TASK_PEEK);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TASK_NOREPLY", SW_TASK_NOREPLY);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_TMPFILE"), SW_TASK_TMPFILE);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_SERIALIZE"), SW_TASK_SERIALIZE);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_NONBLOCK"), SW_TASK_NONBLOCK);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_CALLBACK"), SW_TASK_CALLBACK);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_WAITALL"), SW_TASK_WAITALL);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_COROUTINE"), SW_TASK_COROUTINE);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_PEEK"), SW_TASK_PEEK);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_NOREPLY"), SW_TASK_NOREPLY);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WORKER_BUSY", SW_WORKER_BUSY);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WORKER_IDLE", SW_WORKER_IDLE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WORKER_EXIT", SW_WORKER_EXIT);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("WORKER_BUSY"), SW_WORKER_BUSY);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("WORKER_IDLE"), SW_WORKER_IDLE);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("WORKER_EXIT"), SW_WORKER_EXIT);
 }
 
 zend_fcall_info_cache *php_swoole_server_get_fci_cache(Server *serv, int server_fd, int event_type) {
