@@ -563,10 +563,10 @@ PHP_MINIT_FUNCTION(openswoole) {
     /**
      * Register ERROR types
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_STRERROR_SYSTEM", SW_STRERROR_SYSTEM);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_STRERROR_GAI", SW_STRERROR_GAI);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_STRERROR_DNS", SW_STRERROR_DNS);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_STRERROR_SWOOLE", SW_STRERROR_SWOOLE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("STRERROR_SYSTEM"), SW_STRERROR_SYSTEM);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("STRERROR_GAI"), SW_STRERROR_GAI);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("STRERROR_DNS"), SW_STRERROR_DNS);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("STRERROR_SWOOLE"), SW_STRERROR_SWOOLE);
 
     /**
      * Register ERROR constants
