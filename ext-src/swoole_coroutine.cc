@@ -863,6 +863,8 @@ void php_swoole_coroutine_minit(int module_number) {
     zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_WAITING"), Coroutine::STATE_WAITING);
     zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_RUNNING"), Coroutine::STATE_RUNNING);
     zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_END"), Coroutine::STATE_END);
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("EXIT_IN_COROUTINE"), SW_EXIT_IN_COROUTINE);
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("EXIT_IN_SERVER"), SW_EXIT_IN_SERVER);
 
     SW_INIT_CLASS_ENTRY_BASE(swoole_coroutine_iterator,
                              "Swoole\\Coroutine\\Iterator",
@@ -883,9 +885,6 @@ void php_swoole_coroutine_minit(int module_number) {
                            swoole_exception);
     zend_declare_property_long(swoole_exit_exception_ce, ZEND_STRL("flags"), 0, ZEND_ACC_PRIVATE);
     zend_declare_property_long(swoole_exit_exception_ce, ZEND_STRL("status"), 0, ZEND_ACC_PRIVATE);
-
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_EXIT_IN_COROUTINE", SW_EXIT_IN_COROUTINE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_EXIT_IN_SERVER", SW_EXIT_IN_SERVER);
 }
 
 void php_swoole_coroutine_rinit() {
