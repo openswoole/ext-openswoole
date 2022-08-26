@@ -12,6 +12,7 @@
  . New Psr API: $server->handle(callable $callback)
  . Redis Server API: $server->setHandler() -> $server->addCommand()
  . Redis Server API: $server->getHandler() -> $server->getCommand()
+ . Disable sockets_*, exec, shell_exec, gethostbyname coroutines hook by default, remove HOOK_BLOCKING_FUNCTION and HOOK_SOCKETS in HOOK_ALL; Enable them explicitly if they are used
 
 # 4.11.1
 

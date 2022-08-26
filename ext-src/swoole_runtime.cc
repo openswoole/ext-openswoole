@@ -1160,6 +1160,16 @@ void PHPCoroutine::enable_unsafe_function() {
     }
 }
 
+bool PHPCoroutine::is_core_loaded() {
+    zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    if (zend_lookup_class(class_name) == NULL) {
+        efree(class_name);
+        return false;
+    }
+    efree(class_name);
+    return true;
+}
+
 bool PHPCoroutine::enable_hook(uint32_t flags) {
     if (!runtime_hook_init) {
         HashTable *xport_hash = php_stream_xport_get_hash();
@@ -1317,76 +1327,90 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
     }
     // blocking function
     if (flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
-        if (!(runtime_hook_flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION)) {
-            hook_func(ZEND_STRL("gethostbyname"), PHP_FN(swoole_coroutine_gethostbyname));
-            hook_func(ZEND_STRL("exec"));
-            hook_func(ZEND_STRL("shell_exec"));
-        }
-    } else {
-        if (runtime_hook_flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
-            SW_UNHOOK_FUNC(gethostbyname);
-            SW_UNHOOK_FUNC(exec);
-            SW_UNHOOK_FUNC(shell_exec);
-        }
-    }
-    if (flags & PHPCoroutine::HOOK_SOCKETS) {
-        if (!(runtime_hook_flags & PHPCoroutine::HOOK_SOCKETS)) {
-            hook_func(ZEND_STRL("socket_create"));
-            hook_func(ZEND_STRL("socket_create_listen"));
-            hook_func(ZEND_STRL("socket_create_pair"), PHP_FN(swoole_coroutine_socketpair));
-            hook_func(ZEND_STRL("socket_connect"));
-            hook_func(ZEND_STRL("socket_write"));
-            hook_func(ZEND_STRL("socket_read"));
-            hook_func(ZEND_STRL("socket_send"));
-            hook_func(ZEND_STRL("socket_recv"));
-            hook_func(ZEND_STRL("socket_sendto"));
-            hook_func(ZEND_STRL("socket_recvfrom"));
-            hook_func(ZEND_STRL("socket_bind"));
-            hook_func(ZEND_STRL("socket_listen"));
-            hook_func(ZEND_STRL("socket_accept"));
-            hook_func(ZEND_STRL("socket_getpeername"));
-            hook_func(ZEND_STRL("socket_getsockname"));
-            hook_func(ZEND_STRL("socket_getopt"));
-            hook_func(ZEND_STRL("socket_get_option"));
-            hook_func(ZEND_STRL("socket_setopt"));
-            hook_func(ZEND_STRL("socket_set_option"));
-            hook_func(ZEND_STRL("socket_set_block"));
-            hook_func(ZEND_STRL("socket_set_nonblock"));
-            hook_func(ZEND_STRL("socket_shutdown"));
-            hook_func(ZEND_STRL("socket_close"));
-            hook_func(ZEND_STRL("socket_clear_error"));
-            hook_func(ZEND_STRL("socket_last_error"));
-        }
-    } else {
-        if (runtime_hook_flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
-            SW_UNHOOK_FUNC(socket_create);
-            SW_UNHOOK_FUNC(socket_create_listen);
-            SW_UNHOOK_FUNC(socket_create_pair);
-            SW_UNHOOK_FUNC(socket_connect);
-            SW_UNHOOK_FUNC(socket_write);
-            SW_UNHOOK_FUNC(socket_read);
-            SW_UNHOOK_FUNC(socket_send);
-            SW_UNHOOK_FUNC(socket_recv);
-            SW_UNHOOK_FUNC(socket_sendto);
-            SW_UNHOOK_FUNC(socket_recvfrom);
-            SW_UNHOOK_FUNC(socket_bind);
-            SW_UNHOOK_FUNC(socket_listen);
-            SW_UNHOOK_FUNC(socket_accept);
-            SW_UNHOOK_FUNC(socket_getpeername);
-            SW_UNHOOK_FUNC(socket_getsockname);
-            SW_UNHOOK_FUNC(socket_getopt);
-            SW_UNHOOK_FUNC(socket_get_option);
-            SW_UNHOOK_FUNC(socket_setopt);
-            SW_UNHOOK_FUNC(socket_set_option);
-            SW_UNHOOK_FUNC(socket_set_block);
-            SW_UNHOOK_FUNC(socket_set_nonblock);
-            SW_UNHOOK_FUNC(socket_shutdown);
-            SW_UNHOOK_FUNC(socket_close);
-            SW_UNHOOK_FUNC(socket_clear_error);
-            SW_UNHOOK_FUNC(socket_last_error);
-        }
+        if(is_core_loaded()) {
+            if (flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
+                if (!(runtime_hook_flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION)) {
+                    hook_func(ZEND_STRL("gethostbyname"), PHP_FN(swoole_coroutine_gethostbyname));
+                    hook_func(ZEND_STRL("exec"));
+                    hook_func(ZEND_STRL("shell_exec"));
+                }
+            } else {
+                if (runtime_hook_flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
+                    SW_UNHOOK_FUNC(gethostbyname);
+                    SW_UNHOOK_FUNC(exec);
+                    SW_UNHOOK_FUNC(shell_exec);
+                }
+            }
+        } else {
+            php_swoole_fatal_error(E_ERROR, "HOOK_BLOCKING_FUNCTION option is avaiable in openswoole/core: composer install openswoole/core");
+        }   
     }
 
+    if (flags & PHPCoroutine::HOOK_SOCKETS) {
+        if(is_core_loaded()) {
+            if (flags & PHPCoroutine::HOOK_SOCKETS) {
+                if (!(runtime_hook_flags & PHPCoroutine::HOOK_SOCKETS)) {
+                    hook_func(ZEND_STRL("socket_create"));
+                    hook_func(ZEND_STRL("socket_create_listen"));
+                    hook_func(ZEND_STRL("socket_create_pair"), PHP_FN(swoole_coroutine_socketpair));
+                    hook_func(ZEND_STRL("socket_connect"));
+                    hook_func(ZEND_STRL("socket_write"));
+                    hook_func(ZEND_STRL("socket_read"));
+                    hook_func(ZEND_STRL("socket_send"));
+                    hook_func(ZEND_STRL("socket_recv"));
+                    hook_func(ZEND_STRL("socket_sendto"));
+                    hook_func(ZEND_STRL("socket_recvfrom"));
+                    hook_func(ZEND_STRL("socket_bind"));
+                    hook_func(ZEND_STRL("socket_listen"));
+                    hook_func(ZEND_STRL("socket_accept"));
+                    hook_func(ZEND_STRL("socket_getpeername"));
+                    hook_func(ZEND_STRL("socket_getsockname"));
+                    hook_func(ZEND_STRL("socket_getopt"));
+                    hook_func(ZEND_STRL("socket_get_option"));
+                    hook_func(ZEND_STRL("socket_setopt"));
+                    hook_func(ZEND_STRL("socket_set_option"));
+                    hook_func(ZEND_STRL("socket_set_block"));
+                    hook_func(ZEND_STRL("socket_set_nonblock"));
+                    hook_func(ZEND_STRL("socket_shutdown"));
+                    hook_func(ZEND_STRL("socket_close"));
+                    hook_func(ZEND_STRL("socket_clear_error"));
+                    hook_func(ZEND_STRL("socket_last_error"));
+                }
+            } else {
+                if (runtime_hook_flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
+                    SW_UNHOOK_FUNC(socket_create);
+                    SW_UNHOOK_FUNC(socket_create_listen);
+                    SW_UNHOOK_FUNC(socket_create_pair);
+                    SW_UNHOOK_FUNC(socket_connect);
+                    SW_UNHOOK_FUNC(socket_write);
+                    SW_UNHOOK_FUNC(socket_read);
+                    SW_UNHOOK_FUNC(socket_send);
+                    SW_UNHOOK_FUNC(socket_recv);
+                    SW_UNHOOK_FUNC(socket_sendto);
+                    SW_UNHOOK_FUNC(socket_recvfrom);
+                    SW_UNHOOK_FUNC(socket_bind);
+                    SW_UNHOOK_FUNC(socket_listen);
+                    SW_UNHOOK_FUNC(socket_accept);
+                    SW_UNHOOK_FUNC(socket_getpeername);
+                    SW_UNHOOK_FUNC(socket_getsockname);
+                    SW_UNHOOK_FUNC(socket_getopt);
+                    SW_UNHOOK_FUNC(socket_get_option);
+                    SW_UNHOOK_FUNC(socket_setopt);
+                    SW_UNHOOK_FUNC(socket_set_option);
+                    SW_UNHOOK_FUNC(socket_set_block);
+                    SW_UNHOOK_FUNC(socket_set_nonblock);
+                    SW_UNHOOK_FUNC(socket_shutdown);
+                    SW_UNHOOK_FUNC(socket_close);
+                    SW_UNHOOK_FUNC(socket_clear_error);
+                    SW_UNHOOK_FUNC(socket_last_error);
+                }
+            }
+
+        } else {
+            php_swoole_fatal_error(E_ERROR, "HOOK_SOCKETS option is avaiable in openswoole/core: composer install openswoole/core");
+        }   
+    }
+    
 #ifdef SW_USE_CURL
     if (flags & PHPCoroutine::HOOK_NATIVE_CURL) {
         // Remove HOOK_CURL
@@ -1863,14 +1887,6 @@ static void hook_func(const char *name, size_t l_name, zif_handler handler, zend
     if (zf == nullptr) {
         return;
     }
-
-    zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
-    if (zend_lookup_class(class_name) == NULL) {
-        php_swoole_fatal_error(E_WARNING, "composer dependency required: composer install openswoole/core");
-        efree(class_name);
-        return;
-    }
-    efree(class_name);
 
 #if PHP_VERSION_ID < 80000
     if (zf->internal_function.handler == ZEND_FN(display_disabled_function)) {

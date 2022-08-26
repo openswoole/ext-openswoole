@@ -112,7 +112,7 @@ class PHPCoroutine {
         HOOK_STDIO             = 1u << 15,
 // Remove HOOK_CURL
 // #ifdef SW_USE_CURL
-        HOOK_ALL               = 0x7fffffff ^ HOOK_CURL,
+        HOOK_ALL               = 0x7fffffff ^ HOOK_CURL ^ HOOK_BLOCKING_FUNCTION ^ HOOK_SOCKETS,
 // #else
         // HOOK_ALL               = 0x7fffffff ^ HOOK_NATIVE_CURL,
 // #endif
@@ -128,6 +128,7 @@ class PHPCoroutine {
     static bool disable_hook();
     static void disable_unsafe_function();
     static void enable_unsafe_function();
+    static bool is_core_loaded();
 
     static void interrupt_thread_stop();
 
