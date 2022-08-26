@@ -675,37 +675,37 @@ PHP_MINIT_FUNCTION(openswoole) {
     /**
      * trace log
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_SERVER", SW_TRACE_SERVER);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CLIENT", SW_TRACE_CLIENT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_BUFFER", SW_TRACE_BUFFER);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CONN", SW_TRACE_CONN);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_EVENT", SW_TRACE_EVENT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_WORKER", SW_TRACE_WORKER);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_MEMORY", SW_TRACE_MEMORY);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_REACTOR", SW_TRACE_REACTOR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_PHP", SW_TRACE_PHP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_HTTP", SW_TRACE_HTTP);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_HTTP2", SW_TRACE_HTTP2);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_EOF_PROTOCOL", SW_TRACE_EOF_PROTOCOL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_LENGTH_PROTOCOL", SW_TRACE_LENGTH_PROTOCOL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CLOSE", SW_TRACE_CLOSE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_WEBSOCKET", SW_TRACE_WEBSOCKET);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_REDIS_CLIENT", SW_TRACE_REDIS_CLIENT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_MYSQL_CLIENT", SW_TRACE_MYSQL_CLIENT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_HTTP_CLIENT", SW_TRACE_HTTP_CLIENT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_AIO", SW_TRACE_AIO);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_SSL", SW_TRACE_SSL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_NORMAL", SW_TRACE_NORMAL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CHANNEL", SW_TRACE_CHANNEL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_TIMER", SW_TRACE_TIMER);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_SOCKET", SW_TRACE_SOCKET);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_COROUTINE", SW_TRACE_COROUTINE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CONTEXT", SW_TRACE_CONTEXT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CO_HTTP_SERVER", SW_TRACE_CO_HTTP_SERVER);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_TABLE", SW_TRACE_TABLE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CO_CURL", SW_TRACE_CO_CURL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_CARES", SW_TRACE_CARES);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_TRACE_ALL", SW_TRACE_ALL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_SERVER"), SW_TRACE_SERVER);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CLIENT)", SW_TRACE_CLIENT);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_BUFFER)", SW_TRACE_BUFFER);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CONN"), SW_TRACE_CONN);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_EVENT"), SW_TRACE_EVENT);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_WORKER"), SW_TRACE_WORKER);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_MEMORY"), SW_TRACE_MEMORY);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_REACTOR"), SW_TRACE_REACTOR);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_PHP"), SW_TRACE_PHP);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_HTTP"), SW_TRACE_HTTP);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_HTTP2"), SW_TRACE_HTTP2);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_EOF_PROTOCOL"), SW_TRACE_EOF_PROTOCOL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_LENGTH_PROTOCOL"), SW_TRACE_LENGTH_PROTOCOL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CLOSE"), SW_TRACE_CLOSE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_WEBSOCKET"), SW_TRACE_WEBSOCKET);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_REDIS_CLIENT"), SW_TRACE_REDIS_CLIENT);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_MYSQL_CLIENT"), SW_TRACE_MYSQL_CLIENT);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_HTTP_CLIENT"), SW_TRACE_HTTP_CLIENT);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_AIO"), SW_TRACE_AIO);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_SSL"), SW_TRACE_SSL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_NORMAL"), SW_TRACE_NORMAL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CHANNEL"), SW_TRACE_CHANNEL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_TIMER"), SW_TRACE_TIMER);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_SOCKET"), SW_TRACE_SOCKET);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_COROUTINE"), SW_TRACE_COROUTINE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CONTEXT"), SW_TRACE_CONTEXT);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CO_HTTP_SERVER"), SW_TRACE_CO_HTTP_SERVER);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_TABLE"), SW_TRACE_TABLE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CO_CURL"), SW_TRACE_CO_CURL);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CARES"), SW_TRACE_CARES);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_ALL"), SW_TRACE_ALL);
 
     /**
      * log level
