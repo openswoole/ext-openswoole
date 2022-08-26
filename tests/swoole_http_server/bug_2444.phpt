@@ -30,21 +30,6 @@ $pm->childFunc = function () use ($pm) {
                     return;
                 }
                 $cli->close();
-                $db = new Swoole\Coroutine\Mysql();
-                if (!Assert::assert($db->connect([
-                    'host' => MYSQL_SERVER_HOST,
-                    'port' => MYSQL_SERVER_PORT,
-                    'user' => MYSQL_SERVER_USER,
-                    'password' => MYSQL_SERVER_PWD,
-                    'database' => MYSQL_SERVER_DB,
-                    'strict_type' => true
-                ]))) {
-                    goto _error;
-                }
-                if (!Assert::assert($db->query('select 1')[0][1] === 1)) {
-                    goto _error;
-                }
-                $db->close();
                 break;
         }
         $response->end('OK');
