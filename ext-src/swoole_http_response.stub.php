@@ -30,12 +30,12 @@ namespace Swoole\Http {
 		public function detach(): bool {}
 		public static function create(mixed $server = -1, int $fd = -1): Response|bool {}
 		public function upgrade(): bool {}
-		public function push(\Swoole\WebSocket\Frame|string $data, int $opcode = SWOOLE_WEBSOCKET_OPCODE_TEXT, int $flags = SWOOLE_WEBSOCKET_FLAG_FIN): bool {}
-		public function recv(float $timeout = 0): \Swoole\WebSocket\Frame|bool|string {}
+		public function push(\OpenSwoole\WebSocket\Frame|string $data, int $opcode = \OpenSwoole\WebSocket\Server::WEBSOCKET_OPCODE_TEXT, int $flags = \OpenSwoole\WebSocket\Server::WEBSOCKET_FLAG_FIN): bool {}
+		public function recv(float $timeout = 0): \OpenSwoole\WebSocket\Frame|bool|string {}
 		public function close(): bool {}
 		public function trailer(string $key, string $value): bool {}
 		public function ping(): bool {}
-		public function goaway(int $errorCode = SWOOLE_HTTP2_ERROR_NO_ERROR, string $debugData = ""): bool {}
+		public function goaway(int $errorCode = \OpenSwoole\Coroutine\Http2\Client::HTTP2_ERROR_NO_ERROR, string $debugData = ""): bool {}
 		public function status(int $statusCode, string $reason = ""): bool {}
 		public function __destruct() {}
 	}

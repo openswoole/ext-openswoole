@@ -173,6 +173,10 @@ void php_swoole_process_pool_minit(int module_number) {
 
     zend_declare_property_long(swoole_process_pool_ce, ZEND_STRL("master_pid"), -1, ZEND_ACC_PUBLIC);
     zend_declare_property_null(swoole_process_pool_ce, ZEND_STRL("workers"), ZEND_ACC_PUBLIC);
+
+    zend_declare_class_constant_long(swoole_process_pool_ce, ZEND_STRL("IPC_NONE"),SW_IPC_NONE);
+    zend_declare_class_constant_long(swoole_process_pool_ce, ZEND_STRL("IPC_UNIXSOCK"),SW_IPC_UNIXSOCK);
+    zend_declare_class_constant_long(swoole_process_pool_ce, ZEND_STRL("IPC_SOCKET"),SW_IPC_SOCKET);
 }
 
 static void pool_onWorkerStart(ProcessPool *pool, int worker_id) {

@@ -17,7 +17,7 @@
  
 namespace Swoole {
     final class Server {
-        public function __construct(string $host, int $port = 0, int $mode = SWOOLE_PROCESS, int $sockType = SWOOLE_SOCK_TCP) {}
+        public function __construct(string $host, int $port = 0, int $mode = Server::PROCESS, int $sockType = Server::SOCK_TCP) {}
         public function __destruct() {}
         public function listen(string $host, int $port, int $sockType): false|Server\Port {}
         public function addlistener(string $host, int $port, int $sockType): false|Server\Port {}
@@ -57,7 +57,7 @@ namespace Swoole {
         public function connection_info(int $fd, int $reactorId = -1, bool $noCheckConn = false): bool|array {}
         public function connection_list(int $startFd = 0, int $pageSize = 10): bool|array {}
         public function sendMessage(mixed $message, int $workerId): bool {}
-        public function addProcess(\Swoole\Process $process): bool|int {}
+        public function addProcess(\OpenSwoole\Process $process): bool|int {}
         public function stats(int $mode = 0): string|array|false {}
         public function getSocket(int $port = -1): mixed {}
         public function bind(int $fd, int $uid): bool {}

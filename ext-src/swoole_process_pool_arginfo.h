@@ -1,9 +1,9 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: a97f573753dfb603070c39591475bccb46404fad */
+ * Stub hash: 851c48efa1749bc93c6356be21748ad3de073fd7 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Process_Pool___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, workerNum, IS_LONG, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, ipcType, IS_LONG, 0, "SWOOLE_IPC_NONE")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, ipcType, IS_LONG, 0, "OpenSwoole\\Process\\Pool::IPC_NONE")
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, msgqueue_key, IS_LONG, 0, "0")
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, enableCoroutine, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
@@ -30,7 +30,7 @@ ZEND_END_ARG_INFO()
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Process_Pool_detach, 0, 0, _IS_BOOL, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Process_Pool_getProcess, 0, 0, Swoole\\Process, MAY_BE_FALSE)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Process_Pool_getProcess, 0, 0, OpenSwoole\\Process, MAY_BE_FALSE)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, workerId, IS_LONG, 0, "-1")
 ZEND_END_ARG_INFO()
 

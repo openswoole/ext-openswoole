@@ -717,6 +717,9 @@ void php_swoole_socket_coro_minit(int module_number) {
     zend_declare_property_long(swoole_socket_coro_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_string(swoole_socket_coro_ce, ZEND_STRL("errMsg"), "", ZEND_ACC_PUBLIC);
 
+    zend_declare_class_constant_long(swoole_socket_coro_ce, ZEND_STRL("EVENT_READ"), SW_EVENT_READ);
+    zend_declare_class_constant_long(swoole_socket_coro_ce, ZEND_STRL("EVENT_WRITE"), SW_EVENT_READ);
+
     SW_INIT_CLASS_ENTRY_EX(swoole_socket_coro_exception,
                            "Swoole\\Coroutine\\Socket\\Exception",
                            nullptr,

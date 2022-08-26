@@ -1,8 +1,8 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 73a61393cf18e5b785b93b5ecb6cbb9f55ccc4c5 */
+ * Stub hash: 5d3ebd57d86c82beaa3de639ebcdc1c82152769e */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Lock___construct, 0, 0, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "SWOOLE_MUTEX")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "OpenSwoole\\Lock::MUTEX")
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, lockFile, IS_STRING, 0, "\"\"")
 ZEND_END_ARG_INFO()
 

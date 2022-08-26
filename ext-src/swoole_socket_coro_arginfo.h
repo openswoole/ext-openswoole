@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 49c30980e184027013e977a9ef06cb5644257aec */
+ * Stub hash: e957d42da60a5408776163f001d10904de1eaa51 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Socket___construct, 0, 0, 2)
 	ZEND_ARG_TYPE_INFO(0, domain, IS_LONG, 0)
@@ -16,7 +16,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Socket_li
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, backlog, IS_LONG, 0, "512")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Socket_accept, 0, 0, Swoole\\Coroutine\\Socket, MAY_BE_FALSE)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Socket_accept, 0, 0, OpenSwoole\\Coroutine\\Socket, MAY_BE_FALSE)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "0")
 ZEND_END_ARG_INFO()
 
@@ -108,7 +108,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Socket_sh
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Socket_cancel, 0, 0, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, event, IS_LONG, 0, "SWOOLE_EVENT_READ")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, event, IS_LONG, 0, "OpenSwoole\\Coroutine\\Socket::EVENT_READ")
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Coroutine_Socket_close arginfo_class_Swoole_Coroutine_Socket_checkLiveness

@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 815a1f02e161ee3fb5bd5b2fe4ca04cbd7fc8813 */
+ * Stub hash: a182128736ba52dcbc5c1f5176a25c6159bcf320 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_Http2_Client___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, host, IS_STRING, 0)
@@ -23,7 +23,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http2_Cli
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Http2_Client_send, 0, 1, MAY_BE_BOOL|MAY_BE_LONG)
-	ZEND_ARG_OBJ_INFO(0, request, Swoole\\Http2\\Request, 0)
+	ZEND_ARG_OBJ_INFO(0, request, OpenSwoole\\Http2\\Request, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http2_Client_write, 0, 2, _IS_BOOL, 0)
@@ -32,14 +32,14 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http2_Cli
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, end, _IS_BOOL, 0, "false")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Http2_Client_recv, 0, 0, Swoole\\Http2\\Response, MAY_BE_BOOL)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_Http2_Client_recv, 0, 0, OpenSwoole\\Http2\\Response, MAY_BE_BOOL)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "0")
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Coroutine_Http2_Client_read arginfo_class_Swoole_Coroutine_Http2_Client_recv
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_Http2_Client_goaway, 0, 0, _IS_BOOL, 0)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, errorCode, IS_LONG, 0, "SWOOLE_HTTP2_ERROR_NO_ERROR")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, errorCode, IS_LONG, 0, "OpenSwoole\\Coroutine\\Http2\\Client::HTTP2_ERROR_NO_ERROR")
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, debugData, IS_STRING, 0, "\"\"")
 ZEND_END_ARG_INFO()
 

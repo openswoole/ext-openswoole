@@ -1,17 +1,17 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 3a0ca0e389e77aa732752a09357aeac6c61d5b12 */
+ * Stub hash: a46880b63fc1893e33c0814a40252eb9ffaff613 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server___construct, 0, 0, 1)
 	ZEND_ARG_TYPE_INFO(0, host, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, port, IS_LONG, 0, "0")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mode, IS_LONG, 0, "SWOOLE_PROCESS")
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, sockType, IS_LONG, 0, "SWOOLE_SOCK_TCP")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mode, IS_LONG, 0, "OpenSwoole\\Server::PROCESS")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, sockType, IS_LONG, 0, "OpenSwoole\\Server::SOCK_TCP")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server___destruct, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Server_listen, 0, 3, Swoole\\Server\\Port, MAY_BE_FALSE)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Server_listen, 0, 3, OpenSwoole\\Server\\Port, MAY_BE_FALSE)
 	ZEND_ARG_TYPE_INFO(0, host, IS_STRING, 0)
 	ZEND_ARG_TYPE_INFO(0, port, IS_LONG, 0)
 	ZEND_ARG_TYPE_INFO(0, sockType, IS_LONG, 0)
@@ -162,7 +162,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Server_sendMessage,
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Server_addProcess, 0, 1, MAY_BE_BOOL|MAY_BE_LONG)
-	ZEND_ARG_OBJ_INFO(0, process, Swoole\\Process, 0)
+	ZEND_ARG_OBJ_INFO(0, process, OpenSwoole\\Process, 0)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Server_stats, 0, 0, MAY_BE_STRING|MAY_BE_ARRAY|MAY_BE_FALSE)

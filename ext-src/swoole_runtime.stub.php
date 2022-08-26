@@ -18,8 +18,8 @@
  /** @not-serializable */
 namespace Swoole {
     class Runtime {
-        public static function enableCoroutine(bool $enable = true, int $flags = SWOOLE_HOOK_ALL): void {}
+        public static function enableCoroutine(bool $enable = true, int $flags = Runtime::HOOK_ALL): void {}
     	public static function getHookFlags(): int {}
-    	public static function setHookFlags(int $flags = SWOOLE_HOOK_ALL): void {}
+    	public static function setHookFlags(int $flags = Runtime::HOOK_ALL): void {}
     }
 }
