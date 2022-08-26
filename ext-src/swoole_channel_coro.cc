@@ -129,10 +129,10 @@ void php_swoole_channel_coro_minit(int module_number) {
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("capacity"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CHANNEL_OK", Channel::ERROR_OK);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CHANNEL_TIMEOUT", Channel::ERROR_TIMEOUT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CHANNEL_CLOSED", Channel::ERROR_CLOSED);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CHANNEL_CANCELED", Channel::ERROR_CANCELED);
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_OK"), Channel::ERROR_OK);
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_TIMEOUT"), Channel::ERROR_TIMEOUT);
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_CLOSED"), Channel::ERROR_CLOSED);
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_CANCELED"), Channel::ERROR_CANCELED);
 }
 
 static PHP_METHOD(swoole_channel_coro, __construct) {

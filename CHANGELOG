@@ -28,6 +28,7 @@
  . Remove deprecated function `Server->connection_info()`, use `Server->getClientInfo()`
  . Remove deprecated function `Server->connection_list()`, use `Server->getClientList()`
  . Remove deprecated function `Server->exist`, use `Server->exists`
+ . Move global constants under namespace: SWOOLE_CHANNEL_OK -> `OpenSwoole\Coroutine\Channel::CHANNEL_OK`, SWOOLE_CHANNEL_TIMEOUT -> `OpenSwoole\Coroutine\Channel::CHANNEL_TIMEOUT`, SWOOLE_CHANNEL_CLOSED -> `OpenSwoole\Coroutine\Channel::CHANNEL_CLOSED`...
 
  
 
