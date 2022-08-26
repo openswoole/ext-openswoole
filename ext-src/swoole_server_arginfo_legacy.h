@@ -76,7 +76,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server_handle, 0, 0, 1)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server_setHandler, 0, 0, 1)
-    ZEND_ARG_CALLABLE_INFO(0, handler, 0)
+    ZEND_ARG_INFO(0, handler)
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Server_getCallback, 0, 0, 1)
