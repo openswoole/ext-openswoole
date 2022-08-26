@@ -862,16 +862,7 @@ void ServerObject::on_before_start() {
     }
 
     bool find_http_port = false;
-    if (is_redis_server()) {
-        add_assoc_bool(zsetting, "open_redis_protocol", 1);
-        add_assoc_bool(zsetting, "open_http_protocol", 0);
-        add_assoc_bool(zsetting, "open_mqtt_protocol", 0);
-        add_assoc_bool(zsetting, "open_eof_check", 0);
-        add_assoc_bool(zsetting, "open_length_check", 0);
-        primary_port->clear_protocol();
-        primary_port->open_redis_protocol = 1;
-        serv->onReceive = php_swoole_redis_server_onReceive;
-    } else if (is_http_server()) {
+    if (is_http_server()) {
         if (is_websocket_server()) {
             if (!isset_callback(primary_port, SW_SERVER_CB_onMessage)) {
                 php_swoole_fatal_error(E_ERROR, "require onMessage callback");

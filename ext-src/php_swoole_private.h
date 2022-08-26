@@ -159,8 +159,6 @@ extern zend_class_entry *swoole_socket_coro_ce;
 extern zend_class_entry *swoole_client_ce;
 extern zend_class_entry *swoole_server_ce;
 extern zend_object_handlers swoole_server_handlers;
-extern zend_class_entry *swoole_redis_server_ce;
-extern zend_object_handlers swoole_redis_server_handlers;
 extern zend_class_entry *swoole_connection_iterator_ce;
 extern zend_class_entry *swoole_process_ce;
 extern zend_class_entry *swoole_http_server_ce;
@@ -236,7 +234,6 @@ void php_swoole_http_request_minit(int module_number);
 void php_swoole_http_response_minit(int module_number);
 void php_swoole_http_server_minit(int module_number);
 void php_swoole_websocket_server_minit(int module_number);
-void php_swoole_redis_server_minit(int module_number);
 // other
 #ifdef SW_USE_POSTGRES
 void php_swoole_postgresql_coro_minit(int module_number);
@@ -254,7 +251,6 @@ void php_swoole_runtime_rinit();
  * ==============================================================
  */
 void php_swoole_async_coro_rshutdown();
-void php_swoole_redis_server_rshutdown();
 void php_swoole_coroutine_rshutdown();
 void php_swoole_runtime_rshutdown();
 void php_swoole_server_rshutdown();

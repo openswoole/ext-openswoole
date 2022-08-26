@@ -38,9 +38,6 @@ else
         swoole_server \
         swoole_http_server \
         swoole_websocket_server \
-        swoole_redis_server \
-        swoole_mysql_coro \
-        swoole_redis_coro \
         swoole_socket_coro \
         swoole_runtime"
         if [ ${#} -gt 1 ]; then

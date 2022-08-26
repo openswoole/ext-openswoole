@@ -629,7 +629,6 @@ if test "$PHP_SWOOLE" != "no"; then
         ext-src/swoole_process.cc \
         ext-src/swoole_process_pool.cc \
         ext-src/swoole_redis_coro.cc \
-        ext-src/swoole_redis_server.cc \
         ext-src/swoole_runtime.cc \
         ext-src/swoole_server.cc \
         ext-src/swoole_server_port.cc \

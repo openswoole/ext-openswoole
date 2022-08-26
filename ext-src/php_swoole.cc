@@ -1018,7 +1018,6 @@ PHP_MINIT_FUNCTION(openswoole) {
     php_swoole_http_response_minit(module_number);
     php_swoole_http_server_minit(module_number);
     php_swoole_websocket_server_minit(module_number);
-    php_swoole_redis_server_minit(module_number);
 #ifdef SW_USE_POSTGRES
     php_swoole_postgresql_coro_minit(module_number);
 #endif
@@ -1266,7 +1265,6 @@ PHP_RSHUTDOWN_FUNCTION(openswoole) {
 
     php_swoole_server_rshutdown();
     php_swoole_async_coro_rshutdown();
-    php_swoole_redis_server_rshutdown();
     php_swoole_coroutine_rshutdown();
     php_swoole_runtime_rshutdown();
 
