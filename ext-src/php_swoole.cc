@@ -710,19 +710,19 @@ PHP_MINIT_FUNCTION(openswoole) {
     /**
      * log level
      */
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_DEBUG", SW_LOG_DEBUG);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_TRACE", SW_LOG_TRACE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_INFO", SW_LOG_INFO);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_NOTICE", SW_LOG_NOTICE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_WARNING", SW_LOG_WARNING);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_ERROR", SW_LOG_ERROR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_NONE", SW_LOG_NONE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_DEBUG"), SW_LOG_DEBUG);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_TRACE"), SW_LOG_TRACE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_INFO"), SW_LOG_INFO);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_NOTICE"), SW_LOG_NOTICE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_WARNING"), SW_LOG_WARNING);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_ERROR"), SW_LOG_ERROR);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_NONE"), SW_LOG_NONE);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_ROTATION_SINGLE", SW_LOG_ROTATION_SINGLE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_ROTATION_MONTHLY", SW_LOG_ROTATION_MONTHLY);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_ROTATION_DAILY", SW_LOG_ROTATION_DAILY);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_ROTATION_HOURLY", SW_LOG_ROTATION_HOURLY);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_LOG_ROTATION_EVERY_MINUTE", SW_LOG_ROTATION_EVERY_MINUTE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_ROTATION_SINGLE"), SW_LOG_ROTATION_SINGLE);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_ROTATION_MONTHLY"), SW_LOG_ROTATION_MONTHLY);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_ROTATION_DAILY"), SW_LOG_ROTATION_DAILY);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_ROTATION_HOURLY"), SW_LOG_ROTATION_HOURLY);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_ROTATION_EVERY_MINUTE"), SW_LOG_ROTATION_EVERY_MINUTE);
 
     /**
      * stats
