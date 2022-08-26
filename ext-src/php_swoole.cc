@@ -1007,7 +1007,6 @@ PHP_MINIT_FUNCTION(openswoole) {
     php_swoole_client_minit(module_number);
     php_swoole_client_coro_minit(module_number);
     php_swoole_http_client_coro_minit(module_number);
-    php_swoole_mysql_coro_minit(module_number);
     php_swoole_redis_coro_minit(module_number);
 #ifdef SW_USE_HTTP2
     php_swoole_http2_client_coro_minit(module_number);
