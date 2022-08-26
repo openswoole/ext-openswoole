@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 732bd8bf97680e86267c95e811963549833a95b3 */
+ * Stub hash: b547b74f151fe2cadc5ca1832ce7528ebf694046 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_System_exec, 0, 1, MAY_BE_ARRAY|MAY_BE_FALSE)
 	ZEND_ARG_TYPE_INFO(0, command, IS_STRING, 0)
