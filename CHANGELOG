@@ -13,6 +13,9 @@
  . Redis Server API: $server->setHandler() -> $server->addCommand()
  . Redis Server API: $server->getHandler() -> $server->getCommand()
  . Disable sockets_*, exec, shell_exec, gethostbyname coroutines hook by default, remove HOOK_BLOCKING_FUNCTION and HOOK_SOCKETS in HOOK_ALL; Enable them explicitly if they are used
+ . Remove deprecated custom coroutine mysql client, prefer the hooked native coroutine mysql client
+ . Remove deprecated custom coroutine redis client, prefer the hooked native coroutine redis client
+ . Remove deprecated experimental coroutine http server
 
 # 4.11.1
 
