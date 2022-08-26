@@ -173,8 +173,6 @@ static const zend_function_entry swoole_table_methods[] =
     PHP_ME(swoole_table, next,        arginfo_class_Swoole_Table_next, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_table, current,     arginfo_class_Swoole_Table_current, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_table, key,         arginfo_class_Swoole_Table_key, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_table, delete, del, arginfo_class_Swoole_Table_del, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_table, exist, exists, arginfo_class_Swoole_Table_exists, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 // clang-format on

@@ -405,7 +405,6 @@ static zend_function_entry swoole_server_methods[] = {
     PHP_ME(swoole_server, sendto, arginfo_class_Swoole_Server_sendto, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, sendwait, arginfo_class_Swoole_Server_sendwait, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, exists, arginfo_class_Swoole_Server_exists, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_server, exist, exists, arginfo_class_Swoole_Server_exists, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, protect, arginfo_class_Swoole_Server_protect, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, sendfile, arginfo_class_Swoole_Server_sendfile, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, close, arginfo_class_Swoole_Server_close, ZEND_ACC_PUBLIC)
@@ -429,9 +428,6 @@ static zend_function_entry swoole_server_methods[] = {
     PHP_ME(swoole_server, getWorkerStatus, arginfo_class_Swoole_Server_getWorkerStatus, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, getManagerPid, arginfo_class_Swoole_Server_getManagerPid, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, getMasterPid, arginfo_class_Swoole_Server_getMasterPid, ZEND_ACC_PUBLIC)
-    //psr-0 style
-    PHP_MALIAS(swoole_server, connection_info, getClientInfo, arginfo_class_Swoole_Server_getClientInfo, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_server, connection_list, getClientList, arginfo_class_Swoole_Server_getClientList, ZEND_ACC_PUBLIC)
     //process
     PHP_ME(swoole_server, sendMessage, arginfo_class_Swoole_Server_sendMessage, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server, addProcess, arginfo_class_Swoole_Server_addProcess, ZEND_ACC_PUBLIC)

@@ -31,7 +31,6 @@ namespace Swoole {
         public function sendto(string $ip, int $port, string $data, int $serverSocket = -1): bool {}
         public function sendwait(int $fd, string $data): bool {}
         public function exists(int $fd): bool {}
-        public function exist(int $fd): bool {}
         public function protect(int $fd, bool $isProtected = true): bool {}
         public function sendfile(int $fd, string $fileName, int $offset = 0, int $length = 0): bool {}
         public function close(int $fd, bool $reset = false): bool {}

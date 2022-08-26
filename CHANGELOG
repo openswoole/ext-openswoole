@@ -21,6 +21,14 @@
  . Remove deprecated function `swoole_event_rshutdown`
  . Remove deprecated function `Swoole\Runtime::fread`, `Swoole\Runtime::fwrite`, `Swoole\Runtime::fgets`
  . Remove deprecated function `Coroutine::suspend`, use `Coroutine::yield`
+ . Remove deprecated function `Coroutine::getuid`, use `Coroutine::getCid`
+ . Remove deprecated function `Coroutine::listCoroutines`, use `Coroutine::list`
+ . Remove deprecated function `Table::exist`, use `Table::exists`
+ . Remove deprecated function `Table::delete`, use `Table::del`
+ . Remove deprecated function `Server->connection_info()`, use `Server->getClientInfo()`
+ . Remove deprecated function `Server->connection_list()`, use `Server->getClientList()`
+ . Remove deprecated function `Server->exist`, use `Server->exists`
+
  
 
 # 4.11.1
