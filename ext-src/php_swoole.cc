@@ -537,27 +537,27 @@ PHP_MINIT_FUNCTION(openswoole) {
      * SSL protocols
      */
 #ifdef HAVE_SSL3
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL_SSLv3", SW_SSL_SSLv3);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL_SSLv3"), SW_SSL_SSLv3);
 #endif
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL_TLSv1", SW_SSL_TLSv1);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL_TLSv1"), SW_SSL_TLSv1);
 
 #ifdef TLS1_1_VERSION
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL_TLSv1_1", SW_SSL_TLSv1_1);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL_TLSv1_1"), SW_SSL_TLSv1_1);
 #endif
 
 #ifdef TLS1_2_VERSION
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL_TLSv1_2", SW_SSL_TLSv1_2);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL_TLSv1_2"), SW_SSL_TLSv1_2);
 #endif
 
 #ifdef TLS1_3_VERSION
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL_TLSv1_3", SW_SSL_TLSv1_3);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL_TLSv1_3"), SW_SSL_TLSv1_3);
 #endif
 
 #ifdef SW_SUPPORT_DTLS
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL_DTLS", SW_SSL_DTLS);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL_DTLS"), SW_SSL_DTLS);
 #endif
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL_SSLv2", SW_SSL_SSLv2);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("SSL_SSLv2"), SW_SSL_SSLv2);
 #endif
 
     /**
