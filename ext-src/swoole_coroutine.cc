@@ -857,6 +857,13 @@ void php_swoole_coroutine_minit(int module_number) {
         swoole_coroutine_util, "Swoole\\Coroutine", nullptr, "Co", swoole_coroutine_methods, nullptr);
     SW_SET_CLASS_CREATE(swoole_coroutine_util, sw_zend_create_object_deny);
 
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("DEFAULT_MAX_CORO_NUM"), SW_DEFAULT_MAX_CORO_NUM);
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_MAX_NUM_LIMIT"), Coroutine::MAX_NUM_LIMIT);
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_INIT"), Coroutine::STATE_INIT);
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_WAITING"), Coroutine::STATE_WAITING);
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_RUNNING"), Coroutine::STATE_RUNNING);
+    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_END"), Coroutine::STATE_END);
+
     SW_INIT_CLASS_ENTRY_BASE(swoole_coroutine_iterator,
                              "Swoole\\Coroutine\\Iterator",
                              nullptr,
@@ -866,12 +873,6 @@ void php_swoole_coroutine_minit(int module_number) {
     SW_INIT_CLASS_ENTRY_BASE(
         swoole_coroutine_context, "Swoole\\Coroutine\\Context", nullptr, "Co\\Context", nullptr, spl_ce_ArrayObject);
 
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_DEFAULT_MAX_CORO_NUM", SW_DEFAULT_MAX_CORO_NUM);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CORO_MAX_NUM_LIMIT", Coroutine::MAX_NUM_LIMIT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CORO_INIT", Coroutine::STATE_INIT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CORO_WAITING", Coroutine::STATE_WAITING);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CORO_RUNNING", Coroutine::STATE_RUNNING);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_CORO_END", Coroutine::STATE_END);
 
     // prohibit exit in coroutine
     SW_INIT_CLASS_ENTRY_EX(swoole_exit_exception,
@@ -1039,7 +1040,6 @@ static PHP_METHOD(swoole_coroutine, getContext) {
         RETURN_NULL();
     }
     if (UNEXPECTED(task->context == (zend_object *) ~0)) {
-        /* bad context (has been destroyed), see: https://github.com/swoole/swoole-src/issues/2991 */
         php_swoole_fatal_error(E_WARNING, "Context of this coroutine has been destroyed");
         RETURN_NULL();
     }
