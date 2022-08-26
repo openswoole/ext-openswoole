@@ -629,66 +629,66 @@ void php_swoole_websocket_server_minit(int module_number) {
 
     /* {{{ swoole namespace */
     // status
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_STATUS_CONNECTION", WebSocket::STATUS_CONNECTION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_STATUS_HANDSHAKE", WebSocket::STATUS_HANDSHAKE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_STATUS_ACTIVE", WebSocket::STATUS_ACTIVE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_STATUS_CLOSING", WebSocket::STATUS_CLOSING);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_CONNECTION"), WebSocket::STATUS_CONNECTION);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_HANDSHAKE"), WebSocket::STATUS_HANDSHAKE);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_ACTIVE"), WebSocket::STATUS_ACTIVE);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_CLOSING"), WebSocket::STATUS_CLOSING);
     // all opcodes
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_OPCODE_CONTINUATION", WebSocket::OPCODE_CONTINUATION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_OPCODE_TEXT", WebSocket::OPCODE_TEXT);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_OPCODE_BINARY", WebSocket::OPCODE_BINARY);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_OPCODE_CLOSE", WebSocket::OPCODE_CLOSE);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_OPCODE_PING", WebSocket::OPCODE_PING);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_OPCODE_PONG", WebSocket::OPCODE_PONG);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_CONTINUATION"), WebSocket::OPCODE_CONTINUATION);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_TEXT"), WebSocket::OPCODE_TEXT);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_BINARY"), WebSocket::OPCODE_BINARY);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_CLOSE"), WebSocket::OPCODE_CLOSE);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_PING"), WebSocket::OPCODE_PING);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_PONG"), WebSocket::OPCODE_PONG);
     // flags
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_FLAG_FIN", WebSocket::FLAG_FIN);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_FLAG_RSV1", WebSocket::FLAG_RSV1);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_FLAG_RSV2", WebSocket::FLAG_RSV2);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_FLAG_RSV3", WebSocket::FLAG_RSV3);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_FLAG_MASK", WebSocket::FLAG_MASK);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_FLAG_COMPRESS", WebSocket::FLAG_COMPRESS);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_FIN"), WebSocket::FLAG_FIN);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_RSV1"), WebSocket::FLAG_RSV1);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_RSV2"), WebSocket::FLAG_RSV2);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_RSV3"), WebSocket::FLAG_RSV3);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_MASK"), WebSocket::FLAG_MASK);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_COMPRESS"), WebSocket::FLAG_COMPRESS);
     // close error
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_NORMAL", WebSocket::CLOSE_NORMAL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_GOING_AWAY", WebSocket::CLOSE_GOING_AWAY);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_PROTOCOL_ERROR", WebSocket::CLOSE_PROTOCOL_ERROR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_DATA_ERROR", WebSocket::CLOSE_DATA_ERROR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_STATUS_ERROR", WebSocket::CLOSE_STATUS_ERROR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_ABNORMAL", WebSocket::CLOSE_ABNORMAL);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_MESSAGE_ERROR", WebSocket::CLOSE_MESSAGE_ERROR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_POLICY_ERROR", WebSocket::CLOSE_POLICY_ERROR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_MESSAGE_TOO_BIG", WebSocket::CLOSE_MESSAGE_TOO_BIG);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_EXTENSION_MISSING", WebSocket::CLOSE_EXTENSION_MISSING);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_SERVER_ERROR", WebSocket::CLOSE_SERVER_ERROR);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_WEBSOCKET_CLOSE_TLS", WebSocket::CLOSE_TLS);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_NORMAL"), WebSocket::CLOSE_NORMAL);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_GOING_AWAY"), WebSocket::CLOSE_GOING_AWAY);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_PROTOCOL_ERROR"), WebSocket::CLOSE_PROTOCOL_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_DATA_ERROR"), WebSocket::CLOSE_DATA_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_STATUS_ERROR"), WebSocket::CLOSE_STATUS_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_ABNORMAL"), WebSocket::CLOSE_ABNORMAL);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_MESSAGE_ERROR"), WebSocket::CLOSE_MESSAGE_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_POLICY_ERROR"), WebSocket::CLOSE_POLICY_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_MESSAGE_TOO_BIG"), WebSocket::CLOSE_MESSAGE_TOO_BIG);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_EXTENSION_MISSING"), WebSocket::CLOSE_EXTENSION_MISSING);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_SERVER_ERROR"), WebSocket::CLOSE_SERVER_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_TLS"), WebSocket::CLOSE_TLS);
     /* swoole namespace }}} */
 
     /* BC */
     // status
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_CONNECTION", WebSocket::STATUS_CONNECTION);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_HANDSHAKE", WebSocket::STATUS_HANDSHAKE);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_FRAME", WebSocket::STATUS_ACTIVE);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_ACTIVE", WebSocket::STATUS_ACTIVE);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_CLOSING", WebSocket::STATUS_CLOSING);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_CONNECTION"), WebSocket::STATUS_CONNECTION);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_HANDSHAKE"), WebSocket::STATUS_HANDSHAKE);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_FRAME"), WebSocket::STATUS_ACTIVE);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_ACTIVE"), WebSocket::STATUS_ACTIVE);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_CLOSING"), WebSocket::STATUS_CLOSING);
     // all opcodes
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_CONTINUATION", WebSocket::OPCODE_CONTINUATION);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_TEXT", WebSocket::OPCODE_TEXT);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_BINARY", WebSocket::OPCODE_BINARY);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_CLOSE", WebSocket::OPCODE_CLOSE);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_PING", WebSocket::OPCODE_PING);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_PONG", WebSocket::OPCODE_PONG);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_CONTINUATION"), WebSocket::OPCODE_CONTINUATION);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_TEXT"), WebSocket::OPCODE_TEXT);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_BINARY"), WebSocket::OPCODE_BINARY);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_CLOSE"), WebSocket::OPCODE_CLOSE);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_PING"), WebSocket::OPCODE_PING);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_PONG"), WebSocket::OPCODE_PONG);
     // close error
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_NORMAL", WebSocket::CLOSE_NORMAL);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_GOING_AWAY", WebSocket::CLOSE_GOING_AWAY);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_PROTOCOL_ERROR", WebSocket::CLOSE_PROTOCOL_ERROR);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_DATA_ERROR", WebSocket::CLOSE_DATA_ERROR);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_STATUS_ERROR", WebSocket::CLOSE_STATUS_ERROR);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_ABNORMAL", WebSocket::CLOSE_ABNORMAL);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_MESSAGE_ERROR", WebSocket::CLOSE_MESSAGE_ERROR);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_POLICY_ERROR", WebSocket::CLOSE_POLICY_ERROR);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_MESSAGE_TOO_BIG", WebSocket::CLOSE_MESSAGE_TOO_BIG);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_EXTENSION_MISSING", WebSocket::CLOSE_EXTENSION_MISSING);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_SERVER_ERROR", WebSocket::CLOSE_SERVER_ERROR);
-    SW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_TLS", WebSocket::CLOSE_TLS);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_NORMAL"), WebSocket::CLOSE_NORMAL);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_GOING_AWAY"), WebSocket::CLOSE_GOING_AWAY);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_PROTOCOL_ERROR"), WebSocket::CLOSE_PROTOCOL_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_DATA_ERROR"), WebSocket::CLOSE_DATA_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_STATUS_ERROR"), WebSocket::CLOSE_STATUS_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_ABNORMAL"), WebSocket::CLOSE_ABNORMAL);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_MESSAGE_ERROR"), WebSocket::CLOSE_MESSAGE_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_POLICY_ERROR"), WebSocket::CLOSE_POLICY_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_MESSAGE_TOO_BIG"), WebSocket::CLOSE_MESSAGE_TOO_BIG);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_EXTENSION_MISSING"), WebSocket::CLOSE_EXTENSION_MISSING);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_SERVER_ERROR"), WebSocket::CLOSE_SERVER_ERROR);
+    zend_declare_class_constant_long(swoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_TLS"), WebSocket::CLOSE_TLS);
 }
 
 static sw_inline bool swoole_websocket_server_push(Server *serv, SessionId fd, String *buffer) {
