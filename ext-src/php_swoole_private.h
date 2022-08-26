@@ -223,7 +223,6 @@ void php_swoole_socket_coro_minit(int module_number);
 void php_swoole_client_minit(int module_number);
 void php_swoole_client_coro_minit(int module_number);
 void php_swoole_http_client_coro_minit(int module_number);
-void php_swoole_redis_coro_minit(int module_number);
 #ifdef SW_USE_HTTP2
 void php_swoole_http2_client_coro_minit(int module_number);
 #endif
