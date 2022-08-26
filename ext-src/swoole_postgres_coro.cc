@@ -273,25 +273,25 @@ void php_swoole_postgresql_coro_minit(int module_number) {
     zend_declare_property_null(swoole_postgresql_coro_ce, ZEND_STRL("resultDiag"), ZEND_ACC_PUBLIC);
     zend_declare_property_null(swoole_postgresql_coro_ce, ZEND_STRL("notices"), ZEND_ACC_PUBLIC);
 
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_ASSOC", PGSQL_ASSOC);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_NUM", PGSQL_NUM);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_BOTH", PGSQL_BOTH);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGSQL_ASSOC"), PGSQL_ASSOC);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGSQL_NUM"), PGSQL_NUM);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGSQL_BOTH"), PGSQL_BOTH);
 
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_EMPTY_QUERY", PGRES_EMPTY_QUERY);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_COMMAND_OK", PGRES_COMMAND_OK);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_TUPLES_OK", PGRES_TUPLES_OK);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_BAD_RESPONSE", PGRES_BAD_RESPONSE);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_NONFATAL_ERROR", PGRES_NONFATAL_ERROR);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGRES_FATAL_ERROR", PGRES_FATAL_ERROR);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_EMPTY_QUERY"), PGRES_EMPTY_QUERY);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_COMMAND_OK"), PGRES_COMMAND_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_TUPLES_OK"), PGRES_TUPLES_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_BAD_RESPONSE"), PGRES_BAD_RESPONSE);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_NONFATAL_ERROR"), PGRES_NONFATAL_ERROR);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_FATAL_ERROR"), PGRES_FATAL_ERROR);
 
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_OK", CONNECTION_OK);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_BAD", CONNECTION_BAD);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_STARTED", CONNECTION_STARTED);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_AWAITING_RESPONSE", CONNECTION_AWAITING_RESPONSE);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_AUTH_OK", CONNECTION_AUTH_OK);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_SETENV", CONNECTION_SETENV);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_SSL_STARTUP", CONNECTION_SSL_STARTUP);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_NEEDED", CONNECTION_NEEDED);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_OK"), CONNECTION_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_BAD"), CONNECTION_BAD);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_STARTED"), CONNECTION_STARTED);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_AWAITING_RESPONSE"), CONNECTION_AWAITING_RESPONSE);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_AUTH_OK"), CONNECTION_AUTH_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_SETENV"), CONNECTION_SETENV);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_SSL_STARTUP"), CONNECTION_SSL_STARTUP);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_NEEDED"), CONNECTION_NEEDED);
 
 }
 
