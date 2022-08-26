@@ -602,6 +602,11 @@ void php_swoole_server_minit(int module_number) {
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("WORKER_BUSY"), SW_WORKER_BUSY);
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("WORKER_IDLE"), SW_WORKER_IDLE);
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("WORKER_EXIT"), SW_WORKER_EXIT);
+
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("STATS_DEFAULT"), 0);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("STATS_JSON"), 1);
+    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("STATS_OPENMETRICS"), 2);
+
 }
 
 zend_fcall_info_cache *php_swoole_server_get_fci_cache(Server *serv, int server_fd, int event_type) {

@@ -434,12 +434,12 @@ PHP_MINIT_FUNCTION(openswoole) {
 
     // clang-format off
     // MUST be on the same line for the inspection tool to recognize correctly
-    SW_REGISTER_STRING_CONSTANT("SWOOLE_VERSION", SWOOLE_VERSION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_VERSION_ID", SWOOLE_VERSION_ID);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_MAJOR_VERSION", SWOOLE_MAJOR_VERSION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_MINOR_VERSION", SWOOLE_MINOR_VERSION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_RELEASE_VERSION", SWOOLE_RELEASE_VERSION);
-    SW_REGISTER_STRING_CONSTANT("SWOOLE_EXTRA_VERSION", SWOOLE_EXTRA_VERSION);
+    SW_REGISTER_STRING_CONSTANT("OPENSWOOLE_VERSION", SWOOLE_VERSION);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_VERSION_ID", SWOOLE_VERSION_ID);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_MAJOR_VERSION", SWOOLE_MAJOR_VERSION);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_MINOR_VERSION", SWOOLE_MINOR_VERSION);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_RELEASE_VERSION", SWOOLE_RELEASE_VERSION);
+    SW_REGISTER_STRING_CONSTANT("OPENSWOOLE_EXTRA_VERSION", SWOOLE_EXTRA_VERSION);
 #ifndef SW_DEBUG
     zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("HAVE_DEBUG"), 0);
 #else
@@ -676,8 +676,8 @@ PHP_MINIT_FUNCTION(openswoole) {
      * trace log
      */
     zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_SERVER"), SW_TRACE_SERVER);
-    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CLIENT)", SW_TRACE_CLIENT);
-    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_BUFFER)", SW_TRACE_BUFFER);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CLIENT"), SW_TRACE_CLIENT);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_BUFFER"), SW_TRACE_BUFFER);
     zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_CONN"), SW_TRACE_CONN);
     zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_EVENT"), SW_TRACE_EVENT);
     zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("TRACE_WORKER"), SW_TRACE_WORKER);
@@ -725,17 +725,9 @@ PHP_MINIT_FUNCTION(openswoole) {
     zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("LOG_ROTATION_EVERY_MINUTE"), SW_LOG_ROTATION_EVERY_MINUTE);
 
     /**
-     * stats
-     */
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_STATS_DEFAULT", 0);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_STATS_JSON", 1);
-    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_STATS_OPENMETRICS", 2);
-
-
-    /**
      * limit
      */
-    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("IOV_MAX", IOV_MAX);
+    zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("IOV_MAX"), IOV_MAX);
 
     // clang-format on
 
