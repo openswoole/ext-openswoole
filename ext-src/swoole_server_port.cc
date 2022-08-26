@@ -764,6 +764,16 @@ static PHP_METHOD(swoole_server_port, set) {
     property->zsetting = zsetting;
 }
 
+static bool is_core_loaded() {
+    zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    if (zend_lookup_class(class_name) == NULL) {
+        efree(class_name);
+        return false;
+    }
+    efree(class_name);
+    return true;
+}
+
 static PHP_METHOD(swoole_server_port, handle) {
 
     zval *cb;
@@ -787,6 +797,10 @@ static PHP_METHOD(swoole_server_port, handle) {
     }
     efree(func_name);
 
+    if(!is_core_loaded()) {
+        php_swoole_fatal_error(E_ERROR, "$server->handle API is avaiable in openswoole/core: composer install openswoole/core");
+    }
+
     zval *zserv = (zval *) serv->private_data_2;
     zval args[2];
     args[0] = *zserv;
@@ -809,6 +823,10 @@ static PHP_METHOD(swoole_server_port, setHandler) {
     ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_ZVAL(handler)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if(!is_core_loaded()) {
+        php_swoole_fatal_error(E_ERROR, "server->setHandler API is avaiable in openswoole/core: composer install openswoole/core");
+    }
 
     zval *zserv = (zval *) serv->private_data_2;
     zval args[2];
