@@ -1,0 +1,40 @@
+name: test-laravel
+
+on: [push, pull_request]
+
+jobs:
+  test-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.0, 8.1]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: "${{ matrix.php }}"
+        extensions: dom, curl, libxml, mbstring, zip
+        tools: composer:v2
+        coverage: none
+    - name: Show machine information
+      run: |
+        date
+        env
+        uname -a
+        ulimit -a
+        php -v
+        php --ini
+        ls -al
+        pwd
+        echo "`git log -20 --pretty --oneline`"
+        echo "`git log -10 --stat --pretty --oneline`"
+        sudo apt-get upgrade -y && sudo apt-get update -y
+        sudo apt-get install -y libcurl4-openssl-dev
+    - name: Run simple-compile-on-github.sh
+      run: |
+        sudo ${{runner.workspace}}/swoole-src/travis/simple-compile-on-github.sh
+    - name: Execute Laravel Octane tests
+      run: |
+        sudo ${{runner.workspace}}/swoole-src/travis/test-laravel.sh
