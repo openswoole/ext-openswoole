@@ -147,7 +147,7 @@ bool Context::swap_out() {
 #else
 #if USE_BOOST_V2
     transfer_t t = jump_fcontext(swap_ctx_, this);
-    swap_ctx_= t.fctx;
+    swap_ctx_ = t.fctx;
 #else
     jump_fcontext_v1(&ctx_, swap_ctx_, (intptr_t) this, true);
 #endif
@@ -175,7 +175,6 @@ void Context::context_func(void *arg) {
 }
 
 #endif
-
 
 }  // namespace coroutine
 }  // namespace swoole

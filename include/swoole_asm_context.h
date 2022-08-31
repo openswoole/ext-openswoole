@@ -31,15 +31,14 @@ typedef void *fcontext_t;
 
 #if USE_BOOST_V2
 
-struct data_t
-{
-    void   *from;
-    void   *data;
+struct data_t {
+    void *from;
+    void *data;
 };
 
 struct transfer_t {
-    fcontext_t  fctx;
-    void    *data;
+    fcontext_t fctx;
+    void *data;
 };
 
 fcontext_t make_fcontext(void *sp, size_t size, void (*fn)(transfer_t));
