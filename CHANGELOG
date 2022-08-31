@@ -30,6 +30,9 @@
  . Remove deprecated function `Server->exist`, use `Server->exists`
  . Move global constants under namespace: SWOOLE_CHANNEL_OK -> `OpenSwoole\Coroutine\Channel::CHANNEL_OK`, SWOOLE_CHANNEL_TIMEOUT -> `OpenSwoole\Coroutine\Channel::CHANNEL_TIMEOUT`, SWOOLE_CHANNEL_CLOSED -> `OpenSwoole\Coroutine\Channel::CHANNEL_CLOSED`...
  . Move global constants under namespace: SWOOLE_DEFAULT_MAX_CORO_NUM -> `OpenSwoole\Coroutine::DEFAULT_MAX_CORO_NUM`...
+ . Remove `$server->getLastError()`, use `OpenSwoole\Util::getLastErrorCode()`
+ . Remove `$process->name()`, use `OpenSwoole\Util::setProcessName()`
+ . New Util API class: added `OpenSwoole\Util` class
 
  
 
