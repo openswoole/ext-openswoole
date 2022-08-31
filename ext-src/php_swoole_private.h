@@ -172,8 +172,6 @@ extern zend_class_entry *swoole_error_ce;
 extern zend_class_entry *openswoole_constants_ce;
 
 PHP_FUNCTION(swoole_clear_dns_cache);
-PHP_FUNCTION(swoole_last_error);
-PHP_FUNCTION(swoole_set_process_name);
 //---------------------------------------------------------
 //                  Coroutine API
 //---------------------------------------------------------
@@ -206,6 +204,7 @@ PHP_FUNCTION(swoole_async_dns_lookup_coro);
  */
 void php_swoole_event_minit(int module_number);
 // base
+void php_swoole_util_minit(int module_number);
 void php_swoole_atomic_minit(int module_number);
 void php_swoole_lock_minit(int module_number);
 void php_swoole_process_minit(int module_number);

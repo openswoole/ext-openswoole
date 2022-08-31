@@ -609,6 +609,7 @@ if test "$PHP_SWOOLE" != "no"; then
         ext-src/php_swoole.cc \
         ext-src/php_swoole_cxx.cc \
         ext-src/swoole_async_coro.cc \
+        ext-src/swoole_util.cc \
         ext-src/swoole_atomic.cc \
         ext-src/swoole_channel_coro.cc \
         ext-src/swoole_client.cc \

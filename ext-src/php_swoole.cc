@@ -27,19 +27,8 @@ BEGIN_EXTERN_C()
 #endif
 END_EXTERN_C()
 
-#include "swoole_mime_type.h"
 #include "swoole_server.h"
 #include "swoole_util.h"
-
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <net/if.h>
-#include <ifaddrs.h>
-#include <sys/ioctl.h>
-
-#if defined(__MACH__) || defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__)
-#include <net/if_dl.h>
-#endif
 
 #ifdef SW_HAVE_ZLIB
 #include <zlib.h>
@@ -63,21 +52,6 @@ extern sapi_module_struct sapi_module;
 static swoole::CallbackManager rshutdown_callbacks;
 
 SW_EXTERN_C_BEGIN
-static PHP_FUNCTION(swoole_version);
-static PHP_FUNCTION(swoole_cpu_num);
-static PHP_FUNCTION(swoole_strerror);
-static PHP_FUNCTION(swoole_clear_error);
-static PHP_FUNCTION(swoole_errno);
-static PHP_FUNCTION(swoole_error_log);
-static PHP_FUNCTION(swoole_get_local_ip);
-static PHP_FUNCTION(swoole_get_local_mac);
-static PHP_FUNCTION(swoole_hashcode);
-static PHP_FUNCTION(swoole_mime_type_add);
-static PHP_FUNCTION(swoole_mime_type_set);
-static PHP_FUNCTION(swoole_mime_type_delete);
-static PHP_FUNCTION(swoole_mime_type_get);
-static PHP_FUNCTION(swoole_mime_type_exists);
-static PHP_FUNCTION(swoole_mime_type_list);
 static PHP_FUNCTION(swoole_substr_unserialize);
 #ifdef SW_USE_JSON
 static PHP_FUNCTION(swoole_substr_json_decode);
@@ -145,44 +119,7 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_substr_json_decode, 0, 0, 2)
 ZEND_END_ARG_INFO()
 #endif
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_set_process_name, 0, 0, 1)
-    ZEND_ARG_INFO(0, process_name)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_strerror, 0, 0, 1)
-    ZEND_ARG_INFO(0, errno)
-    ZEND_ARG_INFO(0, error_type)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_error_log, 0, 0, 2)
-    ZEND_ARG_INFO(0, level)
-    ZEND_ARG_INFO(0, msg)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_hashcode, 0, 0, 1)
-    ZEND_ARG_INFO(0, data)
-    ZEND_ARG_INFO(0, type)
-ZEND_END_ARG_INFO()
-
-/* add/set */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_mime_type_write, 0, 0, 2)
-    ZEND_ARG_INFO(0, suffix)
-    ZEND_ARG_INFO(0, mime_type)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_mime_type_delete, 0, 0, 1)
-    ZEND_ARG_INFO(0, suffix)
-ZEND_END_ARG_INFO()
-
-/* get/exists */
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_mime_type_read, 0, 0, 1)
-    ZEND_ARG_INFO(0, filename)
-ZEND_END_ARG_INFO()
-
 const zend_function_entry swoole_functions[] = {
-    PHP_FE(swoole_version, arginfo_swoole_void)
-    PHP_FE(swoole_cpu_num, arginfo_swoole_void)
-    PHP_FE(swoole_last_error, arginfo_swoole_void)
     /*------swoole_async_io------*/
     PHP_FE(swoole_async_dns_lookup_coro, arginfo_swoole_async_dns_lookup_coro)
     PHP_FE(swoole_async_set, arginfo_swoole_async_set)
@@ -194,21 +131,6 @@ const zend_function_entry swoole_functions[] = {
     /*------other-----*/
     PHP_FE(swoole_client_select, arginfo_swoole_client_select)
     PHP_FALIAS(swoole_select, swoole_client_select, arginfo_swoole_client_select)
-    PHP_FE(swoole_set_process_name, arginfo_swoole_set_process_name)
-    PHP_FE(swoole_get_local_ip, arginfo_swoole_void)
-    PHP_FE(swoole_get_local_mac, arginfo_swoole_void)
-    PHP_FE(swoole_strerror, arginfo_swoole_strerror)
-    PHP_FE(swoole_errno, arginfo_swoole_void)
-    PHP_FE(swoole_clear_error, arginfo_swoole_void)
-    PHP_FE(swoole_error_log, arginfo_swoole_error_log)
-    PHP_FE(swoole_hashcode, arginfo_swoole_hashcode)
-    PHP_FE(swoole_mime_type_add, arginfo_swoole_mime_type_write)
-    PHP_FE(swoole_mime_type_set, arginfo_swoole_mime_type_write)
-    PHP_FE(swoole_mime_type_delete, arginfo_swoole_mime_type_delete)
-    PHP_FE(swoole_mime_type_get, arginfo_swoole_mime_type_read)
-    PHP_FALIAS(swoole_get_mime_type, swoole_mime_type_get, arginfo_swoole_mime_type_read)
-    PHP_FE(swoole_mime_type_exists, arginfo_swoole_mime_type_read)
-    PHP_FE(swoole_mime_type_list, arginfo_swoole_void)
     PHP_FE(swoole_clear_dns_cache, arginfo_swoole_void)
     PHP_FE(swoole_substr_unserialize, arginfo_swoole_substr_unserialize)
 #ifdef SW_USE_JSON
@@ -243,8 +165,8 @@ zend_module_entry openswoole_module_entry = {
     swoole_functions,
     PHP_MINIT(openswoole),
     PHP_MSHUTDOWN(openswoole),
-    PHP_RINIT(openswoole),     //RINIT
-    PHP_RSHUTDOWN(openswoole), //RSHUTDOWN
+    PHP_RINIT(openswoole),
+    PHP_RSHUTDOWN(openswoole),
     PHP_MINFO(openswoole),
     PHP_SWOOLE_VERSION,
     STANDARD_MODULE_PROPERTIES
@@ -976,6 +898,7 @@ PHP_MINIT_FUNCTION(openswoole) {
     /** <Sort by dependency> **/
     php_swoole_event_minit(module_number);
     // base
+    php_swoole_util_minit(module_number);
     php_swoole_atomic_minit(module_number);
     php_swoole_lock_minit(module_number);
     php_swoole_process_minit(module_number);
@@ -1280,263 +1203,6 @@ PHP_RSHUTDOWN_FUNCTION(openswoole) {
 #endif
 
     return SUCCESS;
-}
-
-static PHP_FUNCTION(swoole_version) {
-    RETURN_STRING(SWOOLE_VERSION);
-}
-
-static uint32_t hashkit_one_at_a_time(const char *key, size_t key_length) {
-    const char *ptr = key;
-    uint32_t value = 0;
-
-    while (key_length--) {
-        uint32_t val = (uint32_t) *ptr++;
-        value += val;
-        value += (value << 10);
-        value ^= (value >> 6);
-    }
-    value += (value << 3);
-    value ^= (value >> 11);
-    value += (value << 15);
-
-    return value;
-}
-
-static PHP_FUNCTION(swoole_hashcode) {
-    char *data;
-    size_t l_data;
-    zend_long type = 0;
-
-    ZEND_PARSE_PARAMETERS_START(1, 2)
-    Z_PARAM_STRING(data, l_data)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_LONG(type)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    switch (type) {
-    case 0:
-        RETURN_LONG(zend_hash_func(data, l_data));
-    case 1:
-        RETURN_LONG(hashkit_one_at_a_time(data, l_data));
-    default:
-        RETURN_FALSE;
-    }
-}
-
-static PHP_FUNCTION(swoole_clear_error) {
-    swoole_set_last_error(0);
-}
-
-PHP_FUNCTION(swoole_last_error) {
-    RETURN_LONG(swoole_get_last_error());
-}
-
-static PHP_FUNCTION(swoole_cpu_num) {
-    RETURN_LONG(SW_CPU_NUM);
-}
-
-static PHP_FUNCTION(swoole_strerror) {
-    zend_long swoole_errno;
-    zend_long error_type = SW_STRERROR_SYSTEM;
-
-    ZEND_PARSE_PARAMETERS_START(1, 2)
-    Z_PARAM_LONG(swoole_errno)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_LONG(error_type)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    if (error_type == SW_STRERROR_GAI) {
-        RETURN_STRING(gai_strerror(swoole_errno));
-    } else if (error_type == SW_STRERROR_DNS) {
-        RETURN_STRING(hstrerror(swoole_errno));
-    } else if (error_type == SW_STRERROR_SWOOLE || (swoole_errno > SW_ERROR_BEGIN && swoole_errno < SW_ERROR_END)) {
-        RETURN_STRING(swoole_strerror(swoole_errno));
-    } else {
-        RETURN_STRING(strerror(swoole_errno));
-    }
-}
-
-static PHP_FUNCTION(swoole_error_log) {
-    char *msg;
-    size_t l_msg;
-    zend_long level = 0;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-    Z_PARAM_LONG(level)
-    Z_PARAM_STRING(msg, l_msg)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    sw_logger()->put(level, msg, l_msg);
-}
-
-static PHP_FUNCTION(swoole_mime_type_add) {
-    zend_string *suffix;
-    zend_string *mime_type;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-    Z_PARAM_STR(suffix)
-    Z_PARAM_STR(mime_type)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    RETURN_BOOL(swoole::mime_type::add(ZSTR_VAL(suffix), ZSTR_VAL(mime_type)));
-}
-
-static PHP_FUNCTION(swoole_mime_type_set) {
-    zend_string *suffix;
-    zend_string *mime_type;
-
-    ZEND_PARSE_PARAMETERS_START(2, 2)
-    Z_PARAM_STR(suffix)
-    Z_PARAM_STR(mime_type)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    swoole::mime_type::set(ZSTR_VAL(suffix), ZSTR_VAL(mime_type));
-}
-
-static PHP_FUNCTION(swoole_mime_type_delete) {
-    zend_string *suffix;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(suffix)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    RETURN_BOOL(swoole::mime_type::del(ZSTR_VAL(suffix)));
-}
-
-static PHP_FUNCTION(swoole_mime_type_get) {
-    zend_string *filename;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(filename)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    RETURN_STRING(swoole::mime_type::get(ZSTR_VAL(filename)).c_str());
-}
-
-static PHP_FUNCTION(swoole_mime_type_exists) {
-    zend_string *filename;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_STR(filename)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    RETURN_BOOL(swoole::mime_type::exists(ZSTR_VAL(filename)));
-}
-
-static PHP_FUNCTION(swoole_mime_type_list) {
-    array_init(return_value);
-    for (auto &i : swoole::mime_type::list()) {
-        add_next_index_string(return_value, i.second.c_str());
-    }
-}
-
-static PHP_FUNCTION(swoole_errno) {
-    RETURN_LONG(errno);
-}
-
-PHP_FUNCTION(swoole_set_process_name) {
-    zend_function *cli_set_process_title =
-        (zend_function *) zend_hash_str_find_ptr(EG(function_table), ZEND_STRL("cli_set_process_title"));
-    if (!cli_set_process_title) {
-        php_swoole_fatal_error(E_WARNING, "swoole_set_process_name only support in CLI mode");
-        RETURN_FALSE;
-    }
-    cli_set_process_title->internal_function.handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
-}
-
-static PHP_FUNCTION(swoole_get_local_ip) {
-    struct sockaddr_in *s4;
-    struct ifaddrs *ipaddrs, *ifa;
-    void *in_addr;
-    char ip[64];
-
-    if (getifaddrs(&ipaddrs) != 0) {
-        php_swoole_sys_error(E_WARNING, "getifaddrs() failed");
-        RETURN_FALSE;
-    }
-    array_init(return_value);
-    for (ifa = ipaddrs; ifa != nullptr; ifa = ifa->ifa_next) {
-        if (ifa->ifa_addr == nullptr || !(ifa->ifa_flags & IFF_UP)) {
-            continue;
-        }
-
-        switch (ifa->ifa_addr->sa_family) {
-        case AF_INET:
-            s4 = (struct sockaddr_in *) ifa->ifa_addr;
-            in_addr = &s4->sin_addr;
-            break;
-        case AF_INET6:
-            // struct sockaddr_in6 *s6 = (struct sockaddr_in6 *)ifa->ifa_addr;
-            // in_addr = &s6->sin6_addr;
-            continue;
-        default:
-            continue;
-        }
-        if (!inet_ntop(ifa->ifa_addr->sa_family, in_addr, ip, sizeof(ip))) {
-            php_error_docref(nullptr, E_WARNING, "%s: inet_ntop failed", ifa->ifa_name);
-        } else {
-            // if (ifa->ifa_addr->sa_family == AF_INET && ntohl(((struct in_addr *) in_addr)->s_addr) ==
-            // INADDR_LOOPBACK)
-            if (strcmp(ip, "127.0.0.1") == 0) {
-                continue;
-            }
-            add_assoc_string(return_value, ifa->ifa_name, ip);
-        }
-    }
-    freeifaddrs(ipaddrs);
-}
-
-static PHP_FUNCTION(swoole_get_local_mac) {
-    auto add_assoc_address = [](zval *zv, const char *name, const unsigned char *addr) {
-        char buf[32];
-        sw_snprintf(
-            SW_STRS(buf), "%02X:%02X:%02X:%02X:%02X:%02X", addr[0], addr[1], addr[2], addr[3], addr[4], addr[5]);
-        add_assoc_string(zv, name, buf);
-    };
-#ifdef SIOCGIFHWADDR
-    struct ifconf ifc;
-    struct ifreq buf[16];
-
-    int sock;
-    int i = 0, num = 0;
-
-    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        php_swoole_sys_error(E_WARNING, "new socket failed");
-        RETURN_FALSE;
-    }
-    array_init(return_value);
-
-    ifc.ifc_len = sizeof(buf);
-    ifc.ifc_buf = (caddr_t) buf;
-    if (!ioctl(sock, SIOCGIFCONF, (char *) &ifc)) {
-        num = ifc.ifc_len / sizeof(struct ifreq);
-        while (i < num) {
-            if (!(ioctl(sock, SIOCGIFHWADDR, (char *) &buf[i]))) {
-                add_assoc_address(return_value, buf[i].ifr_name, (unsigned char *) buf[i].ifr_hwaddr.sa_data);
-            }
-            i++;
-        }
-    }
-    close(sock);
-#else
-#ifdef LLADDR
-    ifaddrs *ifas, *ifa;
-    if (getifaddrs(&ifas) == 0) {
-        array_init(return_value);
-        for (ifa = ifas; ifa; ifa = ifa->ifa_next) {
-            if ((ifa->ifa_addr->sa_family == AF_LINK) && ifa->ifa_addr) {
-                add_assoc_address(
-                    return_value, ifa->ifa_name, (unsigned char *) (LLADDR((struct sockaddr_dl *) ifa->ifa_addr)));
-            }
-        }
-        freeifaddrs(ifas);
-    }
-#else
-    php_error_docref(nullptr, E_WARNING, "swoole_get_local_mac is not supported");
-    RETURN_FALSE;
-#endif
-#endif
 }
 
 static PHP_FUNCTION(swoole_internal_call_user_shutdown_begin) {
