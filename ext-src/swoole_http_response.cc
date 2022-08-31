@@ -577,7 +577,7 @@ int swoole_http_response_compress(const char *data, size_t length, int method, i
         level = Z_BEST_COMPRESSION;
     }
 
-    size_t memory_size = ((size_t)((double) length * (double) 1.015)) + 10 + 8 + 4 + 1;
+    size_t memory_size = ((size_t) ((double) length * (double) 1.015)) + 10 + 8 + 4 + 1;
     if (memory_size > swoole_zlib_buffer->size) {
         if (!swoole_zlib_buffer->extend(memory_size)) {
             return SW_ERR;

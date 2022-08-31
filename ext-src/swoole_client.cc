@@ -28,12 +28,12 @@
 #include <queue>
 #include <unordered_map>
 
+using swoole::HttpProxy;
 using swoole::Protocol;
+using swoole::Socks5Proxy;
+using swoole::String;
 using swoole::network::Client;
 using swoole::network::Socket;
-using swoole::Socks5Proxy;
-using swoole::HttpProxy;
-using swoole::String;
 
 struct ClientCallback {
     zend_fcall_info_cache cache_onConnect;
@@ -160,8 +160,7 @@ static sw_inline Client *client_get_ptr(zval *zobject) {
         }
     }
     swoole_set_last_error(SW_ERROR_CLIENT_NO_CONNECTION);
-    zend_update_property_long(
-        swoole_client_ce, SW_Z8_OBJ_P(zobject), ZEND_STRL("errCode"), swoole_get_last_error());
+    zend_update_property_long(swoole_client_ce, SW_Z8_OBJ_P(zobject), ZEND_STRL("errCode"), swoole_get_last_error());
     php_swoole_error(E_WARNING, "client is not connected to server");
     return nullptr;
 }
@@ -203,12 +202,8 @@ void php_swoole_client_minit(int module_number) {
     SW_SET_CLASS_CUSTOM_OBJECT(
         swoole_client, php_swoole_client_create_object, php_swoole_client_free_object, ClientObject, std);
 
-    SW_INIT_CLASS_ENTRY_EX(swoole_client_exception,
-                           "Swoole\\Client\\Exception",
-                           nullptr,
-                           nullptr,
-                           nullptr,
-                           swoole_exception);
+    SW_INIT_CLASS_ENTRY_EX(
+        swoole_client_exception, "Swoole\\Client\\Exception", nullptr, nullptr, nullptr, swoole_exception);
 
     zend_declare_property_long(swoole_client_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_client_ce, ZEND_STRL("sock"), -1, ZEND_ACC_PUBLIC);
@@ -666,10 +661,10 @@ static PHP_METHOD(swoole_client, __construct) {
     size_t len = 0;
 
     ZEND_PARSE_PARAMETERS_START(1, 3)
-        Z_PARAM_LONG(type)
-        Z_PARAM_OPTIONAL
-        Z_PARAM_BOOL(async)
-        Z_PARAM_STRING(id, len)
+    Z_PARAM_LONG(type)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_BOOL(async)
+    Z_PARAM_STRING(id, len)
     ZEND_PARSE_PARAMETERS_END();
 
     if (async) {
@@ -720,7 +715,7 @@ static PHP_METHOD(swoole_client, __destruct) {
 static PHP_METHOD(swoole_client, set) {
     zval *zset;
     ZEND_PARSE_PARAMETERS_START(1, 1)
-        Z_PARAM_ARRAY(zset)
+    Z_PARAM_ARRAY(zset)
     ZEND_PARSE_PARAMETERS_END();
 
     zval *zsetting = sw_zend_read_and_convert_property_array(swoole_client_ce, ZEND_THIS, ZEND_STRL("setting"), 0);
@@ -1049,7 +1044,6 @@ static PHP_METHOD(swoole_client, recv) {
         buffer->length = 0;
         RETURN_FALSE;
     } else if (cli->open_length_check) {
-
         if (cli->buffer == nullptr) {
             cli->buffer = new String(SW_BUFFER_SIZE_STD);
         } else {
@@ -1086,7 +1080,8 @@ static PHP_METHOD(swoole_client, recv) {
             swoole_error_log(SW_LOG_WARNING,
                              SW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
                              "Package is too big. package_length=%d, package_max_length=%d, ",
-                             (int) buf_len, (int) protocol->package_max_length);
+                             (int) buf_len,
+                             (int) protocol->package_max_length);
             RETURN_EMPTY_STRING();
         } else if (buf_len == (zend_long) buffer->length) {
             RETURN_STRINGL(buffer->str, buffer->length);

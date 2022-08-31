@@ -102,7 +102,11 @@ void php_swoole_server_rshutdown() {
 #ifdef SW_USE_HTTP2
     int worker_id = SwooleG.process_id;
     serv->foreach_connection([serv, worker_id](Connection *conn) {
-        swoole_trace("check fd=%d, worker_id=%d, conn->worker_id=%d, conn->http2_stream=%d", conn->fd, worker_id, conn->worker_id, conn->http2_stream);
+        swoole_trace("check fd=%d, worker_id=%d, conn->worker_id=%d, conn->http2_stream=%d",
+                     conn->fd,
+                     worker_id,
+                     conn->worker_id,
+                     conn->http2_stream);
         SessionId session_id = conn->session_id;
         if (session_id <= 0) {
             return;
@@ -586,9 +590,12 @@ void php_swoole_server_minit(int module_number) {
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("IPC_MSGQUEUE"), Server::TASK_IPC_MSGQUEUE);
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("IPC_PREEMPTIVE"), Server::TASK_IPC_PREEMPTIVE);
 
-    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_DISCARD_PACKET"), Server::DISPATCH_RESULT_DISCARD_PACKET);
-    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_CLOSE_CONNECTION"), Server::DISPATCH_RESULT_CLOSE_CONNECTION);
-    zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_USERFUNC_FALLBACK"), Server::DISPATCH_RESULT_USERFUNC_FALLBACK);
+    zend_declare_class_constant_long(
+        swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_DISCARD_PACKET"), Server::DISPATCH_RESULT_DISCARD_PACKET);
+    zend_declare_class_constant_long(
+        swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_CLOSE_CONNECTION"), Server::DISPATCH_RESULT_CLOSE_CONNECTION);
+    zend_declare_class_constant_long(
+        swoole_server_ce, ZEND_STRL("DISPATCH_RESULT_USERFUNC_FALLBACK"), Server::DISPATCH_RESULT_USERFUNC_FALLBACK);
 
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_TMPFILE"), SW_TASK_TMPFILE);
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("TASK_SERIALIZE"), SW_TASK_SERIALIZE);
@@ -606,7 +613,6 @@ void php_swoole_server_minit(int module_number) {
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("STATS_DEFAULT"), 0);
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("STATS_JSON"), 1);
     zend_declare_class_constant_long(swoole_server_ce, ZEND_STRL("STATS_OPENMETRICS"), 2);
-
 }
 
 zend_fcall_info_cache *php_swoole_server_get_fci_cache(Server *serv, int server_fd, int event_type) {
@@ -1760,7 +1766,7 @@ static int php_swoole_server_dispatch_func(Server *serv, Connection *conn, SendD
 
     *zserv = *((zval *) serv->private_data_2);
     ZVAL_LONG(zfd, conn ? conn->session_id : data->info.fd);
-    ZVAL_LONG(ztype, (zend_long)(data ? data->info.type : (int) SW_SERVER_EVENT_CLOSE));
+    ZVAL_LONG(ztype, (zend_long) (data ? data->info.type : (int) SW_SERVER_EVENT_CLOSE));
     if (data && sw_zend_function_max_num_args(fci_cache->function_handler) > 3) {
         // TODO: reduce memory copy
         zdata = &args[3];
@@ -2131,7 +2137,7 @@ static PHP_METHOD(swoole_server, set) {
     // max_request_execution_time
     if (php_swoole_array_get_value(vht, "max_request_execution_time", ztmp)) {
         zend_long v = zval_get_long(ztmp);
-        if(v > 0) {
+        if (v > 0) {
             serv->max_request_execution_time = SW_MAX(0, SW_MIN(v, UINT16_MAX));
         }
     }
@@ -2754,9 +2760,9 @@ static uint32_t vm_object_count() {
     uint32_t count = 0;
 
     if (EG(objects_store).object_buckets) {
-        for (uint32_t i = 1; i < EG(objects_store).top ; i++) {
-            if (EG(objects_store).object_buckets[i] &&
-               IS_OBJ_VALID(EG(objects_store).object_buckets[i]) && (!(GC_FLAGS(EG(objects_store).object_buckets[i]) & IS_OBJ_DESTRUCTOR_CALLED))) {
+        for (uint32_t i = 1; i < EG(objects_store).top; i++) {
+            if (EG(objects_store).object_buckets[i] && IS_OBJ_VALID(EG(objects_store).object_buckets[i]) &&
+                (!(GC_FLAGS(EG(objects_store).object_buckets[i]) & IS_OBJ_DESTRUCTOR_CALLED))) {
                 // printf("obj: %s\n", EG(objects_store).object_buckets[i]->ce->name->val);
                 count++;
             }
@@ -2767,31 +2773,30 @@ static uint32_t vm_object_count() {
 }
 
 static zval vm_object_top() {
-
     std::unordered_map<std::string, int> classes;
 
     if (EG(objects_store).object_buckets) {
-        for (uint32_t i = 1; i < EG(objects_store).top ; i++) {
-            if (EG(objects_store).object_buckets[i] &&
-               IS_OBJ_VALID(EG(objects_store).object_buckets[i]) && (!(GC_FLAGS(EG(objects_store).object_buckets[i]) & IS_OBJ_DESTRUCTOR_CALLED))) {
-                classes[EG(objects_store).object_buckets[i]->ce->name->val] ++;
+        for (uint32_t i = 1; i < EG(objects_store).top; i++) {
+            if (EG(objects_store).object_buckets[i] && IS_OBJ_VALID(EG(objects_store).object_buckets[i]) &&
+                (!(GC_FLAGS(EG(objects_store).object_buckets[i]) & IS_OBJ_DESTRUCTOR_CALLED))) {
+                classes[EG(objects_store).object_buckets[i]->ce->name->val]++;
             }
         }
     }
 
-    std::vector<std::pair<std::string,int>> vClasses (classes.begin(),classes.end());
-    std::sort(vClasses.begin(),vClasses.end(), [](std::pair<std::string,int> const&a, std::pair<std::string,int> const&b){
-       return a.second>b.second;
-    });
+    std::vector<std::pair<std::string, int>> vClasses(classes.begin(), classes.end());
+    std::sort(
+        vClasses.begin(),
+        vClasses.end(),
+        [](std::pair<std::string, int> const &a, std::pair<std::string, int> const &b) { return a.second > b.second; });
 
     zval topc;
     array_init(&topc);
 
     int i = 0;
-    for (const std::pair<std::string, int>& kv : vClasses)
-    {
+    for (const std::pair<std::string, int> &kv : vClasses) {
         add_assoc_long(&topc, kv.first.c_str(), kv.second);
-        if(i++ > 10) {
+        if (i++ > 10) {
             break;
         }
     }
@@ -2833,7 +2838,7 @@ static PHP_METHOD(swoole_server, stats) {
     add_assoc_long_ex(&stats, ZEND_STRL("workers_total"), worker_num);
     add_assoc_long_ex(&stats, ZEND_STRL("workers_idle"), idle_worker_num);
     add_assoc_long_ex(&stats, ZEND_STRL("task_workers_total"), task_worker_num);
-    
+
     uint32_t task_worker_idle_num = server->get_idle_task_worker_num();
     add_assoc_long_ex(&stats, ZEND_STRL("task_workers_idle"), task_worker_idle_num);
     add_assoc_long_ex(&stats, ZEND_STRL("tasking_num"), server->gs->tasking_num);
@@ -2876,7 +2881,7 @@ static PHP_METHOD(swoole_server, stats) {
     uint32_t all_worker_num = server->get_all_worker_num();
     SW_LOOP_N(all_worker_num) {
         Worker *worker = server->get_worker(i);
-        if(i < server->worker_num) {
+        if (i < server->worker_num) {
             // event worker
             array_init(&worker_stats);
             add_assoc_long(&worker_stats, "worker_id", worker->id);
@@ -2887,7 +2892,7 @@ static PHP_METHOD(swoole_server, stats) {
             add_assoc_long(&worker_stats, "dispatch_count", worker->dispatch_count);
             add_next_index_zval(&event_workers, &worker_stats);
 
-        } else if(i < server->worker_num + server->task_worker_num) {
+        } else if (i < server->worker_num + server->task_worker_num) {
             // task worker
             array_init(&worker_stats);
             add_assoc_long(&worker_stats, "worker_id", worker->id);
@@ -2904,7 +2909,6 @@ static PHP_METHOD(swoole_server, stats) {
             add_assoc_long(&worker_stats, "start_time", worker->start_time);
             add_assoc_long(&worker_stats, "start_seconds", ::time(nullptr) - worker->start_time);
             add_next_index_zval(&user_workers, &worker_stats);
-
         }
     }
 
@@ -2914,7 +2918,7 @@ static PHP_METHOD(swoole_server, stats) {
     zval topc = vm_object_top();
     add_assoc_zval(&stats, "top_classes", &topc);
 
-    if(mode == 1) {
+    if (mode == 1) {
         // return json_encode($stats, \JSON_PRETTY_PRINT);
 #if PHP_VERSION_ID < 80000
         zval args[2];
@@ -2933,8 +2937,9 @@ static PHP_METHOD(swoole_server, stats) {
         smart_str_free(&json_encode_string_buffer);
         RETURN_ZVAL(&retval, 1, 0);
 #endif
-    } else if(mode == 2) {
-        zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    } else if (mode == 2) {
+        zend_string *class_name =
+            zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
         if (zend_lookup_class(class_name) == NULL) {
             php_swoole_fatal_error(E_WARNING, "composer dependency required: composer install openswoole/core");
             efree(class_name);
@@ -2943,7 +2948,8 @@ static PHP_METHOD(swoole_server, stats) {
         efree(class_name);
         zval args[1];
         args[0] = stats;
-        zend::function::ReturnValue retval = zend::function::call("\\OpenSwoole\\Core\\Helper::statsToOpenMetrics", 1, args);
+        zend::function::ReturnValue retval =
+            zend::function::call("\\OpenSwoole\\Core\\Helper::statsToOpenMetrics", 1, args);
         zval_ptr_dtor(&args[0]);
         RETURN_ZVAL(&retval.value, 1, 0);
     }

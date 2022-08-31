@@ -14,6 +14,8 @@ clang-format -i include/*.h
 
 # ext source file
 clang-format -i *.h
+clang-format -i ext-src/*.h
+clang-format -i ext-src/*.cc
 
 # core-tests source file
 clang-format -i core-tests/src/_lib/*.cpp

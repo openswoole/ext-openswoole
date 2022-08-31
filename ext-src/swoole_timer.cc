@@ -151,7 +151,8 @@ static void timer_add(INTERNAL_FUNCTION_PARAMETERS, bool persistent) {
     }
 
     // no server || user worker || task process with async mode
-    if (!sw_server() || sw_server()->is_user_worker() || (sw_server()->is_task_worker() && sw_server()->task_enable_coroutine)) {
+    if (!sw_server() || sw_server()->is_user_worker() ||
+        (sw_server()->is_task_worker() && sw_server()->task_enable_coroutine)) {
         php_swoole_check_reactor();
     }
 

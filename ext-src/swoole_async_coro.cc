@@ -44,22 +44,22 @@ void php_swoole_async_coro_rshutdown() {
 void php_swoole_set_aio_option(HashTable *vht) {
     zval *ztmp;
     /* AIO */
-   if (php_swoole_array_get_value(vht, "aio_core_worker_num", ztmp)) {
-       zend_long v = zval_get_long(ztmp);
-       v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
-       SwooleG.aio_core_worker_num = v;
-   }
-   if (php_swoole_array_get_value(vht, "aio_worker_num", ztmp)) {
-       zend_long v = zval_get_long(ztmp);
-       v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
-       SwooleG.aio_worker_num = v;
-   }
-   if (php_swoole_array_get_value(vht, "aio_max_wait_time", ztmp)) {
-       SwooleG.aio_max_wait_time = zval_get_double(ztmp);
-   }
-   if (php_swoole_array_get_value(vht, "aio_max_idle_time", ztmp)) {
-       SwooleG.aio_max_idle_time = zval_get_double(ztmp);
-   }
+    if (php_swoole_array_get_value(vht, "aio_core_worker_num", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
+        SwooleG.aio_core_worker_num = v;
+    }
+    if (php_swoole_array_get_value(vht, "aio_worker_num", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
+        SwooleG.aio_worker_num = v;
+    }
+    if (php_swoole_array_get_value(vht, "aio_max_wait_time", ztmp)) {
+        SwooleG.aio_max_wait_time = zval_get_double(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "aio_max_idle_time", ztmp)) {
+        SwooleG.aio_max_idle_time = zval_get_double(ztmp);
+    }
 }
 
 PHP_FUNCTION(swoole_async_set) {
@@ -169,5 +169,5 @@ PHP_FUNCTION(swoole_async_dns_lookup_coro) {
     }
     memcpy(cache->address, Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
     cache->address[Z_STRLEN_P(return_value)] = '\0';
-    cache->update_time = Timer::get_absolute_msec() + (int64_t)(SwooleG.dns_cache_refresh_time * 1000);
+    cache->update_time = Timer::get_absolute_msec() + (int64_t) (SwooleG.dns_cache_refresh_time * 1000);
 }

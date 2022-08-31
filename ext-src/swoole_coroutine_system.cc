@@ -1,6 +1,5 @@
 #include "php_swoole_cxx.h"
 
-
 #if PHP_VERSION_ID >= 80000
 #include "swoole_coroutine_system_arginfo.h"
 #else
@@ -12,14 +11,14 @@
 
 #include <string>
 
-using swoole::TimerNode;
 using swoole::Coroutine;
+using swoole::Event;
 using swoole::PHPCoroutine;
 using swoole::Reactor;
-using swoole::Event;
+using swoole::String;
+using swoole::TimerNode;
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
-using swoole::String;
 
 static zend_class_entry *swoole_coroutine_system_ce;
 

@@ -754,10 +754,11 @@ static PHP_METHOD(swoole_server_port, set) {
     zend_string *key;
     zval *val;
     ZEND_HASH_FOREACH_KEY_VAL(vht, idx, key, val) {
-        if(!server_options_map.count(ZSTR_VAL(key))) {
+        if (!server_options_map.count(ZSTR_VAL(key))) {
             php_swoole_fatal_error(E_ERROR, "Invalid server option: %s", ZSTR_VAL(key));
         }
-    } ZEND_HASH_FOREACH_END();
+    }
+    ZEND_HASH_FOREACH_END();
 
     zval *zsetting = sw_zend_read_and_convert_property_array(swoole_server_port_ce, ZEND_THIS, ZEND_STRL("setting"), 0);
     php_array_merge(Z_ARRVAL_P(zsetting), Z_ARRVAL_P(zset));
@@ -765,7 +766,8 @@ static PHP_METHOD(swoole_server_port, set) {
 }
 
 static bool is_core_loaded() {
-    zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    zend_string *class_name =
+        zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
     if (zend_lookup_class(class_name) == NULL) {
         efree(class_name);
         return false;
@@ -775,7 +777,6 @@ static bool is_core_loaded() {
 }
 
 static PHP_METHOD(swoole_server_port, handle) {
-
     zval *cb;
 
     ServerPortProperty *property = php_swoole_server_port_get_and_check_property(ZEND_THIS);
@@ -797,8 +798,9 @@ static PHP_METHOD(swoole_server_port, handle) {
     }
     efree(func_name);
 
-    if(!is_core_loaded()) {
-        php_swoole_fatal_error(E_ERROR, "$server->handle API is avaiable in openswoole/core: composer install openswoole/core");
+    if (!is_core_loaded()) {
+        php_swoole_fatal_error(E_ERROR,
+                               "$server->handle API is avaiable in openswoole/core: composer install openswoole/core");
     }
 
     zval *zserv = (zval *) serv->private_data_2;
@@ -824,8 +826,9 @@ static PHP_METHOD(swoole_server_port, setHandler) {
     Z_PARAM_ZVAL(handler)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
-    if(!is_core_loaded()) {
-        php_swoole_fatal_error(E_ERROR, "server->setHandler API is avaiable in openswoole/core: composer install openswoole/core");
+    if (!is_core_loaded()) {
+        php_swoole_fatal_error(
+            E_ERROR, "server->setHandler API is avaiable in openswoole/core: composer install openswoole/core");
     }
 
     zval *zserv = (zval *) serv->private_data_2;

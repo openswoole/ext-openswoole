@@ -46,9 +46,9 @@
 
 using swoole::Coroutine;
 using swoole::PHPCoroutine;
+using swoole::coroutine::PollSocket;
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
-using swoole::coroutine::PollSocket;
 
 SW_EXTERN_C_BEGIN
 static PHP_METHOD(swoole_runtime, enableCoroutine);
@@ -131,7 +131,10 @@ static const zend_function_entry swoole_runtime_methods[] =
 static php_stream_wrapper ori_php_plain_files_wrapper;
 static php_stream_ops ori_php_stream_stdio_ops;
 
-static void hook_func(const char *name, size_t l_name, zif_handler handler = nullptr, zend_internal_arg_info *arg_info = nullptr);
+static void hook_func(const char *name,
+                      size_t l_name,
+                      zif_handler handler = nullptr,
+                      zend_internal_arg_info *arg_info = nullptr);
 static void unhook_func(const char *name, size_t l_name);
 
 static zend_internal_arg_info *get_arginfo(const char *name, size_t l_name) {
@@ -144,7 +147,8 @@ static zend_internal_arg_info *get_arginfo(const char *name, size_t l_name) {
 
 #define SW_HOOK_FUNC(f) hook_func(ZEND_STRL(#f), PHP_FN(swoole_##f))
 #define SW_UNHOOK_FUNC(f) unhook_func(ZEND_STRL(#f))
-#define SW_HOOK_NATIVE_FUNC_WITH_ARG_INFO(f) hook_func(ZEND_STRL(#f), PHP_FN(swoole_native_##f), get_arginfo(ZEND_STRL("swoole_native_" #f)))
+#define SW_HOOK_NATIVE_FUNC_WITH_ARG_INFO(f)                                                                           \
+    hook_func(ZEND_STRL(#f), PHP_FN(swoole_native_##f), get_arginfo(ZEND_STRL("swoole_native_" #f)))
 
 static zend_array *tmp_function_table = nullptr;
 
@@ -164,15 +168,19 @@ void php_swoole_runtime_minit(int module_number) {
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_UDG"), PHPCoroutine::HOOK_UDG);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_SSL"), PHPCoroutine::HOOK_SSL);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_TLS"), PHPCoroutine::HOOK_TLS);
-    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_STREAM_FUNCTION"), PHPCoroutine::HOOK_STREAM_FUNCTION);
-    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_STREAM_SELECT"), PHPCoroutine::HOOK_STREAM_FUNCTION);  // backward compatibility
+    zend_declare_class_constant_long(
+        swoole_runtime_ce, ZEND_STRL("HOOK_STREAM_FUNCTION"), PHPCoroutine::HOOK_STREAM_FUNCTION);
+    zend_declare_class_constant_long(swoole_runtime_ce,
+                                     ZEND_STRL("HOOK_STREAM_SELECT"),
+                                     PHPCoroutine::HOOK_STREAM_FUNCTION);  // backward compatibility
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_FILE"), PHPCoroutine::HOOK_FILE);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_STDIO"), PHPCoroutine::HOOK_STDIO);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_SLEEP"), PHPCoroutine::HOOK_SLEEP);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_PROC"), PHPCoroutine::HOOK_PROC);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_CURL"), PHPCoroutine::HOOK_CURL);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_NATIVE_CURL"), PHPCoroutine::HOOK_NATIVE_CURL);
-    zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_BLOCKING_FUNCTION"), PHPCoroutine::HOOK_BLOCKING_FUNCTION);
+    zend_declare_class_constant_long(
+        swoole_runtime_ce, ZEND_STRL("HOOK_BLOCKING_FUNCTION"), PHPCoroutine::HOOK_BLOCKING_FUNCTION);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_SOCKETS"), PHPCoroutine::HOOK_SOCKETS);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_ALL"), PHPCoroutine::HOOK_ALL);
 #ifdef SW_USE_CURL
@@ -314,8 +322,7 @@ _exit:
     return didwrite;
 }
 
-static php_stream_size_t socket_read(php_stream *stream, char *buf, size_t count)
-{
+static php_stream_size_t socket_read(php_stream *stream, char *buf, size_t count) {
     php_swoole_netstream_data_t *abstract;
     Socket *sock;
     ssize_t nr_bytes = -1;
@@ -331,7 +338,7 @@ static php_stream_size_t socket_read(php_stream *stream, char *buf, size_t count
     }
 
     if (abstract->blocking) {
-        nr_bytes =  sock->recv(buf, count);
+        nr_bytes = sock->recv(buf, count);
     } else {
         nr_bytes = sock->get_socket()->recv(buf, count, 0);
         sock->set_err(errno);
@@ -713,8 +720,8 @@ static bool php_openssl_capture_peer_certs(php_stream *stream, Socket *sslsock) 
     php_stream_context_set_option(PHP_STREAM_CONTEXT(stream), "ssl", "peer_certificate", &retval.value);
     zval_dtor(&argv[0]);
 
-    if (NULL != (val = php_stream_context_get_option(PHP_STREAM_CONTEXT(stream), "ssl", "capture_peer_cert_chain"))
-            && zend_is_true(val)) {
+    if (NULL != (val = php_stream_context_get_option(PHP_STREAM_CONTEXT(stream), "ssl", "capture_peer_cert_chain")) &&
+        zend_is_true(val)) {
         zval arr;
         auto chain = sslsock->get_socket()->ssl_get_peer_cert_chain(INT_MAX);
 
@@ -780,8 +787,8 @@ static inline int socket_xport_api(php_stream *stream, Socket *sock, php_stream_
     case STREAM_XPORT_OP_CONNECT_ASYNC:
         xparam->outputs.returncode = socket_connect(stream, sock, xparam);
 #ifdef SW_USE_OPENSSL
-        if (sock->ssl_is_enable()
-                && (socket_xport_crypto_setup(stream) < 0 || socket_xport_crypto_enable(stream, 1) < 0)) {
+        if (sock->ssl_is_enable() &&
+            (socket_xport_crypto_setup(stream) < 0 || socket_xport_crypto_enable(stream, 1) < 0)) {
             xparam->outputs.returncode = -1;
         }
 #endif
@@ -996,7 +1003,6 @@ static bool socket_ssl_set_options(Socket *sock, php_stream_context *context) {
 
         if (sock->ssl_is_enable() && php_swoole_array_get_value(Z_ARRVAL_P(&context->options), "ssl", ztmp) &&
             ZVAL_IS_ARRAY(ztmp)) {
-
             zval zalias;
             array_init(&zalias);
             zend_array *options = Z_ARRVAL_P(ztmp);
@@ -1106,18 +1112,18 @@ static ZEND_FUNCTION(swoole_display_disabled_function) {
 }
 
 static bool disable_func(const char *name, size_t l_name) {
-    real_func *rf = (real_func*) zend_hash_str_find_ptr(tmp_function_table, name, l_name);
+    real_func *rf = (real_func *) zend_hash_str_find_ptr(tmp_function_table, name, l_name);
     if (rf) {
         rf->function->internal_function.handler = ZEND_FN(swoole_display_disabled_function);
         return true;
     }
 
-    zend_function *zf = (zend_function*) zend_hash_str_find_ptr(EG(function_table), name, l_name);
+    zend_function *zf = (zend_function *) zend_hash_str_find_ptr(EG(function_table), name, l_name);
     if (zf == nullptr) {
         return false;
     }
 
-    rf = (real_func*) emalloc(sizeof(real_func));
+    rf = (real_func *) emalloc(sizeof(real_func));
     sw_memset_zero(rf, sizeof(*rf));
     rf->function = zf;
     rf->ori_handler = zf->internal_function.handler;
@@ -1135,7 +1141,7 @@ static bool disable_func(const char *name, size_t l_name) {
 }
 
 static bool enable_func(const char *name, size_t l_name) {
-    real_func *rf = (real_func*) zend_hash_str_find_ptr(tmp_function_table, name, l_name);
+    real_func *rf = (real_func *) zend_hash_str_find_ptr(tmp_function_table, name, l_name);
     if (!rf) {
         return false;
     }
@@ -1161,7 +1167,8 @@ void PHPCoroutine::enable_unsafe_function() {
 }
 
 bool PHPCoroutine::is_core_loaded() {
-    zend_string *class_name = zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    zend_string *class_name =
+        zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
     if (zend_lookup_class(class_name) == NULL) {
         efree(class_name);
         return false;
@@ -1327,7 +1334,7 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
     }
     // blocking function
     if (flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
-        if(is_core_loaded()) {
+        if (is_core_loaded()) {
             if (flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION) {
                 if (!(runtime_hook_flags & PHPCoroutine::HOOK_BLOCKING_FUNCTION)) {
                     hook_func(ZEND_STRL("gethostbyname"), PHP_FN(swoole_coroutine_gethostbyname));
@@ -1342,12 +1349,14 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
                 }
             }
         } else {
-            php_swoole_fatal_error(E_ERROR, "HOOK_BLOCKING_FUNCTION option is avaiable in openswoole/core: composer install openswoole/core");
-        }   
+            php_swoole_fatal_error(
+                E_ERROR,
+                "HOOK_BLOCKING_FUNCTION option is avaiable in openswoole/core: composer install openswoole/core");
+        }
     }
 
     if (flags & PHPCoroutine::HOOK_SOCKETS) {
-        if(is_core_loaded()) {
+        if (is_core_loaded()) {
             if (flags & PHPCoroutine::HOOK_SOCKETS) {
                 if (!(runtime_hook_flags & PHPCoroutine::HOOK_SOCKETS)) {
                     hook_func(ZEND_STRL("socket_create"));
@@ -1407,16 +1416,17 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
             }
 
         } else {
-            php_swoole_fatal_error(E_ERROR, "HOOK_SOCKETS option is avaiable in openswoole/core: composer install openswoole/core");
-        }   
+            php_swoole_fatal_error(
+                E_ERROR, "HOOK_SOCKETS option is avaiable in openswoole/core: composer install openswoole/core");
+        }
     }
-    
+
 #ifdef SW_USE_CURL
     if (flags & PHPCoroutine::HOOK_NATIVE_CURL) {
         // Remove HOOK_CURL
         // if (flags & PHPCoroutine::HOOK_CURL) {
-        //     php_swoole_fatal_error(E_WARNING, "cannot enable both hooks HOOK_NATIVE_CURL and HOOK_CURL at same time");
-        //     flags ^= PHPCoroutine::HOOK_CURL;
+        //     php_swoole_fatal_error(E_WARNING, "cannot enable both hooks HOOK_NATIVE_CURL and HOOK_CURL at same
+        //     time"); flags ^= PHPCoroutine::HOOK_CURL;
         // }
         if (!(runtime_hook_flags & PHPCoroutine::HOOK_NATIVE_CURL)) {
             SW_HOOK_NATIVE_FUNC_WITH_ARG_INFO(curl_close);
@@ -1884,7 +1894,8 @@ static void hook_func(const char *name, size_t l_name, zif_handler handler, zend
         char *func_name;
         zend_fcall_info_cache *func_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
         if (!sw_zend_is_callable_ex(&rf->name, nullptr, 0, &func_name, nullptr, func_cache, nullptr)) {
-            php_swoole_fatal_error(E_ERROR, "Coroutine hook function '%s' is not callable, composer install openswoole/core", func_name);
+            php_swoole_fatal_error(
+                E_ERROR, "Coroutine hook function '%s' is not callable, composer install openswoole/core", func_name);
             efree(func_name);
             return;
         }

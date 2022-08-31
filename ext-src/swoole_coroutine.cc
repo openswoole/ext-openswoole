@@ -39,10 +39,10 @@ using std::unordered_map;
 using swoole::Coroutine;
 using swoole::PHPContext;
 using swoole::PHPCoroutine;
-using swoole::coroutine::Socket;
-using swoole::coroutine::System;
 using swoole::coroutine::Channel;
 using swoole::coroutine::Selector;
+using swoole::coroutine::Socket;
+using swoole::coroutine::System;
 
 #define PHP_CORO_TASK_SLOT                                                                                             \
     ((int) ((ZEND_MM_ALIGNED_SIZE(sizeof(PHPContext)) + ZEND_MM_ALIGNED_SIZE(sizeof(zval)) - 1) /                      \
@@ -381,9 +381,9 @@ void PHPCoroutine::deadlock_check() {
     }
 
     printf("\n==================================================================="
-               "\n [FATAL ERROR]: all coroutines (count: %lu) are asleep - deadlock!"
-               "\n===================================================================\n",
-               Coroutine::count());
+           "\n [FATAL ERROR]: all coroutines (count: %lu) are asleep - deadlock!"
+           "\n===================================================================\n",
+           Coroutine::count());
 }
 
 void PHPCoroutine::interrupt_thread_stop() {
@@ -795,7 +795,7 @@ void PHPCoroutine::main_func(void *arg) {
             // TODO: php8 don't exit on exceptions, but no reason to continue, fix this in the future
             // Keep the behavior the same as php7
 #if PHP_VERSION_ID >= 80000
-            zend_bailout(); // exit for php8
+            zend_bailout();  // exit for php8
 #endif
         }
 
@@ -857,8 +857,10 @@ void php_swoole_coroutine_minit(int module_number) {
         swoole_coroutine_util, "Swoole\\Coroutine", nullptr, "Co", swoole_coroutine_methods, nullptr);
     SW_SET_CLASS_CREATE(swoole_coroutine_util, sw_zend_create_object_deny);
 
-    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("DEFAULT_MAX_CORO_NUM"), SW_DEFAULT_MAX_CORO_NUM);
-    zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_MAX_NUM_LIMIT"), Coroutine::MAX_NUM_LIMIT);
+    zend_declare_class_constant_long(
+        swoole_coroutine_util_ce, ZEND_STRL("DEFAULT_MAX_CORO_NUM"), SW_DEFAULT_MAX_CORO_NUM);
+    zend_declare_class_constant_long(
+        swoole_coroutine_util_ce, ZEND_STRL("CORO_MAX_NUM_LIMIT"), Coroutine::MAX_NUM_LIMIT);
     zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_INIT"), Coroutine::STATE_INIT);
     zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_WAITING"), Coroutine::STATE_WAITING);
     zend_declare_class_constant_long(swoole_coroutine_util_ce, ZEND_STRL("CORO_RUNNING"), Coroutine::STATE_RUNNING);
@@ -874,7 +876,6 @@ void php_swoole_coroutine_minit(int module_number) {
                              spl_ce_ArrayIterator);
     SW_INIT_CLASS_ENTRY_BASE(
         swoole_coroutine_context, "Swoole\\Coroutine\\Context", nullptr, "Co\\Context", nullptr, spl_ce_ArrayObject);
-
 
     // prohibit exit in coroutine
     SW_INIT_CLASS_ENTRY_EX(swoole_exit_exception,
@@ -974,9 +975,7 @@ static PHP_METHOD(swoole_coroutine, stats) {
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_last_cid"), Coroutine::get_last_cid());
 }
 
-
 static PHP_METHOD(swoole_coroutine, run) {
-
     zend_fcall_info fci;
     zend_fcall_info_cache fci_cache;
 
@@ -985,7 +984,7 @@ static PHP_METHOD(swoole_coroutine, run) {
     Z_PARAM_VARIADIC('*', fci.params, fci.param_count)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
-    if(!PHPCoroutine::get_hook_flags()) {
+    if (!PHPCoroutine::get_hook_flags()) {
         PHPCoroutine::set_hook_flags(PHPCoroutine::HOOK_ALL);
     }
 
@@ -1259,7 +1258,7 @@ static sw_inline ChannelObject *php_swoole_channel_coro_fetch_object(zend_object
     return (ChannelObject *) ((char *) obj - XtOffsetOf(ChannelObject, std));
 }
 
-static sw_inline Channel *php_swoole_get_channel(zval *zobject) {    
+static sw_inline Channel *php_swoole_get_channel(zval *zobject) {
     Channel *chan = php_swoole_channel_coro_fetch_object(Z_OBJ_P(zobject))->chan;
     return chan;
 }
@@ -1275,7 +1274,7 @@ static PHP_METHOD(swoole_coroutine, select) {
     Z_PARAM_DOUBLE(timeout)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
-    if(timeout == -1) {
+    if (timeout == -1) {
         timeout = INT_MAX;
     }
 
@@ -1294,32 +1293,37 @@ static PHP_METHOD(swoole_coroutine, select) {
         ZVAL_DEREF(val);
         Channel *chan = php_swoole_get_channel(val);
         pull_chans_vector.push_back(chan);
-    } ZEND_HASH_FOREACH_END();
+    }
+    ZEND_HASH_FOREACH_END();
 
     ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(push_chans), num_idx, key, val) {
         ZVAL_DEREF(val);
         Channel *chan = php_swoole_get_channel(val);
         push_chans_vector.push_back(chan);
-    } ZEND_HASH_FOREACH_END();
+    }
+    ZEND_HASH_FOREACH_END();
 
     Selector selector;
-    std::pair<std::vector<int>, std::vector<int>> ready = selector.select(pull_chans_vector, push_chans_vector, timeout);
+    std::pair<std::vector<int>, std::vector<int>> ready =
+        selector.select(pull_chans_vector, push_chans_vector, timeout);
 
     HashTable *h1 = Z_ARRVAL_P(pull_chans);
     ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(pull_chans), num_idx, key) {
         ZVAL_DEREF(val);
-        if(std::find(ready.first.begin(), ready.first.end(), num_idx) == ready.first.end()) {
+        if (std::find(ready.first.begin(), ready.first.end(), num_idx) == ready.first.end()) {
             zend_hash_index_del(h1, num_idx);
         }
-    } ZEND_HASH_FOREACH_END();
+    }
+    ZEND_HASH_FOREACH_END();
 
     HashTable *h2 = Z_ARRVAL_P(push_chans);
     ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(push_chans), num_idx, key) {
         ZVAL_DEREF(val);
-        if(std::find(ready.second.begin(), ready.second.end(), num_idx) == ready.second.end()) {
+        if (std::find(ready.second.begin(), ready.second.end(), num_idx) == ready.second.end()) {
             zend_hash_index_del(h2, num_idx);
         }
-    } ZEND_HASH_FOREACH_END();
+    }
+    ZEND_HASH_FOREACH_END();
 
     array_init(return_value);
     add_assoc_zval_ex(return_value, ZEND_STRL("read"), pull_chans);

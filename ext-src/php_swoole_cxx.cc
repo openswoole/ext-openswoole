@@ -30,17 +30,22 @@ static zend_op_array *swoole_compile_string(zend_source_string_t *source_string,
     return opa;
 }
 #else
-static zend_op_array *swoole_compile_string(zend_source_string_t *source_string, ZEND_STR_CONST char *filename, zend_compile_position position);
+static zend_op_array *swoole_compile_string(zend_source_string_t *source_string,
+                                            ZEND_STR_CONST char *filename,
+                                            zend_compile_position position);
 
-static zend_op_array *(*old_compile_string)(zend_source_string_t *source_string, ZEND_STR_CONST char *filename, zend_compile_position position);
+static zend_op_array *(*old_compile_string)(zend_source_string_t *source_string,
+                                            ZEND_STR_CONST char *filename,
+                                            zend_compile_position position);
 
-static zend_op_array *swoole_compile_string(zend_source_string_t *source_string, ZEND_STR_CONST char *filename, zend_compile_position position) {
+static zend_op_array *swoole_compile_string(zend_source_string_t *source_string,
+                                            ZEND_STR_CONST char *filename,
+                                            zend_compile_position position) {
     zend_op_array *opa = old_compile_string(source_string, filename, position);
     opa->type = ZEND_USER_FUNCTION;
     return opa;
 }
 #endif
-
 
 namespace zend {
 bool eval(const std::string &code, std::string const &filename) {

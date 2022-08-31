@@ -692,34 +692,50 @@ PHP_MINIT_FUNCTION(openswoole) {
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_LOG_FILE"), "log_file");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_LOG_LEVEL"), "log_level");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_LOG_DATE_FORMAT"), "log_date_format");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_LOG_DATE_WITH_MICROSECONDS"), "log_date_with_microseconds");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_LOG_DATE_WITH_MICROSECONDS"), "log_date_with_microseconds");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_LOG_ROTATION"), "log_rotation");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DISPLAY_ERRORS"), "display_errors");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DNS_SERVER"), "dns_server");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_DNS_TIMEOUT"), "socket_dns_timeout");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_CONNECT_TIMEOUT"), "socket_connect_timeout");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_WRITE_TIMEOUT"), "socket_write_timeout");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_SEND_TIMEOUT"), "socket_send_timeout");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_READ_TIMEOUT"), "socket_read_timeout");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_RECV_TIMEOUT"), "socket_recv_timeout");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_BUFFER_SIZE"), "socket_buffer_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_DNS_TIMEOUT"), "socket_dns_timeout");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_CONNECT_TIMEOUT"), "socket_connect_timeout");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_WRITE_TIMEOUT"), "socket_write_timeout");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_SEND_TIMEOUT"), "socket_send_timeout");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_READ_TIMEOUT"), "socket_read_timeout");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_RECV_TIMEOUT"), "socket_recv_timeout");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_BUFFER_SIZE"), "socket_buffer_size");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_TIMEOUT"), "socket_timeout");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_CONCURRENCY"), "max_concurrency");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_SERVER_TOKEN"), "enable_server_token");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_AIO_CORE_WORKER_NUM"), "aio_core_worker_num");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_SERVER_TOKEN"), "enable_server_token");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_AIO_CORE_WORKER_NUM"), "aio_core_worker_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_AIO_WORKER_NUM"), "aio_worker_num");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_AIO_MAX_WAIT_TIME"), "aio_max_wait_time");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_AIO_MAX_IDLE_TIME"), "aio_max_idle_time");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_AIO_MAX_WAIT_TIME"), "aio_max_wait_time");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_AIO_MAX_IDLE_TIME"), "aio_max_idle_time");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_SIGNALFD"), "enable_signalfd");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_WAIT_SIGNAL"), "wait_signal");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DNS_CACHE_REFRESH_TIME"), "dns_cache_refresh_time");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_DNS_CACHE_REFRESH_TIME"), "dns_cache_refresh_time");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_THREAD_NUM"), "thread_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MIN_THREAD_NUM"), "min_thread_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_THREAD_NUM"), "max_thread_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKET_DONTWAIT"), "socket_dontwait");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DNS_LOOKUP_RANDOM"), "dns_lookup_random");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_USE_ASYNC_RESOLVER"), "use_async_resolver");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_COROUTINE"), "enable_coroutine");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_DNS_LOOKUP_RANDOM"), "dns_lookup_random");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_USE_ASYNC_RESOLVER"), "use_async_resolver");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_COROUTINE"), "enable_coroutine");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_PROTOCOLS"), "ssl_protocols");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_COMPRESS"), "ssl_compress");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_CERT_FILE"), "ssl_cert_file");
@@ -727,68 +743,100 @@ PHP_MINIT_FUNCTION(openswoole) {
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_PASSPHRASE"), "ssl_passphrase");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_HOST_NAME"), "ssl_host_name");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_VERIFY_PEER"), "ssl_verify_peer");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_ALLOW_SELF_SIGNED"), "ssl_allow_self_signed");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SSL_ALLOW_SELF_SIGNED"), "ssl_allow_self_signed");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_CAFILE"), "ssl_cafile");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_CAPATH"), "ssl_capath");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_VERIFY_DEPTH"), "ssl_verify_depth");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SSL_VERIFY_DEPTH"), "ssl_verify_depth");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_CIPHERS"), "ssl_ciphers");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_EOF_CHECK"), "open_eof_check");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_EOF_SPLIT"), "open_eof_split");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_EOF"), "package_eof");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_MQTT_PROTOCOL"), "open_mqtt_protocol");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_LENGTH_CHECK"), "open_length_check");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_LENGTH_TYPE"), "package_length_type");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_LENGTH_OFFSET"), "package_length_offset");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_BODY_OFFSET"), "package_body_offset");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_LENGTH_FUNC"), "package_length_func");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_MAX_LENGTH"), "package_max_length");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_HIGH_WATERMARK"), "buffer_high_watermark");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_LOW_WATERMARK"), "buffer_low_watermark");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_MQTT_PROTOCOL"), "open_mqtt_protocol");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_LENGTH_CHECK"), "open_length_check");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_LENGTH_TYPE"), "package_length_type");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_LENGTH_OFFSET"), "package_length_offset");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_BODY_OFFSET"), "package_body_offset");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_LENGTH_FUNC"), "package_length_func");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_MAX_LENGTH"), "package_max_length");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_HIGH_WATERMARK"), "buffer_high_watermark");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_LOW_WATERMARK"), "buffer_low_watermark");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BIND_PORT"), "bind_port");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BIND_ADDRESS"), "bind_address");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_TCP_NODELAY"), "open_tcp_nodelay");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_TCP_NODELAY"), "open_tcp_nodelay");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKS5_HOST"), "socks5_host");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKS5_PORT"), "socks5_port");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKS5_USERNAME"), "socks5_username");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SOCKS5_PASSWORD"), "socks5_password");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PROXY_HOST"), "http_proxy_host");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PROXY_PORT"), "http_proxy_port");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PROXY_USERNAME"), "http_proxy_username");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PROXY_USERNAME"), "http_proxy_username");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PROXY_USER"), "http_proxy_user");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PROXY_PASSWORD"), "http_proxy_password");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PROXY_PASSWORD"), "http_proxy_password");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TIMEOUT"), "timeout");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_CONNECT_TIMEOUT"), "connect_timeout");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_READ_TIMEOUT"), "read_timeout");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_WRITE_TIMEOUT"), "write_timeout");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_DISABLE_COMPRESSION"), "ssl_disable_compression");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SSL_DISABLE_COMPRESSION"), "ssl_disable_compression");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_CORO_NUM"), "max_coro_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_COROUTINE"), "max_coroutine");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_DEADLOCK_CHECK"), "enable_deadlock_check");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_DEADLOCK_CHECK"), "enable_deadlock_check");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HOOK_FLAGS"), "hook_flags");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_PREEMPTIVE_SCHEDULER"), "enable_preemptive_scheduler");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_PREEMPTIVE_SCHEDULER"), "enable_preemptive_scheduler");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_C_STACK_SIZE"), "c_stack_size");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_STACK_SIZE"), "stack_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DNS_CACHE_EXPIRE"), "dns_cache_expire");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DNS_CACHE_CAPACITY"), "dns_cache_capacity");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_HEADER_TABLE_SIZE"), "http2_header_table_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_INITIAL_WINDOW_SIZE"), "http2_initial_window_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_MAX_CONCURRENT_STREAMS"), "http2_max_concurrent_streams");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_MAX_FRAME_SIZE"), "http2_max_frame_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_MAX_HEADER_LIST_SIZE"), "http2_max_header_list_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_DNS_CACHE_EXPIRE"), "dns_cache_expire");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_DNS_CACHE_CAPACITY"), "dns_cache_capacity");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_HEADER_TABLE_SIZE"), "http2_header_table_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_INITIAL_WINDOW_SIZE"), "http2_initial_window_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_MAX_CONCURRENT_STREAMS"), "http2_max_concurrent_streams");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_MAX_FRAME_SIZE"), "http2_max_frame_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP2_MAX_HEADER_LIST_SIZE"), "http2_max_header_list_size");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_RECONNECT"), "reconnect");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DEFER"), "defer");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_LOWERCASE_HEADER"), "lowercase_header");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_LOWERCASE_HEADER"), "lowercase_header");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_KEEP_ALIVE"), "keep_alive");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_WEBSOCKET_MASK"), "websocket_mask");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_COMPRESSION"), "http_compression");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BODY_DECOMPRESSION"), "body_decompression");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_WEBSOCKET_COMPRESSION"), "websocket_compression");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PARSE_COOKIE"), "http_parse_cookie");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_COMPRESSION"), "http_compression");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_BODY_DECOMPRESSION"), "body_decompression");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_WEBSOCKET_COMPRESSION"), "websocket_compression");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PARSE_COOKIE"), "http_parse_cookie");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PARSE_POST"), "http_parse_post");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PARSE_FILES"), "http_parse_files");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_COMPRESSION_LEVEL"), "http_compression_level");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_PARSE_FILES"), "http_parse_files");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_COMPRESSION_LEVEL"), "http_compression_level");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_GZIP_LEVEL"), "http_gzip_level");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_COMPRESSION_MIN_LENGTH"), "compression_min_length");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_COMPRESSION_MIN_LENGTH"), "compression_min_length");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_UPLOAD_TMP_DIR"), "upload_tmp_dir");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HOST"), "host");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PORT"), "port");
@@ -800,7 +848,8 @@ PHP_MINIT_FUNCTION(openswoole) {
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_STRICT_TYPE"), "strict_type");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_FETCH_MODE"), "fetch_mode");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SERIALIZE"), "serialize");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_COMPATIBILITY_MODE"), "compatibility_mode");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_COMPATIBILITY_MODE"), "compatibility_mode");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_CHROOT"), "chroot");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_GROUP"), "group");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DAEMONIZE"), "daemonize");
@@ -809,72 +858,113 @@ PHP_MINIT_FUNCTION(openswoole) {
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SINGLE_THREAD"), "single_thread");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_WORKER_NUM"), "worker_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_WAIT_TIME"), "max_wait_time");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_QUEUED_BYTES"), "max_queued_bytes");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_MAX_QUEUED_BYTES"), "max_queued_bytes");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SEND_TIMEOUT"), "send_timeout");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DISPATCH_MODE"), "dispatch_mode");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SEND_YIELD"), "send_yield");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DISPATCH_FUNC"), "dispatch_func");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DISCARD_TIMEOUT_REQUEST"), "discard_timeout_request");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_UNSAFE_EVENT"), "enable_unsafe_event");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_DELAY_RECEIVE"), "enable_delay_receive");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_REUSE_PORT"), "enable_reuse_port");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_DISCARD_TIMEOUT_REQUEST"), "discard_timeout_request");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_UNSAFE_EVENT"), "enable_unsafe_event");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_DELAY_RECEIVE"), "enable_delay_receive");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_REUSE_PORT"), "enable_reuse_port");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_USE_OBJECT"), "task_use_object");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_OBJECT"), "task_object");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_EVENT_OBJECT"), "event_object");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_ENABLE_COROUTINE"), "task_enable_coroutine");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_TASK_ENABLE_COROUTINE"), "task_enable_coroutine");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_WORKER_NUM"), "task_worker_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_IPC_MODE"), "task_ipc_mode");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_TMPDIR"), "task_tmpdir");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_MAX_REQUEST"), "task_max_request");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TASK_MAX_REQUEST_GRACE"), "task_max_request_grace");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_TASK_MAX_REQUEST"), "task_max_request");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_TASK_MAX_REQUEST_GRACE"), "task_max_request_grace");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_CONNECTION"), "max_connection");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_CONN"), "max_conn");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_START_SESSION_ID"), "start_session_id");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HEARTBEAT_CHECK_INTERVAL"), "heartbeat_check_interval");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HEARTBEAT_IDLE_TIME"), "heartbeat_idle_time");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_START_SESSION_ID"), "start_session_id");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HEARTBEAT_CHECK_INTERVAL"), "heartbeat_check_interval");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HEARTBEAT_IDLE_TIME"), "heartbeat_idle_time");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_REQUEST"), "max_request");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_REQUEST_GRACE"), "max_request_grace");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_REQUEST_EXECUTION_TIME"), "max_request_execution_time");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_MAX_REQUEST_GRACE"), "max_request_grace");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_MAX_REQUEST_EXECUTION_TIME"), "max_request_execution_time");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_RELOAD_ASYNC"), "reload_async");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_CPU_AFFINITY"), "open_cpu_affinity");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_CPU_AFFINITY_IGNORE"), "cpu_affinity_ignore");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_STATIC_HANDLER"), "enable_static_handler");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_CPU_AFFINITY"), "open_cpu_affinity");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_CPU_AFFINITY_IGNORE"), "cpu_affinity_ignore");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_STATIC_HANDLER"), "enable_static_handler");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_DOCUMENT_ROOT"), "document_root");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_AUTOINDEX"), "http_autoindex");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_INDEX_FILES"), "http_index_files");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_STATIC_HANDLER_LOCATIONS"), "static_handler_locations");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_INPUT_BUFFER_SIZE"), "input_buffer_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_INPUT_SIZE"), "buffer_input_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OUTPUT_BUFFER_SIZE"), "output_buffer_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_OUTPUT_SIZE"), "buffer_output_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MESSAGE_QUEUE_KEY"), "message_queue_key");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_HTTP_INDEX_FILES"), "http_index_files");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_STATIC_HANDLER_LOCATIONS"), "static_handler_locations");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_INPUT_BUFFER_SIZE"), "input_buffer_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_INPUT_SIZE"), "buffer_input_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OUTPUT_BUFFER_SIZE"), "output_buffer_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_BUFFER_OUTPUT_SIZE"), "buffer_output_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_MESSAGE_QUEUE_KEY"), "message_queue_key");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_BACKLOG"), "backlog");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_KERNEL_SOCKET_RECV_BUFFER_SIZE"), "kernel_socket_recv_buffer_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_KERNEL_SOCKET_SEND_BUFFER_SIZE"), "kernel_socket_send_buffer_size");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TCP_DEFER_ACCEPT"), "tcp_defer_accept");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_TCP_KEEPALIVE"), "open_tcp_keepalive");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_HTTP_PROTOCOL"), "open_http_protocol");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_PROTOCOL"), "open_websocket_protocol");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_WEBSOCKET_SUBPROTOCOL"), "websocket_subprotocol");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_CLOSE_FRAME"), "open_websocket_close_frame");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_PING_FRAME"), "open_websocket_ping_frame");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_PONG_FRAME"), "open_websocket_pong_frame");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_HTTP2_PROTOCOL"), "open_http2_protocol");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_REDIS_PROTOCOL"), "open_redis_protocol");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_KERNEL_SOCKET_RECV_BUFFER_SIZE"), "kernel_socket_recv_buffer_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_KERNEL_SOCKET_SEND_BUFFER_SIZE"), "kernel_socket_send_buffer_size");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_TCP_DEFER_ACCEPT"), "tcp_defer_accept");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_TCP_KEEPALIVE"), "open_tcp_keepalive");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_HTTP_PROTOCOL"), "open_http_protocol");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_PROTOCOL"), "open_websocket_protocol");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_WEBSOCKET_SUBPROTOCOL"), "websocket_subprotocol");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_CLOSE_FRAME"), "open_websocket_close_frame");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_PING_FRAME"), "open_websocket_ping_frame");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_WEBSOCKET_PONG_FRAME"), "open_websocket_pong_frame");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_HTTP2_PROTOCOL"), "open_http2_protocol");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_REDIS_PROTOCOL"), "open_redis_protocol");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_MAX_IDLE_TIME"), "max_idle_time");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TCP_KEEPIDLE"), "tcp_keepidle");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TCP_KEEPINTERVAL"), "tcp_keepinterval");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_TCP_KEEPINTERVAL"), "tcp_keepinterval");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TCP_KEEPCOUNT"), "tcp_keepcount");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TCP_USER_TIMEOUT"), "tcp_user_timeout");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_TCP_USER_TIMEOUT"), "tcp_user_timeout");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_TCP_FASTOPEN"), "tcp_fastopen");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_BODY_START"), "package_body_start");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_CLIENT_CERT_FILE"), "ssl_client_cert_file");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_PREFER_SERVER_CIPHERS"), "ssl_prefer_server_ciphers");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_PACKAGE_BODY_START"), "package_body_start");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SSL_CLIENT_CERT_FILE"), "ssl_client_cert_file");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_SSL_PREFER_SERVER_CIPHERS"), "ssl_prefer_server_ciphers");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_ECDH_CURVE"), "ssl_ecdh_curve");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_DHPARAM"), "ssl_dhparam");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_SSL_SNI_CERTS"), "ssl_sni_certs");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_SSL"), "open_ssl");
-    zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_FASTCGI_PROTOCOL"), "open_fastcgi_protocol");
+    zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_OPEN_FASTCGI_PROTOCOL"), "open_fastcgi_protocol");
 
     swoole_init();
 
