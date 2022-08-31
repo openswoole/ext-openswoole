@@ -1671,6 +1671,16 @@ void php_swoole_http_client_coro_minit(int module_number) {
                            nullptr,
                            swoole_exception);
 
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_CONNECT_FAILED"), HTTP_CLIENT_ESTATUS_CONNECT_FAILED);
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_REQUEST_TIMEOUT"), HTTP_CLIENT_ESTATUS_REQUEST_TIMEOUT);
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_SERVER_RESET"), HTTP_CLIENT_ESTATUS_SERVER_RESET);
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_SEND_FAILED"), HTTP_CLIENT_ESTATUS_SEND_FAILED);
+
+    // backward compatibility
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP_CLIENT_ESTATUS_CONNECT_FAILED", HTTP_CLIENT_ESTATUS_CONNECT_FAILED);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP_CLIENT_ESTATUS_REQUEST_TIMEOUT", HTTP_CLIENT_ESTATUS_REQUEST_TIMEOUT);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP_CLIENT_ESTATUS_SERVER_RESET", HTTP_CLIENT_ESTATUS_SERVER_RESET);

@@ -85,6 +85,12 @@ void php_swoole_timer_minit(int module_number) {
     zend_declare_class_constant_double(swoole_timer_ce, ZEND_STRL("TIMER_MIN_SEC"), SW_TIMER_MIN_SEC);
     zend_declare_class_constant_long(swoole_timer_ce, ZEND_STRL("TIMER_MAX_MS"), SW_TIMER_MAX_MS);
     zend_declare_class_constant_double(swoole_timer_ce, ZEND_STRL("TIMER_MAX_SEC"), SW_TIMER_MAX_SEC);
+
+    // backward compatibility
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_TIMER_MIN_MS", SW_TIMER_MIN_MS);
+    SW_REGISTER_DOUBLE_CONSTANT("SWOOLE_TIMER_MIN_SEC", SW_TIMER_MIN_SEC);
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_TIMER_MAX_MS", SW_TIMER_MAX_MS);
+    SW_REGISTER_DOUBLE_CONSTANT("SWOOLE_TIMER_MAX_SEC", SW_TIMER_MAX_SEC);
 }
 
 static void timer_dtor(TimerNode *tnode) {

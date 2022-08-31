@@ -124,6 +124,17 @@ void php_swoole_lock_minit(int module_number) {
     zend_declare_class_constant_long(swoole_lock_ce, ZEND_STRL("SPINLOCK"), Lock::SPIN_LOCK);
 #endif
     zend_declare_property_long(swoole_lock_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
+
+    // backward compatibility
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_FILELOCK", Lock::FILE_LOCK);
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_MUTEX", Lock::MUTEX);
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_SEM", Lock::SEM);
+#ifdef HAVE_RWLOCK
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_RWLOCK", Lock::RW_LOCK);
+#endif
+#ifdef HAVE_SPINLOCK
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_SPINLOCK", Lock::SPIN_LOCK);
+#endif
 }
 
 static PHP_METHOD(swoole_lock, __construct) {
