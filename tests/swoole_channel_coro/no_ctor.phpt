@@ -12,11 +12,11 @@ class MyChan extends Swoole\Coroutine\Channel {
     }
 }
 
-go(function () {
+co::run(function () {
    $chan = new MyChan(100);
     $chan->pop();
 });
 
 ?>
 --EXPECTF--
-Fatal error: Swoole\Coroutine\Channel::pop(): you must call Channel constructor first in %s on line %d
+Fatal error: OpenSwoole\Coroutine\Channel::pop(): you must call Channel constructor first in %s on line %d

@@ -32,7 +32,7 @@ $pm->parentFunc = function ($pid) use ($pm)
     while (!empty($clients)) {
         $write = $error = array();
         $read = array_values($clients);
-        $n = swoole_select($read, $write, $error, TIMEOUT);
+        $n = OpenSwoole\Client::select($read, $write, $error, TIMEOUT);
         if ($n > 0) {
             foreach ($read as $index => $c) {
                 echo "Recv #{$c->sock}: " . $c->recv() . "\n";

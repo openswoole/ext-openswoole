@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\System;
 
-Co\run(
+Co::run(
     function () {
         $conn = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $conn->connect('www.baidu.com', 80);

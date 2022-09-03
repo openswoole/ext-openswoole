@@ -111,7 +111,7 @@ define('PRESSURE_LOW', 1);
 define('PRESSURE_MID', 2);
 define('PRESSURE_NORMAL', 3);
 define('PRESSURE_LEVEL',
-    USE_VALGRIND ? (IS_IN_TRAVIS ? PRESSURE_LOW - 1 : PRESSURE_LOW) : ((IS_IN_TRAVIS || swoole_cpu_num() === 1) ? PRESSURE_MID : PRESSURE_NORMAL));
+    USE_VALGRIND ? (IS_IN_TRAVIS ? PRESSURE_LOW - 1 : PRESSURE_LOW) : ((IS_IN_TRAVIS || OpenSwoole\Util::getCPUNum() === 1) ? PRESSURE_MID : PRESSURE_NORMAL));
 
 /** ============== Time ============== */
 define('SERVER_PREHEATING_TIME', 0.1);

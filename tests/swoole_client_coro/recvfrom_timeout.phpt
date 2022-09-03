@@ -7,7 +7,7 @@ swoole_client_coro: timeout of udp client
 require __DIR__ . '/../include/bootstrap.php';
 $port = get_one_free_port();
 
-Co\Run(function () use ($port) {
+Co::run(function () use ($port) {
     $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
     $cli->set([
         'timeout' => 0.2,

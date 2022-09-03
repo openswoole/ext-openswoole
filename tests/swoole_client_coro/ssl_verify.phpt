@@ -13,7 +13,7 @@ use Swoole\Coroutine;
 
 Co::set(['log_file' => TEST_LOG_FILE]);
 
-Coroutine\run(function () {
+Coroutine::run(function () {
     $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_SSL);
     $client->set([
         //'ssl_cafile' => SSL_FILE_DIR . '/mosquitto.org.crt',

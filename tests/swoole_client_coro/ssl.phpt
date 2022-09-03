@@ -9,7 +9,7 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
+co::run(function () {
     $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_SSL);
     if (!$cli->connect('www.baidu.com', 443)) {
         echo "ERROR\n";

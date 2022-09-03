@@ -17,15 +17,10 @@ skip(
     !extension_loaded('openswoole'),
     SWOOLE_COLOR_RED
 );
-skip(
-    'Please set "swoole.use_shortname = On"',
-    !SWOOLE_USE_SHORTNAME,
-    SWOOLE_COLOR_RED
-);
 
 (function () {
     global $argv;
-    skip_if_php_version_lower_than('7.0');
+    skip_if_php_version_lower_than('7.4');
     if (!getenv('PHPT') && substr($argv[0], -4) === '.php') {
         skip('please read ' . dirname(dirname(__FILE__)) . '/README.md and try again');
     }

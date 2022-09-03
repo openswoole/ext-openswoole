@@ -18,7 +18,7 @@ assert_options(ASSERT_WARNING, 1);
 assert_options(ASSERT_BAIL, 0);
 
 // Swoole settings
-swoole_async_set([
+OpenSwoole\Util::setAio([
     'socket_dontwait' => 1,
     'disable_dns_cache' => true,
     'dns_lookup_random' => true,

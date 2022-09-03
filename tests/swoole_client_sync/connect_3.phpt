@@ -11,7 +11,7 @@ $pm->parentFunc = function () use ($pm) {
     $r = $cli->connect('127.0.0.1', $pm->getFreePort(), 1);
     Assert::assert($r);
     $r = $w = $e = [$cli];
-    $n = swoole_client_select($r, $w, $e, 0);
+    $n = $cli->select($r, $w, $e, 0);
     Assert::same($n, 1);
     Assert::same(count($w), 1);
     Assert::same(count($e), 0);

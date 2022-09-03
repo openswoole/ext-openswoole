@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $cli->connect('127.0.0.1', $pm->getFreePort(), 0.5);
         $data = str_repeat('A', 1025);
         $cli->send(pack('N', strlen($data)) . $data);

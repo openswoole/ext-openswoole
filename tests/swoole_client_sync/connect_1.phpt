@@ -6,7 +6,7 @@ swoole_client_sync: connect 1 - 1
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-ini_set('swoole.display_errors', 'off');
+ini_set('openswoole.display_errors', 'off');
 
 $cli = new \swoole_client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
 $r = $cli->connect("11.11.11.11", 80, 0.5);

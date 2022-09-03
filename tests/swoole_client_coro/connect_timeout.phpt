@@ -6,7 +6,7 @@ swoole_client_coro: connect timeout
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
+co::run(function () {
     co::set([
         'socket_connect_timeout' => 0.1
     ]);

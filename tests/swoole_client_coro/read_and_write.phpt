@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm)
 {
     go(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $client->connect("127.0.0.1",  $pm->getFreePort());
 
         $send_queue = new chan(150);

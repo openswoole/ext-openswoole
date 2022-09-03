@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 $pm = new ProcessManager;
 
-ini_set("swoole.display_errors", "Off");
+ini_set("openswoole.display_errors", "Off");
 
 $pm->initFreePorts(2);
 $pm->parentFunc = function ($pid) use ($pm) {

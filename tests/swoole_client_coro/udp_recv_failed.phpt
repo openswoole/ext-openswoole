@@ -6,7 +6,7 @@ swoole_client_coro: udp recv failed
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
+co::run(function () {
     $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
     $ret = $cli->connect('127.0.0.1', get_one_free_port(), 3);
     echo "connect ret:".var_export($ret,true)."\n";

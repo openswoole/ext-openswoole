@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\run(
+    Co::run(
         function () use ($pm) {
             $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP | SWOOLE_SSL);
             if (!$client->connect('127.0.0.1', $pm->getFreePort())) {

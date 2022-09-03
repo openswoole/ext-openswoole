@@ -12,7 +12,7 @@ use Swoole\Coroutine\Client;
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\Run(function () {
+    Co::run(function () {
         $client = new Client(SWOOLE_SOCK_UNIX_DGRAM);
         $client->set([
             'bind_address' => __DIR__ . '/client.sock',

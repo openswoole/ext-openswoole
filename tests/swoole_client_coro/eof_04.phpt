@@ -11,7 +11,7 @@ $pm = new ProcessManager;
 $pm->initRandomData(MAX_REQUESTS);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_TCP);
         $client->set([
             'open_eof_check' => true,
             'package_eof' => "\r\n",

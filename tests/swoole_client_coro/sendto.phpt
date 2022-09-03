@@ -2,14 +2,13 @@
 swoole_client_coro: sendto
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
-
-run(function () {
+co::run(function () {
     $port = get_one_free_port();
 
     go(function () use ($port) {

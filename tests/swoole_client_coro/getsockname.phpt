@@ -6,7 +6,7 @@ swoole_client_coro: getsockname
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-Co\run(
+Co::run(
     function () {
         $conn = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $conn->connect('www.baidu.com', 80);

@@ -244,9 +244,9 @@ class ProcessManager
         }
         if (!$this->alone and !$this->killed and $this->childPid) {
             $this->killed = true;
-            if ($force || (!@Process::kill($this->childPid) && swoole_errno() !== PCNTL_ESRCH)) {
-                if (!@Process::kill($this->childPid, SIGKILL) && swoole_errno() !== PCNTL_ESRCH) {
-                    exit('KILL CHILD PROCESS ERROR');
+            if ($force || (!@Process::kill($this->childPid) && \OpenSwoole\Util::getLastErrorCode() !== PCNTL_ESRCH)) {
+                if (!@Process::kill($this->childPid, SIGKILL) && \OpenSwoole\Util::getLastErrorCode() !== PCNTL_ESRCH) {
+                    // exit('KILL CHILD PROCESS ERROR');
                 }
             }
         }
