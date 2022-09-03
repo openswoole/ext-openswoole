@@ -9,7 +9,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->initRandomData(1);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
         Assert::assert($client->send($pm->getRandomData()) > 0);
     });

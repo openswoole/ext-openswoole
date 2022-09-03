@@ -36,7 +36,7 @@ $pm->parentFunc = function ($pid) use ($pm)
         }
     }
     for ($i = 0; $i < N; $i ++) {
-        run();
+        co::run();
     }
     $pm->kill();
 };

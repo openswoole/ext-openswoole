@@ -11,7 +11,7 @@ use SwooleTest\MQTT\Helper;
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     co::run(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $client->set(['open_mqtt_protocol' => true]);
         Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
         $buffer = Helper::encodePing(12); // PINGREQ

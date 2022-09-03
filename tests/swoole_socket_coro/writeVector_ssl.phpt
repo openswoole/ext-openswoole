@@ -13,7 +13,7 @@ use Swoole\Server;
 
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $conn = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 
         $conn->setProtocol([

@@ -9,7 +9,7 @@ skip_if_in_valgrind();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 trigger_error('SWOOLE_BASE not support reload task workers.', E_USER_NOTICE);
-$worker_num = swoole_cpu_num() * 2;
+$worker_num = OpenSwoole\Util::getCPUNum() * 2;
 $counter = [
     'worker' => new OpenSwoole\Atomic(),
     'task_worker' => new OpenSwoole\Atomic()

@@ -31,7 +31,7 @@ go(function () use ($socket) {
 });
 
 go(function () use ($socket) {
-    $client = new Co\Client(SWOOLE_SOCK_UDP);
+    $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
     $client->connect('224.10.20.30', 9905);
     $n = 10;
     while($n--) {

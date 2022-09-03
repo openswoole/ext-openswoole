@@ -14,7 +14,7 @@ use Swoole\Coroutine\Socket;
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $requestLine = "POST / HTTP/1.1\r\n";
         $header = "Host: 127.0.0.1\r\n";
         $header .= "Connection: keep-alive\r\n";
@@ -36,7 +36,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $server = new Server("127.0.0.1", $pm->getFreePort(), false);
         $server->handle('/', function (Request $request, Response $response) {
             Assert::same($request->getContent(), 'hello');

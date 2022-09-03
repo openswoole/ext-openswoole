@@ -15,7 +15,7 @@ function clean($dir)
         $extension = pathinfo($file, PATHINFO_EXTENSION);
         if (in_array($extension, ['diff', 'exp', 'log', 'out', 'php', 'sh'], true)) {
             if (is_file($full_path)) {
-                echo "DELETE: {$full_path}\n";
+                // echo "DELETE: {$full_path}\n";
                 unlink($full_path);
             }
         }

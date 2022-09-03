@@ -14,7 +14,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $total = 0;
     for ($i = 0; $i < MAX_CONCURRENCY_MID; $i++) {
         go(function () use ($pm, $i, &$total) {
-            $cli = new Co\Client(SWOOLE_SOCK_TCP);
+            $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $cli->set([
                 'open_length_check' => true,
                 'package_max_length' => 4 * 1024 * 1024,

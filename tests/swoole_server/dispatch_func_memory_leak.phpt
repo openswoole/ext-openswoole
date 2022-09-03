@@ -12,7 +12,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     for ($c = MAX_CONCURRENCY_MID; $c--;) {
         go(function () use ($pm) {
-            $client = new Co\Client(SWOOLE_SOCK_TCP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
             Assert::assert($client->send(str_repeat(get_safe_random(1024), 32)));
         });

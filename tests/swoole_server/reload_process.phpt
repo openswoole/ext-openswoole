@@ -10,7 +10,7 @@ require __DIR__ . '/../include/skipif.inc';
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$worker_num = $task_worker_num = swoole_cpu_num() * 2;
+$worker_num = $task_worker_num = OpenSwoole\Util::getCPUNum() * 2;
 $counter = [
     'worker' => new OpenSwoole\Atomic(),
     'task_worker' => new OpenSwoole\Atomic()

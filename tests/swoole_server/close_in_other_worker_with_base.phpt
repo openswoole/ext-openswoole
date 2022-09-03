@@ -16,7 +16,7 @@ $GLOBALS['atomic'] = new OpenSwoole\Atomic(0);
 
 $pm->parentFunc = function ($pid) use ($pm) {
     co::run(function () use ($pm) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         if ($cli->connect('127.0.0.1', $pm->getFreePort(), 100) == false) {
             echo "ERROR\n";
             return;

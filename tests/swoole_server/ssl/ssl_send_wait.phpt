@@ -12,7 +12,7 @@ use Swoole\Coroutine\Http\Client;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm)  {
+    co::run(function () use ($pm)  {
         $client = new Client('127.0.0.1', $pm->getFreePort(), true);
 
         $ret = $client->get('/');

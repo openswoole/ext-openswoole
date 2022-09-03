@@ -1,5 +1,5 @@
 --TEST--
-swoole_function: swoole_cpu_num
+swoole_function: OpenSwoole\Util::getCPUNum
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

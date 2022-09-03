@@ -21,7 +21,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             Assert::assert(strlen($data) != 1024);
             Assert::assert(strpos($pm->getRandomDataEx($c), $data) === 0);
             Assert::assert($conn->errCode == SOCKET_ETIMEDOUT);
-            Assert::assert($conn->errMsg == swoole_strerror(SOCKET_ETIMEDOUT));
+            Assert::assert($conn->errMsg == OpenSwoole\Util::getErrorMessage(SOCKET_ETIMEDOUT));
         });
     }
     Swoole\Event::wait();

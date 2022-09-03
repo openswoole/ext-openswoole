@@ -17,7 +17,7 @@ use Swoole\WebSocket\Server;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = new Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['websocket_compression' => true, ]);
         $cli->upgrade('/');

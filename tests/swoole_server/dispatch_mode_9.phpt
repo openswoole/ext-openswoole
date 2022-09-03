@@ -26,7 +26,7 @@ const EOF = "\r\n\r\n";
 $pm = new SwooleTest\ProcessManager;
 $pm->magic_code = rand(10000000, 90000000);
 $pm->parentFunc = function ($pid) use ($pm, $table) {
-    run(function () use ($pm, $table) {
+    co::run(function () use ($pm, $table) {
         $client = new Client(SWOOLE_SOCK_TCP);
         $client->set(array(
             'package_eof' => EOF,

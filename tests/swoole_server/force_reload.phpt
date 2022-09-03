@@ -3,7 +3,7 @@ swoole_server: force reload in process mode
 --SKIPIF--
 <?php
  require __DIR__ . '/../include/skipif.inc';
-if (swoole_cpu_num() === 1) {
+if (OpenSwoole\Util::getCPUNum() === 1) {
 	skip('not support on machine with single cpu');
 }
 ?>

@@ -15,7 +15,7 @@ define('SSL_DIR', realpath(__DIR__.'/../../examples/ssl'));
 $pm = new ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(), true);
         $content = str_repeat(get_safe_random(1024), 5 * 1024);
         file_put_contents('/tmp/test.jpg', $content);

@@ -20,7 +20,7 @@ define('GREETER', 'hello world');
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $httpClient = new Client(HTTP_SERVER_HOST, $pm->getFreePort(), false);
         $httpClient->setMethod("POST");
         $httpClient->setData("HELLO");

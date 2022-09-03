@@ -21,7 +21,7 @@ const N = 8;
 $pm->parentFunc = function () use ($pm) {
     $s = microtime(true);
     Co::set([Constant::OPTION_HOOK_FLAGS => SWOOLE_HOOK_ALL]);
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $n = N;
         while($n--) {
             go(function() use ($pm) {

@@ -49,7 +49,7 @@ $pm->parentFunc = function () use ($pm) {
 $pm->childFunc = function () use ($pm) {
     $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
-        "worker_num" => swoole_cpu_num() * 2,
+        "worker_num" => OpenSwoole\Util::getCPUNum() * 2,
         'log_file' => '/dev/null',
         'max_connection' => MAX_CONCURRENCY_MID * MAX_REQUESTS
     ]);

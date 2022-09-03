@@ -69,4 +69,4 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Warning: Swoole\Coroutine\Http2\Client::send(): header cannot bigger than remote max_header_list_size %d in %s on line %d
+Warning: OpenSwoole\Coroutine\Http2\Client::send(): header cannot bigger than remote max_header_list_size %d in %s on line %d

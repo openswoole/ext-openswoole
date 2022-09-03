@@ -22,7 +22,7 @@ $pm->childFunc = function () use ($pm, $reloaded, $workerCounter) {
     $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set([
         'log_file' => '/dev/null',
-        'worker_num' => rand(2, swoole_cpu_num() * 2),
+        'worker_num' => rand(2, OpenSwoole\Util::getCPUNum() * 2),
         'max_wait_time' => 10,
         'reload_async' => true,
         'enable_coroutine' => false,

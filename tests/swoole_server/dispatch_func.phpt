@@ -16,7 +16,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     for ($c = MAX_CONCURRENCY_MID; $c--;) {
         go(function () use ($pm) {
-            $client = new Co\Client(SWOOLE_SOCK_UDP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
             Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
             Assert::assert($client->send($data = get_safe_random()));
             Assert::same($client->recv(), $data);

@@ -108,7 +108,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $server = new Server('127.0.0.1', $pm->getFreePort());
         $server->handle('/validaddress', function (Request $request, Response $response) {
             Assert::eq($request->server['remote_addr'], $request->post['bind_address']);

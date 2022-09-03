@@ -14,7 +14,7 @@ use Swoole\Coroutine\Server\Connection;
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $conn = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $conn->connect('127.0.0.1', $pm->getFreePort());
         $conn->send('hello');
@@ -36,7 +36,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $server = new Server('127.0.0.1', $pm->getFreePort(), false);
 
         $server->handle(function (Connection $conn) use ($server) {

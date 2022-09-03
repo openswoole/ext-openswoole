@@ -15,7 +15,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     for ($i = 0; $i < MAX_CONCURRENCY_MID; $i++) {
         go(function () use ($pm, $i) {
-            $cli = new Co\Socket(AF_INET, SOCK_STREAM, 0);
+            $cli = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
             $cli->setProtocol([
                 'open_length_check' => true,
                 'package_max_length' => 4 * 1024 * 1024,

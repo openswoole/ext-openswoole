@@ -14,7 +14,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     co::run(function () use ($pm) {
         go(function() use ($pm) {
-            $client = new Co\Client(SWOOLE_SOCK_TCP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
             Assert::assert($client->send('test'));
             $client->recv();
@@ -28,7 +28,7 @@ $pm->parentFunc = function () use ($pm) {
             $cli->close();
         });
         go(function() use ($pm) {
-            $client = new Co\Client(SWOOLE_SOCK_TCP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
             $client->send('test2');
             $client->close();

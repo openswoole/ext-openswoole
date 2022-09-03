@@ -32,7 +32,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     for ($c = 0; $c < MAX_CONCURRENCY_LOW; $c++) {
         go(function () use ($pm, $c) {
             global $clients;
-            $clients[] = $client = new Co\Client(SWOOLE_SOCK_TCP);
+            $clients[] = $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $ret = $client->connect('127.0.0.1', $pm->getFreePort(), -1);
             if (!Assert::assert($ret)) {
                 throw new RuntimeException('connect failed');
