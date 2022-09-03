@@ -14,7 +14,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
         Assert::assert($ret);
         for ($i = 100; $i--;)
         {
-            $ping = new OpenSwoole_websocket_frame;
+            $ping = new swoole_websocket_frame;
             $ping->opcode = WEBSOCKET_OPCODE_PING;
             $ret = $cli->push($ping);
             Assert::assert($ret);

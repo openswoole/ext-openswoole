@@ -9,7 +9,7 @@ $pm = new ProcessManager;
 $pm->initFreePorts();
 $pm->parentFunc = function () use ($pm) {
     co::run(function () use ($pm) {
-        $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         if (Assert::true($cli->upgrade('/'))) {
             Assert::same($cli->headers['x-asdf'], 'asdf');
             Assert::same($cli->set_cookie_headers, [

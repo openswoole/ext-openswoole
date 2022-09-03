@@ -22,7 +22,7 @@ $pm->parentFunc = function (int $pid) use ($pm, &$count) {
                 $opcode = $n === $times - 1 ? WEBSOCKET_OPCODE_TEXT : WEBSOCKET_OPCODE_CONTINUATION;
                 $finish = $n === 0;
                 if (mt_rand(0, 1)) {
-                    $frame = new OpenSwoole_websocket_frame;
+                    $frame = new swoole_websocket_frame;
                     $frame->opcode = $opcode;
                     $frame->data = $rand;
                     $frame->finish = $finish;

@@ -20,7 +20,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm, $data_list) {
     for ($c = MAX_CONCURRENCY_LOW; $c--;) {
         go(function () use ($pm) {
-            $cli = new Co\http\client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\http\client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => -1]);
             $ret = $cli->upgrade('/');
             if ($ret == false) {
@@ -63,7 +63,7 @@ $pm->childFunc = function () use ($pm) {
         foreach ($data_list as $data) {
             $opcode = (int)explode('|', $data, 3)[1];
             if (mt_rand(0, 1)) {
-                $frame = new OpenSwoole_websocket_frame;
+                $frame = new swoole_websocket_frame;
                 $frame->opcode = $opcode;
                 $frame->data = $data;
                 $ret = $serv->push($req->fd, $frame);

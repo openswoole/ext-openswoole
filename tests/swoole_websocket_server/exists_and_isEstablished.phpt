@@ -15,7 +15,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
             /* @var $connections Co\Http\Client[][] */
             global $connections;
             $connections[$c] = [
-                'cli' => new Co\Http\Client('127.0.0.1', $pm->getFreePort()),
+                'cli' => new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort()),
                 'type' => array_random(['null', 'http', 'websocket']),
                 'fd' => -1
             ];
@@ -38,7 +38,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
         for ($c = 0; $c < MAX_CONCURRENCY; $c++) {
             Assert::true($ready->pop());
         }
-        $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         if (Assert::assert($cli->upgrade('/'))) {
             for ($c = 0; $c < MAX_CONCURRENCY; $c++) {
                 if (!Assert::assert($cli->push($connections[$c]['fd']))) {

@@ -26,7 +26,7 @@ $pm->parentFunc = function (int $pid) use ($pm, $data_list) {
             Assert::assert($ret);
             foreach ($data_list as $data) {
                 if (mt_rand(0, 1)) {
-                    $frame = new OpenSwoole_websocket_frame;
+                    $frame = new swoole_websocket_frame;
                     $frame->opcode = (int)explode('|', $data, 3)[1];
                     $frame->data = $data;
                     $ret = $cli->push($frame);
@@ -70,7 +70,7 @@ $pm->childFunc = function () use ($pm) {
             return;
         }
         if (mt_rand(0, 1)) {
-            $send_frame = new OpenSwoole_websocket_frame;
+            $send_frame = new swoole_websocket_frame;
             $send_frame->data = $id;
             $serv->push($recv_frame->fd, $send_frame);
         } else {

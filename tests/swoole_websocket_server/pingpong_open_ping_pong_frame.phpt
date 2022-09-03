@@ -13,7 +13,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
         $ret = $cli->upgrade('/');
         Assert::assert($ret);
         for ($i = 100; $i--;) {
-            $ping = new OpenSwoole_websocket_frame;
+            $ping = new swoole_websocket_frame;
             $ping->opcode = WEBSOCKET_OPCODE_PING;
             $ping->data = 'ping';
             $ret = $cli->push($ping);
@@ -44,7 +44,7 @@ $pm->childFunc = function () use ($pm) {
         if ($frame->opcode === WEBSOCKET_OPCODE_PING) {
             Assert::same($frame->data, 'ping');
             $atomic->add();
-            $pongFrame = new OpenSwoole_websocket_frame;
+            $pongFrame = new swoole_websocket_frame;
             $pongFrame->opcode = WEBSOCKET_OPCODE_PONG;
             $pongFrame->data = 'pong';
             $server->push($frame->fd, $pongFrame);
