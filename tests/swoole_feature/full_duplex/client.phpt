@@ -88,11 +88,11 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $server = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+        $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::assert($server->bind('127.0.0.1', $pm->getFreePort()));
         Assert::assert($server->listen(MAX_CONCURRENCY));
         while ($conn = $server->accept(-1)) {
-            if (!Assert::assert($conn instanceof Co\Socket)) {
+            if (!Assert::assert($conn instanceof OpenSwoole\Coroutine\Socket)) {
                 throw new RuntimeException('accept failed');
             } else {
                 set_socket_coro_buffer_size($conn, BUFFER_SIZE);

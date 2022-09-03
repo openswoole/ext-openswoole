@@ -34,7 +34,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $server->on('request', function (\OpenSwoole\Http\Request $request, \OpenSwoole\Http\Response $response) {
-        $response->end(\Co::getuid());
+        $response->end(\Co::getCid());
     });
     $server->start();
 };

@@ -43,6 +43,6 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Property header of class Swoole\Http\Response cannot be unset
+Property header of class OpenSwoole\Http\Response cannot be unset
 500
 just an 500 error for fun

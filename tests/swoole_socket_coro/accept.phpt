@@ -6,6 +6,7 @@ swoole_socket_coro: accept
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+co::run(function() {
 go(function () {
     $sock = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::assert($sock->bind('127.0.0.1', 9601));
@@ -27,6 +28,8 @@ go(function ()  {
     $conn->send(json_encode(['data' => 'hello']));
     echo $conn->recv();
 });
+});
+
 ?>
 --EXPECT--
 world

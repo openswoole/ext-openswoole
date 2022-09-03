@@ -1,7 +1,7 @@
 --TEST--
 swoole_feature/full_duplex: socket
 --SKIPIF--
-<?php use Co\Socket;
+<?php use OpenSwoole\Coroutine\Socket;
 
 require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
@@ -96,7 +96,7 @@ $pm->childFunc = function () use ($pm) {
         Assert::assert($server->listen(MAX_CONCURRENCY));
         /** @var $conn Socket */
         while ($conn = $server->accept(-1)) {
-            if (!Assert::assert($conn instanceof Co\Socket)) {
+            if (!Assert::assert($conn instanceof OpenSwoole\Coroutine\Socket)) {
                 throw new RuntimeException('accept failed');
             } else {
                 set_socket_coro_buffer_size($conn, BUFFER_SIZE);

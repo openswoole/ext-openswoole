@@ -24,7 +24,7 @@ $pm->parentFunc = function () use ($pm) {
             $pm->kill();
         });
         go(function() use ($pm) {
-            $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->close();
         });
         go(function() use ($pm) {

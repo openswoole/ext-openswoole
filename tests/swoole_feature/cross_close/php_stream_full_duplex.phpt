@@ -37,7 +37,7 @@ $pm->childFunc = function () use ($pm) {
         Assert::true($server->bind('127.0.0.1', $pm->getFreePort()));
         Assert::true($server->listen());
         go(function () use ($pm, $server) {
-            if (Assert::true(($conn = $server->accept()) && $conn instanceof Co\Socket)) {
+            if (Assert::true(($conn = $server->accept()) && $conn instanceof OpenSwoole\Coroutine\Socket)) {
                 switch_process();
                 co::sleep(5);
                 $conn->close();

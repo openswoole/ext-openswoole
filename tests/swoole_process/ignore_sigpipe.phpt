@@ -5,6 +5,7 @@ swoole_process: ignore SIGPIPE
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
+ini_set("openswoole.display_errors", "off");
 
 use Swoole\Server;
 use Swoole\Constant;
