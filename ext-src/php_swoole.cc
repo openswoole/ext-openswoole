@@ -80,22 +80,12 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_test_kernel_coroutine, 0, 0, 0)
     ZEND_ARG_INFO(0, sleep_time)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_client_select, 0, 0, 3)
-    ZEND_ARG_INFO(1, read_array)
-    ZEND_ARG_INFO(1, write_array)
-    ZEND_ARG_INFO(1, error_array)
-    ZEND_ARG_INFO(0, timeout)
-ZEND_END_ARG_INFO()
-
 const zend_function_entry swoole_functions[] = {
     /*------swoole_coroutine------*/
     PHP_FE(swoole_coroutine_create, arginfo_swoole_coroutine_create)
     PHP_FE(swoole_coroutine_defer, arginfo_swoole_coroutine_defer)
     PHP_FE(swoole_coroutine_socketpair, arginfo_swoole_coroutine_socketpair)
     PHP_FE(swoole_test_kernel_coroutine, arginfo_swoole_test_kernel_coroutine)
-    /*------other-----*/
-    PHP_FE(swoole_client_select, arginfo_swoole_client_select)
-    PHP_FALIAS(swoole_select, swoole_client_select, arginfo_swoole_client_select)
     PHP_FE(swoole_internal_call_user_shutdown_begin, arginfo_swoole_void)
     PHP_FE_END /* Must be the last line in swoole_functions[] */
 };

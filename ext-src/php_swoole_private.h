@@ -181,15 +181,6 @@ PHP_FUNCTION(swoole_coroutine_defer);
 PHP_FUNCTION(swoole_coroutine_socketpair);
 PHP_FUNCTION(swoole_test_kernel_coroutine);  // for tests
 //---------------------------------------------------------
-//                  event
-//---------------------------------------------------------
-PHP_FUNCTION(swoole_client_select);
-//---------------------------------------------------------
-//                  async[coro]
-//---------------------------------------------------------
-PHP_FUNCTION(swoole_async_set);
-PHP_FUNCTION(swoole_async_dns_lookup_coro);
-//---------------------------------------------------------
 //                  error
 //---------------------------------------------------------
 #define SW_STRERROR_SYSTEM 0

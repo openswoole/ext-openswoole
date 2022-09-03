@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: a02995801f8ac16f4cba220440dd49956ebb8ee0 */
+ * Stub hash: 29a3009e0c5d56a4a48daea95fd8b124664800c0 */
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Client___construct, 0, 0, 1)
 ZEND_ARG_TYPE_INFO(0, sockType, IS_LONG, 0)
@@ -42,6 +42,13 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Client_close, 0, 0, _IS_BOOL, 0)
 ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, force, _IS_BOOL, 0, "false")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Client_select, 0, 3, _IS_BOOL, 0)
+ZEND_ARG_TYPE_INFO(1, readReady, IS_ARRAY, 0)
+ZEND_ARG_TYPE_INFO(1, writeReady, IS_ARRAY, 0)
+ZEND_ARG_TYPE_INFO(1, errors, IS_ARRAY, 0)
+ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "0.5")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Client_shutdown, 0, 1, _IS_BOOL, 0)

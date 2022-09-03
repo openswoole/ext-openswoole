@@ -131,6 +131,7 @@ static PHP_METHOD(swoole_client, shutdown);
 #ifdef SWOOLE_SOCKETS_SUPPORT
 static PHP_METHOD(swoole_client, getSocket);
 #endif
+static PHP_METHOD(swoole_client, select);
 SW_EXTERN_C_END
 
 #ifdef PHP_SWOOLE_CLIENT_USE_POLL
@@ -190,6 +191,7 @@ static const zend_function_entry swoole_client_methods[] =
 #ifdef SWOOLE_SOCKETS_SUPPORT
     PHP_ME(swoole_client, getSocket, arginfo_class_Swoole_Client_getSocket, ZEND_ACC_PUBLIC)
 #endif
+    PHP_ME(swoole_client, select, arginfo_class_Swoole_Client_select, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 // clang-format on
@@ -1357,8 +1359,7 @@ static PHP_METHOD(swoole_client, shutdown) {
     SW_CHECK_RETURN(cli->shutdown(__how));
 }
 
-// TODO: add stub or expose to class
-PHP_FUNCTION(swoole_client_select) {
+static PHP_METHOD(swoole_client, select) {
 #ifdef PHP_SWOOLE_CLIENT_USE_POLL
     zval *r_array, *w_array, *e_array;
     int retval;

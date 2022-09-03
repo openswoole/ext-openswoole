@@ -49,6 +49,13 @@ ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Client_shutdown, 0, 0, 1)
 ZEND_ARG_INFO(0, how)
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Client_select, 0, 0, 3)
+ZEND_ARG_INFO(1, read_array)
+ZEND_ARG_INFO(1, write_array)
+ZEND_ARG_INFO(1, error_array)
+ZEND_ARG_INFO(0, timeout)
+ZEND_END_ARG_INFO()
+
 #define arginfo_class_Swoole_Client_isConnected arginfo_swoole_client_void
 #define arginfo_class_Swoole_Client_getsockname arginfo_swoole_client_void
 #define arginfo_class_Swoole_Client_getSocket arginfo_swoole_client_void
