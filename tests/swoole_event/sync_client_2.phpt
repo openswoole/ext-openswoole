@@ -11,14 +11,13 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Client;
 use Swoole\Event;
 
-swoole_async_set(['enable_coroutine' => false]);
 
 $fp = new Client(SWOOLE_SOCK_TCP);
 // async connect
 $result = $fp->connect('www.qq.com', 80, 1, 1);
 
 Assert::true($result);
-Assert::eq($fp->errCode, SOCKET_EINPROGRESS);
+Assert::eq($fp->errCode, 0);
 
 Event::add($fp, null, function (Client $fp) {
     $fp->send("GET / HTTP/1.1\r\nHost: www.qq.com\r\n\r\n");
