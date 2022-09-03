@@ -18,7 +18,7 @@ $pm->setRandomFunc(function () {
 });
 $pm->initRandomDataEx(1, MAX_REQUESTS);
 $pm->parentFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['socket_buffer_size' => SOCKET_BUFFER_SIZE]);
         for ($n = MAX_REQUESTS; $n--;) {
@@ -30,7 +30,6 @@ $pm->parentFunc = function () use ($pm) {
         }
         $cli->close();
     });
-    Swoole\Event::wait();
     $pm->kill();
     echo "DONE\n";
 };

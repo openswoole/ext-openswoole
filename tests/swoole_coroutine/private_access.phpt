@@ -5,7 +5,10 @@ swoole_coroutine: $this private access in PHP70 (EG(scope))
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-(new Bar)->foo();
+
+co::run(function() {
+    (new Bar)->foo();
+}) ;
 
 class Bar
 {

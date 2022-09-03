@@ -108,7 +108,7 @@ array(1) {
     ["function"]=>
     string(12) "getBackTrace"
     ["class"]=>
-    string(16) "OpenSwoole\Coroutine"
+    string(20) "OpenSwoole\Coroutine"
     ["type"]=>
     string(2) "::"
     ["args"]=>
@@ -152,7 +152,7 @@ array(1) {
     ["function"]=>
     string(6) "usleep"
     ["class"]=>
-    string(16) "OpenSwoole\Coroutine"
+    string(20) "OpenSwoole\Coroutine"
     ["type"]=>
     string(2) "::"
     ["args"]=>
@@ -173,7 +173,7 @@ array(1) {
     ["function"]=>
     string(8) "readFile"
     ["class"]=>
-    string(16) "OpenSwoole\Coroutine"
+    string(20) "OpenSwoole\Coroutine"
     ["type"]=>
     string(2) "::"
     ["args"]=>
@@ -194,7 +194,7 @@ array(1) {
     ["function"]=>
     string(11) "getaddrinfo"
     ["class"]=>
-    string(16) "OpenSwoole\Coroutine"
+    string(20) "OpenSwoole\Coroutine"
     ["type"]=>
     string(2) "::"
     ["args"]=>
@@ -215,7 +215,7 @@ array(1) {
     ["function"]=>
     string(6) "resume"
     ["class"]=>
-    string(16) "OpenSwoole\Coroutine"
+    string(20) "OpenSwoole\Coroutine"
     ["type"]=>
     string(2) "::"
     ["args"]=>
