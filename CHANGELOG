@@ -37,6 +37,7 @@
  . Remove `swoole_async_dns_lookup_coro`, use `OpenSwoole\Coroutine::dnsLookup` or `OpenSwoole\Coroutine\System::dnsLookup`; remove `swoole_async_set`, use `OpenSwoole\Until::setAio([])` or `$server->set([])` for aio options;
  . Rename PHP `ini` options from `swoole.*` to be `openswoole.*`
  . Remove `swoole_clear_dns_cache`, use OpenSwoole\Coroutine::clearDNSCache` or `OpenSwoole\Coroutine\System::clearDNSCache`
+ . Remove custom unserialize functions: `swoole_substr_unserialize` and `swoole_substr_unserialize`
 
 # 4.11.1
 
