@@ -35,7 +35,7 @@
  . New Util API class: added `OpenSwoole\Util` class
  . Remove option `swoole.use_shortname`, remove `Co\*` alias. `go`, `chan`, `defer`, `co::*` are available by default
  . Remove `swoole_async_dns_lookup_coro`, use `OpenSwoole\Coroutine::dnsLookup` or `OpenSwoole\Coroutine\System::dnsLookup`; remove `swoole_async_set`, use `OpenSwoole\Until::setAio([])` or `$server->set([])` for aio options;
- 
+ . Rename PHP `ini` options from `swoole.*` to be `openswoole.*`
 
 # 4.11.1
 
