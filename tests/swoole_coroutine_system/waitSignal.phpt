@@ -29,7 +29,7 @@ $killer = new Process(function () use ($pid, $atomic) {
 });
 $killer->start();
 
-Coroutine\run(function () use ($atomic) {
+Coroutine::run(function () use ($atomic) {
     Coroutine::usleep(1000);
     switch_process();
     $atomic->wakeup();

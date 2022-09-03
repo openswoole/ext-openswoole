@@ -24,11 +24,11 @@ $processSlow = new Process(function () use ($atomic) {
 });
 $processSlow->start();
 
-Coroutine\run(function () use ($processFast, $processSlow, $atomic) {
+Coroutine::run(function () use ($processFast, $processSlow, $atomic) {
     for ($n = MAX_REQUESTS; $n--;) {
         $status = System::waitPid($processSlow->pid, 0.001);
         Assert::false($status);
-        Assert::same(swoole_last_error(), SOCKET_ETIMEDOUT);
+        Assert::same(OpenSwoole\Util::getLastErrorCode(), SOCKET_ETIMEDOUT);
     }
     $atomic->wakeup();
     $status = System::waitPid($processSlow->pid, 1);

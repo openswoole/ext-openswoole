@@ -5,7 +5,7 @@ swoole_coroutine_select: select
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-Co\run(function() {
+Co::run(function() {
     $chan1 = new Swoole\Coroutine\Channel(1);
     $chan2 = new Swoole\Coroutine\Channel(1);
     $wait_min = 10;
