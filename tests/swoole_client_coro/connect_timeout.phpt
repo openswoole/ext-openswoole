@@ -10,7 +10,7 @@ co::run(function () {
     co::set([
         'socket_connect_timeout' => 0.1
     ]);
-    $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+    $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
     $s = microtime(true);
     Assert::assert(!@$cli->connect('140.207.135.104', 1));
     Assert::same($cli->errCode, SOCKET_ETIMEDOUT);

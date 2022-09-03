@@ -9,7 +9,7 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 
 Co::run(function () {
-    $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+    $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
     Assert::true($cli->connect('openswoole.com', 80));
 });
 

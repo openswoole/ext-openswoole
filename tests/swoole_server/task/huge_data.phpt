@@ -25,7 +25,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SERVER_MODE_RANDOM);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SERVER_MODE_RANDOM);
     $http->set([
         'log_file' => '/dev/null',
         'task_worker_num' => 4

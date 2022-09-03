@@ -15,7 +15,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set(['worker_num' => mt_rand(1, 4), 'log_file' => '/dev/null']);
     $server->on('start', function () use ($pm) {
         echo "START\n";

@@ -28,7 +28,7 @@ $pm->parentFunc = function () use ($pm) {
 
 $pm->childFunc = function () use ($pm)
 {
-    $serv = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $serv = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $serv->on("WorkerStart", function () use ($pm) {
         $pm->wakeup();
     });
@@ -36,7 +36,7 @@ $pm->childFunc = function () use ($pm)
 
         $chan = new chan(2);
         go(function () use ($chan) {
-            $cli = new Swoole\Coroutine\Http\Client('openswoole.com', 443, true);
+            $cli = new OpenSwoole\Coroutine\Http\Client('openswoole.com', 443, true);
             $cli->set(['timeout' => 10]);
             $cli->setHeaders([
                 'Host' => "openswoole.com",
@@ -56,7 +56,7 @@ $pm->childFunc = function () use ($pm)
         });
 
         go(function () use ($chan) {
-            $cli = new Swoole\Coroutine\Http\Client('www.google.com', 443, true);
+            $cli = new OpenSwoole\Coroutine\Http\Client('www.google.com', 443, true);
             $cli->set(['timeout' => 10]);
             $cli->setHeaders([
                 'Host' => "www.google.com",

@@ -21,7 +21,7 @@ $pm->parentFunc = function ($pid) use ($port) {
     global $count;
     for ($i = 0; $i < N; $i++) {
         go(function () use ($port) {
-            $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $r = $cli->connect(TCP_SERVER_HOST, $port, 1);
             Assert::assert($r);
             $data = $cli->recv();

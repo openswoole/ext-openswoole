@@ -8,13 +8,13 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
     go(function () use ($pm) {
-        $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['timeout' => 5]);
         $ret = $cli->upgrade('/');
         Assert::assert($ret);
         for ($i = 100; $i--;)
         {
-            $ping = new swoole_websocket_frame;
+            $ping = new OpenSwoole_websocket_frame;
             $ping->opcode = WEBSOCKET_OPCODE_PING;
             $ret = $cli->push($ping);
             Assert::assert($ret);

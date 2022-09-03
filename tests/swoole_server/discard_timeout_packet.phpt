@@ -17,7 +17,7 @@ const TMP_LOG_FILE = '/tmp/swoole.server.log';
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $n = 2;
         while($n--) {
             $client = new Client(SWOOLE_SOCK_TCP);

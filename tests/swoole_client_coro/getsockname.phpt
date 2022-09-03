@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 Co::run(
     function () {
-        $conn = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $conn = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $conn->connect('www.baidu.com', 80);
         $info = $conn->getsockname();
         Assert::assert(filter_var($info['host'], FILTER_VALIDATE_IP));

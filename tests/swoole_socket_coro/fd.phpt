@@ -7,7 +7,7 @@ swoole_socket_coro: fd
 require __DIR__ . '/../include/bootstrap.php';
 $sockets = [];
 for ($n = MAX_REQUESTS; $n--;) {
-    $sockets[] = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    $sockets[] = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     if (count($sockets) > 1) {
         Assert::assert(end($sockets)->fd === prev($sockets)->fd + 1);
     }

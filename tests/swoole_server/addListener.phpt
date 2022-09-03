@@ -14,8 +14,8 @@ $port1 = get_one_free_port();
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) {
-    Co\Run(function () {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
+    co::run(function () {
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
         $r = $cli->connect(UDP_SERVER_HOST, UDP_SERVER_PORT, 1);
         Assert::assert($r);
         $cli->send("test");

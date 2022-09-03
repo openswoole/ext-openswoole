@@ -28,7 +28,7 @@ $pm->childFunc = function () use ($pm) {
         return -1;
     }
 
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set([
         'log_file' => '/dev/null',
         'open_eof_check' => true,

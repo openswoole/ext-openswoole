@@ -11,7 +11,7 @@ $func = function () {
     echo 'aaa' . PHP_EOL;
 };
 
-$socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+$socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 go(function () use ($socket, $func) {
     $socket->connect('192.0.0.1', 80);
     defer($func);

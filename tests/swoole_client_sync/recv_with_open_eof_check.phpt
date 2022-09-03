@@ -9,7 +9,7 @@ use Swoole\Server;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    $client = new \Swoole\Client(SWOOLE_SOCK_TCP);
+    $client = new \OpenSwoole\Client(SWOOLE_SOCK_TCP);
 
     $client->set([
         'open_eof_check'     => true,

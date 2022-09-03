@@ -12,14 +12,14 @@ const MSGQ_KEY = 0x70001001;
 $file = __DIR__.'/tmp.log';
 use Swoole\Server;
 
-$result = new Swoole\Atomic(0);
+$result = new OpenSwoole\Atomic(0);
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
     $data = '{"tid":17732683638813521,"out_trade_no":"dm5601993521","runMethod":"\\Action\\Mpay\\Uni\\UniApiV3Act:jsonDrive"}';
     $queueId = msg_get_queue(MSGQ_KEY);
     if ($queueId === false) {
-        throw new \Swoole\Exception("msg_get_queue() failed.");
+        throw new \OpenSwoole\Exception("msg_get_queue() failed.");
     }
     Assert::true(msg_send($queueId, 1, $data));
     Assert::true(msg_send($queueId, 1, Swoole\Server\Task::pack($data), false));

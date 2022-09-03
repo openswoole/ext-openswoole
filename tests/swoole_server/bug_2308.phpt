@@ -21,8 +21,8 @@ $pm->childFunc = function () use ($pm) {
         'enable_coroutine' => false,
     ]);
     $server->on('start', function () {
-        \Swoole\Coroutine::create(function () {
-            $redis = new \Swoole\Coroutine\Redis();
+        \OpenSwoole\Coroutine::create(function () {
+            $redis = new \OpenSwoole\Coroutine\Redis();
             $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
             $ret = $redis->set('foo', 'bar');
             Assert::assert($ret);

@@ -6,8 +6,8 @@ swoole_coroutine_select: select
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 Co::run(function() {
-    $chan1 = new Swoole\Coroutine\Channel(1);
-    $chan2 = new Swoole\Coroutine\Channel(1);
+    $chan1 = new OpenSwoole\Coroutine\Channel(1);
+    $chan2 = new OpenSwoole\Coroutine\Channel(1);
     $wait_min = 10;
 
     go(function() use ($chan1, &$wait_min) {

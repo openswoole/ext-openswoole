@@ -6,7 +6,7 @@ swoole_websocket_server: onDisconnect
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
+
 use Swoole\Coroutine\Http\Client;
 
 $pm = new ProcessManager;

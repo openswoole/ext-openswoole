@@ -6,7 +6,7 @@ swoole_lock: test lock twice
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$lock = new Swoole\Lock();
+$lock = new OpenSwoole\Lock();
 var_dump($lock->lock());
 
 

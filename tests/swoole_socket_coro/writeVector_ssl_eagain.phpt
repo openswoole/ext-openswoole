@@ -10,7 +10,7 @@ use Swoole\Coroutine;
 use Swoole\Coroutine\Socket;
 use Swoole\Server;
 
-use function Swoole\Coroutine\run;
+
 
 $totalLength = 0;
 $iovector = [];

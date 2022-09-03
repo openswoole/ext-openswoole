@@ -14,7 +14,7 @@ const COUNT = 12;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    $cli = new Swoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
+    $cli = new OpenSwoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
     $cli->connect(TCP_SERVER_HOST, $pm->getFreePort(), 1);
     $data = str_repeat('A', LEN * COUNT);
     $cli->send($data);

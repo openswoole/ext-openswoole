@@ -16,8 +16,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
     echo "Co [1]\n";
 
     $map = [];
-    Co\Run(function () use ($pm, &$map) {
-        $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+    co::run(function () use ($pm, &$map) {
+        $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
         Assert::assert($socket->connect('127.0.0.1', $pm->getFreePort()));
         Assert::assert($socket->send(SEND_STR));
         echo $socket->recv();
@@ -26,7 +26,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
     echo "Co [2]\n";
 
-    Co\Run(function () use ($pm, &$map) {
+    co::run(function () use ($pm, &$map) {
         $socket = $map['sock'];
         Assert::assert($socket->send(SEND_STR));
         echo $socket->recv();
@@ -35,7 +35,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     Assert::assert($socket->bind('127.0.0.1', $pm->getFreePort()));
     Assert::assert($socket->listen(128));
     $pm->wakeup();

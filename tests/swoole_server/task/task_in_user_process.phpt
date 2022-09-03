@@ -22,7 +22,7 @@ $pm->childFunc = function () use ($pm)
         'log_file' => '/dev/null',
     ));
 
-    $process = new \Swoole\Process(function ($process) use ($serv)
+    $process = new \OpenSwoole\Process(function ($process) use ($serv)
     {
         $serv->task(['type' => 'array', 'value' => 'user process']);
         sleep(60);

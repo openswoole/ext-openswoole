@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
     go(function () use ($pm) {
-        $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', 9506);
+        $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', 9506);
         $cli->set(['timeout' => 5]);
         $ret = $cli->upgrade('/');
         Assert::assert($ret);

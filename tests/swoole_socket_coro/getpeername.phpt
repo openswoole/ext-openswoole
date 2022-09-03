@@ -8,9 +8,9 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\System;
 
-Co\run(
+co::run(
     function () {
-        $conn = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+        $conn = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $conn->connect('www.baidu.com', 80);
         $info = $conn->getpeername();
         Assert::eq($info['address'], System::gethostbyname('www.baidu.com'));

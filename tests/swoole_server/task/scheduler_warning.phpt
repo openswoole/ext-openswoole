@@ -12,7 +12,7 @@ use Swoole\Server;
 const N = 3;
 const LOG_FILE =  __DIR__.'/test.log';
 
-$counter = new Swoole\Atomic(0);
+$counter = new OpenSwoole\Atomic(0);
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {

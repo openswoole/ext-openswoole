@@ -101,7 +101,7 @@ foreach ($map as $i => $f) {
         $f();
         continue;
     }
-    $process = new Swoole\Process(function () {
+    $process = new OpenSwoole\Process(function () {
         function a()
         {
             b();

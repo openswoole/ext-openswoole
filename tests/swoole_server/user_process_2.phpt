@@ -13,7 +13,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
     $serv = new Server(TCP_SERVER_HOST, $pm->getFreePort());
-    $process = new \Swoole\Process(function ($process) use ($serv, $pm) {
+    $process = new \OpenSwoole\Process(function ($process) use ($serv, $pm) {
         for ($i = 0; $i < 5; $i++) {
             co::usleep(20000);
             echo "$i OK\n";

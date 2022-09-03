@@ -6,7 +6,7 @@ swoole_coroutine: new server
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $server = new Swoole\Server('127.0.0.1');
+    $server = new OpenSwoole\Server('127.0.0.1');
     $server->on('receive', function () { });
     $server->start();
 });

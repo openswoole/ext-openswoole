@@ -12,7 +12,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->initFreePorts();
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    $client = new Swoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
+    $client = new OpenSwoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
     if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
         echo "FAILED\n";
         $pm->kill();
@@ -35,7 +35,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $serv = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $serv = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $serv->set([
         'worker_num' => 1,
         'log_file' => '/dev/null',

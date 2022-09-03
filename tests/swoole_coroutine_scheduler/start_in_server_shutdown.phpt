@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 $file = file_get_contents(__FILE__);
 
-$server = new Swoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS);
+$server = new OpenSwoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS);
 $server->set(['worker_num' => 2, 'log_level' => SWOOLE_LOG_WARNING,]);
 
 $server->on('WorkerStart', function (Swoole\Server $server, int $worker_id) use ($file) {

@@ -14,8 +14,8 @@ $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($port, $pm)
 {
-    Co\Run(function () use ($port) {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+    co::run(function () use ($port) {
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $r = $cli->connect(TCP_SERVER_HOST, $port, 1);
         Assert::assert($r);
         $cli->send("test");

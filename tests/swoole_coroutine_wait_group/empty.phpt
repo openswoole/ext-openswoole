@@ -5,7 +5,7 @@ swoole_coroutine_wait_group: empty
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$wg = new Swoole\Coroutine\WaitGroup;
+$wg = new OpenSwoole\Coroutine\WaitGroup;
 $wg->add(1);
 $wg->add(-1);
 $wg->wait();

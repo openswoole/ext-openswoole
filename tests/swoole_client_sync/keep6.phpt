@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
 
-    $client1 = new Swoole\Client(SWOOLE_SOCK_TCP | SWOOLE_KEEP | SWOOLE_SYNC);
+    $client1 = new OpenSwoole\Client(SWOOLE_SOCK_TCP | SWOOLE_KEEP | SWOOLE_SYNC);
     $r = @$client1->connect(TCP_SERVER_HOST, $pm->getFreePort(), 0.5);
     Assert::true($r);
     $client1->send("hello");
@@ -19,7 +19,7 @@ $pm->parentFunc = function () use ($pm) {
 
     usleep(10000);
 
-    $client2 = new Swoole\Client(SWOOLE_SOCK_TCP | SWOOLE_KEEP | SWOOLE_SYNC);
+    $client2 = new OpenSwoole\Client(SWOOLE_SOCK_TCP | SWOOLE_KEEP | SWOOLE_SYNC);
     /**
      * recreate socket
      */

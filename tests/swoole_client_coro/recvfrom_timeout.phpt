@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $port = get_one_free_port();
 
 Co::run(function () use ($port) {
-    $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
+    $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
     $cli->set([
         'timeout' => 0.2,
     ]);

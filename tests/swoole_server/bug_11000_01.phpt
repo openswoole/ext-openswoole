@@ -12,7 +12,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->childFunc = function () {
     $port = get_one_free_port();
     $serv = new Server(TCP_SERVER_HOST, $port);
-    $process = new \Swoole\Process(function ($process) use ($serv) {
+    $process = new \OpenSwoole\Process(function ($process) use ($serv) {
         usleep(10000);
         var_dump($serv->stats()['up']);
         $serv->shutdown();

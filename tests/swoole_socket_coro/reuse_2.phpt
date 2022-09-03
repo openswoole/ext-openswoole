@@ -23,7 +23,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $serv = new Server('127.0.0.1', $pm->getFreePort(1), SWOOLE_BASE);
 
     $serv->on(Constant::EVENT_WORKER_START, function (Server $server)  use ($pm, &$map) {
-        $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+        $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
         Assert::assert($socket->connect('127.0.0.1', $pm->getFreePort()));
         Assert::assert($socket->send(SEND_STR));
         echo $socket->recv();
@@ -42,7 +42,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
     echo "Co [2]\n";
 
-    Co\Run(function () use ($pm, &$map) {
+    co::run(function () use ($pm, &$map) {
         $socket = $map['sock'];
         Assert::assert($socket->send(SEND_STR));
         echo $socket->recv();
@@ -51,7 +51,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     Assert::assert($socket->bind('127.0.0.1', $pm->getFreePort()));
     Assert::assert($socket->listen(128));
     $pm->wakeup();

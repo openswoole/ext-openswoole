@@ -44,7 +44,7 @@ function your_code()
 
 co::run(function() {
 
-$chan = new Swoole\Coroutine\Channel;
+$chan = new OpenSwoole\Coroutine\Channel;
 
 go(function () use ($chan, $exit_status_list) {
     foreach ($exit_status_list as $val) {
@@ -57,7 +57,7 @@ for ($i = 0; $i < count($exit_status_list); $i++) {
         try {
             // in coroutine
             route();
-        } catch (\Swoole\ExitException $e) {
+        } catch (\OpenSwoole\ExitException $e) {
             Assert::assert($e->getFlags() & SWOOLE_EXIT_IN_COROUTINE);
             $exit_status = $chan->pop();
             $exit_status = $exit_status === 'undef' ? null : $exit_status;

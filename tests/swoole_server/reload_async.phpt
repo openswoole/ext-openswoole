@@ -9,8 +9,8 @@ skip_if_in_valgrind();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$reloaded = new Swoole\Atomic;
-$workerCounter = new Swoole\Atomic;
+$reloaded = new OpenSwoole\Atomic;
+$workerCounter = new OpenSwoole\Atomic;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->setWaitTimeout(-1);
@@ -19,7 +19,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm, $reloaded, $workerCounter) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set([
         'log_file' => '/dev/null',
         'worker_num' => rand(2, swoole_cpu_num() * 2),

@@ -34,7 +34,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     for ($c = 0; $c < MAX_CONCURRENCY_LOW; $c++) {
         go(function () use ($pm, $c) {
             global $sockets;
-            $sockets[] = $socket = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+            $sockets[] = $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
             $socket->setProtocol(['open_ssl' => true]);
             $ret = $socket->connect('127.0.0.1', $pm->getFreePort(), -1);
             if (!Assert::assert($ret)) {
@@ -86,7 +86,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $server = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+        $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $server->setProtocol([
             'open_ssl' => true,
             'ssl_cert_file' => SSL_FILE_DIR.'/client.crt',

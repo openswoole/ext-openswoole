@@ -9,7 +9,7 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Coroutine\Socket;
 
-use function Swoole\Coroutine\run;
+
 
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;

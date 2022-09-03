@@ -7,7 +7,7 @@ swoole_socket_coro: writeVector all
 
 use Swoole\Coroutine\Socket;
 
-use function Swoole\Coroutine\run;
+
 
 require __DIR__ . '/../include/bootstrap.php';
 
@@ -21,7 +21,7 @@ for ($i = 0; $i < 10; $i++) {
     $packedStr .= $iovector[$i];
 }
 
-run(function () {
+co::run(function () {
     $server = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     $port = get_one_free_port();
 

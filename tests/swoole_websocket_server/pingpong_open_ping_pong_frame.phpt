@@ -8,12 +8,12 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
     go(function () use ($pm) {
-        $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['timeout' => 5]);
         $ret = $cli->upgrade('/');
         Assert::assert($ret);
         for ($i = 100; $i--;) {
-            $ping = new swoole_websocket_frame;
+            $ping = new OpenSwoole_websocket_frame;
             $ping->opcode = WEBSOCKET_OPCODE_PING;
             $ping->data = 'ping';
             $ret = $cli->push($ping);
@@ -39,12 +39,12 @@ $pm->childFunc = function () use ($pm) {
     });
     $serv->on('open', function ($swoole_server, $req) {
     });
-    $atomic = new Swoole\Atomic;
+    $atomic = new OpenSwoole\Atomic;
     $serv->on('message', function (swoole_websocket_server $server, swoole_websocket_frame $frame) use ($atomic) {
         if ($frame->opcode === WEBSOCKET_OPCODE_PING) {
             Assert::same($frame->data, 'ping');
             $atomic->add();
-            $pongFrame = new swoole_websocket_frame;
+            $pongFrame = new OpenSwoole_websocket_frame;
             $pongFrame->opcode = WEBSOCKET_OPCODE_PONG;
             $pongFrame->data = 'pong';
             $server->push($frame->fd, $pongFrame);

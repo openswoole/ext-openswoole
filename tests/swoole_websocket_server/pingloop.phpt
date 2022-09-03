@@ -14,7 +14,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
     for ($i = MAX_CONCURRENCY_MID; $i--;) {
         go(function () use ($pm) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $ret = $cli->upgrade('/');
             Assert::assert($ret);
             $loop = 0;
@@ -25,7 +25,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
                         $count++;
                         $loop++;
                         if (mt_rand(0, 1)) {
-                            $pong = new swoole_websocket_frame;
+                            $pong = new OpenSwoole_websocket_frame;
                             $pong->opcode = WEBSOCKET_OPCODE_PONG;
                             $ret = $cli->push($pong);
                         } else {
@@ -58,7 +58,7 @@ $pm->childFunc = function () use ($pm) {
         $timer_id = $server->tick(PING_INTERVAL, function () use ($server) {
             foreach ($server->connections as $fd) {
                 if (mt_rand(0, 1)) {
-                    $ping = new swoole_websocket_frame;
+                    $ping = new OpenSwoole_websocket_frame;
                     $ping->opcode = WEBSOCKET_OPCODE_PING;
                     $server->push($fd, $ping);
                 } else {
@@ -69,7 +69,7 @@ $pm->childFunc = function () use ($pm) {
         $server->after(PING_LOOP * PING_INTERVAL, function () use ($pm, $server, $timer_id) {
             $server->clearTimer($timer_id);
             foreach ($server->connections as $fd) {
-                $server->push($fd, new swoole_websocket_closeframe);
+                $server->push($fd, new OpenSwoole_websocket_closeframe);
             }
         });
         $pm->wakeup();

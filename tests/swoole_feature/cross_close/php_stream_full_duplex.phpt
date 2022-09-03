@@ -33,7 +33,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $server = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+        $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::true($server->bind('127.0.0.1', $pm->getFreePort()));
         Assert::true($server->listen());
         go(function () use ($pm, $server) {

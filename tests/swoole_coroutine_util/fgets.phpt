@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 Co::set(['hook_flags' => 0]);
 
-Co\run(function () {
+co::run(function () {
     $file = __DIR__ . '/../../examples/server.php';
 
     $coroutine = '';

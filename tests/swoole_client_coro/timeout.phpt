@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $port = get_one_free_port();
 
 $cid = go(function () use ($port) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
     $socket->bind('127.0.0.1', $port);
     $peer = null;
     $socket->recvfrom($peer);
@@ -21,7 +21,7 @@ go(function () use ($port) {
         'socket_timeout' => 0.1
     ]);
 
-    $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
+    $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
     if (!Assert::assert($cli->connect('127.0.0.1', $port))) {
         return;
     }

@@ -17,7 +17,7 @@ $options = [
 
 try {
     $serv->set($options);
-} catch (\Swoole\Exception $e) {
+} catch (\OpenSwoole\Exception $e) {
     echo $e->getMessage();
 }
 

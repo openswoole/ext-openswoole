@@ -7,7 +7,7 @@ swoole_socket_coro: readVector all
 
 use Swoole\Coroutine\Socket;
 
-use function Swoole\Coroutine\run;
+
 
 require __DIR__ . '/../include/bootstrap.php';
 
@@ -23,7 +23,7 @@ for ($i = 0; $i < 10; $i++) {
 }
 $totalLength2 = rand(strlen($packedStr) / 2, strlen($packedStr) - 1024 * 128);
 
-run(function () {
+co::run(function () {
     $server = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     $port = get_one_free_port();
 

@@ -29,7 +29,7 @@ class MyPool
             return $this->pool->dequeue();
         }
 
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_KEEP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_KEEP);
         $client->set(array(
             'open_eof_split' => true, //打开EOF_SPLIT检测
             'package_eof' => "\r\n",

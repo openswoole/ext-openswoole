@@ -20,7 +20,7 @@ co::run(function () {
     System::readFile(__FILE__);
 });
 
-$sch = new Swoole\Coroutine\Scheduler();
+$sch = new OpenSwoole\Coroutine\Scheduler();
 $sch->set(['dns_cache_capacity' => 0]);
 $sch->add(function () {
     static $worker_num = 0;

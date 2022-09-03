@@ -10,7 +10,7 @@ $pm->initRandomDataEx(MAX_CONCURRENCY_MID, 1, 1024);
 $pm->parentFunc = function ($pid) use ($pm) {
     for ($c = MAX_CONCURRENCY_MID; $c--;) {
         go(function () use ($pm, $c) {
-            $conn = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+            $conn = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
             Assert::assert($conn->connect('127.0.0.1', $pm->getFreePort()));
             $conn->send((string)$c);
             $timeout = ms_random(0.1, 1);
@@ -29,7 +29,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->on('WorkerStart', function () use ($pm) {
         $pm->wakeup();
     });

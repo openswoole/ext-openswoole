@@ -12,7 +12,7 @@ use Swoole\Process;
 
 $fp = STDOUT;
 
-$lock = new Swoole\Lock(SWOOLE_MUTEX);
+$lock = new OpenSwoole\Lock(SWOOLE_MUTEX);
 $pid = posix_getpid();
 fwrite($fp, "[Master]create lock\n");
 $lock->lock();

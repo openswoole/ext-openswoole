@@ -11,7 +11,7 @@ $pm->initFreePorts();
 
 $pm->parentFunc = function (int $pid) use ($pm) {
     go(function() use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $connected = $cli->upgrade('/?test=a&b=hello');
         Assert::assert($connected);
         $response = $cli->recv();

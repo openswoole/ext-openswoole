@@ -6,11 +6,11 @@ swoole_socket_coro: check writev and readv param type
 <?php declare(strict_types = 1);
 use Swoole\Coroutine\Socket;
 
-use function Swoole\Coroutine\run;
+
 
 require __DIR__ . '/../include/bootstrap.php';
 
-run(function () {
+co::run(function () {
     $conn = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     try {
         $iovector = [1];

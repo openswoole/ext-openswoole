@@ -13,7 +13,7 @@ co::run(function () {
 });
 function foo()
 {
-    $chan = new \Swoole\Coroutine\Channel();
+    $chan = new \OpenSwoole\Coroutine\Channel();
     go(function () use ($chan) {
         // nothing
     });

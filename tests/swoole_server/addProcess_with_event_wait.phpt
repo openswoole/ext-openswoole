@@ -32,7 +32,7 @@ $pm->childFunc = function () use ($pm) {
         }
     }
 
-    $server = new Swoole\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
+    $server = new OpenSwoole\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
     $server->set(['log_file' => '/dev/null']);
     $server->on('packet', function () { });
     $server->addProcess(new Process5);

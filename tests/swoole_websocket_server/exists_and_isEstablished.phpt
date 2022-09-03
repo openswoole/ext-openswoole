@@ -61,7 +61,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\WebSocket\Server ('127.0.0.1', $pm->getFreePort(), SERVER_MODE_RANDOM);
+    $server = new OpenSwoole\WebSocket\Server ('127.0.0.1', $pm->getFreePort(), SERVER_MODE_RANDOM);
     $server->set(['log_file' => '/dev/null']);
     $server->on('start', function () use ($pm) {
         switch_process();

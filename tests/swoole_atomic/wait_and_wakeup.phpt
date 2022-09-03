@@ -6,16 +6,16 @@ swoole_atomic: wait & wakeup
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$atomic = new Swoole\Atomic(1);
+$atomic = new OpenSwoole\Atomic(1);
 var_dump($atomic->wakeup(), $atomic->get());
 
-$atomic = new Swoole\Atomic(0);
+$atomic = new OpenSwoole\Atomic(0);
 var_dump($atomic->wakeup(), $atomic->get());
 
-$atomic = new Swoole\Atomic(0);
+$atomic = new OpenSwoole\Atomic(0);
 var_dump($atomic->wait(1), $atomic->get());
 
-$atomic = new Swoole\Atomic(1);
+$atomic = new OpenSwoole\Atomic(1);
 var_dump($atomic->wait(1), $atomic->get());
 
 ?>

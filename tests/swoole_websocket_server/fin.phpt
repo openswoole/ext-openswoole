@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm, &$count) {
     for ($c = MAX_CONCURRENCY; $c--;) {
         go(function () use ($pm, &$count) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 5]);
             $ret = $cli->upgrade('/');
             Assert::assert($ret);
@@ -22,7 +22,7 @@ $pm->parentFunc = function (int $pid) use ($pm, &$count) {
                 $opcode = $n === $times - 1 ? WEBSOCKET_OPCODE_TEXT : WEBSOCKET_OPCODE_CONTINUATION;
                 $finish = $n === 0;
                 if (mt_rand(0, 1)) {
-                    $frame = new swoole_websocket_frame;
+                    $frame = new OpenSwoole_websocket_frame;
                     $frame->opcode = $opcode;
                     $frame->data = $rand;
                     $frame->finish = $finish;

@@ -13,7 +13,7 @@ use Swoole\Coroutine\Server\Connection;
 
 const DATA = "hello world\n";
 
-Co\run(function () {
+co::run(function () {
     $port = get_one_free_port();
     go(function () use ($port) {
         $server = new Server('0.0.0.0', $port, false);

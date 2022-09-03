@@ -11,7 +11,7 @@ use Swoole\Coroutine;
 
 
 Co::run(function() {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
     $socket->bind('127.0.0.1', 9601);
     // server
     $cid = go(function () use ($socket) {

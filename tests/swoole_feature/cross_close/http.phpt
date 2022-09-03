@@ -9,7 +9,7 @@ $pm = new SwooleTest\ProcessManager();
 
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $http = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+        $http = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         echo "GET\n";
         go(function () use ($pm, $http) {
             Co::usleep(1000);
@@ -27,7 +27,7 @@ $pm->parentFunc = function () use ($pm) {
     Swoole\Event::wait();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $server = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set(['log_file' => '/dev/null']);
     $server->on('workerStart', function () use ($pm) { $pm->wakeup(); });
     $server->on('request', function ($request, Swoole\Http\Response $response) use ($server) {

@@ -63,7 +63,7 @@ $pm->childFunc = function () use ($pm) {
         foreach ($data_list as $data) {
             $opcode = (int)explode('|', $data, 3)[1];
             if (mt_rand(0, 1)) {
-                $frame = new swoole_websocket_frame;
+                $frame = new OpenSwoole_websocket_frame;
                 $frame->opcode = $opcode;
                 $frame->data = $data;
                 $ret = $serv->push($req->fd, $frame);

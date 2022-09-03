@@ -13,7 +13,7 @@ use Swoole\Constant;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Coroutine\Http\Client;
-use function Swoole\Coroutine\run;
+
 
 define('GREETER', 'hello world');
 

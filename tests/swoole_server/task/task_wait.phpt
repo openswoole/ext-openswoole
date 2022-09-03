@@ -17,7 +17,7 @@ for ($n = MAX_REQUESTS; $n--;)
 $pm->parentFunc = function ($pid) use ($pm) {
     for ($n = MAX_REQUESTS; $n--;) {
         go(function () use ($pm, $n) {
-            $c = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $c = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $c->set(['timeout' => 5,]);
             Assert::assert($c->get('/task?n='.$n));
             Assert::same($c->body, "OK");

@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Constant;
 
-$atomic = new Swoole\Atomic;
+$atomic = new OpenSwoole\Atomic;
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
@@ -17,7 +17,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
 
-    $server = new Swoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
+    $server = new OpenSwoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
 
     $server->set([
         Constant::OPTION_LOG_FILE => '/dev/null',
@@ -26,7 +26,7 @@ $pm->childFunc = function () use ($pm) {
 
     $server->on('packet', function () {
     });
-    $server->addProcess(new Swoole\Process(function () {
+    $server->addProcess(new OpenSwoole\Process(function () {
         pcntl_signal(SIGTERM, function () {
         });
         swoole_timer_tick(1000, function () {

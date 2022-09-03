@@ -13,8 +13,8 @@ use Swoole\Server;
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\Run(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $r = $cli->connect(TCP_SERVER_HOST, $pm->getFreePort(), 1);
         Assert::assert($r);
         $cli->send("test1\r\ntest2\r\n");

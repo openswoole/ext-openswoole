@@ -11,8 +11,8 @@ require __DIR__ . '/../include/bootstrap.php';
 trigger_error('SWOOLE_BASE not support reload task workers.', E_USER_NOTICE);
 $worker_num = swoole_cpu_num() * 2;
 $counter = [
-    'worker' => new Swoole\Atomic(),
-    'task_worker' => new Swoole\Atomic()
+    'worker' => new OpenSwoole\Atomic(),
+    'task_worker' => new OpenSwoole\Atomic()
 ];
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
@@ -50,7 +50,7 @@ $pm->childFunc = function () use ($pm) {
     global $worker_num;
     @unlink(TEST_LOG_FILE);
     @unlink(TEST_PID_FILE);
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
         'log_file' => TEST_LOG_FILE,
         'pid_file' => TEST_PID_FILE,

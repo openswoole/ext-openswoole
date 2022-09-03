@@ -6,7 +6,7 @@ swoole_coroutine_wait_group: logic
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $wg = new Swoole\Coroutine\WaitGroup;
+    $wg = new OpenSwoole\Coroutine\WaitGroup;
     Assert::throws(function () use ($wg) {
         $wg->add(-1);
     }, LogicException::class);

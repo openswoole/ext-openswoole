@@ -11,8 +11,8 @@ use Swoole\Server;
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\Run(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $r = $cli->connect(TCP_SERVER_HOST, $pm->getFreePort(), 1);
         Assert::assert($r);
         $cli->send("test");
@@ -26,7 +26,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
     $serv = new Server(TCP_SERVER_HOST, $pm->getFreePort(), SWOOLE_BASE);
-    $process = new \Swoole\Process(function ($process) use ($serv) {
+    $process = new \OpenSwoole\Process(function ($process) use ($serv) {
         while (1) {
             $msg = json_decode($process->read(), true);
             $serv->send($msg['fd'], $msg['data']);

@@ -6,7 +6,7 @@ swoole_coroutine: new process
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $process = new Swoole\Process(function () { });
+    $process = new OpenSwoole\Process(function () { });
     $process->start();
 });
 ?>

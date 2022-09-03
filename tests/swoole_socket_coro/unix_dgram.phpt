@@ -7,7 +7,7 @@ swoole_socket_coro: unix dgram
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     @unlink('/tmp/test-server.sock');
-    $server = new Swoole\Coroutine\Socket(AF_UNIX, SOCK_DGRAM, IPPROTO_IP);
+    $server = new OpenSwoole\Coroutine\Socket(AF_UNIX, SOCK_DGRAM, IPPROTO_IP);
     $server->bind('/tmp/test-server.sock');
     go(function () use ($server) {
         while ($data = $server->recvfrom($peer)) {
@@ -18,7 +18,7 @@ go(function () {
     });
     go(function () use ($server) {
         @unlink('/tmp/test-client.sock');
-        $client = new Swoole\Coroutine\Socket(AF_UNIX, SOCK_DGRAM, IPPROTO_IP);
+        $client = new OpenSwoole\Coroutine\Socket(AF_UNIX, SOCK_DGRAM, IPPROTO_IP);
         $client->bind('/tmp/test-client.sock');
         $peer = [];
         for ($n = MAX_REQUESTS; $n--;) {

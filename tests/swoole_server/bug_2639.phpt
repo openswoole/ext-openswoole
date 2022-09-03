@@ -13,7 +13,7 @@ $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_SSL);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_SSL);
         $client->set([
             'ssl_cert_file' => dirname(__DIR__) . '/include/api/ssl-ca/client-cert.pem',
             'ssl_key_file' => dirname(__DIR__) . '/include/api/ssl-ca/client-key.pem',

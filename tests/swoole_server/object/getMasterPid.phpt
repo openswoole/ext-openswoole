@@ -22,8 +22,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $atomic = new \Swoole\Atomic(0);
-    $serv = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $atomic = new \OpenSwoole\Atomic(0);
+    $serv = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $serv->set(array(
         'log_level' => SWOOLE_LOG_ERROR,
     ));

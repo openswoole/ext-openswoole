@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Server;
 use Swoole\Coroutine\Server\Connection;
 
-Co\run(function () {
+co::run(function () {
     $port = get_one_free_port();
     go(function() use($port) {
         $server = new Server('0.0.0.0', $port, false);

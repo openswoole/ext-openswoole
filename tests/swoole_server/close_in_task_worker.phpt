@@ -17,7 +17,7 @@ $socket = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_DGRAM, 0);
 
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP );
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP );
         if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
             exit("connect failed\n");
         }

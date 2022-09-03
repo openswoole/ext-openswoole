@@ -12,7 +12,7 @@ use Swoole\Constant;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
-use function Swoole\Coroutine\run;
+
 
 $pm = new SwooleTest\ProcessManager;
 
@@ -50,7 +50,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "Done\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server("127.0.0.1", $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server("127.0.0.1", $pm->getFreePort(), SWOOLE_BASE);
 
     $http->set([
         'worker_num' => 1,

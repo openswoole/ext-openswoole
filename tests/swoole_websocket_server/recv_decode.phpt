@@ -20,13 +20,13 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm, $data_list) {
     for ($c = MAX_CONCURRENCY_LOW; $c--;) {
         go(function () use ($pm, $data_list) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 5]);
             $ret = $cli->upgrade('/');
             Assert::assert($ret);
             foreach ($data_list as $data) {
                 if (mt_rand(0, 1)) {
-                    $frame = new swoole_websocket_frame;
+                    $frame = new OpenSwoole_websocket_frame;
                     $frame->opcode = (int)explode('|', $data, 3)[1];
                     $frame->data = $data;
                     $ret = $cli->push($frame);
@@ -70,7 +70,7 @@ $pm->childFunc = function () use ($pm) {
             return;
         }
         if (mt_rand(0, 1)) {
-            $send_frame = new swoole_websocket_frame;
+            $send_frame = new OpenSwoole_websocket_frame;
             $send_frame->data = $id;
             $serv->push($recv_frame->fd, $send_frame);
         } else {

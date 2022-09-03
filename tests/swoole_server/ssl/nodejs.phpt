@@ -11,7 +11,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $result = Co::exec('node '.__DIR__.'/code/connect.js '.$pm->getFreePort());
         Assert::eq($result['code'], 0);
         Assert::contains($result['output'], 'swoole-http-server');
@@ -20,7 +20,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $serv = new Swoole\Http\Server("127.0.0.1", $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+    $serv = new OpenSwoole\Http\Server("127.0.0.1", $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP | SWOOLE_SSL);
     $serv->set([
         'ssl_cert_file' => SSL_FILE_DIR . '/server.crt',
         'ssl_key_file' => SSL_FILE_DIR . '/server.key',

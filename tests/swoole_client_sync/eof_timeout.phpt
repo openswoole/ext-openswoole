@@ -12,7 +12,7 @@ ini_set("openswoole.display_errors", "Off");
 
 $pm->initFreePorts(2);
 $pm->parentFunc = function ($pid) use ($pm) {
-    $cli = new Swoole\Client(SWOOLE_SOCK_TCP);
+    $cli = new OpenSwoole\Client(SWOOLE_SOCK_TCP);
     $cli->set(['open_eof_check' => true, "package_eof" => "\r\n\r\n"]);
     if (!$cli->connect('127.0.0.1', $pm->getFreePort(1), 0.5)) {
         fail:

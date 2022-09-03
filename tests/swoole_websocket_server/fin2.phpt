@@ -7,8 +7,8 @@ swoole_websocket_server: fin [2]
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
-    Co\run(function () use ($pm) {
-        $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['timeout' => 5]);
         $ret = $cli->upgrade('/');
         Assert::assert($ret);
@@ -20,7 +20,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
             $opcode = $n === $times - 1 ? WEBSOCKET_OPCODE_TEXT : WEBSOCKET_OPCODE_CONTINUATION;
             $finish = $n === 0;
             if (mt_rand(0, 1)) {
-                $frame = new swoole_websocket_frame;
+                $frame = new OpenSwoole_websocket_frame;
                 $frame->opcode = $opcode;
                 $frame->data = $rand;
                 $frame->finish = $finish;

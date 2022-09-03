@@ -7,11 +7,11 @@ swoole_socket_coro: iov max
 
 use Swoole\Coroutine\Socket;
 
-use function Swoole\Coroutine\run;
+
 
 require __DIR__ . '/../include/bootstrap.php';
 
-run(function () {
+co::run(function () {
     $iovector = [];
     $iovectorLength = [];
 

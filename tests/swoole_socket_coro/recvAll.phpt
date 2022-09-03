@@ -11,8 +11,8 @@ $pm->initRandomDataArray(4, 512 * 1024);
 const CASE_LIST = '4';
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\run(function () use ($pm) {
-        $conn = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    co::run(function () use ($pm) {
+        $conn = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::assert($conn->connect('127.0.0.1', $pm->getFreePort()));
         /**
          * Case1，第一次接收到少量內容，随后分多次触发可读事件接收更多数据片
@@ -62,7 +62,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->on('WorkerStart', function () use ($pm) {
         $pm->wakeup();
     });

@@ -37,7 +37,7 @@ $pm->childFunc = function () use ($pm) {
         'log_file' => '/dev/null'
     ]);
 
-    $proc = new swoole\process(function ($process) use ($serv) {
+    $proc = new OpenSwoole\process(function ($process) use ($serv) {
        $data = json_decode($process->read(), true);
         for ($i = 0; $i < TIMES/2; $i ++) {
             go (function() use ($serv,$data, $i){

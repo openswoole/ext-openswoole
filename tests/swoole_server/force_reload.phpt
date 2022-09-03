@@ -14,13 +14,13 @@ require __DIR__ . '/../include/bootstrap.php';
 const WORKER_NUM = 4;
 
 $pm = new ProcessManager;
-$atomic = new Swoole\Atomic;
+$atomic = new OpenSwoole\Atomic;
 
 $pm->parentFunc = function ($pid) use ($pm) {
 	$n = WORKER_NUM;
 	$clients = [];
 	while ($n--) {
-		$client = new Swoole\Client(SWOOLE_SOCK_TCP);
+		$client = new OpenSwoole\Client(SWOOLE_SOCK_TCP);
 		if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
 			exit("connect failed\n");
 		}
@@ -37,7 +37,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm, $atomic) {
-	$server = new Swoole\Server('127.0.0.1', $pm->getFreePort());
+	$server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort());
 	$server->set([
 		'worker_num' => WORKER_NUM,
 		'max_wait_time' => 1,

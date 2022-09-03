@@ -16,7 +16,7 @@ phpt_var_dump(defined('SWOOLE_HAVE_ZLIB'));
 $pm = new ProcessManager;
 $pm->initRandomData(MAX_REQUESTS);
 $pm->parentFunc = function (int $pid) use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = new Client('127.0.0.1', $pm->getFreePort());
         $cli->set([
             'timeout' => 5,

@@ -20,13 +20,13 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm, $fp) {
-    $lock = new Swoole\Lock(SWOOLE_MUTEX);
+    $lock = new OpenSwoole\Lock(SWOOLE_MUTEX);
     $pid = posix_getpid();
     fwrite($fp, "[Master {$pid}]create lock\n");
     $lock->lock();
     $n = 2;
     while ($n--) {
-        $process = new Swoole\Process(function ($p) use ($lock, $fp) {
+        $process = new OpenSwoole\Process(function ($p) use ($lock, $fp) {
             fwrite($fp, "[Child {$p->pid}] Wait Lock\n");
             $lock->lock();
             fwrite($fp, "[Child {$p->pid}] Get Lock\n");

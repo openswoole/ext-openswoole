@@ -6,7 +6,7 @@ swoole_server: addProcess with swoole_timer_tick fatal error
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$atomic = new Swoole\Atomic;
+$atomic = new OpenSwoole\Atomic;
 $pm = new SwooleTest\ProcessManager;
 
 class Process3 extends Swoole\Process
@@ -40,7 +40,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
+    $server = new OpenSwoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
     $server->set([
         'log_file' => '/dev/null',
 //        'worker_num' => 1,

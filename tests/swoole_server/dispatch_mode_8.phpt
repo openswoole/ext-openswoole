@@ -13,7 +13,7 @@ use Swoole\Coroutine\System;
 use Swoole\Server;
 use Swoole\Table;
 
-use function Swoole\Coroutine\run;
+
 use function Swoole\Coroutine\go;
 
 $table = new Table(64);

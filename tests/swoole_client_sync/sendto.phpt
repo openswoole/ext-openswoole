@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Client;
 
-use function Swoole\Coroutine\run;
+
 
 $pm = new SwooleTest\ProcessManager;
 
@@ -27,7 +27,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
     run(function () use ($pm) {
-        $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
+        $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
         $socket->bind('127.0.0.1', $pm->getFreePort());
         $pm->wakeup();
         $peer = null;

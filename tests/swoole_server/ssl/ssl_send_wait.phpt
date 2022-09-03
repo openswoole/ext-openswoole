@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Server;
 use Swoole\Coroutine\Http\Client;
-use function Swoole\Coroutine\run;
+
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
