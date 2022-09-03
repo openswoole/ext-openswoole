@@ -1,17 +1,3 @@
---TEST--
-swoole_curl/multi: Bug #76675 (Segfault with H2 server push write/writeheader handlers)
---SKIPIF--
-<?php require __DIR__ . '/../../include/skipif.inc'; ?>
-<?php
-if (getenv("SKIP_ONLINE_TESTS")) {
-    die("skip online test");
-}
-$curl_version = curl_version();
-if ($curl_version['version_number'] < 0x073d00) {
-    exit("skip: test may crash with curl < 7.61.0");
-}
-?>
---FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
@@ -64,5 +50,3 @@ if (swoole_array_default_value($argv, 1) == 'ori') {
     co::run($fn);
 }
 ?>
---EXPECTREGEX--
-(Received \d+)+

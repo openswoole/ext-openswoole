@@ -11,10 +11,10 @@ Mark van der Velden
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     // start testing
     echo "*** Testing curl_multi_init(void); ***\n";
 

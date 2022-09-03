@@ -14,13 +14,13 @@ use Swoole\Runtime;
 use Swoole\Coroutine;
 use Swoole\Coroutine\System;
 
-use function Swoole\Coroutine\run;
+
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
     Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
     $s = microtime(true);
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $ch = curl_init();
         $code = uniqid('swoole_');
         $url = "http://127.0.0.1:".$pm->getFreePort()."/?code=".urlencode($code);
@@ -38,7 +38,7 @@ $pm->parentFunc = function () use ($pm) {
 
         $output = curl_exec($ch);
         Assert::isEmpty($output);
-        Assert::eq(swoole_last_error(), SWOOLE_ERROR_CO_CANCELED);
+        Assert::eq(\OpenSwoole\Util::getLastErrorCode(), SWOOLE_ERROR_CO_CANCELED);
         Assert::eq(curl_errno($ch), CURLE_ABORTED_BY_CALLBACK);
         Assert::contains(curl_error($ch), 'Operation was aborted by an application callback');
         curl_close($ch);

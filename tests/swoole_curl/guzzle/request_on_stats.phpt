@@ -13,11 +13,11 @@ use Swoole\Runtime;
 use GuzzleHttp\Client;
 use GuzzleHttp\TransferStats;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $client = new Client();
     $host = 'http://httpbin.org/stream/1024';
     $client->request('GET', $host, [

@@ -11,10 +11,10 @@ require_once TESTS_API_PATH.'/curl_multi.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $n = 4;
     while ($n--) {
         go(function () {
@@ -25,7 +25,7 @@ run(function () {
 });
 ?>
 --EXPECTF--
-Fatal error: Uncaught Swoole\Error: cURL is executing, cannot be operated in %s:%d
+Fatal error: Uncaught OpenSwoole\Error: cURL is executing, cannot be operated in %s:%d
 Stack trace:
 #0 %s(%d): curl_multi_select(%s)
 %A

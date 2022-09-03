@@ -77,10 +77,10 @@ class MyHttpClient
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $buzz = new MyHttpClient();
     $buzz->sendRequest();
     $buzz = null;

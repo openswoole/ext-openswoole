@@ -10,23 +10,17 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
-
 const N = 8;
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 $s = microtime(true);
-run(function () {
+co::run(function () {
     $n = N;
     while($n--) {
         go(function() {
             $ch = curl_init();
             $code = uniqid('swoole_');
-            if (IS_IN_TRAVIS) {
                 $domain = 'www.google.com';
-            } else {
-                $domain = 'www.baidu.com';
-            }
             $url = "https://{$domain}/?code=".urlencode($code);
 
             curl_setopt($ch, CURLOPT_URL, $url);
@@ -43,7 +37,7 @@ run(function () {
                 echo "CURL Error:" . curl_error($ch);
             }
             Assert::notEmpty($output);
-            Assert::greaterThan(strlen($output), 10000);
+            Assert::greaterThan(strlen($output), 9000);
             curl_close($ch);
         });
     }

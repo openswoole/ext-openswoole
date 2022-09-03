@@ -13,11 +13,11 @@ use Swoole\Runtime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Cookie\CookieJar;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $client = new Client();
     $jar = CookieJar::fromArray(
         [

@@ -11,7 +11,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-Co\run(function() {
+co::run(function() {
   $multiCurl = array();
   $result = array();
   $mh = curl_multi_init();

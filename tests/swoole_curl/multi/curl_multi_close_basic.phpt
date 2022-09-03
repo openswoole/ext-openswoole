@@ -13,10 +13,10 @@ if (!extension_loaded('curl')) print 'skip';
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $ch = curl_multi_init();
     curl_multi_close($ch);
     curl_type_assert($ch, 'Swoole-Coroutine-cURL-Multi-Handle', CurlMultiHandle::class);

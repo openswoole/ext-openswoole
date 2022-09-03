@@ -12,7 +12,7 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 $pm = new SwooleTest\ProcessManager;
 
 const N = 8;
@@ -20,7 +20,7 @@ const N = 8;
 $pm->parentFunc = function () use ($pm) {
     Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
     $s = microtime(true);
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $ch = curl_init();
         $code = uniqid('swoole_');
         $url = "http://127.0.0.1:".$pm->getFreePort()."/?code=".urlencode($code);
@@ -71,7 +71,7 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Fatal error: Uncaught Swoole\Error: cURL is executing, cannot be operated in %s:%d
+Fatal error: Uncaught OpenSwoole\Error: cURL is executing, cannot be operated in %s:%d
 Stack trace:
 #0 %s(%d): curl_close(%s)
 %A

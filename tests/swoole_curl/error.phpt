@@ -10,11 +10,11 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 $s = microtime(true);
-run(function () {
+co::run(function () {
     $ch = curl_init();
     $code = uniqid('swoole_');
     $url = "http://127.0.0.1:49494/?code=".urlencode($code);

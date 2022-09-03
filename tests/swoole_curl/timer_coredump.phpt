@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
@@ -25,8 +25,8 @@ function test()
     curl_close($curl);
 }
 
-run('test');
-run('test');
+co::run('test');
+co::run('test');
 
 echo "Done\n";
 ?>
