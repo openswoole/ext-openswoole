@@ -16,7 +16,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort());
     $http->set([
         'enable_coroutine' => false, // close build-in coroutine
         'worker_num' => 1,
@@ -26,10 +26,10 @@ $pm->childFunc = function () use ($pm) {
         $response->header("Content-Type", "text/plain");
         if ($request->server['request_uri'] == '/co') {
             go(function () use ($response) {
-                $response->end(Co::getuid());
+                $response->end(Co::getCid());
             });
         } else {
-            $response->end(Co::getuid());
+            $response->end(Co::getCid());
         }
     });
     $http->start();

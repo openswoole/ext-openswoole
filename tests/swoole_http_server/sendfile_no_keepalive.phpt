@@ -9,13 +9,10 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Http\Client;
 use Swoole\WebSocket\Server;
 
-use function Swoole\Coroutine\run;
-use function Swoole\Coroutine\go;
-
 $pm = new ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $n = MAX_CONCURRENCY_LOW;
         while ($n--) {
             go(function () use ($pm) {

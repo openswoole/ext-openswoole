@@ -18,7 +18,7 @@ $pm->parentFunc = function () use ($pm)
 };
 $pm->childFunc = function () use ($pm)
 {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $http->set(['http_compression' => false,]);
     $http->on("WorkerStart", function ($serv, $wid) {
         global $pm;

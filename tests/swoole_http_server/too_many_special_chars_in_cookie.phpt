@@ -13,7 +13,7 @@ $pm->setRandomFunc(function () {
 $pm->initRandomDataEx(1, MAX_REQUESTS);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         for ($n = MAX_REQUESTS; $n--;) {
             Assert::assert($cli->get('/'));
             Assert::same($cli->statusCode, 200);
@@ -25,7 +25,7 @@ $pm->parentFunc = function () use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort());
     $http->set(['log_file' => '/dev/null']);
     $http->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use ($pm) {
         static $pre_cookie;

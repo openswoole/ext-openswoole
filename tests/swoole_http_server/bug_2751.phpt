@@ -11,13 +11,13 @@ use Swoole\Constant;
 
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         echo httpGetStatusCode("http://127.0.0.1:{$pm->getFreePort()}/test™") . PHP_EOL;
     });
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set(['log_file' => '/dev/null']);
     $http->on(Constant::EVENT_WORKER_START, function () use ($pm) {
         $pm->wakeup();

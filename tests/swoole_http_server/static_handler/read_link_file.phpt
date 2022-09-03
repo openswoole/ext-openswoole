@@ -13,7 +13,7 @@ use Swoole\Http\Server;
 symlink(TEST_IMAGE, TEST_LINK_IMAGE);
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Swoole\Coroutine\run(function () use ($pm) {
+    co::run(function () use ($pm) {
             $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/examples/test_link.jpg");
             if (is_file(TEST_LINK_IMAGE)) {
                 unlink(TEST_LINK_IMAGE);

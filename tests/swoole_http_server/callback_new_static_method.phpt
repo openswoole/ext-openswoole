@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     for ($i = MAX_CONCURRENCY_LOW; $i--;) {
         go(function () use ($pm) {
-            $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             for ($i = MAX_REQUESTS_LOW; $i--;) {
                 Assert::assert($cli->get('/'));
                 Assert::same($cli->statusCode, 200);

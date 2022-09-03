@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         if (!$client->connect('127.0.0.1', $pm->getFreePort(), 1)) {
             exit("connect failed. Error: {$client->errCode}\n");
         }

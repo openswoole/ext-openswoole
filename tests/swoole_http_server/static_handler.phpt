@@ -13,7 +13,7 @@ use Swoole\Http\Response;
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     foreach ([false, true] as $http2) {
-        Swoole\Coroutine\run(function () use ($pm, $http2) {
+        co::run(function () use ($pm, $http2) {
             $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/test.jpg", ['http2' => $http2]);
             Assert::assert(!empty($data));
             $data2 = file_get_contents(TEST_IMAGE);
@@ -47,7 +47,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    Assert::true(swoole_mime_type_add('moc', 'application/x-mocha'));
+    Assert::true(OpenSwoole\Util::mimeTypeAdd('moc', 'application/x-mocha'));
     $http = new Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set([
         'log_file' => '/dev/null',

@@ -14,7 +14,7 @@ use Swoole\Coroutine;
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     foreach ([false, true] as $http2) {
-        Coroutine\run(function () use ($pm, $http2) {
+        Coroutine::run(function () use ($pm, $http2) {
             $data = httpGetBody(
                 "http://127.0.0.1:{$pm->getFreePort()}/examples/test.jpg",
                 ['http2' => $http2]

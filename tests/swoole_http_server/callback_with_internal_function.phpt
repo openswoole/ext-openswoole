@@ -28,7 +28,7 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-object(Swoole\Http\Request)#%d (%d) {
+object(OpenSwoole\Http\Request)#%d (%d) {
   ["fd"]=>
   int(1)
   %A"header"]=>
@@ -74,7 +74,7 @@ object(Swoole\Http\Request)#%d (%d) {
   ["tmpfiles"]=>
   NULL
 }
-object(Swoole\Http\Response)#%d (%d) {
+object(OpenSwoole\Http\Response)#%d (%d) {
   ["fd"]=>
   int(1)
   ["socket"]=>

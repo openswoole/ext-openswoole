@@ -17,7 +17,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $http->set([
         'worker_num' => 1,
         'log_file' => '/dev/null',

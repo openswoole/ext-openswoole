@@ -9,13 +9,11 @@ skip_if_in_valgrind();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Co\run;
-
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $randomData = get_safe_random();
-        $httpClient = new Co\http\Client(HTTP_SERVER_HOST, $pm->getFreePort(), false);
+        $httpClient = new OpenSwoole\Coroutine\http\Client(HTTP_SERVER_HOST, $pm->getFreePort(), false);
         $httpClient->setMethod("POST");
         $httpClient->setData($randomData);
 

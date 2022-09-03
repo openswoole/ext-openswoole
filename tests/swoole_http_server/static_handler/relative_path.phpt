@@ -14,7 +14,7 @@ use Swoole\Http\Server;
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     foreach ([false, true] as $http2) {
-        Swoole\Coroutine\run(function () use ($pm, $http2) {
+        co::run(function () use ($pm, $http2) {
             $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/examples/test.jpg", ['http2' => $http2]);
             Assert::notEmpty($data);
             Assert::same(md5($data), md5_file(TEST_IMAGE));

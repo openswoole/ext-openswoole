@@ -11,7 +11,7 @@ $pm = new SwooleTest\ProcessManager;
 $html = base64_encode(random_bytes(rand(2048, 65536 * 2)));
 
 $pm->parentFunc = function ($pid) use ($pm, $html) {
-    Co\run(function () use ($pm, $html) {
+    co::run(function () use ($pm, $html) {
         $index = rand(8192, strlen($html) - 8192);
         $reqData = [
             'data1' => substr($html, 0, $index),

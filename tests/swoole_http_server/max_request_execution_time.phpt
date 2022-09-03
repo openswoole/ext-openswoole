@@ -17,7 +17,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
     Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $http->set(['enable_coroutine' => true, 'max_request_execution_time' => 1, 'max_wait_time' => 1]);
     $http->on('workerStart', function () use ($pm) {
         $pm->wakeup();
