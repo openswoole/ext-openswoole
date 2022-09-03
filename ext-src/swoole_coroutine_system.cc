@@ -20,7 +20,29 @@ using swoole::TimerNode;
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
 
+#include "swoole_socket.h"
+
+#include <vector>
+#include <unordered_map>
+
+using std::string;
+using std::vector;
+using swoole::Timer;
+
 static zend_class_entry *swoole_coroutine_system_ce;
+
+struct DNSCacheEntity {
+    char address[INET6_ADDRSTRLEN];
+    time_t update_time;
+};
+
+static std::unordered_map<std::string, DNSCacheEntity *> request_cache_map;
+
+void php_swoole_async_coro_rshutdown() {
+    for (auto i = request_cache_map.begin(); i != request_cache_map.end(); i++) {
+        efree(i->second);
+    }
+}
 
 SW_EXTERN_C_BEGIN
 PHP_METHOD(swoole_coroutine_system, exec);
@@ -37,6 +59,7 @@ PHP_METHOD(swoole_coroutine_system, wait);
 PHP_METHOD(swoole_coroutine_system, waitPid);
 PHP_METHOD(swoole_coroutine_system, waitSignal);
 PHP_METHOD(swoole_coroutine_system, waitEvent);
+PHP_METHOD(swoole_coroutine_system, dnsLookup);
 SW_EXTERN_C_END
 
 // clang-format off
@@ -44,7 +67,6 @@ SW_EXTERN_C_END
 static const zend_function_entry swoole_coroutine_system_methods[] =
 {
     ZEND_FENTRY(gethostbyname, ZEND_FN(swoole_coroutine_gethostbyname), arginfo_class_Swoole_Coroutine_System_gethostbyname, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(dnsLookup, ZEND_FN(swoole_async_dns_lookup_coro), arginfo_class_Swoole_Coroutine_System_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, exec, arginfo_class_Swoole_Coroutine_System_exec, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, sleep, arginfo_class_Swoole_Coroutine_System_sleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, usleep, arginfo_class_Swoole_Coroutine_System_usleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -56,6 +78,7 @@ static const zend_function_entry swoole_coroutine_system_methods[] =
     PHP_ME(swoole_coroutine_system, waitPid, arginfo_class_Swoole_Coroutine_System_waitPid, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, waitSignal, arginfo_class_Swoole_Coroutine_System_waitSignal, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, waitEvent, arginfo_class_Swoole_Coroutine_System_waitEvent, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_coroutine_system, dnsLookup, arginfo_class_Swoole_Coroutine_System_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
 
@@ -442,4 +465,61 @@ PHP_METHOD(swoole_coroutine_system, waitEvent) {
     }
 
     RETURN_LONG(events);
+}
+
+PHP_METHOD(swoole_coroutine_system, dnsLookup) {
+    Coroutine::get_current_safe();
+
+    zval *domain;
+    long type = AF_INET;
+    double timeout = swoole::network::Socket::default_dns_timeout;
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z|dl", &domain, &timeout, &type) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if (Z_TYPE_P(domain) != IS_STRING) {
+        php_swoole_fatal_error(E_WARNING, "invalid domain name");
+        RETURN_FALSE;
+    }
+
+    if (Z_STRLEN_P(domain) == 0) {
+        php_swoole_fatal_error(E_WARNING, "domain name empty");
+        RETURN_FALSE;
+    }
+
+    // find cache
+    std::string key(Z_STRVAL_P(domain), Z_STRLEN_P(domain));
+    DNSCacheEntity *cache;
+
+    if (request_cache_map.find(key) != request_cache_map.end()) {
+        cache = request_cache_map[key];
+        if (cache->update_time > Timer::get_absolute_msec()) {
+            RETURN_STRING(cache->address);
+        }
+    }
+
+    php_swoole_check_reactor();
+
+    vector<string> result = swoole::coroutine::dns_lookup(Z_STRVAL_P(domain), type, timeout);
+    if (result.empty()) {
+        swoole_set_last_error(SW_ERROR_DNSLOOKUP_RESOLVE_FAILED);
+        RETURN_FALSE;
+    }
+
+    if (SwooleG.dns_lookup_random) {
+        RETVAL_STRING(result[rand() % result.size()].c_str());
+    } else {
+        RETVAL_STRING(result[0].c_str());
+    }
+
+    auto cache_iterator = request_cache_map.find(key);
+    if (cache_iterator == request_cache_map.end()) {
+        cache = (DNSCacheEntity *) emalloc(sizeof(DNSCacheEntity));
+        request_cache_map[key] = cache;
+    } else {
+        cache = cache_iterator->second;
+    }
+    memcpy(cache->address, Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
+    cache->address[Z_STRLEN_P(return_value)] = '\0';
+    cache->update_time = Timer::get_absolute_msec() + (int64_t) (SwooleG.dns_cache_refresh_time * 1000);
 }

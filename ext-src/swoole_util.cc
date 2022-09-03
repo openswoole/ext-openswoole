@@ -51,6 +51,8 @@ static PHP_METHOD(swoole_util, mimeTypeGet);
 static PHP_METHOD(swoole_util, mimeTypeList);
 static PHP_METHOD(swoole_util, mimeTypeExists);
 static PHP_METHOD(swoole_util, setProcessName);
+static PHP_METHOD(swoole_util, setAio);
+
 SW_EXTERN_C_END
 
 static const zend_function_entry swoole_util_methods[] = {
@@ -87,20 +89,23 @@ static const zend_function_entry swoole_util_methods[] = {
                                                                              mimeTypeGet,
                                                                              arginfo_class_Swoole_Util_mimeTypeGet,
                                                                              ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                                PHP_ME(swoole_util,
-                                       mimeTypeList,
-                                       arginfo_class_Swoole_Util_mimeTypeList,
-                                       ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+                                PHP_ME(
+                                    swoole_util,
+                                    mimeTypeList,
+                                    arginfo_class_Swoole_Util_mimeTypeList,
+                                    ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(swoole_util,
+                                                                              mimeTypeExists,
+                                                                              arginfo_class_Swoole_Util_mimeTypeExists,
+                                                                              ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
                                     PHP_ME(swoole_util,
-                                           mimeTypeExists,
-                                           arginfo_class_Swoole_Util_mimeTypeExists,
-                                           ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                                        PHP_ME(swoole_util,
-                                               setProcessName,
-                                               arginfo_class_Swoole_Util_setProcessName,
-                                               ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+                                           setProcessName,
+                                           arginfo_class_Swoole_Util_setProcessName,
+                                           ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(swoole_util,
+                                                                                     setAio,
+                                                                                     arginfo_class_Swoole_Util_setAio,
+                                                                                     ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
 
-                                            PHP_FE_END};
+                                        PHP_FE_END};
 
 void php_swoole_util_minit(int module_number) {
     SW_INIT_CLASS_ENTRY(swoole_util, "Swoole\\Util", nullptr, nullptr, swoole_util_methods);
@@ -364,4 +369,79 @@ static PHP_METHOD(swoole_util, mimeTypeList) {
     for (auto &i : swoole::mime_type::list()) {
         add_next_index_string(return_value, i.second.c_str());
     }
+}
+
+void php_swoole_set_aio_option(HashTable *vht) {
+    zval *ztmp;
+    /* AIO */
+    if (php_swoole_array_get_value(vht, "aio_core_worker_num", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
+        SwooleG.aio_core_worker_num = v;
+    }
+    if (php_swoole_array_get_value(vht, "aio_worker_num", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
+        SwooleG.aio_worker_num = v;
+    }
+    if (php_swoole_array_get_value(vht, "aio_max_wait_time", ztmp)) {
+        SwooleG.aio_max_wait_time = zval_get_double(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "aio_max_idle_time", ztmp)) {
+        SwooleG.aio_max_idle_time = zval_get_double(ztmp);
+    }
+}
+
+static PHP_METHOD(swoole_util, setAio) {
+    if (sw_reactor()) {
+        php_swoole_fatal_error(E_ERROR, "eventLoop has already been created. unable to change settings");
+        RETURN_FALSE;
+    }
+
+    zval *zset = nullptr;
+    HashTable *vht;
+    zval *ztmp;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(zset)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    vht = Z_ARRVAL_P(zset);
+
+    php_swoole_set_global_option(vht);
+    php_swoole_set_aio_option(vht);
+
+    if (php_swoole_array_get_value(vht, "enable_signalfd", ztmp)) {
+        SwooleG.enable_signalfd = zval_is_true(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "wait_signal", ztmp)) {
+        SwooleG.wait_signal = zval_is_true(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "dns_cache_refresh_time", ztmp)) {
+        SwooleG.dns_cache_refresh_time = zval_get_double(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "thread_num", ztmp) ||
+        php_swoole_array_get_value(vht, "min_thread_num", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
+        SwooleG.aio_core_worker_num = v;
+    }
+    if (php_swoole_array_get_value(vht, "max_thread_num", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        v = SW_MAX(1, SW_MIN(v, UINT32_MAX));
+        SwooleG.aio_worker_num = v;
+    }
+    if (php_swoole_array_get_value(vht, "socket_dontwait", ztmp)) {
+        SwooleG.socket_dontwait = zval_is_true(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "dns_lookup_random", ztmp)) {
+        SwooleG.dns_lookup_random = zval_is_true(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "use_async_resolver", ztmp)) {
+        SwooleG.use_async_resolver = zval_is_true(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "enable_coroutine", ztmp)) {
+        SWOOLE_G(enable_coroutine) = zval_is_true(ztmp);
+    }
+    RETURN_TRUE;
 }

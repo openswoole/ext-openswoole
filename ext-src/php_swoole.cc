@@ -64,16 +64,6 @@ SW_EXTERN_C_END
 ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_void, 0, 0, 0)
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_async_set, 0, 0, 1)
-    ZEND_ARG_ARRAY_INFO(0, settings, 0)
-ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_async_dns_lookup_coro, 0, 0, 1)
-    ZEND_ARG_INFO(0, domain_name)
-    ZEND_ARG_INFO(0, timeout)
-    ZEND_ARG_INFO(0, type)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_coroutine_create, 0, 0, 1)
     ZEND_ARG_CALLABLE_INFO(0, func, 0)
     ZEND_ARG_VARIADIC_INFO(0, params)
@@ -120,9 +110,6 @@ ZEND_END_ARG_INFO()
 #endif
 
 const zend_function_entry swoole_functions[] = {
-    /*------swoole_async_io------*/
-    PHP_FE(swoole_async_dns_lookup_coro, arginfo_swoole_async_dns_lookup_coro)
-    PHP_FE(swoole_async_set, arginfo_swoole_async_set)
     /*------swoole_coroutine------*/
     PHP_FE(swoole_coroutine_create, arginfo_swoole_coroutine_create)
     PHP_FE(swoole_coroutine_defer, arginfo_swoole_coroutine_defer)

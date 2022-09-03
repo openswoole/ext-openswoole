@@ -35,5 +35,6 @@ namespace Swoole {
         public static function mimeTypeList(): array {}
         public static function mimeTypeExists(string $filename): string {}
         public static function setProcessName(string $name): void {}
+        public static function setAio(array $settings): bool {}
 	}
 }

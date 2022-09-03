@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 7f8eaecfc2d79c56786c8f1dfbb0720646eb8625 */
+ * Stub hash: e5ccb42f37841b52dd69b83ba90029afcd6d98f1 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Util_getVersion, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -55,4 +55,8 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Util_setProcessName, 0, 1, IS_VOID, 0)
 ZEND_ARG_TYPE_INFO(0, name, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Util_setAio, 0, 1, _IS_BOOL, 0)
+ZEND_ARG_TYPE_INFO(0, settings, IS_ARRAY, 0)
 ZEND_END_ARG_INFO()
