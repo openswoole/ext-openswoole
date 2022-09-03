@@ -26,7 +26,7 @@ $server->on('Receive', function (Swoole\Server $server, $fd, $reactor_id, $data)
 });
 
 $server->on('shutdown', function () use ($file) {
-    $sch = new Co\Scheduler;
+    $sch = new OpenSwoole\Coroutine\Scheduler;
     $sch->add(function ($t, $n) use ($file) {
         Co::usleep($t);
         echo "[2] Co " . Co::getCid() . "\n";

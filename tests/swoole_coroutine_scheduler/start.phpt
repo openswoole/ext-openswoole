@@ -6,7 +6,7 @@ swoole_coroutine_scheduler: user yield and resume1
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$sch = new Co\Scheduler;
+$sch = new OpenSwoole\Coroutine\Scheduler;
 
 $sch->set(['max_coroutine' => 100]);
 
