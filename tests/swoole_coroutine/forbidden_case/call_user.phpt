@@ -7,17 +7,22 @@ swoole_coroutine/forbidden_case: coro call user func
 require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Coroutine as co;
-co::create(function() {
-    $name = "call_user_func";
-    $return = $name("test");
-    echo "co end\n";
+co::run(function() {
+
+    co::create(function() {
+        $name = "call_user_func";
+        $return = $name("test");
+        echo "co end\n";
+    });
+
+    function test() {
+        echo "func start\n";
+        co::usleep(1000);
+        echo "func end\n";
+    }
+
 });
 
-function test() {
-    echo "func start\n";
-    co::usleep(1000);
-    echo "func end\n";
-}
 echo "main end\n";
 ?>
 --EXPECT--

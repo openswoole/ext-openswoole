@@ -6,8 +6,7 @@ swoole_coroutine/exception: exception after yield
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-use Swoole\Coroutine as co;
-go(function () {
+co::run(function () {
     try {
         echo "start\n";
         co::usleep(1000);

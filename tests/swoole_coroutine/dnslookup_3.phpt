@@ -7,9 +7,9 @@ swoole_coroutine: async dns lookup [3]
 require __DIR__ . '/../include/bootstrap.php';
 
 go(function () {
-    $host = swoole_async_dns_lookup_coro('www.' . uniqid() . '.' . uniqid(), 15);
+    $host = \OpenSwoole\Coroutine::dnsLookup('www.' . uniqid() . '.' . uniqid(), 15);
     Assert::eq($host, false);
-    Assert::eq(swoole_last_error(), SWOOLE_ERROR_DNSLOOKUP_RESOLVE_FAILED);
+    Assert::eq(OpenSwoole\Util::getLastErrorCode(), SWOOLE_ERROR_DNSLOOKUP_RESOLVE_FAILED);
 });
 swoole_event_wait();
 ?>

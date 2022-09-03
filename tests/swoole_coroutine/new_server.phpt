@@ -12,4 +12,4 @@ go(function () {
 });
 ?>
 --EXPECTF--
-Warning: Swoole\Server::start(): eventLoop has already been created, unable to start %s in %s on line %d
+Warning: OpenSwoole\Server::start(): eventLoop has already been created, unable to start %s in %s on line %d

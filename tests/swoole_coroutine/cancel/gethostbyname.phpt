@@ -6,13 +6,13 @@ swoole_coroutine/cancel: gethostbyname
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
-use function Swoole\Coroutine\go;
+
+
 use Swoole\Coroutine;
 use Swoole\Event;
 use Swoole\Coroutine\System;
 
-run(function () {
+Co::run(function () {
     $cid = Coroutine::getCid();
     Event::defer(function () use ($cid) {
         Assert::true(Coroutine::cancel($cid));
@@ -20,7 +20,7 @@ run(function () {
     $retval = System::gethostbyname('www.baidu.com');
     echo "Done\n";
     Assert::eq($retval, false);
-    Assert::eq(swoole_last_error(), SWOOLE_ERROR_CO_CANCELED);
+    Assert::eq(OpenSwoole\Util::getLastErrorCode(), SWOOLE_ERROR_CO_CANCELED);
 });
 
 ?>

@@ -65,50 +65,32 @@ $map = [
         Assert::assert(0); // never here
     },
     function () {
-        swoole_async_dns_lookup_coro('127.0.0.1');
+        \OpenSwoole\Coroutine::dnsLookup('127.0.0.1');
         Assert::assert(0); // never here
     },
     function () {
-        (new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP))->connect('127.0.0.1', 1234);
+        (new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP))->connect('127.0.0.1', 1234);
         Assert::assert(0); // never here
     },
     function () {
-        (new Co\Client(SWOOLE_SOCK_TCP))->connect('127.0.0.1', 1234);
-        Assert::assert(0); // never here
-    },
-    function () {
-        (new Co\Http\Client('127.0.0.1', 1234))->get('/');
-        Assert::assert(0); // never here
-    },
-    function () {
-        (new Co\Mysql)->connect([
-            'host' => MYSQL_SERVER_HOST,
-            'port' => MYSQL_SERVER_PORT,
-            'user' => MYSQL_SERVER_USER,
-            'password' => MYSQL_SERVER_PWD,
-            'database' => MYSQL_SERVER_DB
-        ]);
-        Assert::assert(0); // never here
-    },
-    function () {
-        (new Co\Redis)->connect('127.0.0.1', 6379);
+        (new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP))->connect('127.0.0.1', 1234);
         Assert::assert(0); // never here
     },
 ];
 
 function pgsql_test() {
-    (new Co\Postgresql())->connect('host=127.0.0.1 port=12345 dbname=test user=root password=root');
+    (new OpenSwoole\Coroutine\Postgresql())->connect('host=127.0.0.1 port=12345 dbname=test user=root password=root');
     Assert::assert(0); // never here
 }
 
-if (class_exists(Co\Postgresql::class)) {
+if (class_exists(OpenSwoole\Coroutine\Postgresql::class)) {
     $map[] = function () {
         pgsql_test();
     };
 }
-if (class_exists(Co\Http2\Client::class)) {
+if (class_exists(OpenSwoole\Coroutine\Http2\Client::class)) {
     $map[] = function () {
-        (new Co\Http2\Client('127.0.0.1', 1234))->connect();
+        (new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', 1234))->connect();
         Assert::assert(0); // never here
     };
 }

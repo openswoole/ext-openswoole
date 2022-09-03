@@ -11,8 +11,8 @@ go(function () {
 });
 ?>
 --EXPECTF--
-Fatal error: Uncaught Swoole\Error: must be forked outside the coroutine in %s:%d
+Fatal error: Uncaught OpenSwoole\Error: must be forked outside the coroutine in %s:%d
 Stack trace:
-#0 %s(5): Swoole\Process->start()
+#0 %s(5): OpenSwoole\Process->start()
 %A
   thrown in %s on line %d

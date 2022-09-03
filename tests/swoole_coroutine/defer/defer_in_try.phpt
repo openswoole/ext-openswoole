@@ -6,7 +6,7 @@ swoole_coroutine/defer: coro defer
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
-go(function () {
+co::run(function () {
     try {
         $obj = new class
         {

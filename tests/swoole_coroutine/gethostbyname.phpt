@@ -12,9 +12,9 @@ require __DIR__ . '/../include/bootstrap.php';
 use  Swoole\Coroutine\System;
 use  Swoole\Coroutine;
 
-use function Swoole\Coroutine\run;
 
-run(function () {
+
+Co::run(function () {
     $map = IS_IN_TRAVIS ? [
         'www.google.com' => null,
         'www.youtube.com' => null,
@@ -47,7 +47,7 @@ run(function () {
 
     $no_cache_time = microtime(true);
     for ($n = MAX_CONCURRENCY_LOW; $n--;) {
-        swoole_clear_dns_cache();
+        System::cleaDNSCache();
         $ip = System::gethostbyname(array_rand($map));
         Assert::assert(preg_match(IP_REGEX, $ip));
     }
@@ -57,7 +57,7 @@ run(function () {
     $no_cache_multi_time = microtime(true);
     for ($c = MAX_CONCURRENCY_LOW; $c--;) {
         go(function () use ($map, $chan) {
-            swoole_clear_dns_cache();
+            System::cleaDNSCache();
             $ip = System::gethostbyname(array_rand($map));
             Assert::assert(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4));
             $chan->push(Assert::assert(preg_match(IP_REGEX, $ip)));

@@ -49,7 +49,7 @@ $pm->childFunc = function () use ($pm)
 
             $host = $components['host'];
 
-            $ip = swoole_async_dns_lookup_coro($host);
+            $ip = \OpenSwoole\Coroutine::dnsLookup($host);
             $port = isset($components['port']) ? $components['port'] : 80;
             $client = new HttpClient($ip, $port);
 

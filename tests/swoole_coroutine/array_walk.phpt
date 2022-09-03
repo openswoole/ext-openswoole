@@ -5,7 +5,7 @@ swoole_coroutine: array_walk
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-Co\run(function () {
+co::run(function () {
     for ($n = 2; $n--;) {
         go(function () {
             $array = range(0, 1);

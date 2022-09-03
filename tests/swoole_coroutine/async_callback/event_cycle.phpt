@@ -13,7 +13,7 @@ const N = 4;
 $GLOBALS['count'] = 0;
 $GLOBALS['logs'] = [];
 
-Co\run(function () {
+co::run(function () {
     Event::cycle(function () {
         $GLOBALS['count']++;
         if ($GLOBALS['count'] == N) {

@@ -42,6 +42,8 @@ function your_code()
     }
 }
 
+co::run(function() {
+
 $chan = new Swoole\Coroutine\Channel;
 
 go(function () use ($chan, $exit_status_list) {
@@ -68,7 +70,7 @@ for ($i = 0; $i < count($exit_status_list); $i++) {
     });
 }
 
-swoole_event::wait();
+});
 
 ?>
 --EXPECTF--

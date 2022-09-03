@@ -7,16 +7,23 @@ swoole_coroutine/forbidden_case: coro array map
 require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Coroutine as co;
-co::create(function() {
-    array_map("test",array("func start\n"));
-    echo "co end\n";
-});
+
 function test($p) {
     echo $p;
     co::usleep(1000);
     echo "func end\n";
 }
-echo "main end\n";
+
+co::run(function() {
+
+    co::create(function() {
+        array_map("test",array("func start\n"));
+        echo "co end\n";
+    });
+    echo "main end\n";
+
+});
+
 ?>
 --EXPECT--
 func start

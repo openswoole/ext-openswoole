@@ -6,12 +6,12 @@ swoole_coroutine/cancel: pop from channel
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
-use function Swoole\Coroutine\go;
+
+
 use Swoole\Coroutine;
 use Swoole\Coroutine\System;
 
-run(function () {
+Co::run(function () {
     $chan = new Coroutine\Channel(4);
     $cid = Coroutine::getCid();
     go(function () use ($cid) {

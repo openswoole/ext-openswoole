@@ -4,7 +4,6 @@ namespace SwooleTest;
 
 use Swoole\Process;
 use Swoole;
-use function Swoole\Coroutine\run as run;
 
 class CurlManager
 {
@@ -56,7 +55,7 @@ class CurlManager
             Swoole\Runtime::enableCoroutine($flags);
         }
 
-        run(function () use ($fn, $proc) {
+        \co::run(function () use ($fn, $proc) {
             $fn("127.0.0.1:{$this->port}");
             if ($proc) {
                 Swoole\Process::kill($proc->pid);

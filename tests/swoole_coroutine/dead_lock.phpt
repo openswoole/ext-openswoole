@@ -26,7 +26,7 @@ $pm->childFunc = function () use ($pm) {
             return Coroutine::stats()['coroutine_num'] === 0;
         }
     ]);
-    Coroutine::create(function () {
+    Co::run(function () {
         $channel = new Coroutine\Channel;
         $channel->pop();
     });
