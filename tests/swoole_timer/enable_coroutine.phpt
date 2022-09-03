@@ -7,13 +7,13 @@ all
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-swoole_async_set([
-    'enable_coroutine' => false
-]);
-swoole_timer_after(1, function () {
-    $uid = Co::getuid();
-    echo "#{$uid}\n";
+Co::run(function() {
+    swoole_timer_after(1, function () {
+        $uid = Co::getCid();
+        echo "#{$uid}\n";
+    });
 });
+
 ?>
 --EXPECT--
-#-1
+#2
