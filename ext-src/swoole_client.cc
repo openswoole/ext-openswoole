@@ -191,7 +191,7 @@ static const zend_function_entry swoole_client_methods[] =
 #ifdef SWOOLE_SOCKETS_SUPPORT
     PHP_ME(swoole_client, getSocket, arginfo_class_Swoole_Client_getSocket, ZEND_ACC_PUBLIC)
 #endif
-    PHP_ME(swoole_client, select, arginfo_class_Swoole_Client_select, ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_client, select, arginfo_class_Swoole_Client_select, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
 // clang-format on
