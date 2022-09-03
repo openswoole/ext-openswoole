@@ -170,9 +170,8 @@ void php_swoole_runtime_minit(int module_number) {
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_TLS"), PHPCoroutine::HOOK_TLS);
     zend_declare_class_constant_long(
         swoole_runtime_ce, ZEND_STRL("HOOK_STREAM_FUNCTION"), PHPCoroutine::HOOK_STREAM_FUNCTION);
-    zend_declare_class_constant_long(swoole_runtime_ce,
-                                     ZEND_STRL("HOOK_STREAM_SELECT"),
-                                     PHPCoroutine::HOOK_STREAM_FUNCTION);
+    zend_declare_class_constant_long(
+        swoole_runtime_ce, ZEND_STRL("HOOK_STREAM_SELECT"), PHPCoroutine::HOOK_STREAM_FUNCTION);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_FILE"), PHPCoroutine::HOOK_FILE);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_STDIO"), PHPCoroutine::HOOK_STDIO);
     zend_declare_class_constant_long(swoole_runtime_ce, ZEND_STRL("HOOK_SLEEP"), PHPCoroutine::HOOK_SLEEP);
@@ -192,8 +191,7 @@ void php_swoole_runtime_minit(int module_number) {
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_SSL", PHPCoroutine::HOOK_SSL);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_TLS", PHPCoroutine::HOOK_TLS);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_STREAM_FUNCTION", PHPCoroutine::HOOK_STREAM_FUNCTION);
-    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_STREAM_SELECT",
-                              PHPCoroutine::HOOK_STREAM_FUNCTION);
+    SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_STREAM_SELECT", PHPCoroutine::HOOK_STREAM_FUNCTION);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_FILE", PHPCoroutine::HOOK_FILE);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_STDIO", PHPCoroutine::HOOK_STDIO);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HOOK_SLEEP", PHPCoroutine::HOOK_SLEEP);

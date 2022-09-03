@@ -23,7 +23,7 @@ namespace Swoole {
         public static function getLocalIp(): array {}
         public static function getLocalMac(): array {}
         public static function getLastErrorCode(): int {}
-        public static function getErrorMessage(int $errorCode): string {}
+        public static function getErrorMessage(int $errorCode, ?int $errorType): string {}
         public static function errorCode(): int {}
         public static function clearError(): void {}
         public static function log(int $level, string $message): void {}

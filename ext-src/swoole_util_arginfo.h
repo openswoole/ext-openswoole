@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 47c743b4a5412d48be5785f9b05fe7c6c1036076 */
+ * Stub hash: 7f8eaecfc2d79c56786c8f1dfbb0720646eb8625 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Util_getVersion, 0, 0, IS_STRING, 0)
 ZEND_END_ARG_INFO()
@@ -14,8 +14,9 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Util_getLastErrorCode arginfo_class_Swoole_Util_getCPUNum
 
-ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Util_getErrorMessage, 0, 1, IS_STRING, 0)
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Util_getErrorMessage, 0, 2, IS_STRING, 0)
 ZEND_ARG_TYPE_INFO(0, errorCode, IS_LONG, 0)
+ZEND_ARG_TYPE_INFO(0, errorType, IS_LONG, 1)
 ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Util_errorCode arginfo_class_Swoole_Util_getCPUNum
