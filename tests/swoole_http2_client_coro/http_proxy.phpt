@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Http2\Client;
 use Swoole\Http2\Request;
 
-Co\run(function () {
+co::run(function () {
     $domain = 'cloudflare.com';
     $c = new Client($domain, 443, true);
     $c->set([

@@ -7,16 +7,16 @@ skip_if_offline();
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     $domain = 'mail.qq.com';
-    $cli = new Swoole\Coroutine\Http2\Client($domain, 443, true);
+    $cli = new OpenSwoole\Coroutine\Http2\Client($domain, 443, true);
     $cli->set([
         'timeout' => 10,
         'ssl_host_name' => $domain
     ]);
     $cli->connect();
 
-    $req = new Swoole\Http2\Request;
+    $req = new OpenSwoole\Http2\Request;
     $req->path = '/';
     // auto to-lower
     $req->headers = [

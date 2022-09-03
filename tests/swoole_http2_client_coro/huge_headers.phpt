@@ -12,10 +12,10 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
         $domain = '127.0.0.1';
-        $cli = new Swoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
+        $cli = new OpenSwoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
         $cli->set(['timeout' => 5]);
         $cli->connect();
-        $request = new Swoole\Http2\Request;
+        $request = new OpenSwoole\Http2\Request;
         for ($n = MAX_REQUESTS; $n--;) {
             $request->path = '/';
             $request->headers = [

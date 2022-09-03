@@ -9,7 +9,7 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 Co::set(['log_level' => SWOOLE_LOG_WARNING]);
 go(function () {
-    $cli = new Swoole\Coroutine\Http2\Client('nghttp2.org', 443, true);
+    $cli = new OpenSwoole\Coroutine\Http2\Client('nghttp2.org', 443, true);
     $cli->set(['timeout' => 5,]);
     if (!$cli->connect()) {
         return;
@@ -17,7 +17,7 @@ go(function () {
     $ret = $cli->ping();
     Assert::assert($ret);
     co::usleep(500000);
-    Assert::greaterThan($cli->send(new Swoole\Http2\Request), 0);
+    Assert::greaterThan($cli->send(new OpenSwoole\Http2\Request), 0);
     /** @var $response Swoole\Http2\Response */
     $response = $cli->recv();
     if (!$response && $cli->errCode === SOCKET_ETIMEDOUT) {

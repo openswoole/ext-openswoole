@@ -9,13 +9,13 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomData(MAX_REQUESTS, 8);
 $pm->parentFunc = function ($pid) use ($pm) {
-    Swoole\Coroutine\run(function () use ($pm) {
-        $client = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $client = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
         Assert::true($client->connect());
         /** @var $channels Swoole\Coroutine\Channel[] */
         $channels = [];
         for ($n = MAX_REQUESTS; $n--;) {
-            $request = new Swoole\Http2\Request;
+            $request = new OpenSwoole\Http2\Request;
             $request->pipeline = true;
             $streamId = $client->send($request);
             if (Assert::greaterThan($streamId, 0)) {
@@ -23,7 +23,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
                 for ($i = 0; $i < strlen($data); $i++) {
                     $client->write($streamId, $data[$i], $i === (strlen($data) - 1));
                 }
-                $channels[$streamId] = $channel = new Swoole\Coroutine\Channel;
+                $channels[$streamId] = $channel = new OpenSwoole\Coroutine\Channel;
                 Swoole\Coroutine::create(function () use ($streamId, $channel, $data) {
                     /** @var $response Swoole\Http2\Response */
                     $response = $channel->pop();
@@ -33,7 +33,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
                     Assert::same($response->headers, [
                         'content-type' => 'application/srpc',
                         'trailer' => 'srpc-status, srpc-message',
-                        'server' => 'OpenSwoole '. swoole_version(),
+                        'server' => 'OpenSwoole '. OpenSwoole\Util::getVersion(),
                         'content-length' => '8',
                         'srpc-status' => '0',
                         'srpc-message' => '',
@@ -58,7 +58,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set([
         'worker_num' => 1,
         'log_file' => '/dev/null',
