@@ -3,6 +3,7 @@ swoole_runtime/sockets: error
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -10,13 +11,13 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 
 $port = get_one_free_port();
 
-run(function () use($port) {
+co::run(function () use($port) {
     $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
     socket_connect($sock, '127.0.0.1', $port);
 

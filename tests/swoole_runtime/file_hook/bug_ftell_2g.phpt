@@ -23,7 +23,7 @@ fclose($fp);
 
 Swoole\Runtime::enableCoroutine();
 
-Co\run(function () use ($noHookResults) {
+co::run(function () use ($noHookResults) {
     $hookResults = [];
     $fp = fopen(__FILE__, 'r+');
     foreach(SIZES as $size) {

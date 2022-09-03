@@ -3,13 +3,14 @@ swoole_runtime/sockets: udp
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Runtime;
-use function Swoole\Coroutine\run;
+
 
 const N = 8;
 const GREETINGS = 'hello world';
@@ -18,7 +19,7 @@ $GLOBALS['port'] = get_one_free_port();
 
 Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 
-run(function () {
+co::run(function () {
     go(function () {
         $sock = socket_create(AF_INET, SOCK_DGRAM, 0);
         socket_bind($sock, '127.0.0.1', $GLOBALS['port']);

@@ -13,7 +13,7 @@ swoole\runtime::enableCoroutine();
 const N = 5;
 
 go(function () {
-    $socket = new Swoole\Coroutine\Socket(AF_UNIX, SOCK_STREAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_UNIX, SOCK_STREAM, 0);
     $socket->bind(__DIR__ . '/test.sock');
     $socket->listen();
 

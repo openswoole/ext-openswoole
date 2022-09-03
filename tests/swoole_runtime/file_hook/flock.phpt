@@ -5,7 +5,7 @@ swoole_runtime/file_hook: flock
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
-\Swoole\Runtime::enableCoroutine();
+\OpenSwoole\Runtime::enableCoroutine();
 
 function test_flock()
 {
@@ -19,7 +19,7 @@ function test_flock()
 }
 
 $num = mt_rand(2, 16);
-swoole_async_set(['thread_num' => $num]);
+OpenSwoole\Util::setAio(['thread_num' => $num]);
 go(function () use ($num) {
     for ($i = $num; $i--;) {
         go('test_flock');

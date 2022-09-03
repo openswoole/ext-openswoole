@@ -8,7 +8,7 @@ die("skip not support");
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 const FILE = __DIR__ . '/test.data';
-\Swoole\Runtime::enableCoroutine();
+\OpenSwoole\Runtime::enableCoroutine();
 $startTime = microtime(true);
 go(function () {
     $f = fopen(FILE, 'w+');

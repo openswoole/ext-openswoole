@@ -16,7 +16,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
-Swoole\Coroutine\run(function () {
+co::run(function () {
     for ($i = 0; $i < 4; $i++) {
         go(function () use ($i) {
             echo "$i-1\n";

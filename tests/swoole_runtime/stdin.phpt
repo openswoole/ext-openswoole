@@ -15,7 +15,7 @@ require __DIR__ . '/../include/bootstrap.php';
 Co::set(['socket_read_timeout' => -1, ]);
 
 $proc = new Process(function ($p) {
-    Co\run(function () use($p) {
+    co::run(function () use($p) {
         $p->write('start'.PHP_EOL);
         go(function() {
             co::usleep(50000);

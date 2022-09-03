@@ -10,7 +10,7 @@ require __DIR__ . '/../../include/skipif.inc';
 
 use Swoole\Coroutine;
 use Swoole\Coroutine\WaitGroup;
-use function Swoole\Coroutine\run;
+
 
 require __DIR__.'/../../include/bootstrap.php';
 
@@ -42,7 +42,7 @@ function createDirectories($protocol = "")
 }
 
 
-run(function () {
+co::run(function () {
     createDirectories();
     createDirectories("file://");
 });

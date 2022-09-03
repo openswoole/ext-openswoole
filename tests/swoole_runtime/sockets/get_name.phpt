@@ -3,6 +3,7 @@ swoole_runtime/sockets: getsockname & getpeername
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -10,11 +11,11 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 
-run(function () {
+co::run(function () {
     $sock = socket_create_listen(0);
     Assert::true(socket_getsockname($sock, $server_addr, $server_port));
 

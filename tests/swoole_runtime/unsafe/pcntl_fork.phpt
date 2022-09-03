@@ -8,9 +8,9 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
 
-run(function ()  {
+
+co::run(function ()  {
     pcntl_fork();
 });
 ?>

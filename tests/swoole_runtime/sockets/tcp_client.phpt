@@ -3,6 +3,7 @@ swoole_runtime/sockets: tcp client
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -10,7 +11,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 const N = 8;
 
@@ -18,7 +19,7 @@ Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 
 $GLOBALS['time'] = [];
 $s = microtime(true);
-run(function () {
+co::run(function () {
     $n = N;
     while($n--) {
         go(function() {

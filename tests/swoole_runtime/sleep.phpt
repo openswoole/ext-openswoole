@@ -42,6 +42,6 @@ NON-BLOCKED
 
 Warning: sleep(): Number of seconds must be greater than or equal to 0 in %s on line %d
 
-Warning: Swoole\Coroutine::usleep(): Number of microseconds must be greater than or equal to 0 in %s on line %d
+Warning: OpenSwoole\Coroutine::usleep(): Number of microseconds must be greater than or equal to 0 in %s on line %d
 
 DONE

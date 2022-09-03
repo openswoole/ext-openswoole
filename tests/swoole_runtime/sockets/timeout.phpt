@@ -3,6 +3,7 @@ swoole_runtime/sockets: timeout
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -10,12 +11,12 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 $GLOBALS['port'] = get_one_free_port();
 
-run(function () {
+co::run(function () {
     go(function () {
         $sock = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         socket_bind($sock, '127.0.0.1', $GLOBALS['port']);

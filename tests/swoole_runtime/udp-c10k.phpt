@@ -12,7 +12,7 @@ Swoole\Runtime::enableCoroutine();
 $port = get_one_free_port();
 
 go(function () use ($port) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
     $socket->bind('127.0.0.1', $port);
     $client_map = [];
     for ($c = MAX_CONCURRENCY_MID; $c--;) {

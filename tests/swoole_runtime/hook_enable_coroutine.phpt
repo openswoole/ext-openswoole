@@ -10,11 +10,11 @@ require __DIR__ . '/../include/bootstrap.php';
 
 Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_TCP);
 
-Co\run(function () {
+co::run(function () {
     Assert::eq(Swoole\Runtime::getHookFlags(), SWOOLE_HOOK_TCP);
 });
 
-Co\run(function () {
+co::run(function () {
     Assert::eq(Swoole\Runtime::getHookFlags(), SWOOLE_HOOK_TCP);
 });
 

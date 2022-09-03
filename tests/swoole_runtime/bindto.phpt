@@ -11,13 +11,13 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
     Runtime::enableCoroutine();
 
-    run(function () use($pm) {
+    co::run(function () use($pm) {
         $context = stream_context_create([
             'socket' => [
                 'bindto' => '0:9100',
@@ -30,7 +30,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $server = new Server("127.0.0.1", $pm->getFreePort(), false);
         $server->handle('/', function (Request $request, Response $response) {
             Assert::eq($request->server['remote_addr'], '127.0.0.1');

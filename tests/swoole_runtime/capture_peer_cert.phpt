@@ -32,7 +32,7 @@ function capture_peer_cert($domain)
 
 Swoole\Runtime::setHookFlags(SWOOLE_HOOK_ALL);
 
-Co\run(function ()  {
+co::run(function ()  {
     $result = capture_peer_cert('www.baidu.com');
     $info1 = openssl_x509_parse($result["options"]["ssl"]["peer_certificate"]);
     Assert::isArray($info1);

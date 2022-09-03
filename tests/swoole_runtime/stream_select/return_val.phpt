@@ -11,7 +11,7 @@ if (!getenv('TEST_PHP_EXECUTABLE')) {
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
-Co\run(function () {
+co::run(function () {
     $php = realpath(getenv('TEST_PHP_EXECUTABLE'));
     $pipes = [];
     $proc = proc_open(
