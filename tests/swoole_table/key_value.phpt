@@ -43,13 +43,13 @@ Assert::eq($table->get('test_key', 'num'), PI);
 Assert::false($table->get('test_key', 'id_no_exists'));
 Assert::false($table->get('test_key_no_exists', 'id_no_exists'));
 
-$ret = $table->exist('test_key');
+$ret = $table->exists('test_key');
 if (!($ret))
 {
     echo __LINE__." error";
 }
 
-$ret = $table->exist('test_key_not_exists');
+$ret = $table->exists('test_key_not_exists');
 if ($ret)
 {
     echo __LINE__." error";
@@ -88,7 +88,7 @@ if (!$ret)
 {
     echo __LINE__." error";
 }
-if ($table->exist('test_key'))
+if ($table->exists('test_key'))
 {
     echo __LINE__." error";
 }

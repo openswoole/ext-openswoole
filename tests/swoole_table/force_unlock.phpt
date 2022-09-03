@@ -10,9 +10,9 @@ use Swoole\Process;
 
 ini_set('memory_limit', '16M');
 
-$table = new \Swoole\Table(1);
-$table->column('string', \Swoole\Table::TYPE_STRING, 4 * 1024 * 1024);
-$table->column('int', \Swoole\Table::TYPE_INT, 8);
+$table = new \OpenSwoole\Table(1);
+$table->column('string', \OpenSwoole\Table::TYPE_STRING, 4 * 1024 * 1024);
+$table->column('int', \OpenSwoole\Table::TYPE_INT, 8);
 $table->create();
 $str_size = 4 * 1024 * 1024;
 $str_value = random_bytes($str_size);

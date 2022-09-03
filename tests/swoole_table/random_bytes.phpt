@@ -5,8 +5,8 @@ swoole_table: read/write random data
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$table = new \Swoole\Table(IS_IN_TRAVIS ? 1024 : 2048);
-$table->column('string', \Swoole\Table::TYPE_STRING, 256 * 1024);
+$table = new \OpenSwoole\Table(IS_IN_TRAVIS ? 1024 : 2048);
+$table->column('string', \OpenSwoole\Table::TYPE_STRING, 256 * 1024);
 $table->create();
 
 $n = IS_IN_TRAVIS ? 100 : 1000;

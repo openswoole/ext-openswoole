@@ -6,7 +6,7 @@ swoole_table: clear all columns
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$table = new Swoole\Table(1024, 0.25);
+$table = new OpenSwoole\Table(1024, 0.25);
 $table->column('state', Swoole\Table::TYPE_INT);
 $table->column('remainLen', Swoole\Table::TYPE_INT);
 $table->column('data', Swoole\Table::TYPE_STRING, 64);

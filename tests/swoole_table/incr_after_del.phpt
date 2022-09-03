@@ -5,8 +5,8 @@ swoole_table: incr after del
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$table = new \Swoole\Table(1024);
-$table->column('id', \Swoole\Table::TYPE_INT);
+$table = new \OpenSwoole\Table(1024);
+$table->column('id', \OpenSwoole\Table::TYPE_INT);
 $table->create();
 
 $table->set('1', ['id' => 1,]);

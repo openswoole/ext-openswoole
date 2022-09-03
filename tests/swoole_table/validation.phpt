@@ -6,29 +6,29 @@ swoole_table: validation
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$table = new Swoole\Table(10);
+$table = new OpenSwoole\Table(10);
 $table->column('a', Swoole\Table::TYPE_INT);
 $table->column('b', Swoole\Table::TYPE_FLOAT);
 $table->column('c', Swoole\Table::TYPE_STRING, 8);
 $table->create();
 try{
 	$table->set('a', array('a' => '1', 'b' => 1.1, 'c' => '1'));
-} catch(\Swoole\Exception $e) {
+} catch(\OpenSwoole\Exception $e) {
 	echo $e->getMessage()."\n";
 }
 try{
 	$table->set('a', array('a' => '1', 'b' => 1, 'c' => '1'));
-} catch(\Swoole\Exception $e) {
+} catch(\OpenSwoole\Exception $e) {
 	echo $e->getMessage()."\n";
 }
 try{
 	$table->set('a', array('a' => '1', 'b' => 1, 'c' => 1));
-} catch(\Swoole\Exception $e) {
+} catch(\OpenSwoole\Exception $e) {
 	echo $e->getMessage()."\n";
 }
 try{
 	$table->set('a', array('a' => 1, 'b' => 1.1, 'c' => '111111111'));
-} catch(\Swoole\Exception $e) {
+} catch(\OpenSwoole\Exception $e) {
 	echo $e->getMessage()."\n";
 }
 
