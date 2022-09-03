@@ -14,14 +14,14 @@ define('DOC_ROOT', realpath(__DIR__ . '/../..'));
 
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    Swoole\Coroutine\run(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort(), false);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort(), false);
         $cli->set([
             'timeout' => -1,
         ]);
         $cli->connect();
 
-        $req = new Swoole\Http2\Request;
+        $req = new OpenSwoole\Http2\Request;
         $req->path = '/';
         //request
         for ($n = MAX_REQUESTS; $n--;) {

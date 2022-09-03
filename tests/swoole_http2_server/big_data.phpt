@@ -9,7 +9,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
         $domain = '127.0.0.1';
-        $cli = new Swoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
+        $cli = new OpenSwoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
         $cli->set([
             'timeout' => 10,
             'ssl_cert_file' => SSL_FILE_DIR2 . '/client-cert.pem',
@@ -17,7 +17,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         ]);
         Assert::assert($cli->connect());
 
-        $req = new Swoole\Http2\Request;
+        $req = new OpenSwoole\Http2\Request;
         $req->method = 'POST';
         $req->path = '/';
         $req->headers = [

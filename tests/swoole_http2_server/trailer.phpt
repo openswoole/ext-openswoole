@@ -8,15 +8,15 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomData(MAX_REQUESTS);
 $pm->parentFunc = function ($pid) use ($pm) {
-    go(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
         Assert::true($cli->connect());
         /** @var $channels Swoole\Coroutine\Channel[] */
         $channels = [];
         for ($n = MAX_REQUESTS; $n--;) {
-            $streamId = $cli->send(new Swoole\Http2\Request);
+            $streamId = $cli->send(new OpenSwoole\Http2\Request);
             if (Assert::greaterThan($streamId, 0)) {
-                $channels[$streamId] = $channel = new Swoole\Coroutine\Channel;
+                $channels[$streamId] = $channel = new OpenSwoole\Coroutine\Channel;
                 go(function () use ($streamId, $channel) {
                     /** @var $response Swoole\Http2\Response */
                     $response = $channel->pop();
@@ -26,7 +26,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
                     Assert::same($headers, [
                         'content-type' => 'application/srpc',
                         'trailer' => 'srpc-status, srpc-message',
-                        'server' => 'OpenSwoole '. swoole_version(),
+                        'server' => 'OpenSwoole '. OPENSWOOLE_VERSION,
                         'content-length' => '32',
                         'srpc-status' => '0',
                         'srpc-message' => '',
@@ -48,7 +48,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set([
         'worker_num' => 1,
         'log_file' => '/dev/null',

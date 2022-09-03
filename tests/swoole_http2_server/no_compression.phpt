@@ -7,9 +7,9 @@ swoole_http2_server: no compression with http2
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $domain = '127.0.0.1';
-        $cli = new Swoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
+        $cli = new OpenSwoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
         $cli->set([
             'timeout' => -1,
             'ssl_cert_file' => SSL_FILE_DIR2 . '/client-cert.pem',
@@ -17,7 +17,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         ]);
         $cli->connect();
 
-        $req = new Swoole\Http2\Request;
+        $req = new OpenSwoole\Http2\Request;
         $req->path = '/';
         $req->headers = [
             'Host' => $domain,
@@ -32,7 +32,6 @@ $pm->parentFunc = function ($pid) use ($pm) {
         }
         $pm->kill();
     });
-    swoole_event::wait();
 };
 $pm->childFunc = function () use ($pm) {
     $http = new swoole_http_server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP | SWOOLE_SSL);
