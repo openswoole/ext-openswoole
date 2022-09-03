@@ -181,19 +181,19 @@ PHP_INI_BEGIN()
 /**
  * enable swoole coroutine
  */
-STD_ZEND_INI_BOOLEAN("swoole.enable_coroutine", "On", PHP_INI_ALL, OnUpdateBool, enable_coroutine, zend_openswoole_globals, openswoole_globals)
+STD_ZEND_INI_BOOLEAN("openswoole.enable_coroutine", "On", PHP_INI_ALL, OnUpdateBool, enable_coroutine, zend_openswoole_globals, openswoole_globals)
 /**
  * enable swoole coroutine epreemptive scheduler
  */
-STD_ZEND_INI_BOOLEAN("swoole.enable_preemptive_scheduler", "Off", PHP_INI_ALL, OnUpdateBool, enable_preemptive_scheduler, zend_openswoole_globals, openswoole_globals)
+STD_ZEND_INI_BOOLEAN("openswoole.enable_preemptive_scheduler", "Off", PHP_INI_ALL, OnUpdateBool, enable_preemptive_scheduler, zend_openswoole_globals, openswoole_globals)
 /**
  * display error
  */
-STD_ZEND_INI_BOOLEAN("swoole.display_errors", "On", PHP_INI_ALL, OnUpdateBool, display_errors, zend_openswoole_globals, openswoole_globals)
+STD_ZEND_INI_BOOLEAN("openswoole.display_errors", "On", PHP_INI_ALL, OnUpdateBool, display_errors, zend_openswoole_globals, openswoole_globals)
 /**
  * unix socket buffer size
  */
-STD_PHP_INI_ENTRY("swoole.unixsock_buffer_size", ZEND_TOSTR(SW_SOCKET_BUFFER_SIZE), PHP_INI_ALL, OnUpdateLong, socket_buffer_size, zend_openswoole_globals, openswoole_globals)
+STD_PHP_INI_ENTRY("openswoole.unixsock_buffer_size", ZEND_TOSTR(SW_SOCKET_BUFFER_SIZE), PHP_INI_ALL, OnUpdateLong, socket_buffer_size, zend_openswoole_globals, openswoole_globals)
 PHP_INI_END()
 // clang-format on
 
