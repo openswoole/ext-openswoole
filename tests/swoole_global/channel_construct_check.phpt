@@ -6,7 +6,7 @@ swoole_global: socket construct check
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $chan = new class () extends Co\Channel
+    $chan = new class () extends OpenSwoole\Coroutine\Channel
     {
         public function __construct($size = 1)
         {
@@ -17,4 +17,4 @@ go(function () {
 });
 ?>
 --EXPECTF--
-Fatal error: Swoole\Coroutine\Channel::push(): you must call Channel constructor first in %s on line %d
+Fatal error: OpenSwoole\Coroutine\Channel::push(): you must call Channel constructor first in %s on line %d

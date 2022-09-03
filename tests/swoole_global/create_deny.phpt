@@ -7,29 +7,29 @@ swoole_global: deny create object
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     try {
-        new Swoole\Coroutine;
+        new OpenSwoole\Coroutine;
     } catch (Error $e) {
         echo $e->getMessage() . PHP_EOL;
     }
     try {
-        new Swoole\Event;
+        new OpenSwoole\Event;
     } catch (Error $e) {
         echo $e->getMessage() . PHP_EOL;
     }
     try {
-        new Swoole\Runtime;
+        new OpenSwoole\Runtime;
     } catch (Error $e) {
         echo $e->getMessage() . PHP_EOL;
     }
     try {
-        new Swoole\Timer;
+        new OpenSwoole\Timer;
     } catch (Error $e) {
         echo $e->getMessage() . PHP_EOL;
     }
 });
 ?>
 --EXPECT--
-The object of Swoole\Coroutine can not be created for security reasons
-The object of Swoole\Event can not be created for security reasons
-The object of Swoole\Runtime can not be created for security reasons
-The object of Swoole\Timer can not be created for security reasons
+The object of OpenSwoole\Coroutine can not be created for security reasons
+The object of OpenSwoole\Event can not be created for security reasons
+The object of OpenSwoole\Runtime can not be created for security reasons
+The object of OpenSwoole\Timer can not be created for security reasons
