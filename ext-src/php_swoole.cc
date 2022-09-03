@@ -1333,7 +1333,6 @@ PHP_MINFO_FUNCTION(openswoole) {
 #ifdef SW_USE_TCMALLOC
     php_info_print_table_row(2, "tcmalloc", "enabled");
 #endif
-    php_info_print_table_row(2, "async_redis", "enabled");
 #ifdef SW_USE_POSTGRES
     php_info_print_table_row(2, "postgresql", "enabled");
 #endif
