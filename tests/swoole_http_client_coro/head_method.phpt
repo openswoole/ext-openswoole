@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 Swoole\Coroutine::create(function ()
 {
-    $cli = new \Swoole\Coroutine\Http\Client('www.baidu.com', 80);
+    $cli = new \OpenSwoole\Coroutine\Http\Client('www.baidu.com', 80);
     $cli->set(['timeout' => 10]);
     $cli->setMethod('HEAD');
     $cli->get('/');

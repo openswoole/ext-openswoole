@@ -9,7 +9,7 @@ $port = get_one_free_port();
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm, $port) {
     go(function () use ($pm, $port) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $port);
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $port);
         $cli->set(['timeout' => 0.1]);
         $cli->setHeaders([
             'hello' => 'swoole'

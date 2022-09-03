@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine as co;
 
 co::create(function () {
-    $http = new Swoole\Coroutine\Http\Client('httpbin.org', 80, false);
+    $http = new OpenSwoole\Coroutine\Http\Client('httpbin.org', 80, false);
     $http->set([
         'timeout' => -1,
         'keep_alive' => false,

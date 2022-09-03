@@ -13,7 +13,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomData(1, [1, 4, 8, 32][PRESSURE_LEVEL] * 1024 * 1024);
 $pm->parentFunc = function () use ($pm) {
-    Co\Run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $random = $pm->getRandomData();
         foreach ([[], ['download' => ['/', TEST_LOG_FILE]]] as $download) {
             foreach (['deflate', 'gzip', 'br'] as $compression) {
@@ -35,7 +35,7 @@ $pm->parentFunc = function () use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Http\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Http\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
     $server->set(['log_file' => '/dev/null']);
     $server->on('workerStart', function () use ($pm) {
         $pm->wakeup();

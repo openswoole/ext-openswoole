@@ -10,8 +10,8 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-Swoole\Coroutine\Run(function () {
-    $client = new Swoole\Coroutine\Http\Client('www.zhe800.com', 443, true);
+co::run(function () {
+    $client = new OpenSwoole\Coroutine\Http\Client('www.zhe800.com', 443, true);
 
     function foo($ch, $client)
     {
@@ -27,7 +27,7 @@ Swoole\Coroutine\Run(function () {
     function bar($client)
     {
         $length = 10;
-        $ch = new Swoole\Coroutine\Channel($length);
+        $ch = new OpenSwoole\Coroutine\Channel($length);
         for ($i = 0; $i < $length; $i++) {
             go('foo', $ch, $client);
         }

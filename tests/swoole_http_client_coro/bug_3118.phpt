@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine;
 
-Coroutine\run(function () {
+Coroutine::run(function () {
     $client = new Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);
     $client->set(['timeout' => 10]);
     $codes = [200, 201, 304, 301, 302, 303,];

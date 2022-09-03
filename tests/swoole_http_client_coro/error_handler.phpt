@@ -11,7 +11,7 @@ $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
         $cli_map = [];
         for ($c = MAX_CONCURRENCY_MID; $c--;) {
-            $cli_map[] = $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli_map[] = $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->setDefer(true);
             $cli->get('/');
         }

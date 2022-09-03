@@ -8,8 +8,8 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 //Co::set(['log_level' => SWOOLE_LOG_TRACE, 'trace_flags' => SWOOLE_TRACE_ALL]);
 
-Co\run(function ()  {
-    $cli = new Co\http\Client('www.bitmex.com', 443, true);
+co::run(function ()  {
+    $cli = new OpenSwoole\Coroutine\http\Client('www.bitmex.com', 443, true);
     if (($http_proxy_conf = getenv('https_proxy'))) {
         $uri = parse_url($http_proxy_conf);
         $cli->set([

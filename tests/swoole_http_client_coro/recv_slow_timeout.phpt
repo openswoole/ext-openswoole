@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     for ($c = MAX_CONCURRENCY_LOW; $c--;) {
         go(function () use ($pm) {
-            $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 1]);
             $s = microtime(true);
             $ret = $cli->get('/');
@@ -31,7 +31,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $server = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+        $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
         Assert::assert($server->bind('127.0.0.1', $pm->getFreePort()));
         Assert::assert($server->listen());
         while ($client = $server->accept()) {

@@ -11,8 +11,8 @@ require __DIR__ . '/../include/bootstrap.php';
 const FILE = '/tmp/download.html';
 
 @unlink(FILE);
-Co\run(function () {
-    $server = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+co::run(function () {
+    $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::assert($server->bind('127.0.0.1', 0));
     Assert::assert($server->listen());
     $oort = $server->getsockname()['port'];
@@ -23,14 +23,14 @@ Co\run(function () {
         }
         $server->close();
     });
-    $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $oort);
+    $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $oort);
     $cli->set(['timeout' => 0.1]);
     Assert::false($cli->download('/get', FILE));
     Assert::false(file_exists(FILE));
     echo "OK\n";
 });
-Co\run(function () {
-    $server = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+co::run(function () {
+    $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::assert($server->bind('127.0.0.1', 0));
     Assert::assert($server->listen());
     $oort = $server->getsockname()['port'];
@@ -42,7 +42,7 @@ Co\run(function () {
         }
         $server->close();
     });
-    $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $oort);
+    $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $oort);
     $cli->set(['timeout' => 0.1]);
     Assert::false($cli->download('/get', FILE));
     Assert::true(file_exists(FILE));

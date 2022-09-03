@@ -13,7 +13,7 @@ require __DIR__ . '/../include/bootstrap.php';
 go(function ()
 {
     $domain = 'www.google.com';
-    $cli = new Swoole\Coroutine\Http\Client($domain, 443, true);
+    $cli = new OpenSwoole\Coroutine\Http\Client($domain, 443, true);
 
     $cli->setHeaders(['Host' => $domain]);
     $cli->set([

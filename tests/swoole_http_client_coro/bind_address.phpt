@@ -12,11 +12,11 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Coroutine\WaitGroup;
 
-use function Swoole\Coroutine\run;
+
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $wg = new WaitGroup();
 
         $wg->add(5);

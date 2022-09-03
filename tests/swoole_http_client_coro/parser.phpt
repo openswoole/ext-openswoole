@@ -194,7 +194,7 @@ $pm->parentFunc = function () use ($pm, &$normal_chars) {
 
     // use swoole http client
     go(function () use ($pm, &$normal_chars) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['timeout' => 1]);
         Assert::assert($cli->get('/'));
         foreach ($cli->headers as $name => $value) {

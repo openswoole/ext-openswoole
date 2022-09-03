@@ -15,7 +15,7 @@ $pm->parentFunc = function (int $pid) use ($pm, &$count) {
     $raw_file_content = file_get_contents(TEST_IMAGE);
     for ($c = MAX_CONCURRENCY_LOW; $c--;) {
         go(function () use ($pm, &$count, $c, $raw_file_size, $raw_file_content) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 5]);
             $filename = '/tmp/test-' . $c . '.jpg';
             $offset = mt_rand(0, $raw_file_size);

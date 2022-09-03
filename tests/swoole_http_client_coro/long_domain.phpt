@@ -14,7 +14,7 @@ function http_get(string $url)
 {
     $url_info = parse_url($url);
     $domain = $url_info['host'];
-    $cli = new Swoole\Coroutine\Http\Client($domain);
+    $cli = new OpenSwoole\Coroutine\Http\Client($domain);
     $cli->set(['timeout' => 5]);
     $cli->setHeaders([
         'Host' => $domain,

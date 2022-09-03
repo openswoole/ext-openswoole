@@ -13,7 +13,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
         $domain = 'mail.qq.com';
-        $cli = new Swoole\Coroutine\Http\Client($domain, 443, true);
+        $cli = new OpenSwoole\Coroutine\Http\Client($domain, 443, true);
         $cli->setHeaders(['Host' => $domain]);
         $cli->set([
             'timeout'         => 30,

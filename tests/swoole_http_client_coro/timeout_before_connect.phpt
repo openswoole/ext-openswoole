@@ -16,7 +16,7 @@ go(function () {
     ];
 
     $ip = Co::gethostbyname($host);
-    $cli1 = new Swoole\Coroutine\Http\Client($ip, 443, true);
+    $cli1 = new OpenSwoole\Coroutine\Http\Client($ip, 443, true);
     $cli1->setHeaders($requestHeaders);
     $cli1->set(['timeout' => 0.001]);
     $cli1->setDefer(true);
@@ -25,7 +25,7 @@ go(function () {
     Assert::same($cli1->errCode, SOCKET_ETIMEDOUT);
     Assert::same($cli1->statusCode, SWOOLE_HTTP_CLIENT_ESTATUS_CONNECT_FAILED);
 
-    $cli2 = new Swoole\Coroutine\Http\Client($ip, 443, true);
+    $cli2 = new OpenSwoole\Coroutine\Http\Client($ip, 443, true);
     $cli2->setHeaders($requestHeaders);
     $cli2->setDefer(true);
 

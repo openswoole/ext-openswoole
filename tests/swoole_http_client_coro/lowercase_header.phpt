@@ -11,7 +11,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
 
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(), false);
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(), false);
         $cli->set(['timeout' => 10,
             'lowercase_header' => false,
         ]);
@@ -20,7 +20,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         Assert::assert(!array_key_exists('hello-world', $cli->getHeaders()));
 
 
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(), false);
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(), false);
         Assert::assert($cli->get('/'));
         Assert::assert(!array_key_exists('Hello-world', $cli->getHeaders()));
         Assert::assert(array_key_exists('hello-world', $cli->getHeaders()));

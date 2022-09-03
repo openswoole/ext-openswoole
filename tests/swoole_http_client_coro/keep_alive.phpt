@@ -13,7 +13,7 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $cli = new Swoole\Coroutine\Http\Client('pecl.php.net', 443, true);
+    $cli = new OpenSwoole\Coroutine\Http\Client('pecl.php.net', 443, true);
     $cli->set(['timeout' => 5]);
     Assert::assert($cli->get('/'));
     Assert::assert(strpos($cli->body, 'pecl') !== false);

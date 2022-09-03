@@ -9,7 +9,7 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $host = 'www.imiphp.com';
-    $cli = new Swoole\Coroutine\Http\Client($host, 443, true);
+    $cli = new OpenSwoole\Coroutine\Http\Client($host, 443, true);
     $cli->set(['timeout' => 10]);
     $cli->setHeaders([
         'host' => $host, // wrong case auto fix

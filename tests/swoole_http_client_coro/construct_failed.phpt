@@ -5,7 +5,7 @@ swoole_http_client_coro: construct failed
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$http = new Co\Http\Client('');
+$http = new OpenSwoole\Coroutine\http\Client('');
 ?>
 --EXPECTF--
 Fatal error: Uncaught Swoole\Coroutine\Http\Client\Exception: host is empty in %s/tests/swoole_http_client_coro/construct_failed.php:3

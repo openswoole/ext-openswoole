@@ -10,8 +10,8 @@ require __DIR__.'/../include/bootstrap.php';
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', 1234);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', 1234);
         $cli->set([
             'timeout' => 30,
             'http_proxy_host' => '127.0.0.1',
@@ -26,7 +26,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
         'log_file'       => '/dev/null',
         'open_eof_check' => true,
