@@ -8,8 +8,6 @@ all
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\go;
-use function Swoole\Coroutine\run;
 use Swoole\Coroutine\System;
 use Swoole\Server;
 
@@ -17,9 +15,9 @@ $pm = new ProcessManager;
 $pm->initFreePorts(3);
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $test_func = function ($port_index, $sleep_seconds) use ($pm) {
-            $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $cli->connect('127.0.0.1', $pm->getFreePort($port_index));
             System::usleep(intval($sleep_seconds * 1000000));
             return $cli->recv(0.01);
@@ -29,7 +27,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             echo "DONE 0\n";
         });
         go(function () use ($test_func) {
-            Assert::same($test_func(1, 2.3), '');
+            Assert::same($test_func(1, 2.3), false);
             echo "DONE 1\n";
         });
     });

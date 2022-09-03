@@ -9,7 +9,7 @@ $pm = new ProcessManager;
 $pm->initFreePorts(2);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(1));
+        $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(1));
         $cli->set(['timeout' => 5]);
         $ret = $cli->upgrade('/');
         Assert::assert($ret);
@@ -72,7 +72,7 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-object(Swoole\WebSocket\Frame)#%d (5) {
+object(OpenSwoole\WebSocket\Frame)#%d (5) {
   ["fd"]=>
   int(1)
   ["data"]=>
@@ -84,7 +84,7 @@ object(Swoole\WebSocket\Frame)#%d (5) {
   ["finish"]=>
   bool(true)
 }
-object(Swoole\WebSocket\Frame)#%d (5) {
+object(OpenSwoole\WebSocket\Frame)#%d (5) {
   ["fd"]=>
   int(%d)
   ["data"]=>
