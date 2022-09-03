@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: b547b74f151fe2cadc5ca1832ce7528ebf694046 */
+ * Stub hash: 0992d0656330dabae784e8e492a1db9938599430 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_System_exec, 0, 1, MAY_BE_ARRAY | MAY_BE_FALSE)
 ZEND_ARG_TYPE_INFO(0, command, IS_STRING, 0)
@@ -85,4 +85,7 @@ ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, sockType, IS_LONG, 0, "SOCK_STREAM")
 ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, protocol, IS_LONG, 0, "STREAM_IPPROTO_TCP")
 ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, service, IS_STRING, 0, "null")
 ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "-1")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_System_clearDNSCache, 0, 0, IS_VOID, 0)
 ZEND_END_ARG_INFO()

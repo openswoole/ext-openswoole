@@ -63,6 +63,7 @@ ZEND_END_ARG_INFO()
 #define arginfo_class_Swoole_Coroutine_list arginfo_swoole_coroutine_void
 #define arginfo_class_Swoole_Coroutine_enableScheduler arginfo_swoole_coroutine_void
 #define arginfo_class_Swoole_Coroutine_disableScheduler arginfo_swoole_coroutine_void
+#define arginfo_class_Swoole_Coroutine_clearDNSCache arginfo_swoole_coroutine_void
 
 ZEND_BEGIN_ARG_INFO_EX(arginfo_class_Swoole_Coroutine_exec, 0, 0, 1)
 ZEND_ARG_INFO(0, command)

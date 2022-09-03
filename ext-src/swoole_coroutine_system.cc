@@ -60,6 +60,7 @@ PHP_METHOD(swoole_coroutine_system, waitPid);
 PHP_METHOD(swoole_coroutine_system, waitSignal);
 PHP_METHOD(swoole_coroutine_system, waitEvent);
 PHP_METHOD(swoole_coroutine_system, dnsLookup);
+PHP_METHOD(swoole_coroutine_system, clearDNSCache);
 SW_EXTERN_C_END
 
 // clang-format off
@@ -79,6 +80,7 @@ static const zend_function_entry swoole_coroutine_system_methods[] =
     PHP_ME(swoole_coroutine_system, waitSignal, arginfo_class_Swoole_Coroutine_System_waitSignal, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, waitEvent, arginfo_class_Swoole_Coroutine_System_waitEvent, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, dnsLookup, arginfo_class_Swoole_Coroutine_System_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_coroutine_system, clearDNSCache, arginfo_class_Swoole_Coroutine_System_clearDNSCache, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
 
@@ -235,7 +237,7 @@ PHP_FUNCTION(swoole_coroutine_gethostbyname) {
     }
 }
 
-PHP_FUNCTION(swoole_clear_dns_cache) {
+PHP_METHOD(swoole_coroutine_system, clearDNSCache) {
     System::clear_dns_cache();
 }
 

@@ -171,7 +171,6 @@ extern zend_object_handlers swoole_exception_handlers;
 extern zend_class_entry *swoole_error_ce;
 extern zend_class_entry *openswoole_constants_ce;
 
-PHP_FUNCTION(swoole_clear_dns_cache);
 //---------------------------------------------------------
 //                  Coroutine API
 //---------------------------------------------------------

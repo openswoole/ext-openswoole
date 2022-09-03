@@ -36,6 +36,7 @@
  . Remove option `swoole.use_shortname`, remove `Co\*` alias. `go`, `chan`, `defer`, `co::*` are available by default
  . Remove `swoole_async_dns_lookup_coro`, use `OpenSwoole\Coroutine::dnsLookup` or `OpenSwoole\Coroutine\System::dnsLookup`; remove `swoole_async_set`, use `OpenSwoole\Until::setAio([])` or `$server->set([])` for aio options;
  . Rename PHP `ini` options from `swoole.*` to be `openswoole.*`
+ . Remove `swoole_clear_dns_cache`, use OpenSwoole\Coroutine::clearDNSCache` or `OpenSwoole\Coroutine\System::clearDNSCache`
 
 # 4.11.1
 

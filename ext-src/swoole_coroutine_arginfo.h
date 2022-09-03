@@ -1,5 +1,5 @@
 /* This is a generated file, edit the .stub.php file instead.
- * Stub hash: 1546e9dca04920d0d9a87917f484b3c2b7b245be */
+ * Stub hash: d6998de1dabeeab01bb78f4bd67be23ddeca14d3 */
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_create, 0, 1, MAY_BE_LONG | MAY_BE_FALSE)
 ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
@@ -131,6 +131,9 @@ ZEND_ARG_TYPE_INFO(0, domain, IS_STRING, 0)
 ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "5")
 ZEND_END_ARG_INFO()
 
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_clearDNSCache, 0, 0, IS_VOID, 0)
+ZEND_END_ARG_INFO()
+
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_getaddrinfo, 0, 1, MAY_BE_ARRAY | MAY_BE_FALSE)
 ZEND_ARG_TYPE_INFO(0, domain, IS_STRING, 0)
 ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, family, IS_LONG, 0, "AF_INET")
@@ -146,10 +149,10 @@ ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, write, IS_ARRAY, 0, "[]")
 ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, timeout, IS_DOUBLE, 0, "-1")
 ZEND_END_ARG_INFO()
 
-ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_coroutine_void, 0, 0, 0)
-ZEND_END_ARG_INFO()
-
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_run, 0, 1, _IS_BOOL, 1)
 ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
 ZEND_ARG_VARIADIC_TYPE_INFO(0, params, IS_MIXED, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_swoole_coroutine_void, 0, 0, 0)
 ZEND_END_ARG_INFO()

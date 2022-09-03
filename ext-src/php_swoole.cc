@@ -118,7 +118,6 @@ const zend_function_entry swoole_functions[] = {
     /*------other-----*/
     PHP_FE(swoole_client_select, arginfo_swoole_client_select)
     PHP_FALIAS(swoole_select, swoole_client_select, arginfo_swoole_client_select)
-    PHP_FE(swoole_clear_dns_cache, arginfo_swoole_void)
     PHP_FE(swoole_substr_unserialize, arginfo_swoole_substr_unserialize)
 #ifdef SW_USE_JSON
     PHP_FE(swoole_substr_json_decode, arginfo_swoole_substr_json_decode)
