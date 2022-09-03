@@ -14,7 +14,7 @@ go(function () use ($server, $port) {
     Assert::assert($server->listen(512));
     $conn_map = [];
     while ($conn = $server->accept()) {
-        Assert::assert($conn instanceof  Co\Socket);
+        Assert::assert($conn instanceof  OpenSwoole\Coroutine\Socket);
         Assert::assert($conn->fd > 0);
         $conn_map[$conn->fd] = $conn;
         go(function () use ($conn) {

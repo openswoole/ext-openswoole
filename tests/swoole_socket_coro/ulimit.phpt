@@ -8,10 +8,10 @@ require __DIR__ . '/../include/bootstrap.php';
 if ($argv[1] ?? '' === 'ulimit') {
     try {
         for ($n = MAX_CONCURRENCY + 1; $n--;) {
-            $sockets[] = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+            $sockets[] = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         }
         echo 'never here' . PHP_EOL;
-    } catch (Co\Socket\Exception $e) {
+    } catch (OpenSwoole\Coroutine\Socket\Exception $e) {
         Assert::assert($e->getCode() === SOCKET_EMFILE);
         echo "DONE\n";
     }

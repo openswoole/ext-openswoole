@@ -26,7 +26,7 @@ co::run(function () {
         $server->start();
     });
 
-    $cli = new Co\Socket(AF_INET, SOCK_STREAM, 0);
+    $cli = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     if ($cli->connect('127.0.0.1', $port) == false) {
         echo "ERROR\n";
         return;
