@@ -6,7 +6,7 @@ swoole_process: signal
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Process;
-use function Swoole\Coroutine\run;
+
 
 const N = 2;
 
@@ -24,7 +24,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 $pm->childFunc = function () use ($pm) {
     $n = N;
     while($n--) {
-        run(static function () use($n, $pm){
+        co::run(static function () use($n, $pm){
             $running = true;
             Process::signal(SIGUSR1, function() use(&$running, $n) {
                 $running = false;

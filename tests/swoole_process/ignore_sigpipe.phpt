@@ -20,14 +20,14 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $serv = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $serv = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $serv->set(array(
         "worker_num" => 1,
         'hook_flags' => SWOOLE_HOOK_ALL,
         'log_level' => SWOOLE_LOG_WARNING,
     ));
     $serv->on("WorkerStart", function (Server $serv) use ($pm) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         if ($cli->connect('127.0.0.1', $pm->getFreePort(), 1) == false) {
             echo "ERROR\n";
             return;

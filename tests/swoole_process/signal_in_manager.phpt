@@ -9,7 +9,7 @@ all
 require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Process;
 use Swoole\Server;
-use function Swoole\Coroutine\run;
+
 
 define('PID_FILE', __DIR__.'/manager.pid');
 

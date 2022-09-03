@@ -16,7 +16,7 @@ $pid = $process->start();
 $r = array($process);
 $w = array();
 $e = array();
-$ret = swoole_select($r, $w, $e, 1.0);
+$ret = OpenSwoole\Client::select($r, $w, $e, 1.0);
 echo $process->read();
 ?>
 Done

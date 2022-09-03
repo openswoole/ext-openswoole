@@ -6,7 +6,7 @@ swoole_process: null callback
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$process = new Swoole\Process(function () { });
+$process = new OpenSwoole\Process(function () { });
 $p = new ReflectionProperty($process, 'callback');
 $p->setAccessible(true);
 $p->setValue($process, null);
@@ -16,4 +16,4 @@ usleep(100);
 $process->wait();
 ?>
 --EXPECTF--
-Fatal error: Swoole\Process::start(): Illegal callback function of Swoole\Process in %s
+Fatal error: OpenSwoole\Process::start(): Illegal callback function of OpenSwoole\Process in %s

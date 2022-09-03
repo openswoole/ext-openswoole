@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Process;
 use Swoole\Server;
 use Swoole\Coroutine\Client;
-use function Swoole\Coroutine\run;
+
 
 define('PID_FILE', __DIR__.'/task_worker.pid');
 

@@ -5,7 +5,7 @@ swoole_process: write in worker
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$counter = new Swoole\Atomic;
+$counter = new OpenSwoole\Atomic;
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     $pm->kill();
