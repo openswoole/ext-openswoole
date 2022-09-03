@@ -1,5 +1,5 @@
 --TEST--
-swoole_coroutine_util: listCoroutines
+swoole_coroutine_util: list
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
@@ -16,9 +16,9 @@ foreach(range(1, 10) as $i) {
 
 go(function () use ($co_list) {
     Co::usleep(200000);
-    $coros = Co::listCoroutines();
+    $coros = Co::list();
     $list_2 = iterator_to_array($coros);
-    Assert::same(array_values(array_diff($list_2, $co_list)), [Co::getUid(),]);
+    Assert::same(array_values(array_diff($list_2, $co_list)), [Co::getCid(),]);
 });
 
 swoole_event_wait();
