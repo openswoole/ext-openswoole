@@ -48,7 +48,6 @@ PHP_MINFO_FUNCTION(openswoole);
 ZEND_BEGIN_MODULE_GLOBALS(openswoole)
     zend_bool display_errors;
     zend_bool cli;
-    zend_bool use_shortname;
     zend_bool enable_coroutine;
     zend_bool enable_preemptive_scheduler;
     long socket_buffer_size;

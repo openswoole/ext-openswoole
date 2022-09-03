@@ -33,6 +33,7 @@
  . Remove `$server->getLastError()`, use `OpenSwoole\Util::getLastErrorCode()`
  . Remove `$process->name()`, use `OpenSwoole\Util::setProcessName()`
  . New Util API class: added `OpenSwoole\Util` class
+ . Remove option `swoole.use_shortname`, remove `Co\*` alias. `go`, `chan`, `defer`, `co::*` are available by default
 
  
 

@@ -1623,11 +1623,8 @@ static zend_object *php_swoole_http_client_coro_create_object(zend_class_entry *
 }
 
 void php_swoole_http_client_coro_minit(int module_number) {
-    SW_INIT_CLASS_ENTRY(swoole_http_client_coro,
-                        "Swoole\\Coroutine\\Http\\Client",
-                        nullptr,
-                        "Co\\Http\\Client",
-                        swoole_http_client_coro_methods);
+    SW_INIT_CLASS_ENTRY(
+        swoole_http_client_coro, "Swoole\\Coroutine\\Http\\Client", nullptr, nullptr, swoole_http_client_coro_methods);
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_http_client_coro);
     SW_SET_CLASS_CLONEABLE(swoole_http_client_coro, sw_zend_class_clone_deny);
     SW_SET_CLASS_UNSET_PROPERTY_HANDLER(swoole_http_client_coro, sw_zend_class_unset_property_deny);
@@ -1667,7 +1664,7 @@ void php_swoole_http_client_coro_minit(int module_number) {
     SW_INIT_CLASS_ENTRY_EX(swoole_http_client_coro_exception,
                            "Swoole\\Coroutine\\Http\\Client\\Exception",
                            nullptr,
-                           "Co\\Http\\Client\\Exception",
+                           nullptr,
                            nullptr,
                            swoole_exception);
 

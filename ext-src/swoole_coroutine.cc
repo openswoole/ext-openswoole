@@ -876,14 +876,10 @@ void php_swoole_coroutine_minit(int module_number) {
     SW_REGISTER_LONG_CONSTANT("SWOOLE_CORO_RUNNING", Coroutine::STATE_RUNNING);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_CORO_END", Coroutine::STATE_END);
 
-    SW_INIT_CLASS_ENTRY_BASE(swoole_coroutine_iterator,
-                             "Swoole\\Coroutine\\Iterator",
-                             nullptr,
-                             "Co\\Iterator",
-                             nullptr,
-                             spl_ce_ArrayIterator);
     SW_INIT_CLASS_ENTRY_BASE(
-        swoole_coroutine_context, "Swoole\\Coroutine\\Context", nullptr, "Co\\Context", nullptr, spl_ce_ArrayObject);
+        swoole_coroutine_iterator, "Swoole\\Coroutine\\Iterator", nullptr, nullptr, nullptr, spl_ce_ArrayIterator);
+    SW_INIT_CLASS_ENTRY_BASE(
+        swoole_coroutine_context, "Swoole\\Coroutine\\Context", nullptr, nullptr, nullptr, spl_ce_ArrayObject);
 
     // prohibit exit in coroutine
     SW_INIT_CLASS_ENTRY_EX(swoole_exit_exception,

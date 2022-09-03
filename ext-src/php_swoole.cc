@@ -204,10 +204,6 @@ STD_ZEND_INI_BOOLEAN("swoole.enable_preemptive_scheduler", "Off", PHP_INI_ALL, O
  */
 STD_ZEND_INI_BOOLEAN("swoole.display_errors", "On", PHP_INI_ALL, OnUpdateBool, display_errors, zend_openswoole_globals, openswoole_globals)
 /**
- * use short class name
- */
-STD_ZEND_INI_BOOLEAN("swoole.use_shortname", "On", PHP_INI_SYSTEM, OnUpdateBool, use_shortname, zend_openswoole_globals, openswoole_globals)
-/**
  * unix socket buffer size
  */
 STD_PHP_INI_ENTRY("swoole.unixsock_buffer_size", ZEND_TOSTR(SW_SOCKET_BUFFER_SIZE), PHP_INI_ALL, OnUpdateLong, socket_buffer_size, zend_openswoole_globals, openswoole_globals)
@@ -219,7 +215,6 @@ static void php_swoole_init_globals(zend_openswoole_globals *openswoole_globals)
     openswoole_globals->enable_preemptive_scheduler = 0;
     openswoole_globals->socket_buffer_size = SW_SOCKET_BUFFER_SIZE;
     openswoole_globals->display_errors = 1;
-    openswoole_globals->use_shortname = 1;
 }
 
 void php_swoole_register_shutdown_function(const char *function) {
@@ -387,8 +382,6 @@ PHP_MINIT_FUNCTION(openswoole) {
 #ifdef SW_USE_POSTGRES
     zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("USE_POSTGRES"), 1);
 #endif
-
-    zend_declare_class_constant_bool(openswoole_constants_ce, ZEND_STRL("USE_SHORTNAME"), SWOOLE_G(use_shortname));
 
     /**
      * socket type
@@ -657,10 +650,8 @@ PHP_MINIT_FUNCTION(openswoole) {
 
     // clang-format on
 
-    if (SWOOLE_G(use_shortname)) {
-        SW_FUNCTION_ALIAS(CG(function_table), "swoole_coroutine_create", CG(function_table), "go");
-        SW_FUNCTION_ALIAS(CG(function_table), "swoole_coroutine_defer", CG(function_table), "defer");
-    }
+    SW_FUNCTION_ALIAS(CG(function_table), "swoole_coroutine_create", CG(function_table), "go");
+    SW_FUNCTION_ALIAS(CG(function_table), "swoole_coroutine_defer", CG(function_table), "defer");
 
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("EVENT_START"), "start");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("EVENT_SHUTDOWN"), "shutdown");

@@ -248,11 +248,8 @@ static const zend_function_entry openswoole_postgresql_coro_methods[] =
 // clang-format on
 
 void php_swoole_postgresql_coro_minit(int module_number) {
-    SW_INIT_CLASS_ENTRY(swoole_postgresql_coro,
-                        "Swoole\\Coroutine\\PostgreSQL",
-                        NULL,
-                        "Co\\PostgreSQL",
-                        openswoole_postgresql_coro_methods);
+    SW_INIT_CLASS_ENTRY(
+        swoole_postgresql_coro, "Swoole\\Coroutine\\PostgreSQL", NULL, nullptr, openswoole_postgresql_coro_methods);
 #ifdef SW_SET_CLASS_NOT_SERIALIZABLE
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_postgresql_coro);
 #else

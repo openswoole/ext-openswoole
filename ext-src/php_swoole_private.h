@@ -595,7 +595,7 @@ static sw_inline void add_assoc_ulong_safe(zval *arg, const char *key, zend_ulon
         module##_ce = zend_register_internal_class_ex(&_##module##_ce, parent_ce);                                     \
         SW_CLASS_ALIAS(namespace_name, module);                                                                        \
         if (snake_name) SW_CLASS_ALIAS(snake_name, module);                                                            \
-        if (short_name) SW_CLASS_ALIAS_SHORT_NAME(short_name, module);                                                 \
+        if (short_name) SW_CLASS_ALIAS(short_name, module);                                                            \
     } while (0)
 
 #define SW_INIT_CLASS_ENTRY(module, namespace_name, snake_name, short_name, methods)                                   \
@@ -620,13 +620,6 @@ static sw_inline void add_assoc_ulong_safe(zval *arg, const char *key, zend_ulon
     do {                                                                                                               \
         if (name) {                                                                                                    \
             sw_zend_register_class_alias(ZEND_STRL(name), module##_ce);                                                \
-        }                                                                                                              \
-    } while (0)
-
-#define SW_CLASS_ALIAS_SHORT_NAME(short_name, module)                                                                  \
-    do {                                                                                                               \
-        if (SWOOLE_G(use_shortname)) {                                                                                 \
-            SW_CLASS_ALIAS(short_name, module);                                                                        \
         }                                                                                                              \
     } while (0)
 
