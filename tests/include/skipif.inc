@@ -232,7 +232,7 @@ function skip_if_not_redis5()
     require_once __DIR__ . '/config.php';
     $skip = false;
     go(function () use (&$skip) {
-        $redis = new Swoole\Coroutine\Redis();
+        $redis = new OpenSwoole\Coroutine\Redis();
         $redis->setOptions(['compatibility_mode' => true]);
         $redis->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT);
         $info = $redis->eval("return redis.call('info')");

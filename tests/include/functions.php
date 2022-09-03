@@ -189,10 +189,10 @@ function httpRequest(string $uri, array $options = [])
     $http2 = $options['http2'] ?? false;
     $connect_args = [$domain, $port, $scheme === 'https' || $port === 443];
     if ($http2) {
-        $cli = new Swoole\Coroutine\Http2\Client(...$connect_args);
-        $request = new Swoole\Http2\Request;
+        $cli = new OpenSwoole\Coroutine\Http2\Client(...$connect_args);
+        $request = new OpenSwoole\Http2\Request;
     } else {
-        $cli = new Swoole\Coroutine\Http\Client(...$connect_args);
+        $cli = new OpenSwoole\Coroutine\Http\Client(...$connect_args);
         $request = null;
     }
     $cli->set($options + ['timeout' => 5]);
@@ -366,7 +366,7 @@ function get_big_random(int $length = 1024 * 1024)
 function makeCoTcpClient($host, $port, callable $onConnect = null, callable $onReceive = null)
 {
     go(function () use ($host, $port, $onConnect, $onReceive) {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         assert($cli->set([
             'open_length_check' => 1,
             'package_length_type' => 'N',
@@ -421,7 +421,7 @@ function kill_self_and_descendant($pid)
  */
 function killself_in_syncmode($lifetime = 1000, $sig = SIGKILL)
 {
-    $proc = new Swoole\Process(function (Swoole\Process $proc) use ($lifetime, $sig) {
+    $proc = new OpenSwoole\Process(function (Swoole\Process $proc) use ($lifetime, $sig) {
         $pid = $proc->pop();
         $proc->freeQueue();
         usleep($lifetime * 1000);
@@ -622,7 +622,7 @@ function start_server($file, $host, $port, $redirect_file = "/dev/null", $ext1 =
 
 function swoole_fork_exec(callable $fn, bool $redirect_stdin_and_stdout = false, int $pipe_type = SOCK_DGRAM, bool $enable_coroutine = false)
 {
-    $process = new Swoole\Process(...func_get_args());
+    $process = new OpenSwoole\Process(...func_get_args());
     if (!$process->start()) {
         return false;
     }
