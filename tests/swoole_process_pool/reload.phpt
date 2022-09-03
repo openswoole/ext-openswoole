@@ -18,18 +18,17 @@ $pm->parentFunc = function ($pid) use ($pm) {
     {
         swoole_process::kill($pid, SIGUSR1);
         usleep(10000);
-        //判断进程是否存在
         Assert::assert(intval(shell_exec("ps aux | grep \"" . PROC_NAME . "\" |grep -v grep| awk '{ print $2}'")) > 0);
     }
     $pm->kill();
 };
 
 $pm->childFunc = function () use ($pm) {
-    swoole_set_process_name(PROC_NAME);
+    OpenSwoole\Util::setProcessName(PROC_NAME);
 
     Co::set(['log_level' => SWOOLE_LOG_ERROR]);
 
-    $pool = new Swoole\Process\Pool(2);
+    $pool = new OpenSwoole\Process\Pool(2);
 
     $pool->on('workerStart', function (Swoole\Process\Pool $pool, int $workerId) use ($pm)
     {

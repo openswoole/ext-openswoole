@@ -11,12 +11,12 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Http\Client;
 use Swoole\WebSocket\Server;
 
-use function Swoole\Coroutine\run;
+
 
 $workerNum = 2;
 $port = get_one_free_port();
 
-$pool = new Swoole\Process\Pool($workerNum);
+$pool = new OpenSwoole\Process\Pool($workerNum);
 
 $pool->on("WorkerStart", function ($pool, $workerId) use ($port) {
     if ($workerId === 0) {
@@ -26,7 +26,7 @@ $pool->on("WorkerStart", function ($pool, $workerId) use ($port) {
         });
         $server->start();
     } elseif ($workerId === 1) {
-        run(function () use ($port, $pool) {
+        co::run(function () use ($port, $pool) {
             $client = new Client('127.0.0.1', $port);
             while (!$client->upgrade('/')) {}
             $data = 'data';

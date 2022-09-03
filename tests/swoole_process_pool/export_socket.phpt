@@ -9,7 +9,7 @@ all
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$pool = new Swoole\Process\Pool(2, SWOOLE_IPC_UNIXSOCK, 0, true);
+$pool = new OpenSwoole\Process\Pool(2, SWOOLE_IPC_UNIXSOCK, 0, true);
 
 $pool->on('workerStart', function (Swoole\Process\Pool $pool, int $workerId) {
     $process = $pool->getProcess(0);

@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Process\Pool;
 
-$pool = new Swoole\Process\Pool(1);
+$pool = new OpenSwoole\Process\Pool(1);
 
 $pool->on("WorkerStart", function (Pool $pool, $workerId) {
     echo "CHILD START\n";
