@@ -39,7 +39,7 @@
  . Remove `swoole_clear_dns_cache`, use OpenSwoole\Coroutine::clearDNSCache` or `OpenSwoole\Coroutine\System::clearDNSCache`
  . Remove custom unserialize functions: `swoole_substr_unserialize` and `swoole_substr_unserialize`
  . Remove `swoole_client_select` and `swoole_select`, use `OpenSwoole\Client::select`
- 
+ . Remove `swoole_last_error`, use `OpenSwoole\Util::getLastErrorCode`
 
 
 # 4.11.1
