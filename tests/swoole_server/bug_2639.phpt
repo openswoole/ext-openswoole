@@ -25,7 +25,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         Co::usleep(10000);
         $data = $client->recv();
         Assert::assert($data);
-        $json = json_decode($data, true);
+        $json = json_decode((string)$data, true);
         Assert::isArray($json);
         Assert::same($json['subject']['O'], 'swoole');
         Co::usleep(10000);

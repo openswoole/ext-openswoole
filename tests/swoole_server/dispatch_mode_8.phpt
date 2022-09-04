@@ -13,9 +13,6 @@ use Swoole\Coroutine\System;
 use Swoole\Server;
 use Swoole\Table;
 
-
-use function Swoole\Coroutine\go;
-
 $table = new Table(64);
 $table->column('count', Table::TYPE_INT);
 $table->create();

@@ -51,6 +51,7 @@ co::run(function () {
 @unlink(FILE);
 
 ?>
---EXPECT--
+--EXPECTF--
 OK
 OK
+%sUnable to find callback function for signal Broken pipe: %d

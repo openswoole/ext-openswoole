@@ -28,7 +28,7 @@ $pm->parentFunc = function (int $pid) use ($pm, &$count) {
             // read content
             $raw_file = fopen(TEST_IMAGE, 'r+');
             fseek($raw_file, $offset);
-            if (!Assert::assert(co::fread($raw_file) === co::readFile($filename))) {
+            if (!Assert::assert(fread($raw_file, $raw_file_size) === co::readFile($filename))) {
                 goto _end;
             }
 
@@ -51,7 +51,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $serv->on('request', function (swoole_http_request $request, swoole_http_response $response) {
-        $offset = (int) @explode('-', explode('=', $request->header['range'])[1])[0];
+        $offset = (int) @explode('-', (string)explode('=', (string)$request->header['range'])[1])[0];
         $response->sendfile(TEST_IMAGE, $offset);
     });
     $serv->start();

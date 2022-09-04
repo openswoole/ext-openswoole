@@ -40,12 +40,11 @@ $pm->childFunc = function () use ($pm, $atomic) {
 	$server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort());
 	$server->set([
 		'worker_num' => WORKER_NUM,
-		'max_wait_time' => 1,
+		'max_wait_time' => 10,
 		'enable_coroutine' => false,
 	]);
 	$server->on('workerStart', function (Swoole\Server $server, $worker_id) use ($pm, $atomic) {
 		$worker_id++;
-		sleep(1);
 		echo "$worker_id [" . $server->worker_pid . "] start\n";
 		$atomic->add(1);
 		if ($atomic->get() === WORKER_NUM) {
@@ -69,16 +68,9 @@ $pm->run();
 %s start to reload
 [%s]	INFO	Server is reloading all workers
 [%s]	INFO	Server has done all workers reloading
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
+%d [%d] start
+%d [%d] start
+%d [%d] start
+%d [%d] start
 [%s]	INFO	Server is shutdown now
-%d [%d] start
-%d [%d] start
-%d [%d] start
-%d [%d] start
+

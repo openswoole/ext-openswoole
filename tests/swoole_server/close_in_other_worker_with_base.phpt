@@ -42,7 +42,7 @@ $pm->childFunc = function () use ($pm) {
     $serv->on(Constant::EVENT_PIPE_MESSAGE, function ($serv, $workerId, $msg) {
         Assert::assert($serv->close($msg['fd']));
         Assert::false($serv->close(99999));
-        Assert::eq($serv->getLastError(), SWOOLE_ERROR_SESSION_NOT_EXIST);
+        Assert::eq(OpenSwoole\Util::getLastErrorCode(), SWOOLE_ERROR_SESSION_NOT_EXIST);
     });
 
     $serv->on(Constant::EVENT_RECEIVE, function (Swoole\Server $serv, $fd, $rid, $data) {

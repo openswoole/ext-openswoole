@@ -15,9 +15,10 @@ co::create(function () {
         'keep_alive' => false,
     ]);
     $http->execute('/get');
-    swoole_string($http->getHeaderOut())->contains('httpbin.org');
+    echo strpos($http->getHeaderOut(), 'httpbin.org') > -1;
 });
 swoole_event::wait();
 
 ?>
 --EXPECT--
+1
