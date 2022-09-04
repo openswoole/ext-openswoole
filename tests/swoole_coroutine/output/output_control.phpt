@@ -43,6 +43,7 @@ go(function () {
     Assert::same(ob_get_status(true), []); //empty
 });
 Assert::same(ob_get_clean(), 'main');
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--
 foo
