@@ -31,7 +31,7 @@ $pm->parentFunc = function () use ($pm) {
         $retry_time = microtime(true) - $retry_time;
 
         $pm->kill();
-        usleep(1000);
+        co::usleep(1000);
 
         // failed when connect
         $failed_time = microtime(true);
@@ -45,7 +45,6 @@ $pm->parentFunc = function () use ($pm) {
         phpt_var_dump($retry_time, $failed_time);
         Assert::assert($retry_time > $failed_time * 2);
     });
-    swoole_event_wait();
     echo "OK\n";
 };
 $pm->childFunc = function () use ($pm) {

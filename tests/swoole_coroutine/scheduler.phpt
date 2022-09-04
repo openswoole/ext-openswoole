@@ -6,30 +6,26 @@ swoole_coroutine: coroutine scheduler
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-co::run(function() {
-
-    $co1 = go(function () {
+$co1 = go(function () {
+    co::yield();
+    echo "co1\n";
+    go(function () {
         co::yield();
-        echo "co1\n";
-        go(function () {
-            co::yield();
-            echo "co4\n";
-        });
+        echo "co4\n";
     });
-
-    go(function () use ($co1) {
-        go(function () {
-            co::usleep(1000);
-            echo "co3\n";
-            co::resume(4);
-        });
-        co::resume($co1);
-        echo "co2\n";
-    });
-
 });
 
+go(function () use ($co1) {
+    go(function () {
+        co::sleep(1);
+        echo "co3\n";
+        co::resume(4);
+    });
+    co::resume($co1);
+    echo "co2\n";
+});
 
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--
 co1

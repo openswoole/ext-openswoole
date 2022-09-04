@@ -85,7 +85,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $server->setProtocol([
             'open_ssl' => true,

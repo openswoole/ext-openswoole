@@ -5,7 +5,7 @@ swoole_socket_coro: closed bad fd
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     Assert::assert($socket->connect(REDIS_SERVER_HOST, REDIS_SERVER_PORT));
     Assert::assert($socket->close());

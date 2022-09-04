@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $fp = stream_socket_client("tcp://127.0.0.1:{$pm->getFreePort()}", $errno, $errstr, 1);
         if (!$fp) {
             exit("$errstr ($errno)\n");
@@ -24,7 +24,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $ctx = stream_context_create(['socket' => ['so_reuseaddr' => true, 'backlog' => MAX_CONCURRENCY_MID]]);
         $server = stream_socket_server(
             "tcp://127.0.0.1:{$pm->getFreePort()}",

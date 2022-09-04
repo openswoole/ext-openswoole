@@ -9,8 +9,8 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Server;
 use Swoole\Client;
 
-define('UNIX_SOCK_1', getenv('HOME').'/swoole.test.uinx_stream.sock');
-define('UNIX_SOCK_2', getenv('HOME').'/swoole.test.uinx_dgram.sock');
+define('UNIX_SOCK_1', getenv('HOME').'/openswoole.test.uinx_stream.sock');
+define('UNIX_SOCK_2', getenv('HOME').'/openswoole.test.uinx_dgram.sock');
 define('HAVE_IPV6', boolval(@stream_socket_server('tcp://[::1]:0')));
 
 register_shutdown_function(function () {
@@ -52,8 +52,6 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
     $sockets = [];
-    $start_fd = swoole_array(scandir('/proc/self/fd'))->sort()->last();
-    putenv('LISTEN_FDS_START='. $start_fd);
 
     $sockets[] = stream_socket_server('tcp://127.0.0.1:'.$pm->getFreePort(0), $errno, $errstr);
     $sockets[] = stream_socket_server('udp://0.0.0.0:'.$pm->getFreePort(1), $errno, $errstr, STREAM_SERVER_BIND);

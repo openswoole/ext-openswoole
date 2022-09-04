@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 $pm = new ProcessManager();
 $pm->parentFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = stream_socket_client("tcp://127.0.0.1:{$pm->getFreePort()}", $errno, $errstr, 1);
         Assert::true(!$errno);
         go(function () use ($cli) {
@@ -28,7 +28,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::true($server->bind('127.0.0.1', $pm->getFreePort()));
         Assert::true($server->listen());
@@ -53,4 +53,5 @@ RECV
 CLOSE
 %s CLOSED
 %s CLOSED
+%swoole_signal_callback() (ERRNO 721): Unable to find callback function for signal Broken pipe: %d
 DONE

@@ -54,8 +54,7 @@ $pm->childFunc = function () use ($pm, $file, $result) {
 $pm->childFirst();
 $pm->run();
 
-// echo file_get_contents($file);
-Assert::true(swoole_string(file_get_contents($file))->contains('ProcessPool_worker_loop: bad task packet'));
+Assert::true(strpos(file_get_contents($file), 'ProcessPool_worker_loop(): bad task packet') > -1);
 unlink($file);
 Assert::eq($result->get(), 1);
 ?>

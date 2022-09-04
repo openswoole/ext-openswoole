@@ -7,7 +7,7 @@ swoole_feature/cross_close: full duplex
 require __DIR__ . '/../../include/bootstrap.php';
 $pm = new ProcessManager();
 $pm->parentFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         Assert::assert($cli->connect('127.0.0.1', $pm->getFreePort()));
         Assert::assert($cli->connected);
@@ -35,7 +35,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::assert($server->bind('127.0.0.1', $pm->getFreePort()));
         Assert::assert($server->listen());

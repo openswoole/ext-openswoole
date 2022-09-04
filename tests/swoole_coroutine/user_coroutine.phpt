@@ -15,7 +15,7 @@ $pm->parentFunc = function () use ($pm)
 {
     go(function () use ($pm) {
         $data= httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/");
-        Assert::assert(strlen($data) > 1024);
+        Assert::assert(strlen($data) > 100);
         $pm->kill();
     });
     Swoole\Event::wait();
@@ -39,7 +39,7 @@ $pm->childFunc = function () use ($pm)
     {
         Swoole\Coroutine::create(function () use ($response)
         {
-            $url = 'http://news.bitauto.com/xinche/';
+            $url = 'http://www.google.com/';
             $components = parse_url($url);
 
             if (!isset($components['host']))
@@ -59,6 +59,7 @@ $pm->childFunc = function () use ($pm)
             ]);
             $client->set(['timeout' => 10]);
             $client->get(isset($components['path']) ? $components['path'] : '/');
+
             $response->end($client->body);
         });
     });

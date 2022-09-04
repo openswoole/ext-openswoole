@@ -55,6 +55,7 @@ $pm->childFunc = function () use ($pm, $port) {
         $client->close();
         $socket->close();
     });
+    swoole_event_wait();
 };
 
 $pm->childFirst();

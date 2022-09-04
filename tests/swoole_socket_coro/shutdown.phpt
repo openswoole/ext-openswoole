@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 for ($n = 2; $n--;) {
     $randoms[] = get_safe_random();
 }
-co::run(function() {
+co::run(function() use ($randoms) {
 go(function () use ($randoms) {
     $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::true($server->bind('127.0.0.1', 9601));
@@ -45,5 +45,6 @@ go(function () use ($randoms) {
 
 echo "DONE\n";
 ?>
---EXPECT--
+--EXPECTF--
+%sUnable to find callback function for signal Broken pipe: %d
 DONE

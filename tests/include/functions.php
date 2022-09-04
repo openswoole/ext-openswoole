@@ -611,7 +611,7 @@ function start_server($file, $host, $port, $redirect_file = "/dev/null", $ext1 =
     //        proc_terminate($handle, SIGTERM);
     //        @unlink($redirect_file);
     //    });
-    OpenSwoole\Util::setAio(['enable_coroutine' => false]); // need use exit
+    Co::set(['enable_coroutine' => false]); // need use exit
     return function () use ($handle, $redirect_file) {
         // @unlink($redirect_file);
         proc_terminate($handle, SIGTERM);

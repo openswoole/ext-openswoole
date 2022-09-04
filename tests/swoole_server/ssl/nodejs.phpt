@@ -14,7 +14,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     co::run(function () use ($pm) {
         $result = Co::exec('node '.__DIR__.'/code/connect.js '.$pm->getFreePort());
         Assert::eq($result['code'], 0);
-        Assert::contains($result['output'], 'swoole-http-server');
+        Assert::contains($result['output'], 'Content-Type: text/plain');
     });
     $pm->kill();
 };

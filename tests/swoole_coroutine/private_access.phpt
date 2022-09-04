@@ -6,10 +6,6 @@ swoole_coroutine: $this private access in PHP70 (EG(scope))
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-co::run(function() {
-    (new Bar)->foo();
-}) ;
-
 class Bar
 {
     static private $s_private = 's_private';
@@ -94,8 +90,11 @@ class Bar
         var_dump($this->private);
         var_dump($this->protect);
         var_dump($this->public);
+        OpenSwoole\Event::wait();
     }
 }
+
+(new Bar)->foo();
 
 ?>
 --EXPECT--

@@ -17,7 +17,7 @@ function getCookies()
     return $result;
 }
 
-go(function () {
+co::run(function () {
     $url_info = parse_url('http://httpbin.org/cookies/set/a/1');
     $domain = $url_info['host'];
     $path = $url_info['path'];

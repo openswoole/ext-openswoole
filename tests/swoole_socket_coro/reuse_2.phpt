@@ -42,12 +42,13 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
     echo "Co [2]\n";
 
-    co::run(function () use ($pm, &$map) {
+    go(function () use ($pm, &$map) {
         $socket = $map['sock'];
         Assert::assert($socket->send(SEND_STR));
         echo $socket->recv();
         unset($map['sock']);
     });
+    OpenSwoole\Event::wait();
 };
 
 $pm->childFunc = function () use ($pm) {
@@ -63,7 +64,7 @@ $pm->childFunc = function () use ($pm) {
                 break;
             }
         }
-        Assert::isInstanceOf($client, Swoole\Coroutine\Socket::class);
+        Assert::isInstanceOf($client, OpenSwoole\Coroutine\Socket::class);
         while (true) {
             $client_data = $client->recv(1024, -1);
             if (empty($client_data)) {
@@ -82,6 +83,7 @@ $pm->childFunc = function () use ($pm) {
         $socket->close();
         echo "server exit\n";
     });
+    OpenSwoole\Event::wait();
 };
 
 $pm->childFirst();

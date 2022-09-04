@@ -12,7 +12,7 @@ use Swoole\Coroutine\Socket;
 $pm = new ProcessManager;
 $pm->initRandomDataEx(MAX_CONCURRENCY_MID, 1, 1024);
 $pm->parentFunc = function () use ($pm) {
-    Coroutine\run(function () use ($pm) {
+    Coroutine::run(function () use ($pm) {
         for ($c = MAX_CONCURRENCY_MID; $c--;) {
             Coroutine::create(function () use ($pm, $c) {
                 $socket = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);

@@ -41,7 +41,7 @@ for ($c = MAX_CONCURRENCY_MID; $c--;) {
         $client->close();
     });
 }
-
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--
 DONE

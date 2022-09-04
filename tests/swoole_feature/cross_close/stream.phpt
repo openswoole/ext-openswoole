@@ -7,7 +7,7 @@ swoole_feature/cross_close: stream
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
-go(function () {
+co::run(function () {
     $fp = stream_socket_client('tcp://' . REDIS_SERVER_HOST . ':' . REDIS_SERVER_PORT, $errno, $errstr, 1);
     if (!$fp) {
         exit("$errstr ($errno)\n");
