@@ -6,9 +6,10 @@ swoole_table: force unlock
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use Swoole\Process;
+use OpenSwoole\Process;
 
 ini_set('memory_limit', '16M');
+ini_set('openswoole.display_errors', 'on');
 
 $table = new \OpenSwoole\Table(1);
 $table->column('string', \OpenSwoole\Table::TYPE_STRING, 4 * 1024 * 1024);
@@ -23,7 +24,7 @@ $data = [
 $table->set('test', $data);
 
 $proc = new Process(function () use ($table) {
-    $str = str_repeat('A', 5 * 1024 * 1024);
+    $str = str_repeat('A', 20 * 1024 * 1024);
     // Fatal error: memory exhausted
     $data = $table->get('test');
     var_dump(strlen($data['string']));
@@ -43,5 +44,4 @@ Assert::eq($data['string'], $str_value);
 echo "Done\n";
 ?>
 --EXPECTF--
-[%s]	WARNING	TableRow::lock(): lock process[%d] not exists, force unlock
 Done
