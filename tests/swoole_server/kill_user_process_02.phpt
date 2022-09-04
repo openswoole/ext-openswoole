@@ -33,7 +33,7 @@ $pm->childFunc = function () use ($pm)
 //    );
     $process2 = new swoole_process(function ($worker) use ($serv, $pm) {
         global $argv;
-        swoole_set_process_name(WORKER_PROC_NAME);
+        \OpenSwoole\Util::setProcessName(WORKER_PROC_NAME);
         swoole_process::signal(SIGTERM, function () {
             swoole_event_exit();
         });

@@ -22,7 +22,7 @@ if [ "$1" = "cmake" ] ;then
 fi
 
 if [ "$1" = "clean" ] ;then
-  make clean
+  make -k clean
   phpize --clean
   exit 0
 fi

@@ -32,7 +32,7 @@ $pm->childFunc = function () use ($pm)
     $serv->on("WorkerStart", function (Server $serv, $worker_id) use ($pm) {
         if ($worker_id = 1)
         {
-            swoole_set_process_name(PROC_NAME);
+            \OpenSwoole\Util::setProcessName(PROC_NAME);
             $pm->wakeup();
         }
     });

@@ -1,0 +1,60 @@
+#!/usr/bin/env php
+<?php
+
+function read_sql_file(string $file)
+{
+    $comment_regex = '/(?<!:)\/\/.*|\/\\*(\s|.)*?\*\/|--[^\n]+/';
+    $lines = explode("\n", preg_replace($comment_regex, '', co::readFile($file)));
+    $init_sql = [];
+    $multi = false;
+    foreach ($lines as $index => $line) {
+        if (strlen($line) === 0) {
+            continue;
+        }
+        if (substr($line, -1, 1) !== ';') {
+            if (!$multi) {
+                $multi = true;
+                goto _new_line;
+            } else {
+                _append:
+                $end_line = &$init_sql[count($init_sql) - 1];
+                $end_line = $end_line . $line . "\n";
+            }
+        } else {
+            if ($multi) {
+                $multi = false;
+                goto _append;
+            } else {
+                $multi = false;
+                _new_line:
+                $init_sql[] = "{$line}";
+            }
+        }
+    }
+
+    return $init_sql;
+}
+
+require __DIR__ . '/include/config.php';
+
+co::run(function () {
+    echo "[DB-init] initialization MySQL database...\n";
+
+    $conn = new mysqli(MYSQL_SERVER_HOST, MYSQL_SERVER_USER, MYSQL_SERVER_PWD, MYSQL_SERVER_DB);
+    if ($conn->connect_errno) {
+        printf("connection failed: %s\n", $con->connect_error());
+        exit(1);
+    }
+    $res = $conn->query("SELECT VERSION()");
+    
+    $sql_file = read_sql_file(__DIR__ . '/test.sql');
+    foreach ($sql_file as $line) {
+        if (!$conn->query($line)) {
+            echo "[DB-init] Failed!\n";
+            exit(1);
+        }
+    }
+    $res->close();
+    $conn->close();
+    echo "[DB-init] Done!\n";
+});
