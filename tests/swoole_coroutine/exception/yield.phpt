@@ -23,7 +23,7 @@ co::run(function () {
 ?>
 --EXPECT--
 start
-end
 after sleep
 Caught exception: coro Exception
 finally.
+end

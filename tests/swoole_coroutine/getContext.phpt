@@ -40,12 +40,12 @@ class Resource
     }
 }
 
-$context = new Co\Context();
+$context = new OpenSwoole\Coroutine\Context();
 Assert::assert($context instanceof ArrayObject);
 Assert::assert(Co::getContext() === null);
 func(function () {
     $context = Co::getContext();
-    Assert::assert($context instanceof Co\Context);
+    Assert::assert($context instanceof OpenSwoole\Coroutine\Context);
     $context['resource1'] = new Resource;
     $context->resource2 = new Resource;
     func(function () {

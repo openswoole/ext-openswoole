@@ -7,6 +7,13 @@ swoole_coroutine/forbidden_case: coro call user func
 require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Coroutine as co;
+
+function test() {
+        echo "func start\n";
+        co::usleep(1000);
+        echo "func end\n";
+    }
+    
 co::run(function() {
 
     co::create(function() {
@@ -15,11 +22,7 @@ co::run(function() {
         echo "co end\n";
     });
 
-    function test() {
-        echo "func start\n";
-        co::usleep(1000);
-        echo "func end\n";
-    }
+    
 
 });
 
@@ -27,6 +30,6 @@ echo "main end\n";
 ?>
 --EXPECT--
 func start
-main end
 func end
 co end
+main end

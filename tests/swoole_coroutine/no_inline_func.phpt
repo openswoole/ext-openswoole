@@ -8,13 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine as co;
 
-co::run(function() {
-
-    co::create(function () {
-        $ret = test();
-        echo $ret;
-    });
-    function test()
+function test()
     {
         echo "start func\n";
         Co::usleep(1000);
@@ -22,10 +16,16 @@ co::run(function() {
         return "return func params\n";
     }
 
-});
-echo "start\n";
+co::run(function() {
+    echo "start\n";
+    co::create(function () {
+        $ret = test();
+        echo $ret;
+    });
+    echo "end\n";
 
-echo "end\n";
+});
+
 ?>
 --EXPECT--
 start

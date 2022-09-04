@@ -19,5 +19,5 @@ co::run(function () {
     co::usleep(20000);
 });
 ?>
---EXPECT--
-int(10)
+--EXPECTREGEX--
+int\(10\)|int\(30\)

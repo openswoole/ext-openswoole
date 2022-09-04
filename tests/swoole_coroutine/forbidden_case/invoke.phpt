@@ -8,6 +8,12 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Coroutine as co;
 
+function foo() {
+      echo "func start\n";
+      co::usleep(1000);
+      echo "func end\n";
+   }
+   
 co::run(function() {
 
    co::create(function() {
@@ -15,11 +21,7 @@ co::run(function() {
        $function->invoke();
        echo "co end\n";
    });
-   function foo() {
-      echo "func start\n";
-      co::usleep(1000);
-      echo "func end\n";
-   }
+   
 
 });
 
@@ -27,6 +29,6 @@ echo "main end\n";
 ?>
 --EXPECT--
 func start
-main end
 func end
 co end
+main end

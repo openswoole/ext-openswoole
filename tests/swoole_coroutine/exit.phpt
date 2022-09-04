@@ -5,6 +5,7 @@ swoole_coroutine: exit
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
+ini_set('openswoole.display_errors', 'off');
 
 $exit_status_list = [
     'undef',
@@ -42,7 +43,7 @@ function your_code()
     }
 }
 
-co::run(function() {
+co::run(function() use ($exit_status_list) {
 
 $chan = new OpenSwoole\Coroutine\Channel;
 
@@ -58,7 +59,7 @@ for ($i = 0; $i < count($exit_status_list); $i++) {
             // in coroutine
             route();
         } catch (\OpenSwoole\ExitException $e) {
-            Assert::assert($e->getFlags() & SWOOLE_EXIT_IN_COROUTINE);
+            Assert::assert($e->getFlags() & OpenSwoole\Coroutine::EXIT_IN_COROUTINE);
             $exit_status = $chan->pop();
             $exit_status = $exit_status === 'undef' ? null : $exit_status;
             Assert::same($e->getStatus(), $exit_status);

@@ -25,6 +25,6 @@ echo "main end\n";
 --EXPECT--
 start 1
 start 2
-main end
 end 1
 end 2
+main end
