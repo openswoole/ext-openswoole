@@ -1,7 +1,7 @@
 --TEST--
 swoole_server: systemd fds
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php require __DIR__ . '/../include/skipif.inc'; skip("TODOv22"); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';

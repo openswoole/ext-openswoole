@@ -5,6 +5,7 @@ swoole_server: kill user process [SWOOLE_PROCESS]
 require __DIR__ . '/../include/skipif.inc';
 skip_if_darwin();
 //skip_if_in_valgrind();
+skip("TODOv22");
 ?>
 --FILE--
 <?php declare(strict_types = 1);

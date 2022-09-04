@@ -11,3 +11,5 @@ find . -name \*.so -print0 | xargs -0 rm -f
 find . -name \*.dep -print0 | xargs -0 rm -f
 find . -name .libs -a -type d -print0 | xargs -0 rm -rf
 rm -f libphp.la modules/* libs/*
+rm -f tests/test-result*
+rm -f tests/core
