@@ -24,6 +24,7 @@ go(function () {
         fclose($fp);
     }
 });
+OpenSwoole\Event::wait();
 ?>
 --EXPECTF--
 READ
