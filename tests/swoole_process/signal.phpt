@@ -39,11 +39,14 @@ $pid = (new Process(function ()
     //never calback
     OpenSwoole\Event::add(STDIN, function () {});
 
+    OpenSwoole\Event::wait();
+
+
 }))->start();
 
-OpenSwoole\Timer::after(500, function() use ($pid) {
+OpenSwoole\Timer::after(1000, function() use ($pid) {
     Process::kill($pid, SIGTERM);
-    OpenSwoole\Timer::after(500, function() use ($pid) {
+    OpenSwoole\Timer::after(1000, function() use ($pid) {
         Process::kill($pid, SIGTERM);
     });
 });

@@ -18,7 +18,7 @@ $simple_tcp_server = __DIR__ . "/../../include/api/swoole_server/tcp_task_server
 $port = get_one_free_port();
 $closeServer = start_server($simple_tcp_server, TCP_SERVER_HOST, $port);
 
-co::run(function () use($port, $closeServer) {
+go(function () use($port, $closeServer) {
     $cli = new Client(SWOOLE_SOCK_TCP);
     $r = $cli->connect(TCP_SERVER_HOST, $port);
     Assert::true($r);
@@ -29,6 +29,7 @@ co::run(function () use($port, $closeServer) {
     Assert::false($cli->isConnected());
     echo "SUCCESS\n";
 });
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--
 SUCCESS

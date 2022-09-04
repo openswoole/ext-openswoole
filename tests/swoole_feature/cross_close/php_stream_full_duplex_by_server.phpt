@@ -53,5 +53,4 @@ RECV
 CLOSE
 %s CLOSED
 %s CLOSED
-%swoole_signal_callback() (ERRNO 721): Unable to find callback function for signal Broken pipe: %d
 DONE

@@ -24,7 +24,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             $cli->close();
         });
     }
-    Swoole\Event::wait();
+    OpenSwoole\Event::wait();
     $pm->kill();
     echo "DONE\n";
 };
@@ -36,7 +36,7 @@ $pm->childFunc = function () use ($pm) {
         Assert::assert($server->listen());
         while ($client = $server->accept()) {
             go(function () use ($server, $client) {
-                Assert::assert($client instanceof Swoole\Coroutine\Socket);
+                Assert::assert($client instanceof OpenSwoole\Coroutine\Socket);
                 $data =
                     "HTTP/1.1 200 OK\r\n" .
                     "Connection: keep-alive\r\n" .
@@ -56,6 +56,7 @@ $pm->childFunc = function () use ($pm) {
             });
         }
     });
+    OpenSwoole\Event::wait();
 };
 
 $pm->childFirst();

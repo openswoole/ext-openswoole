@@ -12,10 +12,7 @@ use SwooleTest\ProcessManager;
 
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-
-
         echo "Co [1]\n";
-
         $map = [];
         go(function () use ($pm, &$map) {
             $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
@@ -28,6 +25,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         echo "Co [2]\n";
 
         go(function () use ($pm, &$map) {
+            co::sleep(1);
             $socket = $map['sock'];
             Assert::assert($socket->send(SEND_STR));
             echo $socket->recv();
@@ -72,8 +70,8 @@ $pm->run();
 ?>
 --EXPECT--
 Co [1]
-swoole hello world
 Co [2]
+swoole hello world
 swoole hello world
 closed
 server exit
