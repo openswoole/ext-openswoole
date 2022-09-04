@@ -39,4 +39,3 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-%sUnable to find callback function for signal Broken pipe%s

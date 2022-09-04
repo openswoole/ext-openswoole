@@ -55,5 +55,4 @@ RECV
 CLOSE
 %s CLOSED
 %s CLOSED
-%sUnable to find callback function for signal Broken pipe: %d
 DONE

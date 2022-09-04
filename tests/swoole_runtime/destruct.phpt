@@ -36,6 +36,7 @@ go(function () use ($timer_id) {
     echo "DONE\n";
 });
 
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--
 DONE

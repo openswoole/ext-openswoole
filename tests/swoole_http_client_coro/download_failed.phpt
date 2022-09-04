@@ -54,4 +54,3 @@ co::run(function () {
 --EXPECTF--
 OK
 OK
-%sUnable to find callback function for signal Broken pipe: %d

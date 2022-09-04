@@ -57,4 +57,3 @@ $pm->run();
 ?>
 --EXPECTF--
 DONE
-%sUnable to find callback function for signal Broken pipe%s

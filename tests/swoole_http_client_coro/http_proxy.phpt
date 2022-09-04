@@ -9,7 +9,7 @@ skip_if_offline();
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     $domain = 'www.qq.com';
     $cli = new OpenSwoole\Coroutine\Http\Client($domain, 443, true);
     // $cli->setHeaders(['Host' => $domain]); // without host header it can also work well
