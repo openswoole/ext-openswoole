@@ -24,7 +24,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    co::run(function () use ($pm) {
+    go(function () use ($pm) {
         $ctx = stream_context_create(['socket' => ['so_reuseaddr' => true, 'backlog' => MAX_CONCURRENCY_MID]]);
         $server = stream_socket_server(
             "tcp://127.0.0.1:{$pm->getFreePort()}",
@@ -46,6 +46,7 @@ $pm->childFunc = function () use ($pm) {
         }
         $pm->wakeup();
     });
+    OpenSwoole\Event::wait();
 };
 $pm->childFirst();
 $pm->run();

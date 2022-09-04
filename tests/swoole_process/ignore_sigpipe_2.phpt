@@ -20,7 +20,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->setWaitTimeout(5);
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    co::run(function () use ($pm) {
+    go(function () use ($pm) {
         $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         if ($cli->connect('127.0.0.1', $pm->getFreePort(), 1) == false) {
             echo "ERROR\n";
@@ -34,6 +34,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             }
         }
     });
+    OpenSwoole\Event::wait();
     echo "DONE\n";
     $pm->kill();
 };
