@@ -21,7 +21,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    ini_set('swoole.display_errors', 'Off');
+    ini_set('openswoole.display_errors', 'Off');
     $serv = new Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $serv->set(array(
         "worker_num" => 1,
@@ -44,4 +44,4 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Warning: OpenSwoole\Server::start(): server have been shutdown, unable to execute Swoole\Server->start() in %s on line %d
+Warning: OpenSwoole\Server::start(): server have been shutdown, unable to execute OpenSwoole\Server->start() in %s on line %d

@@ -12,7 +12,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
 
-    class Process5 extends Swoole\Process
+    class Process5 extends OpenSwoole\Process
     {
         public function __construct()
         {
@@ -29,6 +29,7 @@ $pm->childFunc = function () use ($pm) {
                 }
                 echo "Tick {$i}\n";
             });
+            OpenSwoole\Event::wait();
         }
     }
 

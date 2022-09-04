@@ -31,6 +31,7 @@ class Process3 extends Swoole\Process
             echo "sleep end\n";
             trigger_error('ERROR', E_USER_ERROR);
         });
+        OpenSwoole\Event::wait();
     }
 }
 

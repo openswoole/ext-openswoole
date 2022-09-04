@@ -22,7 +22,7 @@ $pm->childFunc = function () use ($pm) {
 
         public function run()
         {
-            go(function () {
+            co::run(function () {
                 global $atomic;
                 if ($atomic->add() > 5) {
                     global $pm;

@@ -16,12 +16,12 @@ $pm->setRandomFunc(function () {
     }
     return $data;
 });
-$pm->initRandomDataEx(1, 32);
+$pm->initRandomDataEx(1, 8);
 $pm->parentFunc = function () use ($pm) {
     co::run(function () use ($pm) {
         $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['socket_buffer_size' => SOCKET_BUFFER_SIZE]);
-        for ($n = 32; $n--;) {
+        for ($n = 8; $n--;) {
             $data = $pm->getRandomData();
             Assert::true($cli->post('/', $data));
             Assert::same($cli->statusCode, 200);

@@ -61,5 +61,6 @@ $pm->childFunc = function () use ($pm) {
 $pm->childFirst();
 $pm->run();
 ?>
---EXPECT--
+--EXPECTF--
+%sUnable to find callback function for signal Broken pipe%s
 DONE

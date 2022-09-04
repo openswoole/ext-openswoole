@@ -14,7 +14,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     $pid = file_get_contents(TEST_PID_FILE);
     usleep(10000);
-    Swoole\Process::kill((int)$pid, SIGPIPE);
+    OpenSwoole\Process::kill((int)$pid, SIGPIPE);
     usleep(10000);
     $log = file_get_contents(TEST_LOG_FILE);
     echo $log, "\n";
@@ -39,3 +39,4 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
+%sUnable to find callback function for signal Broken pipe%s
