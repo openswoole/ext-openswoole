@@ -13,9 +13,9 @@ class TcpServer
     public function __construct($host, $port)
     {
         echo "swoole_server host:$host, port:$port\n";
-        $this->swooleServer = new \swoole_server($host, $port, SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
+        $this->swooleServer = new OpenSwoole\Server($host, $port, SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
         $this->swooleServer->set([
-            "pipe_buffer_size" => 1024 * 1024 * 1024,
+            // "pipe_buffer_size" => 1024 * 1024 * 1024,
             'dispatch_mode' => 3,
             'open_tcp_nodelay' => 1,
             'open_cpu_affinity' => 1,

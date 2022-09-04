@@ -68,9 +68,5 @@ $pm->run();
 %s start to reload
 [%s]	INFO	Server is reloading all workers
 [%s]	INFO	Server has done all workers reloading
-%d [%d] start
-%d [%d] start
-%d [%d] start
-%d [%d] start
 [%s]	INFO	Server is shutdown now
 

@@ -1,7 +1,7 @@
 --TEST--
 swoole_socket_coro: recvAll
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php require __DIR__ . '/../include/skipif.inc'; skip("TODOv22"); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
@@ -11,7 +11,7 @@ $pm->initRandomDataArray(4, 512 * 1024);
 const CASE_LIST = '4';
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    co::run(function () use ($pm) {
+    go(function () use ($pm) {
         $conn = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::assert($conn->connect('127.0.0.1', $pm->getFreePort()));
         /**
@@ -58,6 +58,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
             Assert::eq($body, substr($pm->getRandomDataElement(3), 0, 65536 * 3));
         //}
     });
+    OpenSwoole\Event::wait();
     $pm->kill();
     echo "DONE\n";
 };

@@ -20,7 +20,7 @@ $closeServer = start_server($simple_tcp_server, TCP_SERVER_HOST, $port);
 
 go(function () use($port, $closeServer) {
     $cli = new Client(SWOOLE_SOCK_TCP);
-    $r = $cli->connect(TCP_SERVER_HOST, $port);
+    $r = $cli->connect(TCP_SERVER_HOST, $port, 1);
     Assert::true($r);
     $cli->send("Test swoole_server::task Interface.");
     $data = $cli->recv();
