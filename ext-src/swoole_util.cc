@@ -55,57 +55,29 @@ static PHP_METHOD(swoole_util, setAio);
 
 SW_EXTERN_C_END
 
+// clang-format off
 static const zend_function_entry swoole_util_methods[] = {
-    PHP_ME(swoole_util, getVersion, arginfo_class_Swoole_Util_getVersion, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(
-        swoole_util, getCPUNum, arginfo_class_Swoole_Util_getCPUNum, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-        PHP_ME(swoole_util, getLocalIp, arginfo_class_Swoole_Util_getLocalIp, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(
-            swoole_util, getLocalMac, arginfo_class_Swoole_Util_getLocalMac, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-            PHP_ME(swoole_util,
-                   getLastErrorCode,
-                   arginfo_class_Swoole_Util_getLastErrorCode,
-                   ZEND_ACC_PUBLIC |
-                       ZEND_ACC_STATIC) PHP_ME(swoole_util,
-                                               getErrorMessage,
-                                               arginfo_class_Swoole_Util_getErrorMessage,
-                                               ZEND_ACC_PUBLIC |
-                                                   ZEND_ACC_STATIC) PHP_ME(swoole_util,
-                                                                           errorCode,
-                                                                           arginfo_class_Swoole_Util_errorCode,
-                                                                           ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                PHP_ME(swoole_util, clearError, arginfo_class_Swoole_Util_clearError, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                    PHP_ME(swoole_util, log, arginfo_class_Swoole_Util_log, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(
-                        swoole_util, hashcode, arginfo_class_Swoole_Util_hashcode, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                        PHP_ME(swoole_util,
-                               mimeTypeAdd,
-                               arginfo_class_Swoole_Util_mimeTypeAdd,
-                               ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(swoole_util,
-                                                                         mimeTypeSet,
-                                                                         arginfo_class_Swoole_Util_mimeTypeSet,
-                                                                         ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                            PHP_ME(swoole_util,
-                                   mimeTypeDel,
-                                   arginfo_class_Swoole_Util_mimeTypeDel,
-                                   ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(swoole_util,
-                                                                             mimeTypeGet,
-                                                                             arginfo_class_Swoole_Util_mimeTypeGet,
-                                                                             ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                                PHP_ME(
-                                    swoole_util,
-                                    mimeTypeList,
-                                    arginfo_class_Swoole_Util_mimeTypeList,
-                                    ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(swoole_util,
-                                                                              mimeTypeExists,
-                                                                              arginfo_class_Swoole_Util_mimeTypeExists,
-                                                                              ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-                                    PHP_ME(swoole_util,
-                                           setProcessName,
-                                           arginfo_class_Swoole_Util_setProcessName,
-                                           ZEND_ACC_PUBLIC | ZEND_ACC_STATIC) PHP_ME(swoole_util,
-                                                                                     setAio,
-                                                                                     arginfo_class_Swoole_Util_setAio,
-                                                                                     ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-
-                                        PHP_FE_END};
+  PHP_ME(swoole_util, getVersion, arginfo_class_Swoole_Util_getVersion, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, getCPUNum, arginfo_class_Swoole_Util_getCPUNum, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, getLocalIp, arginfo_class_Swoole_Util_getLocalIp, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, getLocalMac, arginfo_class_Swoole_Util_getLocalMac, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, getLastErrorCode, arginfo_class_Swoole_Util_getLastErrorCode, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, getErrorMessage, arginfo_class_Swoole_Util_getErrorMessage, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, errorCode, arginfo_class_Swoole_Util_errorCode, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, clearError, arginfo_class_Swoole_Util_clearError, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, log, arginfo_class_Swoole_Util_log, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, hashcode, arginfo_class_Swoole_Util_hashcode, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, mimeTypeAdd, arginfo_class_Swoole_Util_mimeTypeAdd, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, mimeTypeSet, arginfo_class_Swoole_Util_mimeTypeSet, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, mimeTypeDel, arginfo_class_Swoole_Util_mimeTypeDel, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, mimeTypeGet, arginfo_class_Swoole_Util_mimeTypeGet, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, mimeTypeList, arginfo_class_Swoole_Util_mimeTypeList, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, mimeTypeExists, arginfo_class_Swoole_Util_mimeTypeExists, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, setProcessName, arginfo_class_Swoole_Util_setProcessName, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_ME(swoole_util, setAio, arginfo_class_Swoole_Util_setAio, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+  PHP_FE_END
+};
+// clang-format on
 
 void php_swoole_util_minit(int module_number) {
     SW_INIT_CLASS_ENTRY(swoole_util, "Swoole\\Util", nullptr, nullptr, swoole_util_methods);
