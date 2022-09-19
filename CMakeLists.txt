@@ -126,16 +126,16 @@ if(CODE_COVERAGE)
 endif(CODE_COVERAGE)
 
 # test_server
-set(TEST_SRC_LIST examples/cpp/test_server.cc)
-add_executable(test_server ${TEST_SRC_LIST})
-add_dependencies(test_server lib-openswoole)
-target_link_libraries(test_server openswoole pthread)
+#set(TEST_SRC_LIST examples/cpp/test_server.cc)
+#add_executable(test_server ${TEST_SRC_LIST})
+#add_dependencies(test_server lib-openswoole)
+#target_link_libraries(test_server openswoole pthread)
 
 # co
-set(TEST_SRC_LIST examples/cpp/co.cc)
-add_executable(co ${TEST_SRC_LIST})
-add_dependencies(co lib-openswoole)
-target_link_libraries(co openswoole)
+#set(TEST_SRC_LIST examples/cpp/co.cc)
+#add_executable(co ${TEST_SRC_LIST})
+#add_dependencies(co lib-openswoole)
+#target_link_libraries(co openswoole)
 
 # ext-openswoole
 file(GLOB ext_cxx_files ext-src/*.cc)

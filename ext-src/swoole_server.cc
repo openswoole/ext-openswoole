@@ -2941,7 +2941,6 @@ static PHP_METHOD(swoole_server, stats) {
 
     if (mode == 1) {
         // return json_encode($stats, \JSON_PRETTY_PRINT);
-#if PHP_VERSION_ID < 80000
         zval args[2];
         args[0] = stats;
         ZVAL_LONG(&args[1], 128);
@@ -2949,15 +2948,6 @@ static PHP_METHOD(swoole_server, stats) {
         zval_ptr_dtor(&args[0]);
         zval_ptr_dtor(&args[1]);
         RETURN_ZVAL(&retval.value, 1, 0);
-#else
-        zval retval;
-        smart_str json_encode_string_buffer = {0};
-        php_json_encode(&json_encode_string_buffer, &stats, 128);
-        smart_str_0(&json_encode_string_buffer);
-        ZVAL_STR_COPY(&retval, json_encode_string_buffer.s);
-        smart_str_free(&json_encode_string_buffer);
-        RETURN_ZVAL(&retval, 1, 0);
-#endif
     } else if (mode == 2) {
         zend_string *class_name =
             zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
