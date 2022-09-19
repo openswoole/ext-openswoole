@@ -214,6 +214,29 @@ void HttpContext::bind(Server *serv) {
     close = http_context_disconnect;
 }
 
+void HttpContext::init(Socket *sock) {
+    parse_cookie = 1;
+    parse_body = 1;
+    parse_files = 1;
+#ifdef SW_HAVE_COMPRESSION
+    enable_compression = 1;
+    compression_level = SW_Z_BEST_SPEED;
+#endif
+#ifdef SW_HAVE_ZLIB
+    websocket_compression = 0;
+#endif
+    upload_tmp_dir = "/tmp";
+    bind(sock);
+}
+
+void HttpContext::bind(Socket *sock) {
+    private_data = sock;
+    co_socket = 1;
+    send = http_context_send_data;
+    sendfile = http_context_sendfile;
+    close = http_context_disconnect;
+}
+
 void HttpContext::copy(HttpContext *ctx) {
     parse_cookie = ctx->parse_cookie;
     parse_body = ctx->parse_body;
