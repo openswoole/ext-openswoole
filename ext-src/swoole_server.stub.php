@@ -17,7 +17,7 @@
  
 namespace Swoole {
     final class Server {
-        public function __construct(string $host, int $port = 0, int $mode = \OpenSwoole\Server::PROCESS, int $sockType = \OpenSwoole\Constant::SOCK_TCP) {}
+        public function __construct(string $host, int $port = 0, int $mode = \OpenSwoole\Server::SIMPLE_MODE, int $sockType = \OpenSwoole\Constant::SOCK_TCP) {}
         public function __destruct() {}
         public function listen(string $host, int $port, int $sockType): false|Server\Port {}
         public function addlistener(string $host, int $port, int $sockType): false|Server\Port {}

@@ -41,6 +41,7 @@
  . Remove `swoole_client_select` and `swoole_select`, use `OpenSwoole\Client::select`
  . Remove `swoole_last_error`, use `OpenSwoole\Util::getLastErrorCode`
  . `OpenSwoole\Event::wait();` should be added explicitly to wait for all the IO events
+ . Use `\OpenSwoole\Server::SIMPLE_MODE` and `\OpenSwoole\Server::POOL_MODE` at server structure config
 
 # 4.11.1
 
