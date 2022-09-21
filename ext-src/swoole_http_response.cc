@@ -302,6 +302,15 @@ static bool parse_header_flags(HttpContext *ctx, const char *key, size_t keylen,
     } else if (SW_STRCASEEQ(key, keylen, "Date")) {
         header_flags |= HTTP_HEADER_DATE;
     } else if (SW_STRCASEEQ(key, keylen, "Content-Length")) {
+#ifdef SW_HAVE_COMPRESSION
+    if(ctx->send_chunked || ctx->accept_compression) {
+        return false;
+    }
+#else
+    if(ctx->send_chunked) {
+        return false;
+    }
+#endif
         header_flags |= HTTP_HEADER_CONTENT_LENGTH;
     } else if (SW_STRCASEEQ(key, keylen, "Content-Type")) {
         header_flags |= HTTP_HEADER_CONTENT_TYPE;
