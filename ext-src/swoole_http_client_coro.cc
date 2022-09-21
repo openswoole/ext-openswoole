@@ -953,6 +953,14 @@ bool HttpClient::send() {
                 // ignore custom Content-Length value
                 continue;
             }
+
+            if (SW_STRCASEEQ(key, keylen, "Accept-Encoding")) {
+#ifndef SW_HAVE_COMPRESSION
+                continue;
+#endif
+                header_flag |= HTTP_HEADER_ACCEPT_ENCODING;
+            }
+
             zend::String str_value(zvalue);
             add_headers(buffer, key, keylen, str_value.val(), str_value.len());
 
@@ -961,8 +969,6 @@ bool HttpClient::send() {
                 if (SW_STRCASEEQ(str_value.val(), str_value.len(), "close")) {
                     keep_alive = 0;
                 }
-            } else if (SW_STRCASEEQ(key, keylen, "Accept-Encoding")) {
-                header_flag |= HTTP_HEADER_ACCEPT_ENCODING;
             }
         }
         SW_HASHTABLE_FOREACH_END();
