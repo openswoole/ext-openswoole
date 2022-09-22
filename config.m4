@@ -10,21 +10,18 @@ dnl  | available through the world-wide-web at the following url:           |
 dnl  | http://www.apache.org/licenses/LICENSE-2.0.html                      |
 dnl  | If you did not receive a copy of the Apache2.0 license and are unable|
 dnl  | to obtain it through the world-wide-web, please send a note to       |
-dnl  | hello@swoole.co.uk so we can mail you a copy immediately.            |
-dnl  +----------------------------------------------------------------------+
-dnl  | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
-dnl  | Author: Twosee  <twose@qq.com>                                       |
+dnl  | hello@openswoole.com so we can mail you a copy immediately.          |
 dnl  +----------------------------------------------------------------------+
 
 PHP_ARG_ENABLE([debug-log],
   [enable debug log],
   [AS_HELP_STRING([--enable-debug-log],
-    [Enable swoole debug log])], [no], [no])
+    [Enable debug log])], [no], [no])
 
 PHP_ARG_ENABLE([trace-log],
   [enable trace log],
   [AS_HELP_STRING([--enable-trace-log],
-    [Enable swoole trace log])], [no], [no])
+    [Enable trace log])], [no], [no])
 
 PHP_ARG_ENABLE([sockets],
   [enable sockets support],
@@ -34,32 +31,32 @@ PHP_ARG_ENABLE([sockets],
 PHP_ARG_ENABLE([openssl],
   [enable openssl support],
   [AS_HELP_STRING([--enable-openssl],
-    [Use openssl])], [no], [no])
+    [Enable openssl support])], [no], [no])
 
 PHP_ARG_ENABLE([http2],
-  [enable http2.0 support],
+  [enable HTTP2 support],
   [AS_HELP_STRING([--enable-http2],
-    [Use http2.0])], [no], [no])
+    [Enable HTTP2 support])], [no], [no])
 
 PHP_ARG_ENABLE([openswoole],
   [openswoole support],
   [AS_HELP_STRING([--enable-openswoole],
-    [Enable openswoole support])], [enable_openswoole"yes"])
+    [Enable openswoole support and compile into PHP])], [enable_openswoole"yes"])
 
 PHP_ARG_ENABLE([mysqlnd],
   [enable mysqlnd support],
   [AS_HELP_STRING([--enable-mysqlnd],
-    [Enable mysqlnd])], [no], [no])
+    [Enable mysqlnd support])], [no], [no])
 
 PHP_ARG_WITH([postgres],
-  [enable postgreSQL support],
+  [enable PostgreSQL support],
   [AS_HELP_STRING([[--with-postgres[=DIR]]],
-    [Enable postgres])], [no], [no])
+    [Enable postgres support])], [no], [no])
 
 PHP_ARG_ENABLE([cares],
   [enable c-ares support],
   [AS_HELP_STRING([--enable-cares],
-    [Enable cares])], [no], [no])
+    [Enable cares support])], [no], [no])
 
 PHP_ARG_WITH([openssl_dir],
   [dir of openssl],
@@ -76,25 +73,25 @@ PHP_ARG_ENABLE([asan],
   [AS_HELP_STRING([--enable-asan],
     [Enable asan])], [no], [no])
 
-PHP_ARG_ENABLE([swoole-coverage],
-  [whether to enable swoole coverage support],
-  [AS_HELP_STRING([--enable-swoole-coverage],
-    [Enable swoole coverage support])], [no], [no])
+PHP_ARG_ENABLE([openswoole-coverage],
+  [whether to enable coverage testing],
+  [AS_HELP_STRING([--enable-openswoole-coverage],
+    [Enable coverage])], [no], [no])
 
-PHP_ARG_ENABLE([swoole-dev],
-  [whether to enable Swoole developer build flags],
-  [AS_HELP_STRING([--enable-swoole-dev],
-    [Enable developer flags])], [no], [no])
+PHP_ARG_ENABLE([openswoole-dev],
+  [whether to enable developer build flags],
+  [AS_HELP_STRING([--enable-openswoole-dev],
+    [Enable development mode])], [no], [no])
 
-PHP_ARG_ENABLE([swoole-curl],
-  [whether to enable Swoole CURL build flags],
-  [AS_HELP_STRING([--enable-swoole-curl],
-    [Enable cURL support])], [no], [no])
+PHP_ARG_ENABLE([hook-curl],
+  [whether to enable Coroutine Hooks for CURL build flags],
+  [AS_HELP_STRING([--enable-hook-curl],
+    [Enable Coroutine Hooks for CURL])], [no], [no])
 
 PHP_ARG_ENABLE([thread-context],
   [whether to enable thread context],
   [AS_HELP_STRING([--enable-thread-context],
-    [Use thread context])], [no], [no])
+    [Use Thread Context])], [no], [no])
 
 AC_DEFUN([SWOOLE_HAVE_PHP_EXT], [
     extname=$1
@@ -394,7 +391,7 @@ if test "$PHP_SWOOLE" != "no"; then
         CXXFLAGS="-g -O0 -Wall $CXXFLAGS"
     fi
 
-    if test "$PHP_SWOOLE_CURL" = "yes"; then
+    if test "$PHP_HOOK_CURL" = "yes"; then
         AC_DEFINE(SW_USE_CURL, 1, [do we enable cURL native client])
     fi
 

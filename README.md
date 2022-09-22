@@ -57,7 +57,7 @@ You can find how to fix [Common Installation Errors](https://openswoole.com/docs
 + `--enable-sockets`
 + `--enable-http2`
 + `--enable-mysqlnd` (need mysqlnd, it just for supporting `$mysql->escape` method)
-+ `--enable-swoole-curl`
++ `--enable-hook-curl`
 + `--with-postgres[=DIR]`
 
 #### Enable Open Swoole extension

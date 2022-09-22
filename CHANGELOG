@@ -42,7 +42,10 @@
  . Remove `swoole_last_error`, use `OpenSwoole\Util::getLastErrorCode`
  . `OpenSwoole\Event::wait();` should be added explicitly to wait for all the IO events
  . Use `\OpenSwoole\Server::SIMPLE_MODE` and `\OpenSwoole\Server::POOL_MODE` at server structure config
- . Fix: ignore user set illegal HTTP header
+ . Fix: ignore user set illegal HTTP header at server
+ . Fix: ignore user set encoding header at client if it is not supported
+ . Remove hard requirements and links of json and remove compile flag `--enable-swoole-json`
+ . Rename compile flag `--enable-swoole-curl` to be `--enable-hook-curl`
 
 # 4.12.0
 
