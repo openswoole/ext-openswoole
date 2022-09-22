@@ -61,7 +61,7 @@ RUN set -ex \
 
 RUN set -ex \
     && phpize \
-    && ./configure --enable-openssl --enable-http2 --enable-swoole-curl \
+    && ./configure --enable-openssl --enable-http2 --enable-hook-curl \
     && make -s -j$(nproc) && make install \
     && echo /etc/php${PHP_VERSION%\.*\.*}/conf.d/50_openswoole.ini \
     && echo "extension=openswoole.so" > /etc/php${PHP_VERSION%\.*\.*}/conf.d/50_openswoole.ini \

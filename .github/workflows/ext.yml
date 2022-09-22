@@ -14,7 +14,7 @@ jobs:
     - name: build1
       run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
     - name: build2
-      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-swoole-curl
+      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
         --enable-openssl --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
@@ -29,7 +29,7 @@ jobs:
     - name: build1
       run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
     - name: build2
-      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-swoole-curl
+      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
         --enable-openssl --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
@@ -46,7 +46,7 @@ jobs:
     - name: phpize
       run: phpize
     - name: build
-      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-swoole-curl
+      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
         --enable-openssl --enable-cares --with-postgres --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
@@ -61,7 +61,7 @@ jobs:
     - name: build1
       run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
     - name: build2
-      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-swoole-curl
+      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
         --enable-openssl --with-openssl-dir=/usr/local/opt/openssl@1.1 --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 

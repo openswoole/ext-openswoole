@@ -19,7 +19,7 @@ phpize > /dev/null && \
 --enable-http2 \
 --enable-sockets \
 --enable-mysqlnd \
---enable-swoole-curl \
+--enable-hook-curl \
 --enable-cares \
 --with-postgres \
 > /dev/null && \

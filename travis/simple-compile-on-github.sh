@@ -19,7 +19,7 @@ cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
 phpize --clean > /dev/null && \
 phpize > /dev/null && \
-./configure --enable-openssl --enable-sockets --enable-mysqlnd --enable-http2 --enable-swoole-curl --enable-cares --with-postgres \
+./configure --enable-openssl --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl --enable-cares --with-postgres \
  > /dev/null && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
