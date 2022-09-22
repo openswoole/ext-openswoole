@@ -22,9 +22,6 @@
 BEGIN_EXTERN_C()
 #include "ext/standard/php_var.h"
 #include "zend_smart_str.h"
-#ifdef SW_USE_JSON
-#include "ext/json/php_json.h"
-#endif
 END_EXTERN_C()
 
 #if PHP_VERSION_ID >= 80000

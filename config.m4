@@ -86,11 +86,6 @@ PHP_ARG_ENABLE([swoole-dev],
   [AS_HELP_STRING([--enable-swoole-dev],
     [Enable developer flags])], [no], [no])
 
-PHP_ARG_ENABLE([swoole-json],
-  [whether to enable Swoole JSON build flags],
-  [AS_HELP_STRING([--enable-swoole-json],
-    [Enable JSON support])], [no], [no])
-
 PHP_ARG_ENABLE([swoole-curl],
   [whether to enable Swoole CURL build flags],
   [AS_HELP_STRING([--enable-swoole-curl],
@@ -397,10 +392,6 @@ if test "$PHP_SWOOLE" != "no"; then
         EXTRA_CFLAGS="$_MAINTAINER_CFLAGS"
         CFLAGS="-g -O0 -Wall $CFLAGS"
         CXXFLAGS="-g -O0 -Wall $CXXFLAGS"
-    fi
-
-    if test "$PHP_SWOOLE_JSON" = "yes"; then
-        AC_DEFINE(SW_USE_JSON, 1, [do we enable json decoder])
     fi
 
     if test "$PHP_SWOOLE_CURL" = "yes"; then

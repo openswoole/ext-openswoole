@@ -21,12 +21,6 @@
 #endif
 #include "zend_exceptions.h"
 
-BEGIN_EXTERN_C()
-#ifdef SW_USE_JSON
-#include "ext/json/php_json.h"
-#endif
-END_EXTERN_C()
-
 #include "swoole_server.h"
 #include "swoole_util.h"
 
@@ -92,9 +86,6 @@ const zend_function_entry swoole_functions[] = {
 
 static const zend_module_dep swoole_deps[] = {
     ZEND_MOD_CONFLICTS("swoole")
-#ifdef SW_USE_JSON
-    ZEND_MOD_REQUIRED("json")
-#endif
 #ifdef SW_USE_MYSQLND
     ZEND_MOD_REQUIRED("mysqlnd")
 #endif
@@ -1291,9 +1282,6 @@ PHP_MINFO_FUNCTION(openswoole) {
 #endif
 #ifdef SW_USE_HTTP2
     php_info_print_table_row(2, "http2", "enabled");
-#endif
-#ifdef SW_USE_JSON
-    php_info_print_table_row(2, "json", "enabled");
 #endif
 #ifdef SW_USE_CURL
     php_info_print_table_row(2, "curl-native", "enabled");
