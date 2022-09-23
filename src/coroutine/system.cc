@@ -52,7 +52,7 @@ static void sleep_callback(Coroutine *co, bool *canceled) {
 }
 
 int System::sleep(double sec) {
-    return System::usleep((long) sec * 1000000);
+    return System::usleep((long) (sec * 1000000));
 }
 
 int System::usleep(long microseconds) {
