@@ -46,6 +46,7 @@
  . Fix: ignore user set encoding header at client if it is not supported
  . Remove hard requirements and links of json and remove compile flag `--enable-swoole-json`
  . Rename compile flag `--enable-swoole-curl` to be `--enable-hook-curl`
+ . Fix convert double sec to long microseconds in hooked usleep by @shandyDev
 
 # 4.12.0
 
