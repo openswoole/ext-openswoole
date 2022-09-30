@@ -22,6 +22,11 @@ go(function () {
     Co::usleep(0);
     Co::usleep(-1);
 
+    // native usleep with HOOKS
+    $s = microtime(true);
+    $t = ms_random(0.1, 0.9);
+    usleep((int) ($t * 1000 * 1000));
+    time_approximate($t, microtime(true) - $s);
     // // time_nanosleep
     // Assert::false(time_nanosleep(-1, 1));
     // Assert::true(time_nanosleep(0, 1));
