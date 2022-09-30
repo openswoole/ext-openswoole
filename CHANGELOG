@@ -2,6 +2,9 @@
 
  . New server option: `enable_server_token`, disable by default
  . Compatible with PHP 8.2 latest changes (PHP-8.2-RC3)
+ . Fix: ignore user set encoding if it is not supported
+ . Fix: Remove illegal http header
+ . Fix convert double sec to long microseconds in hooked usleep by @shandyDev
 
 # 4.11.1
 
