@@ -1588,19 +1588,18 @@ static PHP_FUNCTION(swoole_sleep) {
 }
 
 static PHP_FUNCTION(swoole_usleep) {
-    zend_long num;
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &num) == FAILURE) {
+    zend_long microseconds;
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &microseconds) == FAILURE) {
         RETURN_FALSE;
     }
-    if (num < 0) {
+    if (microseconds < 0) {
         php_error_docref(nullptr, E_WARNING, "Number of seconds must be greater than or equal to 0");
         RETURN_FALSE;
     }
-    double sec = (double) num / 1000000;
     if (Coroutine::get_current()) {
-        System::sleep(sec);
+        System::usleep(microseconds);
     } else {
-        usleep((unsigned int) num);
+        usleep((unsigned int) microseconds);
     }
 }
 
