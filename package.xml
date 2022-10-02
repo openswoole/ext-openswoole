@@ -12,10 +12,10 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2022-04-28</date>
-    <time>16:00:00</time>
+    <date>2022-10-03</date>
+    <time>01:00:00</time>
     <version>
-        <release>4.11.1</release>
+        <release>4.12.0</release>
         <api>4.0</api>
     </version>
     <stability>
@@ -1338,6 +1338,7 @@
             <file role="test" name="tests/swoole_http_server/co_switching.phpt" />
             <file role="test" name="tests/swoole_http_server/compression.phpt" />
             <file role="test" name="tests/swoole_http_server/compression_min_length.phpt" />
+            <file role="test" name="tests/swoole_http_server/content_length_bug.phpt" />
             <file role="test" name="tests/swoole_http_server/cookie_delete.phpt" />
             <file role="test" name="tests/swoole_http_server/cookie_samesite.phpt" />
             <file role="test" name="tests/swoole_http_server/cookie_vs_rawcookie.phpt" />

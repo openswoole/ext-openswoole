@@ -1,4 +1,4 @@
-# 4.11.2
+# 4.12.0
 
  . New server option: `enable_server_token`, disable by default
  . Compatible with PHP 8.2 latest changes (PHP-8.2-RC3)
