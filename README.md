@@ -41,7 +41,7 @@ Download the source packages from [Releases](https://github.com/openswoole/swool
 ```shell
 git clone https://github.com/openswoole/swoole-src.git && \
 cd swoole-src
-git checkout v4.11.1
+git checkout v4.12.0
 phpize && \
 ./configure && \
 make && make install
