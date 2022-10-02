@@ -24,11 +24,11 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-         . Fix postgres client metaData api bugs
-         . Fix cookie parsing bug causing cookie errors
-         . Fix memory leak in swoole_stream_select
-         . Fix compatible issues with old libcurl on centos 7
-         . Fix compatible issues for PHP 8.0 and Fedora, Centos 7
+         . New server option: `enable_server_token`, disable by default
+         . Compatible with PHP 8.2 latest changes (PHP-8.2-RC3)
+         . Fix: ignore user set encoding if it is not supported
+         . Fix: Remove illegal http header
+         . Fix convert double sec to long microseconds in hooked usleep by @shandyDev
     </notes>
     <contents>
         <dir name="/">
