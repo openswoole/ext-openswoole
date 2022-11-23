@@ -36,7 +36,7 @@ PHP_ARG_ENABLE([openssl],
 PHP_ARG_ENABLE([http2],
   [enable HTTP2 support],
   [AS_HELP_STRING([--enable-http2],
-    [Enable HTTP2 support])], [no], [no])
+    [Enable HTTP2 support])], [yes], [no])
 
 PHP_ARG_ENABLE([openswoole],
   [openswoole support],
