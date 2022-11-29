@@ -9,7 +9,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
         $cli = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
-        $cli->set(['timeout' => 10]);
+        $cli->set(['timeout' => -1]);
         Assert::true($cli->connect());
         Assert::greaterThan($streamId = $cli->send(new OpenSwoole\Http2\Request), 0);
         $cli->recv();
@@ -18,7 +18,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         Assert::same($cli->errMsg, 'NO_ERROR');
         $pm->kill();
     });
-    Swoole\Event::wait();
+    OpenSwoole\Event::wait();
 };
 $pm->childFunc = function () use ($pm) {
     $http = new swoole_http_server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
