@@ -9,7 +9,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
         $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
-        $cli->set(['timeout' => 10]);
+        $cli->set(['timeout' => -1]);
         Assert::true($cli->connect());
         Assert::greaterThan($streamId = $cli->send(new Swoole\Http2\Request), 0);
         $cli->recv();
