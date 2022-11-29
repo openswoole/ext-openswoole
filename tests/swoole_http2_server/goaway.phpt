@@ -9,10 +9,10 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
         $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
-        $cli->set(['timeout' => 10]);
+        $cli->set(['timeout' => 30]);
         Assert::true($cli->connect());
         Assert::greaterThan($streamId = $cli->send(new Swoole\Http2\Request), 0);
-        $cli->recv();
+        $cli->recv(10);
         Assert::same($cli->serverLastStreamId, $streamId);
         Assert::same($cli->errCode, SWOOLE_HTTP2_ERROR_NO_ERROR);
         Assert::same($cli->errMsg, 'NO_ERROR');
@@ -28,6 +28,7 @@ $pm->childFunc = function () use ($pm) {
         'open_http2_protocol' => true
     ]);
     $http->on('workerStart', function ($serv, $wid) use ($pm) {
+        sleep(1);
         $pm->wakeup();
     });
     $http->on('request', function (swoole_http_request $request, swoole_http_response $response) {
