@@ -1,10 +1,15 @@
 name: ext-openswoole
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  # Allow to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   build-ubuntu-latest:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
     - uses: actions/checkout@v1
     - name: install-deps
@@ -20,6 +25,7 @@ jobs:
 
   build-ubuntu-old:
     runs-on: ubuntu-18.04
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
     - uses: actions/checkout@v1
     - name: install-deps
@@ -35,6 +41,7 @@ jobs:
 
   build-centos:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     container: 'centos:latest'
     steps:
     - uses: actions/checkout@v1
@@ -52,6 +59,7 @@ jobs:
 
   build-macos-latest:
     runs-on: macos-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
     - name: install dependencies
       run: brew install openssl && brew link openssl && brew install curl && brew link curl && brew install c-ares && brew link c-ares
@@ -67,9 +75,10 @@ jobs:
 
   build-alpine-latest:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     strategy:
       matrix:
-        php-version: [ '7.4.26', '8.0.13', '8.1.0', '8.2.0RC6' ]
+        php-version: [ '7.4.26', '8.0.13', '8.1.0', '8.2.0RC7' ]
         alpine-version: [ '3.15' ]
       max-parallel: 8
       fail-fast: false

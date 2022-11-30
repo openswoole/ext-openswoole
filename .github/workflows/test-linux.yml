@@ -1,20 +1,25 @@
 name: test-linux
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  # Allow to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 jobs:
   test-linux:
     runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     strategy:
       fail-fast: false
       matrix:
-        php: [7.4, 8.0, 8.1, 8.2]
+        php: ['7.4', '8.0', '8.1', '8.2']
     steps:
     - uses: actions/checkout@v1
-    - name: Setup PHP
-      uses: shivammathur/setup-php@v2
-      with:
-        php-version: "${{ matrix.php }}"
+    # - name: Setup PHP
+    #   uses: shivammathur/setup-php@v2
+    #   with:
+    #     php-version: "${{ matrix.php }}"
     - name: Show machine information
       run: |
         date
@@ -27,18 +32,20 @@ jobs:
         pwd
         echo "`git log -20 --pretty --oneline`"
         echo "`git log -10 --stat --pretty --oneline`"
-        sudo apt-get upgrade -y && sudo apt-get update -y
-        sudo apt-get install -y libcurl4-openssl-dev
+      env:
+          PHP_VERSION: "${{ matrix.php }}"
     # - name: Run pecl-install.sh
     #   run: |
     #     sudo ${{runner.workspace}}/swoole-src/travis/pecl-install.sh
-    - name: Run simple-compile-on-github.sh
-      run: |
-        sudo ${{runner.workspace}}/swoole-src/travis/simple-compile-on-github.sh
+    # - name: Run simple-compile-on-github.sh
+    #   run: |
+    #     sudo ${{runner.workspace}}/swoole-src/travis/simple-compile-on-github.sh
     - name: Run Openswoole test
       run: |
         export TRAVIS_BRANCH=${GITHUB_REF##*/}
         ${{runner.workspace}}/swoole-src/travis/route.sh
+      env:
+          PHP_VERSION: "${{ matrix.php }}"
     - name: Upload Unit Test Results
       if: always()
       uses: actions/upload-artifact@v2
@@ -50,7 +57,7 @@ jobs:
     name: "Publish PHP Unit Tests Results"
     needs: test-linux
     runs-on: ubuntu-latest
-    if: always()
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
     steps:
       - name: Download Artifacts
