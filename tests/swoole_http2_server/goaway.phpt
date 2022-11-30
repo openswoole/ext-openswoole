@@ -28,10 +28,10 @@ $pm->childFunc = function () use ($pm) {
         'open_http2_protocol' => true
     ]);
     $http->on('workerStart', function ($serv, $wid) use ($pm) {
-        sleep(1);
         $pm->wakeup();
     });
     $http->on('request', function (swoole_http_request $request, swoole_http_response $response) {
+        co::sleep(1);
         $response->goaway(SWOOLE_HTTP2_ERROR_NO_ERROR, 'NO_ERROR');
         $response->end($request->rawcontent());
     });
