@@ -25,14 +25,14 @@ define('TESTS_ROOT_PATH', __DIR__ . '/../');
 define('TESTS_API_PATH', TESTS_ROOT_PATH.'/include/api');
 define('TESTS_LIB_PATH', TESTS_ROOT_PATH.'/include/lib');
 define('TRAVIS_DIR_PATH', __DIR__ . '/../../travis/');
-define('TEST_IMAGE', __DIR__ . '/../../examples/test.jpg');
-define('TEST_LINK_IMAGE', __DIR__ . '/../../examples/test_link.jpg');
-define('TEST_IMAGE2', __DIR__ . '/../../examples/logo.svg');
+define('TEST_IMAGE', __DIR__ . '/../assets/test.jpg');
+define('TEST_LINK_IMAGE', __DIR__ . '/../assets/test_link.jpg');
+define('TEST_IMAGE2', __DIR__ . '/../assets/test.svg');
 define('TEST_LOG_FILE', '/tmp/swoole.log');
 define('TEST_PID_FILE', '/tmp/swoole.pid');
 define('SSL_FILE_DIR', __DIR__ . '/ssl_certs/');
 define('SSL_FILE_DIR2', __DIR__ . '/../include/api/ssl-ca');
-define('DOCUMENT_ROOT', __DIR__ . '/../../examples/www');
+define('DOCUMENT_ROOT', __DIR__ . '/../assets/www');
 
 /** ============ Servers ============ */
 define('SERVER_MODE_RANDOM', array_random([SWOOLE_BASE, SWOOLE_PROCESS]));

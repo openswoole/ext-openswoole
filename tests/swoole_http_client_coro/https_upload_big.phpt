@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 
 
-define('SSL_DIR', realpath(__DIR__.'/../../examples/ssl'));
+define('SSL_DIR', realpath(__DIR__.'/assets/ssl'));
 
 $pm = new ProcessManager;
 

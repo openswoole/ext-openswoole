@@ -91,7 +91,7 @@ static void test_run_server(function<void(swServer *)> fn) {
 
     serv.enable_static_handler = true;
     serv.set_document_root(test::get_root_path());
-    serv.add_static_handler_location("/examples");
+    serv.add_static_handler_location("/tests/assets");
 
     sw_logger()->set_level(SW_LOG_WARNING);
 
@@ -213,10 +213,10 @@ TEST(http_server, static_get) {
         auto port = serv->get_primary_port();
 
         httplib::Client cli(TEST_HOST, port->port);
-        auto resp = cli.Get("/examples/test.jpg");
+        auto resp = cli.Get("/tests/assets/test.jpg");
         EXPECT_EQ(resp->status, 200);
 
-        string file = test::get_root_path() + "/examples/test.jpg";
+        string file = test::get_root_path() + "/tests/assets/test.jpg";
         File fp(file, O_RDONLY);
         EXPECT_TRUE(fp.ready());
 

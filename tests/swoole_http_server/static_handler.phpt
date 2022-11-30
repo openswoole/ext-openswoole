@@ -38,7 +38,7 @@ $pm->parentFunc = function () use ($pm) {
             #3131
             $response = httpRequest("http://127.0.0.1:{$pm->getFreePort()}/http/moc.moc");
             Assert::same($response['statusCode'], 200);
-            Assert::same($response['body'], file_get_contents(__DIR__ . '/../../examples/http/moc.moc'));
+            Assert::same($response['body'], file_get_contents(__DIR__ . '/../../tests/assets/http/moc.moc'));
             Assert::same($response['headers']['content-type'], 'application/x-mocha');
         });
     }
@@ -53,7 +53,7 @@ $pm->childFunc = function () use ($pm) {
         'log_file' => '/dev/null',
         'open_http2_protocol' => true,
         'enable_static_handler' => true,
-        'document_root' => dirname(dirname(__DIR__)) . '/examples/',
+        'document_root' => dirname(dirname(__DIR__)) . '/tests/assets/',
         'static_handler_locations' => ['/static', '/']
     ]);
     $http->on('workerStart', function () use ($pm) {

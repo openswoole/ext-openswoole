@@ -14,7 +14,7 @@ symlink(TEST_IMAGE, TEST_LINK_IMAGE);
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     co::run(function () use ($pm) {
-            $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/examples/test_link.jpg");
+            $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/tests/assets/test_link.jpg");
             if (is_file(TEST_LINK_IMAGE)) {
                 unlink(TEST_LINK_IMAGE);
             }
@@ -30,7 +30,7 @@ $pm->childFunc = function () use ($pm) {
         'open_http2_protocol' => true,
         'enable_static_handler' => true,
         'document_root' => dirname(dirname(dirname(__DIR__))) . '/',
-        'static_handler_locations' => ['/examples']
+        'static_handler_locations' => ['/tests/assets']
     ]);
     $http->on('workerStart', function () use ($pm) {
         $pm->wakeup();

@@ -22,7 +22,7 @@ $pm->childFunc = function () use ($pm) {
     $http->set([
         'log_file' => '/dev/null',
         'enable_static_handler' => true,
-        'document_root' => dirname(dirname(__DIR__)) . '/examples/',
+        'document_root' => dirname(dirname(__DIR__)) . '/tests/assets/',
     ]);
 
     $http->on("WorkerStart", function ($serv, $wid) {

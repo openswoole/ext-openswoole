@@ -71,7 +71,7 @@ array (
     'type' => 'application/octet-stream',
     'tmp_name' => '/tmp/swoole.upfile.fixture1',
     'error' => 0,
-    'size' => 218787,
+    'size' => 15144,
   ),
   'form' => 
   array (
@@ -109,10 +109,10 @@ array (
     ),
     'size' => 
     array (
-      'file' => 218787,
+      'file' => 15144,
       'group' => 
       array (
-        'file' => 7424,
+        'file' => 4742,
       ),
     ),
   ),

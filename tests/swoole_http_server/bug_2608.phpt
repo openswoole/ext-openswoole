@@ -43,8 +43,8 @@ $pm->childFunc = function () use ($pm) {
         'static_handler_locations' => ["/examples",]
     ]);
     $http->on('workerStart', function ($serv, $wid) use ($pm) {
-        if (!file_exists(__DIR__ . '/examples')) {
-            symlink(dirname(dirname(__DIR__)) . '/examples/', __DIR__ . '/examples');
+        if (!file_exists(__DIR__ . '/tests/assets')) {
+            symlink(dirname(dirname(__DIR__)) . '/tests/assets/', __DIR__ . '/examples');
         }
         $pm->wakeup();
     });
