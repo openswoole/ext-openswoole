@@ -1,6 +1,10 @@
 name: core-openswoole
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  # Allow to run this workflow manually from the Actions tab
+  workflow_dispatch:
 
 env:
   CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
@@ -8,7 +12,7 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     services:
       tinyproxy:
         image: "vimagick/tinyproxy"

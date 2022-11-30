@@ -56,7 +56,7 @@ should_exit_with_error(){
 touch tests.list
 trap "rm -f tests.list; echo ''; echo '⌛ Done on '`date "+%Y-%m-%d %H:%M:%S"`;" EXIT
 
-cpu_num=`nproc --all --ignore=1`
+cpu_num=`nproc --all`
 options="-j${cpu_num}"
 
 echo "" && echo "🌵️️ Current branch is ${SWOOLE_BRANCH}" && echo ""
