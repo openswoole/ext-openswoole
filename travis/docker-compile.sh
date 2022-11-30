@@ -11,7 +11,6 @@ fi
 #-------print error only-------
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
-./make.sh clean > /dev/null && \
 phpize --clean > /dev/null && \
 phpize > /dev/null && \
 ./configure \

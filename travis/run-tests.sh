@@ -7,6 +7,10 @@ __DIR__=$(cd "$(dirname "$0")";pwd)
 #-------------PHPT-------------
 cd ${__DIR__} && cd ../tests/
 
+echo "" && echo "⭐️ Testing environment..." && echo ""
+ulimit -a
+nproc --all
+
 # initialization
 echo "" && echo "⭐️ Initialization for tests..." && echo ""
 ./init
@@ -73,6 +77,7 @@ do
         cat tests.list
         timeout=`echo | expr ${i} \* 15 + 15`
         options="${options} --set-timeout ${timeout}"
+        echo ${options}
         run_tests ${i} tests.list "${options}"
     else
         break
