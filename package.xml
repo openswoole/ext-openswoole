@@ -628,7 +628,7 @@
             <file role="src" name="include/swoole_websocket.h" />
             <file role="src" name="include/swoole_wheel_timer.h" />
             <file role="src" name="make.sh" />
-            <file role="src" name="php_swoole.h" />
+            <file role="src" name="php_openswoole.h" />
             <file role="src" name="src/core/base.cc" />
             <file role="src" name="src/core/channel.cc" />
             <file role="src" name="src/core/crc32.cc" />

@@ -19,7 +19,7 @@ Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 co::run(function () {
     $client = new Client();
-    $response = $client->request('GET', 'https://api.github.com/repos/swoole/swoole-src');
+    $response = $client->request('GET', 'https://api.github.com/repos/openswoole/swoole-src');
 
     echo $response->getStatusCode(), PHP_EOL; // 200
     echo $response->getHeaderLine('content-type'), PHP_EOL; // 'application/json; charset=utf8'
