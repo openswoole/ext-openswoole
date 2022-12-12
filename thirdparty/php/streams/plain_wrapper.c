@@ -18,7 +18,7 @@
 
 /* $Id$ */
 
-#include "php_swoole.h"
+#include "php_openswoole.h"
 #include "php_open_temporary_file.h"
 #include "ext/standard/file.h"
 #include "ext/standard/flock_compat.h"

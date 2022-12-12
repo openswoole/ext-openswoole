@@ -22,7 +22,7 @@
 #define __STDC_FORMAT_MACROS
 #endif
 
-#include "php_swoole.h"
+#include "php_openswoole.h"
 
 #define SW_HAVE_COUNTABLE 1
 
