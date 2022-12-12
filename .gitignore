@@ -73,6 +73,7 @@ tests/.idea
 /tests/swoole_*/*.mem
 /tests/swoole_*/*.php
 /tests/swoole_library/curl/skip
+/tests/test-*.xml
 /core-tests/server/*.log
 cmake-build-debug/
 *.cbp
