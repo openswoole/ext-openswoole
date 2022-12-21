@@ -815,6 +815,7 @@ if test "$PHP_SWOOLE" != "no"; then
             ${SW_ASM_DIR}make_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}jump_${SW_CONTEXT_ASM_FILE} "
         AC_DEFINE(SW_USE_ASM_CONTEXT, 1, [use boost asm context])
+        AC_DEFINE(USE_BOOST_V2, 1, [use boost asm context v2])
     fi
 
     # 32-bit ARM
