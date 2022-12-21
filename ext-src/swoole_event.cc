@@ -77,22 +77,28 @@ static const zend_function_entry swoole_event_methods[] =
     ZEND_FENTRY(exit, ZEND_FN(swoole_event_exit), arginfo_class_Swoole_Event_exit, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
+
+static const zend_function_entry swoole_event_funcs[] =
+{
+    ZEND_FENTRY(swoole_event_add, ZEND_FN(swoole_event_add), arginfo_class_Swoole_Event_add, 0)
+    ZEND_FENTRY(swoole_event_del, ZEND_FN(swoole_event_del), arginfo_class_Swoole_Event_del, 0)
+    ZEND_FENTRY(swoole_event_set, ZEND_FN(swoole_event_set), arginfo_class_Swoole_Event_set, 0)
+    ZEND_FENTRY(swoole_event_isset, ZEND_FN(swoole_event_isset), arginfo_class_Swoole_Event_isset, 0)
+    ZEND_FENTRY(swoole_event_dispatch, ZEND_FN(swoole_event_dispatch), arginfo_class_Swoole_Event_dispatch, 0)
+    ZEND_FENTRY(swoole_event_defer, ZEND_FN(swoole_event_defer), arginfo_class_Swoole_Event_defer, 0)
+    ZEND_FENTRY(swoole_event_cycle, ZEND_FN(swoole_event_cycle), arginfo_class_Swoole_Event_cycle, 0)
+    ZEND_FENTRY(swoole_event_write, ZEND_FN(swoole_event_write), arginfo_class_Swoole_Event_write, 0)
+    ZEND_FENTRY(swoole_event_wait, ZEND_FN(swoole_event_wait), arginfo_class_Swoole_Event_wait, 0)
+    ZEND_FENTRY(swoole_event_exit, ZEND_FN(swoole_event_exit), arginfo_class_Swoole_Event_exit, 0)
+    PHP_FE_END
+};
 // clang-format on
 
 void php_swoole_event_minit(int module_number) {
     SW_INIT_CLASS_ENTRY(swoole_event, "Swoole\\Event", "swoole_event", nullptr, swoole_event_methods);
     SW_SET_CLASS_CREATE(swoole_event, sw_zend_create_object_deny);
 
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "add", CG(function_table), "swoole_event_add");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "del", CG(function_table), "swoole_event_del");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "set", CG(function_table), "swoole_event_set");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "isset", CG(function_table), "swoole_event_isset");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "dispatch", CG(function_table), "swoole_event_dispatch");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "defer", CG(function_table), "swoole_event_defer");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "cycle", CG(function_table), "swoole_event_cycle");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "write", CG(function_table), "swoole_event_write");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "wait", CG(function_table), "swoole_event_wait");
-    SW_FUNCTION_ALIAS(&swoole_event_ce->function_table, "exit", CG(function_table), "swoole_event_exit");
+    zend_register_functions(NULL, swoole_event_funcs, NULL, MODULE_PERSISTENT);
 }
 
 static void event_object_free(void *data) {

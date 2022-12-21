@@ -62,6 +62,20 @@ static const zend_function_entry swoole_timer_methods[] =
     ZEND_FENTRY(clearAll, ZEND_FN(swoole_timer_clear_all), arginfo_class_Swoole_Timer_clearAll, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
+
+static const zend_function_entry swoole_timer_funcs[] =
+{
+    ZEND_FENTRY(swoole_timer_set, ZEND_FN(swoole_timer_set), arginfo_class_Swoole_Timer_set, ZEND_ACC_DEPRECATED)
+    ZEND_FENTRY(swoole_timer_after, ZEND_FN(swoole_timer_after), arginfo_class_Swoole_Timer_after, 0)
+    ZEND_FENTRY(swoole_timer_tick, ZEND_FN(swoole_timer_tick), arginfo_class_Swoole_Timer_tick, 0)
+    ZEND_FENTRY(swoole_timer_exists, ZEND_FN(swoole_timer_exists), arginfo_class_Swoole_Timer_exists, 0)
+    ZEND_FENTRY(swoole_timer_info, ZEND_FN(swoole_timer_info), arginfo_class_Swoole_Timer_info, 0)
+    ZEND_FENTRY(swoole_timer_stats, ZEND_FN(swoole_timer_stats), arginfo_class_Swoole_Timer_stats, 0)
+    ZEND_FENTRY(swoole_timer_list, ZEND_FN(swoole_timer_list), arginfo_class_Swoole_Timer_list, 0)
+    ZEND_FENTRY(swoole_timer_clear, ZEND_FN(swoole_timer_clear), arginfo_class_Swoole_Timer_clear, 0)
+    ZEND_FENTRY(swoole_timer_clear_all, ZEND_FN(swoole_timer_clear_all), arginfo_class_Swoole_Timer_clearAll, 0)
+    PHP_FE_END
+};
 // clang-format on
 
 void php_swoole_timer_minit(int module_number) {
@@ -75,15 +89,7 @@ void php_swoole_timer_minit(int module_number) {
                              nullptr,
                              spl_ce_ArrayIterator);
 
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "set", CG(function_table), "swoole_timer_set");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "after", CG(function_table), "swoole_timer_after");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "tick", CG(function_table), "swoole_timer_tick");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "exists", CG(function_table), "swoole_timer_exists");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "info", CG(function_table), "swoole_timer_info");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "stats", CG(function_table), "swoole_timer_stats");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "list", CG(function_table), "swoole_timer_list");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "clear", CG(function_table), "swoole_timer_clear");
-    SW_FUNCTION_ALIAS(&swoole_timer_ce->function_table, "clearAll", CG(function_table), "swoole_timer_clear_all");
+    zend_register_functions(NULL, swoole_timer_funcs, NULL, MODULE_PERSISTENT);
 
     SW_REGISTER_LONG_CONSTANT("SWOOLE_TIMER_MIN_MS", SW_TIMER_MIN_MS);
     SW_REGISTER_DOUBLE_CONSTANT("SWOOLE_TIMER_MIN_SEC", SW_TIMER_MIN_SEC);
