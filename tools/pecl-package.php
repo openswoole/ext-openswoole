@@ -89,13 +89,7 @@ function check_source_ver(string $expect_ver, $source_file)
 // all check
 swoole_execute_and_check(['php', __DIR__ . '/config-generator.php']);
 swoole_execute_and_check(['php', __DIR__ . '/arginfo-check.php']);
-swoole_execute_and_check(['php', __DIR__ . '/code-generator.php']);
-if (file_exists(LIBRARY_DIR)) {
-    swoole_execute_and_check(['php', __DIR__ . '/constant-generator.php']);
-    swoole_execute_and_check(['php', __DIR__ . '/build-library.php']);
-} else {
-    swoole_warn('Unable to find source of library, this step will be skipped');
-}
+// swoole_execute_and_check(['php', __DIR__ . '/code-generator.php']);
 swoole_execute_and_check(['php', __DIR__ . '/phpt-fixer.php']);
 
 // prepare

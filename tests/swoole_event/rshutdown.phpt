@@ -20,4 +20,3 @@ swoole_timer_after(100, function () {
 
 ?>
 --EXPECTF--
-
