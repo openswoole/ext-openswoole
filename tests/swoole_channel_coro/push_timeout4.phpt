@@ -6,7 +6,7 @@ swoole_channel_coro: push timeout 3
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$channel = new Swoole\Coroutine\Channel(1);
+$channel = new OpenSwoole\Coroutine\Channel(1);
 
 go(function () use ($channel) {
     Assert::assert($channel->push(1, 0.1));

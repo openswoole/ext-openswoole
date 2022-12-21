@@ -9,13 +9,13 @@ $pm = new SwooleTest\ProcessManager;
 $pm->initRandomData(1);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
         Assert::assert($client->send($pm->getRandomData()) > 0);
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set(['worker_num' => 1, 'log_file' => '/dev/null']);
     $server->on('start', function () use ($pm) {
         echo "START\n";

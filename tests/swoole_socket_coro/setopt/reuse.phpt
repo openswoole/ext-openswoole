@@ -9,7 +9,7 @@ swoole_socket_coro/setopt: setOption SO_RCVTIMEO
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-$socket = new Co\Socket(AF_INET, SOCK_STREAM, SOL_TCP);
+$socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, SOL_TCP);
 $socket->bind("127.0.0.1", 9501);
 
 Assert::assert($socket->setOption(SOL_SOCKET, SO_REUSEADDR, true));

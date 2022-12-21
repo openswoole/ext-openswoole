@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     for ($i = MAX_CONCURRENCY; $i--;) {
         go(function () use ($pm) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             for ($i = MAX_REQUESTS; $i--;) {
                 Assert::assert($cli->get('/'));
                 Assert::same($cli->statusCode, 200);
@@ -26,7 +26,7 @@ $pm->childFunc = function () use ($pm) {
     $http = new swoole_http_server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
     $http->set([
         'log_file' => '/dev/null',
-        'worker_num' => swoole_cpu_num()
+        'worker_num' => OpenSwoole\Util::getCPUNum()
     ]);
     $http->on('request', function (swoole_http_request $request, swoole_http_response $response) use ($http) {
         go(function () {

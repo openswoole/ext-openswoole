@@ -3,7 +3,7 @@ swoole_server: force reload in process mode
 --SKIPIF--
 <?php
  require __DIR__ . '/../include/skipif.inc';
-if (swoole_cpu_num() === 1) {
+if (OpenSwoole\Util::getCPUNum() === 1) {
 	skip('not support on machine with single cpu');
 }
 ?>
@@ -14,13 +14,13 @@ require __DIR__ . '/../include/bootstrap.php';
 const WORKER_NUM = 4;
 
 $pm = new ProcessManager;
-$atomic = new Swoole\Atomic;
+$atomic = new OpenSwoole\Atomic;
 
 $pm->parentFunc = function ($pid) use ($pm) {
 	$n = WORKER_NUM;
 	$clients = [];
 	while ($n--) {
-		$client = new Swoole\Client(SWOOLE_SOCK_TCP);
+		$client = new OpenSwoole\Client(SWOOLE_SOCK_TCP);
 		if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
 			exit("connect failed\n");
 		}
@@ -37,15 +37,14 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm, $atomic) {
-	$server = new Swoole\Server('127.0.0.1', $pm->getFreePort());
+	$server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort());
 	$server->set([
 		'worker_num' => WORKER_NUM,
-		'max_wait_time' => 1,
+		'max_wait_time' => 10,
 		'enable_coroutine' => false,
 	]);
 	$server->on('workerStart', function (Swoole\Server $server, $worker_id) use ($pm, $atomic) {
 		$worker_id++;
-		sleep(1);
 		echo "$worker_id [" . $server->worker_pid . "] start\n";
 		$atomic->add(1);
 		if ($atomic->get() === WORKER_NUM) {
@@ -53,7 +52,7 @@ $pm->childFunc = function () use ($pm, $atomic) {
 		}
 	});
 	$server->on('receive', function ($serv, $fd, $tid, $data) {
-		sleep(100);
+		sleep(10);
 	});
 	$server->start();
 };
@@ -69,16 +68,5 @@ $pm->run();
 %s start to reload
 [%s]	INFO	Server is reloading all workers
 [%s]	INFO	Server has done all workers reloading
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Manager::kill_timeout_process() (ERRNO 9012): worker(pid=%d, id=%d) exit timeout, force kill the process
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
-[%s]	WARNING	Server::check_worker_exit_status(): worker(pid=%d, id=%d) abnormal exit, status=0, signal=9
 [%s]	INFO	Server is shutdown now
-%d [%d] start
-%d [%d] start
-%d [%d] start
-%d [%d] start
+

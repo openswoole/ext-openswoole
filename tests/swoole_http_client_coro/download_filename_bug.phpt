@@ -39,7 +39,7 @@ function download($pm, $fileName)
     $c1 = new C1($fileName);
     $c1 = $c1->withSavedFileName($fileName);
 
-    $client = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+    $client = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
     $client->set(['timeout' => 5]);
 
     $client->download('/', $fileName);
@@ -47,11 +47,11 @@ function download($pm, $fileName)
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use($pm) {
+    co::run(function () use($pm) {
         download($pm, '/tmp/test-1.*');
     });
     
-    Co\run(function () use($pm) {
+    co::run(function () use($pm) {
         download($pm, '/tmp/test-2.*');
     });
 

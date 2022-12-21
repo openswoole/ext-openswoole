@@ -6,12 +6,12 @@ swoole_coroutine/cancel: waitEvent
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
-use function Swoole\Coroutine\go;
+
+
 use Swoole\Coroutine;
 use Swoole\Coroutine\System;
 
-run(function () {
+Co::run(function () {
     $fp = stream_socket_client('tcp://www.baidu.com:80/', $errno, $errmsg, 1);
     Assert::assert($fp);
 
@@ -24,7 +24,7 @@ run(function () {
     $retval = System::waitEvent($fp);
     echo "Done\n";
     Assert::eq($retval, false);
-    Assert::eq(swoole_last_error(), SWOOLE_ERROR_CO_CANCELED);
+    Assert::eq(OpenSwoole\Util::getLastErrorCode(), SWOOLE_ERROR_CO_CANCELED);
 });
 
 ?>

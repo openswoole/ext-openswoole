@@ -10,10 +10,10 @@ use Swoole\Coroutine as co;
 
 $map = [];
 $id = go(function() use (&$map){
-    $id = co::getUid();
+    $id = co::getCid();
     echo "start coro $id\n";
     $id2 = go(function(){
-        $id2 = co::getUid();
+        $id2 = co::getCid();
         echo "start coro $id2\n";
         co::yield();
         echo "resume coro $id2\n";

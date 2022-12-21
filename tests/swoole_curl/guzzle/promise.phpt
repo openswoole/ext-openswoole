@@ -13,11 +13,11 @@ use Swoole\Runtime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $client = new Client(['base_uri' => 'http://httpbin.org']);
 
     // Initiate each request but do not block

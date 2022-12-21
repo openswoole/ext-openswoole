@@ -15,7 +15,7 @@ use Swoole\Server;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($port, $pm, $size, $_g_data) {
-    $cli = new Swoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
+    $cli = new OpenSwoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
     $cli->connect(TCP_SERVER_HOST, $port, 1);
     $cli->send(pack('N', strlen($_g_data)) . $_g_data);
     $recv_data = $cli->recv();

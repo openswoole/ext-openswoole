@@ -12,10 +12,10 @@ if (!extension_loaded("curl")) {
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $base = curl_init('http://www.baidu.com/');
     curl_setopt($base, CURLOPT_RETURNTRANSFER, true);
     $mh = curl_multi_init();

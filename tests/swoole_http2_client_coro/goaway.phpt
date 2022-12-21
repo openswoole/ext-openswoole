@@ -9,7 +9,7 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $domain = 'nghttp2.org';
-    $cli = new Swoole\Coroutine\Http2\Client($domain, 443, true);
+    $cli = new OpenSwoole\Coroutine\Http2\Client($domain, 443, true);
     $cli->set([
         'timeout' => 1,
         'ssl_host_name' => $domain

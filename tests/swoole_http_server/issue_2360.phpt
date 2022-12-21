@@ -16,12 +16,12 @@ $pm->setRandomFunc(function () {
     }
     return $data;
 });
-$pm->initRandomDataEx(1, MAX_REQUESTS);
+$pm->initRandomDataEx(1, 8);
 $pm->parentFunc = function () use ($pm) {
-    go(function () use ($pm) {
-        $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['socket_buffer_size' => SOCKET_BUFFER_SIZE]);
-        for ($n = MAX_REQUESTS; $n--;) {
+        for ($n = 8; $n--;) {
             $data = $pm->getRandomData();
             Assert::true($cli->post('/', $data));
             Assert::same($cli->statusCode, 200);
@@ -30,12 +30,11 @@ $pm->parentFunc = function () use ($pm) {
         }
         $cli->close();
     });
-    Swoole\Event::wait();
     $pm->kill();
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
+    $server = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort());
     $server->set([
         'log_file' => '/dev/null',
         'socket_buffer_size' => SOCKET_BUFFER_SIZE
@@ -43,7 +42,7 @@ $pm->childFunc = function () use ($pm) {
     $server->on('workerStart', function () use ($pm) {
         $pm->wakeup();
     });
-    $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) use ($pm) {
+    $server->on('request', function (OpenSwoole\Http\Request $request, OpenSwoole\Http\Response $response) use ($pm) {
         phpt_echo("received {$request->header['content-length']} bytes\n");
         if (Assert::assert($request->rawContent() === $pm->getRandomData())) {
             $response->end($request->rawContent());

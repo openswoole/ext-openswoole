@@ -33,7 +33,7 @@ $pm->childFunc = function () use ($pm)
     });
     $http->on('request', function (swoole_http_request $request, swoole_http_response $response)
     {
-        $host = swoole_async_dns_lookup_coro('www.baidu.com');
+        $host = OpenSwoole\Coroutine::dnsLookup('www.baidu.com');
         if ($host)
         {
             $response->end("OK\n");

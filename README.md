@@ -41,7 +41,7 @@ Download the source packages from [Releases](https://github.com/openswoole/swool
 ```shell
 git clone https://github.com/openswoole/swoole-src.git && \
 cd swoole-src
-git checkout v4.12.0
+git checkout v22.0.0
 phpize && \
 ./configure && \
 make && make install
@@ -57,8 +57,7 @@ You can find how to fix [Common Installation Errors](https://openswoole.com/docs
 + `--enable-sockets`
 + `--enable-http2`
 + `--enable-mysqlnd` (need mysqlnd, it just for supporting `$mysql->escape` method)
-+ `--enable-swoole-json`
-+ `--enable-swoole-curl`
++ `--enable-hook-curl`
 + `--with-postgres[=DIR]`
 
 #### Enable Open Swoole extension

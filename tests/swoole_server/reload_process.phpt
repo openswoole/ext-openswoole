@@ -10,10 +10,10 @@ require __DIR__ . '/../include/skipif.inc';
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$worker_num = $task_worker_num = swoole_cpu_num() * 2;
+$worker_num = $task_worker_num = OpenSwoole\Util::getCPUNum() * 2;
 $counter = [
-    'worker' => new Swoole\Atomic(),
-    'task_worker' => new Swoole\Atomic()
+    'worker' => new OpenSwoole\Atomic(),
+    'task_worker' => new OpenSwoole\Atomic()
 ];
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
@@ -52,7 +52,7 @@ $pm->childFunc = function () use ($pm) {
     global $worker_num, $task_worker_num;
     @unlink(TEST_LOG_FILE);
     @unlink(TEST_PID_FILE);
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set([
         'log_file' => TEST_LOG_FILE,
         'pid_file' => TEST_PID_FILE,

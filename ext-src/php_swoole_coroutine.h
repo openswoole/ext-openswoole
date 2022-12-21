@@ -94,28 +94,23 @@ class PHPCoroutine {
     static zend_array *options;
 
     enum HookType {
-        HOOK_NONE              = 0,
-        HOOK_TCP               = 1u << 1,
-        HOOK_UDP               = 1u << 2,
-        HOOK_UNIX              = 1u << 3,
-        HOOK_UDG               = 1u << 4,
-        HOOK_SSL               = 1u << 5,
-        HOOK_TLS               = 1u << 6,
-        HOOK_STREAM_FUNCTION   = 1u << 7,
-        HOOK_FILE              = 1u << 8,
-        HOOK_SLEEP             = 1u << 9,
-        HOOK_PROC              = 1u << 10,
-        HOOK_CURL              = 1u << 11, // removed
-        HOOK_NATIVE_CURL       = 1u << 12,
+        HOOK_NONE = 0,
+        HOOK_TCP = 1u << 1,
+        HOOK_UDP = 1u << 2,
+        HOOK_UNIX = 1u << 3,
+        HOOK_UDG = 1u << 4,
+        HOOK_SSL = 1u << 5,
+        HOOK_TLS = 1u << 6,
+        HOOK_STREAM_FUNCTION = 1u << 7,
+        HOOK_FILE = 1u << 8,
+        HOOK_SLEEP = 1u << 9,
+        HOOK_PROC = 1u << 10,
+        HOOK_CURL = 1u << 11,  // removed
+        HOOK_NATIVE_CURL = 1u << 12,
         HOOK_BLOCKING_FUNCTION = 1u << 13,
-        HOOK_SOCKETS           = 1u << 14,
-        HOOK_STDIO             = 1u << 15,
-// Remove HOOK_CURL
-// #ifdef SW_USE_CURL
-        HOOK_ALL               = 0x7fffffff ^ HOOK_CURL,
-// #else
-        // HOOK_ALL               = 0x7fffffff ^ HOOK_NATIVE_CURL,
-// #endif
+        HOOK_SOCKETS = 1u << 14,
+        HOOK_STDIO = 1u << 15,
+        HOOK_ALL = 0x7fffffff ^ HOOK_CURL ^ HOOK_BLOCKING_FUNCTION ^ HOOK_SOCKETS,
     };
 
     static const uint8_t MAX_EXEC_MSEC = 10;
@@ -128,6 +123,7 @@ class PHPCoroutine {
     static bool disable_hook();
     static void disable_unsafe_function();
     static void enable_unsafe_function();
+    static bool is_core_loaded();
 
     static void interrupt_thread_stop();
 

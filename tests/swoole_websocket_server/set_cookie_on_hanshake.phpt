@@ -8,8 +8,8 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initFreePorts();
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use ($pm) {
-        $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         if (Assert::true($cli->upgrade('/'))) {
             Assert::same($cli->headers['x-asdf'], 'asdf');
             Assert::same($cli->set_cookie_headers, [
@@ -22,11 +22,11 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\WebSocket\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\WebSocket\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->on('workerStart', function () use ($pm) {
         $pm->wakeup();
     });
-    $server->on('handshake', function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) {
+    $server->on('handshake', function (\OpenSwoole\Http\Request $request, \OpenSwoole\Http\Response $response) {
         $secWebSocketKey = $request->header['sec-websocket-key'];
         $patten = '#^[+/0-9A-Za-z]{21}[AQgw]==$#';
         if (0 === preg_match($patten, $secWebSocketKey) || 16 !== strlen(base64_decode($secWebSocketKey))) {

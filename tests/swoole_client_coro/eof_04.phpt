@@ -11,7 +11,7 @@ $pm = new ProcessManager;
 $pm->initRandomData(MAX_REQUESTS);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_TCP);
         $client->set([
             'open_eof_check' => true,
             'package_eof' => "\r\n",
@@ -35,7 +35,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $server->set(['log_file' => '/dev/null']);
     $server->on('connect', function (Swoole\Server $server, int $fd) use ($pm) {
         do {

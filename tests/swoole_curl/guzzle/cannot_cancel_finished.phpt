@@ -14,11 +14,11 @@ use GuzzleHttp\Handler\CurlMultiHandler;
 use GuzzleHttp\Promise;
 use GuzzleHttp\Psr7\Request;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $handler = new CurlMultiHandler();
     $response = $handler(new Request('GET', 'http://httpbin.org/get'), []);
     $response->wait();

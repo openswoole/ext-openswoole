@@ -10,21 +10,18 @@ dnl  | available through the world-wide-web at the following url:           |
 dnl  | http://www.apache.org/licenses/LICENSE-2.0.html                      |
 dnl  | If you did not receive a copy of the Apache2.0 license and are unable|
 dnl  | to obtain it through the world-wide-web, please send a note to       |
-dnl  | hello@swoole.co.uk so we can mail you a copy immediately.            |
-dnl  +----------------------------------------------------------------------+
-dnl  | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
-dnl  | Author: Twosee  <twose@qq.com>                                       |
+dnl  | hello@openswoole.com so we can mail you a copy immediately.          |
 dnl  +----------------------------------------------------------------------+
 
 PHP_ARG_ENABLE([debug-log],
   [enable debug log],
   [AS_HELP_STRING([--enable-debug-log],
-    [Enable swoole debug log])], [no], [no])
+    [Enable debug log])], [no], [no])
 
 PHP_ARG_ENABLE([trace-log],
   [enable trace log],
   [AS_HELP_STRING([--enable-trace-log],
-    [Enable swoole trace log])], [no], [no])
+    [Enable trace log])], [no], [no])
 
 PHP_ARG_ENABLE([sockets],
   [enable sockets support],
@@ -34,32 +31,32 @@ PHP_ARG_ENABLE([sockets],
 PHP_ARG_ENABLE([openssl],
   [enable openssl support],
   [AS_HELP_STRING([--enable-openssl],
-    [Use openssl])], [no], [no])
+    [Enable openssl support])], [no], [no])
 
 PHP_ARG_ENABLE([http2],
-  [enable http2.0 support],
+  [enable HTTP2 support],
   [AS_HELP_STRING([--enable-http2],
-    [Use http2.0])], [no], [no])
+    [Enable HTTP2 support])], [no], [no])
 
 PHP_ARG_ENABLE([openswoole],
   [openswoole support],
   [AS_HELP_STRING([--enable-openswoole],
-    [Enable openswoole support])], [enable_openswoole"yes"])
+    [Enable openswoole support and compile into PHP])], [enable_openswoole"yes"])
 
 PHP_ARG_ENABLE([mysqlnd],
   [enable mysqlnd support],
   [AS_HELP_STRING([--enable-mysqlnd],
-    [Enable mysqlnd])], [no], [no])
+    [Enable mysqlnd support])], [no], [no])
 
 PHP_ARG_WITH([postgres],
-  [enable postgreSQL support],
+  [enable PostgreSQL support],
   [AS_HELP_STRING([[--with-postgres[=DIR]]],
-    [Enable postgres])], [no], [no])
+    [Enable postgres support])], [no], [no])
 
 PHP_ARG_ENABLE([cares],
   [enable c-ares support],
   [AS_HELP_STRING([--enable-cares],
-    [Enable cares])], [no], [no])
+    [Enable cares support])], [no], [no])
 
 PHP_ARG_WITH([openssl_dir],
   [dir of openssl],
@@ -76,30 +73,25 @@ PHP_ARG_ENABLE([asan],
   [AS_HELP_STRING([--enable-asan],
     [Enable asan])], [no], [no])
 
-PHP_ARG_ENABLE([swoole-coverage],
-  [whether to enable swoole coverage support],
-  [AS_HELP_STRING([--enable-swoole-coverage],
-    [Enable swoole coverage support])], [no], [no])
+PHP_ARG_ENABLE([openswoole-coverage],
+  [whether to enable coverage testing],
+  [AS_HELP_STRING([--enable-openswoole-coverage],
+    [Enable coverage])], [no], [no])
 
-PHP_ARG_ENABLE([swoole-dev],
-  [whether to enable Swoole developer build flags],
-  [AS_HELP_STRING([--enable-swoole-dev],
-    [Enable developer flags])], [no], [no])
+PHP_ARG_ENABLE([openswoole-dev],
+  [whether to enable developer build flags],
+  [AS_HELP_STRING([--enable-openswoole-dev],
+    [Enable development mode])], [no], [no])
 
-PHP_ARG_ENABLE([swoole-json],
-  [whether to enable Swoole JSON build flags],
-  [AS_HELP_STRING([--enable-swoole-json],
-    [Enable JSON support])], [no], [no])
-
-PHP_ARG_ENABLE([swoole-curl],
-  [whether to enable Swoole CURL build flags],
-  [AS_HELP_STRING([--enable-swoole-curl],
-    [Enable cURL support])], [no], [no])
+PHP_ARG_ENABLE([hook-curl],
+  [whether to enable Coroutine Hooks for CURL build flags],
+  [AS_HELP_STRING([--enable-hook-curl],
+    [Enable Coroutine Hooks for CURL])], [no], [no])
 
 PHP_ARG_ENABLE([thread-context],
   [whether to enable thread context],
   [AS_HELP_STRING([--enable-thread-context],
-    [Use thread context])], [no], [no])
+    [Use Thread Context])], [no], [no])
 
 AC_DEFUN([SWOOLE_HAVE_PHP_EXT], [
     extname=$1
@@ -399,11 +391,7 @@ if test "$PHP_SWOOLE" != "no"; then
         CXXFLAGS="-g -O0 -Wall $CXXFLAGS"
     fi
 
-    if test "$PHP_SWOOLE_JSON" = "yes"; then
-        AC_DEFINE(SW_USE_JSON, 1, [do we enable json decoder])
-    fi
-
-    if test "$PHP_SWOOLE_CURL" = "yes"; then
+    if test "$PHP_HOOK_CURL" = "yes"; then
         AC_DEFINE(SW_USE_CURL, 1, [do we enable cURL native client])
     fi
 
@@ -608,7 +596,7 @@ if test "$PHP_SWOOLE" != "no"; then
     swoole_source_file=" \
         ext-src/php_swoole.cc \
         ext-src/php_swoole_cxx.cc \
-        ext-src/swoole_async_coro.cc \
+        ext-src/swoole_util.cc \
         ext-src/swoole_atomic.cc \
         ext-src/swoole_channel_coro.cc \
         ext-src/swoole_client.cc \
@@ -624,15 +612,10 @@ if test "$PHP_SWOOLE" != "no"; then
         ext-src/swoole_http_request.cc \
         ext-src/swoole_http_response.cc \
         ext-src/swoole_http_server.cc \
-        ext-src/swoole_http_server_coro.cc \
         ext-src/swoole_lock.cc \
-        ext-src/swoole_mysql_coro.cc \
-        ext-src/swoole_mysql_proto.cc \
         ext-src/swoole_postgres_coro.cc \
         ext-src/swoole_process.cc \
         ext-src/swoole_process_pool.cc \
-        ext-src/swoole_redis_coro.cc \
-        ext-src/swoole_redis_server.cc \
         ext-src/swoole_runtime.cc \
         ext-src/swoole_server.cc \
         ext-src/swoole_server_port.cc \
@@ -718,7 +701,6 @@ if test "$PHP_SWOOLE" != "no"; then
         thirdparty/php/sockets/sendrecvmsg.cc \
         thirdparty/php/sockets/conversions.cc \
         thirdparty/php/sockets/sockaddr_conv.cc \
-        thirdparty/php/standard/var_decoder.cc \
         thirdparty/php/standard/proc_open.cc"
 
     swoole_source_file="$swoole_source_file \
@@ -741,6 +723,7 @@ if test "$PHP_SWOOLE" != "no"; then
         thirdparty/nghttp2/nghttp2_hd_huffman.c \
         thirdparty/nghttp2/nghttp2_hd_huffman_data.c"
 
+    SW_ASM_DIR_V1="thirdparty/boost/asmv1/"
     SW_ASM_DIR="thirdparty/boost/asm/"
     SW_USE_ASM_CONTEXT="yes"
 
@@ -827,6 +810,8 @@ if test "$PHP_SWOOLE" != "no"; then
 
     if test "$SW_USE_ASM_CONTEXT" = "yes"; then
         swoole_source_file="$swoole_source_file \
+            ${SW_ASM_DIR_V1}make_${SW_CONTEXT_ASM_FILE} \
+            ${SW_ASM_DIR_V1}jump_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}make_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}jump_${SW_CONTEXT_ASM_FILE} "
         AC_DEFINE(SW_USE_ASM_CONTEXT, 1, [use boost asm context])
@@ -853,7 +838,7 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_MSG_RESULT([disabled])
     fi
 
-    PHP_INSTALL_HEADERS([ext/openswoole], [ext-src/*.h config.h php_swoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h])
+    PHP_INSTALL_HEADERS([ext/openswoole], [ext-src/*.h config.h php_openswoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h])
 
     PHP_REQUIRE_CXX()
 
@@ -877,6 +862,7 @@ if test "$PHP_SWOOLE" != "no"; then
     PHP_ADD_BUILD_DIR($ext_builddir/src/coroutine)
     PHP_ADD_BUILD_DIR($ext_builddir/src/wrapper)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost)
+    PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asmv1)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asm)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/hiredis)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/nghttp2)

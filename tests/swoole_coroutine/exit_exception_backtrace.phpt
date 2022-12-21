@@ -20,18 +20,22 @@ function char(int $random)
     exit;
 }
 
-go(function () {
-    Co::usleep(1000);
+co::run(function() {
+    go(function () {
+        Co::usleep(1000);
+    });
+    go(function () {
+        foo();
+    });
 });
-go(function () {
-    foo();
-});
+
+
 ?>
 --EXPECTF--
-Fatal error: Uncaught Swoole\ExitException: swoole exit in %s/tests/swoole_coroutine/exit_exception_backtrace.php:15
+Fatal error: Uncaught OpenSwoole\ExitException: swoole exit in %s/tests/swoole_coroutine/exit_exception_backtrace.php:15
 Stack trace:
 #0 %s/tests/swoole_coroutine/exit_exception_backtrace.php(10): char(%d)
 #1 %s/tests/swoole_coroutine/exit_exception_backtrace.php(5): bar('%s...')
-#2 %s/tests/swoole_coroutine/exit_exception_backtrace.php(22): foo()
+#2 %s/tests/swoole_coroutine/exit_exception_backtrace.php(23): foo()
 %A
   thrown in %s/tests/swoole_coroutine/exit_exception_backtrace.php on line 15

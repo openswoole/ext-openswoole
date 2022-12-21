@@ -5,20 +5,20 @@ swoole_http_client_coro: recv timeout
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$GLOBALS['socket'] = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+$GLOBALS['socket'] = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 $GLOBALS['socket']->bind('127.0.0.1');
 $GLOBALS['socket']->listen();
 $GLOBALS['port'] = (int)$GLOBALS['socket']->getsockname()['port'];
 go(function () {
     for ($c = MAX_CONCURRENCY_MID; $c--;) {
         $conn = $GLOBALS['socket']->accept();
-        Assert::assert($conn instanceof Co\Socket);
+        Assert::assert($conn instanceof OpenSwoole\Coroutine\Socket);
         $GLOBALS['connections'][] = $conn;
     }
 });
 for ($c = MAX_CONCURRENCY_MID; $c--;) {
     go(function () {
-        $cli = new Co\Http\Client('127.0.0.1', $GLOBALS['port']);
+        $cli = new OpenSwoole\Coroutine\http\Client('127.0.0.1', $GLOBALS['port']);
         $cli->setDefer();
         $config_timeout = mt_rand(100, 500) / 1000;
         $cli->set(['timeout' => $config_timeout]);

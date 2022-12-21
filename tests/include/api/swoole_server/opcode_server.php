@@ -20,7 +20,7 @@ class OpcodeServer
 
     public function __construct($host, $port, $port1 = null, $port2 = null)
     {
-	    $this->swooleServer = new \swoole_server($host, $port, SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
+	    $this->swooleServer = new OpenSwoole\Server($host, $port, SWOOLE_PROCESS, SWOOLE_SOCK_TCP);
         $this->swooleServer->set([
             'dispatch_mode' => 3,
             'worker_num' => 2,

@@ -11,10 +11,10 @@ require_once TESTS_API_PATH.'/curl_multi.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $ch1 = curl_init();
     curl_setopt($ch1, CURLOPT_URL, "http://www.baidu.com/");
     curl_setopt($ch1, CURLOPT_HEADER, 0);

@@ -5,9 +5,9 @@ swoole_table: set after del
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$table = new \Swoole\Table(1024);
-$table->column('id', \Swoole\Table::TYPE_INT);
-$table->column('name', \Swoole\Table::TYPE_STRING, 10);
+$table = new \OpenSwoole\Table(1024);
+$table->column('id', \OpenSwoole\Table::TYPE_INT);
+$table->column('name', \OpenSwoole\Table::TYPE_STRING, 10);
 $table->create();
 
 $table->set('1', ['id' => 1, 'name' => 'rango']);

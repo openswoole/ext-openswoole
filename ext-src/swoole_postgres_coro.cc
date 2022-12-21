@@ -248,11 +248,8 @@ static const zend_function_entry openswoole_postgresql_coro_methods[] =
 // clang-format on
 
 void php_swoole_postgresql_coro_minit(int module_number) {
-    SW_INIT_CLASS_ENTRY(swoole_postgresql_coro,
-                        "Swoole\\Coroutine\\PostgreSQL",
-                        NULL,
-                        "Co\\PostgreSQL",
-                        openswoole_postgresql_coro_methods);
+    SW_INIT_CLASS_ENTRY(
+        swoole_postgresql_coro, "Swoole\\Coroutine\\PostgreSQL", NULL, nullptr, openswoole_postgresql_coro_methods);
 #ifdef SW_SET_CLASS_NOT_SERIALIZABLE
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_postgresql_coro);
 #else
@@ -273,6 +270,30 @@ void php_swoole_postgresql_coro_minit(int module_number) {
     zend_declare_property_null(swoole_postgresql_coro_ce, ZEND_STRL("resultDiag"), ZEND_ACC_PUBLIC);
     zend_declare_property_null(swoole_postgresql_coro_ce, ZEND_STRL("notices"), ZEND_ACC_PUBLIC);
 
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGSQL_ASSOC"), PGSQL_ASSOC);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGSQL_NUM"), PGSQL_NUM);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGSQL_BOTH"), PGSQL_BOTH);
+
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_EMPTY_QUERY"), PGRES_EMPTY_QUERY);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_COMMAND_OK"), PGRES_COMMAND_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_TUPLES_OK"), PGRES_TUPLES_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_BAD_RESPONSE"), PGRES_BAD_RESPONSE);
+    zend_declare_class_constant_long(
+        swoole_postgresql_coro_ce, ZEND_STRL("PGRES_NONFATAL_ERROR"), PGRES_NONFATAL_ERROR);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PGRES_FATAL_ERROR"), PGRES_FATAL_ERROR);
+
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_OK"), CONNECTION_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_BAD"), CONNECTION_BAD);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_STARTED"), CONNECTION_STARTED);
+    zend_declare_class_constant_long(
+        swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_AWAITING_RESPONSE"), CONNECTION_AWAITING_RESPONSE);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_AUTH_OK"), CONNECTION_AUTH_OK);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_SETENV"), CONNECTION_SETENV);
+    zend_declare_class_constant_long(
+        swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_SSL_STARTUP"), CONNECTION_SSL_STARTUP);
+    zend_declare_class_constant_long(swoole_postgresql_coro_ce, ZEND_STRL("PG_CONNECTION_NEEDED"), CONNECTION_NEEDED);
+
+    // backward compatibility
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_ASSOC", PGSQL_ASSOC);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_NUM", PGSQL_NUM);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PGSQL_BOTH", PGSQL_BOTH);
@@ -292,7 +313,6 @@ void php_swoole_postgresql_coro_minit(int module_number) {
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_SETENV", CONNECTION_SETENV);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_SSL_STARTUP", CONNECTION_SSL_STARTUP);
     SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_PG_CONNECTION_NEEDED", CONNECTION_NEEDED);
-
 }
 
 static char *_php_pgsql_trim_message(const char *message, size_t *len) {
@@ -560,55 +580,55 @@ static int meta_data_result_parse(PGObject *object) {
 }
 
 #ifndef PG_DIAG_SEVERITY
-# define PG_DIAG_SEVERITY 'S'
+#define PG_DIAG_SEVERITY 'S'
 #endif
 #ifndef PG_DIAG_SQLSTATE
-# define PG_DIAG_SQLSTATE 'C'
+#define PG_DIAG_SQLSTATE 'C'
 #endif
 #ifndef PG_DIAG_MESSAGE_PRIMARY
-# define PG_DIAG_MESSAGE_PRIMARY 'M'
+#define PG_DIAG_MESSAGE_PRIMARY 'M'
 #endif
 #ifndef PG_DIAG_MESSAGE_DETAIL
-# define PG_DIAG_MESSAGE_DETAIL 'D'
+#define PG_DIAG_MESSAGE_DETAIL 'D'
 #endif
 #ifndef PG_DIAG_MESSAGE_HINT
-# define PG_DIAG_MESSAGE_HINT 'H'
+#define PG_DIAG_MESSAGE_HINT 'H'
 #endif
 #ifndef PG_DIAG_STATEMENT_POSITION
-# define PG_DIAG_STATEMENT_POSITION 'P'
+#define PG_DIAG_STATEMENT_POSITION 'P'
 #endif
 #ifndef PG_DIAG_INTERNAL_POSITION
-# define PG_DIAG_INTERNAL_POSITION 'p'
+#define PG_DIAG_INTERNAL_POSITION 'p'
 #endif
 #ifndef PG_DIAG_INTERNAL_QUERY
-# define PG_DIAG_INTERNAL_QUERY 'q'
+#define PG_DIAG_INTERNAL_QUERY 'q'
 #endif
 #ifndef PG_DIAG_CONTEXT
-# define PG_DIAG_CONTEXT 'W'
+#define PG_DIAG_CONTEXT 'W'
 #endif
 #ifndef PG_DIAG_SCHEMA_NAME
-# define PG_DIAG_SCHEMA_NAME 's'
+#define PG_DIAG_SCHEMA_NAME 's'
 #endif
 #ifndef PG_DIAG_TABLE_NAME
-# define PG_DIAG_TABLE_NAME 't'
+#define PG_DIAG_TABLE_NAME 't'
 #endif
 #ifndef PG_DIAG_COLUMN_NAME
-# define PG_DIAG_COLUMN_NAME 'c'
+#define PG_DIAG_COLUMN_NAME 'c'
 #endif
 #ifndef PG_DIAG_DATATYPE_NAME
-# define PG_DIAG_DATATYPE_NAME 'd'
+#define PG_DIAG_DATATYPE_NAME 'd'
 #endif
 #ifndef PG_DIAG_CONSTRAINT_NAME
-# define PG_DIAG_CONSTRAINT_NAME 'n'
+#define PG_DIAG_CONSTRAINT_NAME 'n'
 #endif
 #ifndef PG_DIAG_SOURCE_FILE
-# define PG_DIAG_SOURCE_FILE 'F'
+#define PG_DIAG_SOURCE_FILE 'F'
 #endif
 #ifndef PG_DIAG_SOURCE_LINE
-# define PG_DIAG_SOURCE_LINE 'L'
+#define PG_DIAG_SOURCE_LINE 'L'
 #endif
 #ifndef PG_DIAG_SOURCE_FUNCTION
-# define PG_DIAG_SOURCE_FUNCTION 'R'
+#define PG_DIAG_SOURCE_FUNCTION 'R'
 #endif
 
 static void set_error_diag(const PGObject *object, const PGresult *pgsql_result) {

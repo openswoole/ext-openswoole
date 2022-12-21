@@ -9,11 +9,11 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Socket;
 use Swoole\Server;
 
-use function Swoole\Coroutine\run;
+
 
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $conn = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
 
         $conn->setProtocol([
@@ -29,7 +29,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         global $totalLength, $packedStr;
         $socket = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $socket->setProtocol([

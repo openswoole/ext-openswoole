@@ -45,12 +45,13 @@
  *                                                     *
  * *****************************************************/
 
+.file "make_mips64_n64_elf_gas.S"
 .text
-.globl make_fcontext_v1
+.globl make_fcontext
 .align 3
-.type make_fcontext_v1,@function
-.ent make_fcontext_v1
-make_fcontext_v1:
+.type make_fcontext,@function
+.ent make_fcontext
+make_fcontext:
 #ifdef __PIC__
 .set    noreorder
 .cpload $t9
@@ -63,7 +64,7 @@ make_fcontext_v1:
     # reserve space for context-data on context-stack
     daddiu $v0, $v0, -160
 
-    # third arg of make_fcontext_v1() == address of context-function
+    # third arg of make_fcontext() == address of context-function
     sd  $a2, 152($v0)
     # save global pointer in context-data
     sd  $gp, 136($v0)
@@ -88,8 +89,8 @@ finish:
     dla $t9, _exit
     move $a0, $zero
     jr $t9
-.end make_fcontext_v1
-.size make_fcontext_v1, .-make_fcontext_v1
+.end make_fcontext
+.size make_fcontext, .-make_fcontext
 
 /* Mark that we don't need executable stack.  */
 .section .note.GNU-stack,"",%progbits

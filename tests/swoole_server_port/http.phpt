@@ -6,7 +6,7 @@ swoole_server_port: http and tcp
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-ini_set("swoole.display_errors", "Off");
+ini_set("openswoole.display_errors", "Off");
 
 $pm = new ProcessManager;
 $pm->initFreePorts(2);
@@ -15,7 +15,7 @@ $pm->parentFunc = function ($pid) use ($pm)
 {
     go(function () use ($pm)
     {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $cli->set(['open_eof_check' => true, "package_eof" => "\r\n\r\n"]);
         if (!$cli->connect('127.0.0.1', $pm->getFreePort(0), 0.5))
         {
@@ -37,7 +37,7 @@ $pm->parentFunc = function ($pid) use ($pm)
     });
 
     go(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(1));
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(1));
         if ($cli->get("/")) {
             echo $cli->body;
             Assert::same($cli->statusCode, 200);

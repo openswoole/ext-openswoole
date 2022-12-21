@@ -22,7 +22,7 @@
 #define __STDC_FORMAT_MACROS
 #endif
 
-#include "php_swoole.h"
+#include "php_openswoole.h"
 
 #define SW_HAVE_COUNTABLE 1
 
@@ -45,6 +45,7 @@ BEGIN_EXTERN_C()
 #define PHP_SWOOLE_VERSION SWOOLE_VERSION
 #define OPENSWOOLE_VERSION "OpenSwoole-" SWOOLE_VERSION
 #define PHP_SWOOLE_CLIENT_USE_POLL
+#define OPENSWOOLE_NS_PREFIX "Open"
 
 extern PHPAPI int php_array_merge(zend_array *dest, zend_array *src);
 
@@ -62,12 +63,12 @@ extern PHPAPI int php_array_merge(zend_array *dest, zend_array *src);
     } else {                                                                                                           \
         RETURN_TRUE;                                                                                                   \
     }
-#define SW_LOCK_CHECK_RETURN(s)																						   \
-    zend_long ___tmp_return_value = s; 																				   \
+#define SW_LOCK_CHECK_RETURN(s)                                                                                        \
+    zend_long ___tmp_return_value = s;                                                                                 \
     if (___tmp_return_value == 0) {                                                                                    \
         RETURN_TRUE;                                                                                                   \
     } else {                                                                                                           \
-        zend_update_property_long(NULL, SW_Z8_OBJ_P(ZEND_THIS), SW_STRL("errCode"), ___tmp_return_value );             \
+        zend_update_property_long(NULL, SW_Z8_OBJ_P(ZEND_THIS), SW_STRL("errCode"), ___tmp_return_value);              \
         RETURN_FALSE;                                                                                                  \
     }
 
@@ -158,8 +159,6 @@ extern zend_class_entry *swoole_socket_coro_ce;
 extern zend_class_entry *swoole_client_ce;
 extern zend_class_entry *swoole_server_ce;
 extern zend_object_handlers swoole_server_handlers;
-extern zend_class_entry *swoole_redis_server_ce;
-extern zend_object_handlers swoole_redis_server_handlers;
 extern zend_class_entry *swoole_connection_iterator_ce;
 extern zend_class_entry *swoole_process_ce;
 extern zend_class_entry *swoole_http_server_ce;
@@ -170,10 +169,8 @@ extern zend_class_entry *swoole_server_port_ce;
 extern zend_class_entry *swoole_exception_ce;
 extern zend_object_handlers swoole_exception_handlers;
 extern zend_class_entry *swoole_error_ce;
+extern zend_class_entry *openswoole_constants_ce;
 
-PHP_FUNCTION(swoole_clear_dns_cache);
-PHP_FUNCTION(swoole_last_error);
-PHP_FUNCTION(swoole_set_process_name);
 //---------------------------------------------------------
 //                  Coroutine API
 //---------------------------------------------------------
@@ -183,15 +180,6 @@ PHP_FUNCTION(swoole_coroutine_gethostbyname);
 PHP_FUNCTION(swoole_coroutine_defer);
 PHP_FUNCTION(swoole_coroutine_socketpair);
 PHP_FUNCTION(swoole_test_kernel_coroutine);  // for tests
-//---------------------------------------------------------
-//                  event
-//---------------------------------------------------------
-PHP_FUNCTION(swoole_client_select);
-//---------------------------------------------------------
-//                  async[coro]
-//---------------------------------------------------------
-PHP_FUNCTION(swoole_async_set);
-PHP_FUNCTION(swoole_async_dns_lookup_coro);
 //---------------------------------------------------------
 //                  error
 //---------------------------------------------------------
@@ -206,6 +194,7 @@ PHP_FUNCTION(swoole_async_dns_lookup_coro);
  */
 void php_swoole_event_minit(int module_number);
 // base
+void php_swoole_util_minit(int module_number);
 void php_swoole_atomic_minit(int module_number);
 void php_swoole_lock_minit(int module_number);
 void php_swoole_process_minit(int module_number);
@@ -223,8 +212,6 @@ void php_swoole_socket_coro_minit(int module_number);
 void php_swoole_client_minit(int module_number);
 void php_swoole_client_coro_minit(int module_number);
 void php_swoole_http_client_coro_minit(int module_number);
-void php_swoole_mysql_coro_minit(int module_number);
-void php_swoole_redis_coro_minit(int module_number);
 #ifdef SW_USE_HTTP2
 void php_swoole_http2_client_coro_minit(int module_number);
 #endif
@@ -234,9 +221,7 @@ void php_swoole_server_port_minit(int module_number);
 void php_swoole_http_request_minit(int module_number);
 void php_swoole_http_response_minit(int module_number);
 void php_swoole_http_server_minit(int module_number);
-void php_swoole_http_server_coro_minit(int module_number);
 void php_swoole_websocket_server_minit(int module_number);
-void php_swoole_redis_server_minit(int module_number);
 // other
 #ifdef SW_USE_POSTGRES
 void php_swoole_postgresql_coro_minit(int module_number);
@@ -254,7 +239,6 @@ void php_swoole_runtime_rinit();
  * ==============================================================
  */
 void php_swoole_async_coro_rshutdown();
-void php_swoole_redis_server_rshutdown();
 void php_swoole_coroutine_rshutdown();
 void php_swoole_runtime_rshutdown();
 void php_swoole_server_rshutdown();
@@ -597,10 +581,11 @@ static sw_inline void add_assoc_ulong_safe(zval *arg, const char *key, zend_ulon
 #define SW_INIT_CLASS_ENTRY_BASE(module, namespace_name, snake_name, short_name, methods, parent_ce)                   \
     do {                                                                                                               \
         zend_class_entry _##module##_ce = {};                                                                          \
-        INIT_CLASS_ENTRY(_##module##_ce, namespace_name, methods);                                                     \
+        INIT_CLASS_ENTRY(_##module##_ce, OPENSWOOLE_NS_PREFIX namespace_name, methods);                                \
         module##_ce = zend_register_internal_class_ex(&_##module##_ce, parent_ce);                                     \
+        SW_CLASS_ALIAS(namespace_name, module);                                                                        \
         if (snake_name) SW_CLASS_ALIAS(snake_name, module);                                                            \
-        if (short_name) SW_CLASS_ALIAS_SHORT_NAME(short_name, module);                                                 \
+        if (short_name) SW_CLASS_ALIAS(short_name, module);                                                            \
     } while (0)
 
 #define SW_INIT_CLASS_ENTRY(module, namespace_name, snake_name, short_name, methods)                                   \
@@ -628,20 +613,12 @@ static sw_inline void add_assoc_ulong_safe(zval *arg, const char *key, zend_ulon
         }                                                                                                              \
     } while (0)
 
-#define SW_CLASS_ALIAS_SHORT_NAME(short_name, module)                                                                  \
-    do {                                                                                                               \
-        if (SWOOLE_G(use_shortname)) {                                                                                 \
-            SW_CLASS_ALIAS(short_name, module);                                                                        \
-        }                                                                                                              \
-    } while (0)
-
 #if PHP_VERSION_ID < 80100
 #define SW_SET_CLASS_NOT_SERIALIZABLE(module)                                                                          \
-    module##_ce->serialize = zend_class_serialize_deny;                                                                               \
+    module##_ce->serialize = zend_class_serialize_deny;                                                                \
     module##_ce->unserialize = zend_class_unserialize_deny;
 #else
-#define SW_SET_CLASS_NOT_SERIALIZABLE(module)                                                                          \
-    module##_ce->ce_flags |= ZEND_ACC_NOT_SERIALIZABLE;
+#define SW_SET_CLASS_NOT_SERIALIZABLE(module) module##_ce->ce_flags |= ZEND_ACC_NOT_SERIALIZABLE;
 #endif
 
 #define sw_zend_class_clone_deny NULL

@@ -17,8 +17,8 @@ for ($i = 0; $i++ < 3;) {
     touch("{$testDir}/{$i}.txt");
 }
 
-\Swoole\Runtime::enableCoroutine(true);
-\Swoole\Coroutine\run(
+\OpenSwoole\Runtime::enableCoroutine(true);
+co::run(
     function () use ($testDir) {
         for ($i = 0; $i < MAX_CONCURRENCY; $i++) {
             go(

@@ -5,6 +5,7 @@ swoole_server: kill user process [SWOOLE_PROCESS]
 require __DIR__ . '/../include/skipif.inc';
 skip_if_darwin();
 //skip_if_in_valgrind();
+skip("TODOv22");
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -33,7 +34,7 @@ $pm->childFunc = function () use ($pm)
 //    );
     $process2 = new swoole_process(function ($worker) use ($serv, $pm) {
         global $argv;
-        swoole_set_process_name(WORKER_PROC_NAME);
+        \OpenSwoole\Util::setProcessName(WORKER_PROC_NAME);
         swoole_process::signal(SIGTERM, function () {
             swoole_event_exit();
         });

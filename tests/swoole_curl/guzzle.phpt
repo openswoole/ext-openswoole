@@ -3,6 +3,7 @@ swoole_curl: guzzle
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
+skip("TODOv22");
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -14,14 +15,11 @@ use Swoole\Runtime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise;
 
-use function Swoole\Coroutine\run;
-use function Swoole\Coroutine\go;
-
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 const N = 4;
 
-run(function () {
+co::run(function () {
     $wg = new WaitGroup();
     $result = [];
     go(function () use ($wg, &$result) {

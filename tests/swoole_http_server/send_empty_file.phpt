@@ -10,7 +10,7 @@ const TMP_FILE = '/tmp/sendfile.txt';
 
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         file_put_contents(TMP_FILE, '');
         $recv_file = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}");
         unlink(TMP_FILE);
@@ -20,7 +20,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set(['worker_num' => 1]);
     $http->on('workerStart', function () use ($pm) {
         $pm->wakeup();

@@ -14,7 +14,7 @@ $pm->childFunc = function () use ($pm) {
         Assert::same(Co::readFile(__FILE__), __FILE_CONTENTS__); // will be discarded
     });
     swoole_event::wait();
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort());
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort());
     $server->set(['worker_num' => 1]);
     $server->on('WorkerStart', function (Swoole\Server $server, int $worker_id) use ($pm) {
         echo 'read file' . PHP_EOL;

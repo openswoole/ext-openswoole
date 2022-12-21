@@ -12,12 +12,12 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
     Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $ch = curl_init();
         $code = uniqid('swoole_');
         $url = "http://127.0.0.1:".$pm->getFreePort()."/?code=".urlencode($code);
@@ -46,7 +46,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "Done\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server("127.0.0.1", $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server("127.0.0.1", $pm->getFreePort());
     $http->set(['worker_num' => 1, 'log_file' => '/dev/null']);
 
     $http->on("start", function ($server) use ($pm) {

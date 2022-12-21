@@ -16,11 +16,11 @@ $pm->parentFunc = function () use ($pm) {
     phpt_echo("start to benchmark " . MAX_REQUESTS_MID . " times...\n");
     $concurrency = PRESSURE_LEVEL === PRESSURE_NORMAL ? MAX_CONCURRENCY * 4 : MAX_CONCURRENCY;
     Co::set(['max_coroutine' => $concurrency + 1]);
-    Co\run(function () use ($pm, $concurrency) {
+    co::run(function () use ($pm, $concurrency) {
         phpt_echo("Concurrency: {$concurrency}\n");
         for ($c = $concurrency; $c--;) {
             go(function () use ($pm, $c) {
-                $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+                $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
                 $cli->set(['timeout' => -1]);
                 while (!@$cli->upgrade('/')) {
                     co::usleep(100000);
@@ -34,7 +34,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Websocket\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Websocket\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set(['worker_num' => 1, 'log_file' => '/dev/null']);
     $server->on('workerStart', function (Swoole\Websocket\Server $server, int $worker_id) use ($pm) {
         global $mem_records;

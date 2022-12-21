@@ -8,14 +8,12 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\Client;
 
-use function Swoole\Coroutine\run;
-
-run(function () {
+co::run(function () {
     $client = new Client(SWOOLE_SOCK_TCP);
-    $client->connect('www.baidu.com', 443);
+    $client->connect('www.google.com', 443);
     $client->enableSSL();
 
-    $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: www.baidu.com\r\nConnection: Close\r\n\r\n";
+    $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: www.google.com\r\nConnection: Close\r\n\r\n";
     if (!$client->send($http)) {
         echo "ERROR\n";
     }
@@ -29,7 +27,7 @@ run(function () {
         $content .= $read;
     }
     $client->close();
-    Assert::assert(strpos($content, 'map.baidu.com') !== false);
+    Assert::assert(strpos($content, 'google.com') !== false);
 });
 ?>
 --EXPECT--

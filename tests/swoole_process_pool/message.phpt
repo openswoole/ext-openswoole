@@ -22,7 +22,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $pool = new Swoole\Process\Pool(1, SWOOLE_IPC_SOCKET);
+    $pool = new OpenSwoole\Process\Pool(1, SWOOLE_IPC_SOCKET);
 
     $pool->on('workerStart', function (Swoole\Process\Pool $pool, int $workerId) {
         $client = new swoole_client(SWOOLE_SOCK_TCP);

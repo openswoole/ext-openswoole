@@ -8,7 +8,7 @@ require __DIR__ . '/../include/skipif.inc';
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-Co\run(function () {
+co::run(function () {
     $socket = stream_socket_client(
         'tcp://www.baidu.com:80',
         $errorCode,

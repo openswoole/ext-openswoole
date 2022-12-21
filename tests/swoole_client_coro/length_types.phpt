@@ -10,7 +10,7 @@ $pm->initRandomData(count(tcp_length_types()) * MAX_REQUESTS);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
         foreach (tcp_length_types() as $length_type => $type_length) {
-            $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $client->set([
                 'open_eof_split' => false,
                 'open_length_check' => true,
@@ -35,7 +35,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $server->on('connect', function (Swoole\Server $server, int $fd) use ($pm) {
         $length_type = array_keys(tcp_length_types())[$fd - 1];
         for ($n = MAX_REQUESTS; $n--;) {

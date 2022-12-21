@@ -12,7 +12,7 @@ use Swoole\Coroutine\Socket;
 
 const GREETER = 'Hello Swoole';
 
-Coroutine\run(function () {
+co::run(function () {
     $server = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Coroutine::create(function () use ($server) {
         Assert::assert($server->bind('127.0.0.1'));

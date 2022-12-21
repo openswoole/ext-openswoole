@@ -10,8 +10,8 @@ use SwooleTest\MQTT\Helper;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_SOCK_TCP);
+    co::run(function () use ($pm) {
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $client->set(['open_mqtt_protocol' => true]);
         Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
         $buffer = Helper::encodePing(12); // PINGREQ
@@ -28,7 +28,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
         'worker_num' => 1,
         'open_mqtt_protocol' => 1,

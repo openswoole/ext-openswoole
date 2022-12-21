@@ -30,7 +30,7 @@ namespace Swoole\Coroutine {
 		public function close(): bool {}
 		public function isConnected(): bool {}
 		public function getsockname(): bool|array {}
-		public function exportSocket(): \Swoole\Coroutine\Socket|bool {}
+		public function exportSocket(): \OpenSwoole\Coroutine\Socket|bool {}
 		public function getpeername(): bool|array {}
 		public function enableSSL(): bool {}
 		public function getPeerCert(): bool|string {}

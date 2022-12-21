@@ -24,7 +24,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $server = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set([
         'log_file' => TEST_LOG_FILE,
         'pid_file' => TEST_PID_FILE,
@@ -33,8 +33,8 @@ $pm->childFunc = function () use ($pm) {
     $server->on('WorkerStart', function (Swoole\Server $server, int $worker_id) use ($pm) {
         $pm->wakeup();
     });
-    $server->on('request', function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) {
-        $response->end(\Co::getuid());
+    $server->on('request', function (\OpenSwoole\Http\Request $request, \OpenSwoole\Http\Response $response) {
+        $response->end(\Co::getCid());
     });
     $server->start();
 };

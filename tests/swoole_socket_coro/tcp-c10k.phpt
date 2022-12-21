@@ -10,7 +10,7 @@ Swoole\Runtime::enableCoroutine();
 
 $port = get_one_free_port();
 go(function () use ($port) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::assert($socket->bind('127.0.0.1', $port));
     Assert::assert($socket->listen(MAX_CONCURRENCY_MID));
     $i = 0;
@@ -31,7 +31,7 @@ go(function () use ($port) {
 });
 for ($c = MAX_CONCURRENCY_MID; $c--;) {
     go(function () use ($port) {
-        $client = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+        $client = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
         Assert::assert($client->connect('127.0.0.1', $port));
         for ($n = MAX_REQUESTS; $n--;) {
             $client->send(tcp_pack("Hello Swoole Server #{$n}!"));
@@ -41,7 +41,7 @@ for ($c = MAX_CONCURRENCY_MID; $c--;) {
         $client->close();
     });
 }
-
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--
 DONE

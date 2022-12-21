@@ -6,9 +6,9 @@ swoole_socket_coro: sendto
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $randomData = '';
-Co\run(function () {
+co::run(function () {
     go(function () {
-        $socket = new Swoole\Coroutine\Socket(AF_UNIX, SOCK_DGRAM, IPPROTO_IP);
+        $socket = new OpenSwoole\Coroutine\Socket(AF_UNIX, SOCK_DGRAM, IPPROTO_IP);
         $socket->bind('/tmp/test-server.sock', 0);
         $data = $socket->recvfrom($peer);
         if (!$data) {

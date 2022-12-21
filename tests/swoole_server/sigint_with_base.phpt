@@ -19,13 +19,13 @@ $pm->parentFunc = function ($pid) use ($pm) {
     echo file_get_contents(TEST_LOG_FILE);
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
         'log_file' => '/dev/null',
         'worker_num' => 1,
     ]);
     $server->on('workerStart', function (Swoole\Server $server) use ($pm) {
-        \Swoole\Process::signal(2, function () use ($server) {
+        \OpenSwoole\Process::signal(2, function () use ($server) {
             file_put_contents(TEST_LOG_FILE, 'SIGINT, SHUTDOWN' . PHP_EOL);
             $server->shutdown();
         });

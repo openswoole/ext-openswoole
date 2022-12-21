@@ -11,7 +11,7 @@ Co::set([
 ]);
 
 
-Co\run(function () {
+co::run(function () {
     test_not_found();
 });
 echo "DONE\n";

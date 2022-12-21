@@ -8,9 +8,9 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
         $cli->connect();
-        $request = new Swoole\Http2\Request;
+        $request = new OpenSwoole\Http2\Request;
         for ($n = MAX_REQUESTS; $n--;) {
             $request->cookies = [];
             for ($k = 32; $k--;) {
@@ -26,7 +26,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set([
         'log_file' => '/dev/null',
         'open_http2_protocol' => true

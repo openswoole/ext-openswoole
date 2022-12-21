@@ -111,7 +111,7 @@ static zend_object *php_swoole_channel_coro_create_object(zend_class_entry *ce) 
 
 void php_swoole_channel_coro_minit(int module_number) {
     SW_INIT_CLASS_ENTRY(
-        swoole_channel_coro, "Swoole\\Coroutine\\Channel", nullptr, "Co\\Channel", swoole_channel_coro_methods);
+        swoole_channel_coro, "Swoole\\Coroutine\\Channel", nullptr, nullptr, swoole_channel_coro_methods);
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_channel_coro);
     SW_SET_CLASS_CLONEABLE(swoole_channel_coro, sw_zend_class_clone_deny);
     SW_SET_CLASS_UNSET_PROPERTY_HANDLER(swoole_channel_coro, sw_zend_class_unset_property_deny);
@@ -121,14 +121,18 @@ void php_swoole_channel_coro_minit(int module_number) {
                                ChannelObject,
                                std);
     SW_SET_CLASS_DTOR(swoole_channel_coro, php_swoole_channel_coro_dtor_object);
-    if (SWOOLE_G(use_shortname)) {
-        SW_CLASS_ALIAS("Chan", swoole_channel_coro);
-    }
+    SW_CLASS_ALIAS("chan", swoole_channel_coro);
 
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("id"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("capacity"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_long(swoole_channel_coro_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
 
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_OK"), Channel::ERROR_OK);
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_TIMEOUT"), Channel::ERROR_TIMEOUT);
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_CLOSED"), Channel::ERROR_CLOSED);
+    zend_declare_class_constant_long(swoole_channel_coro_ce, ZEND_STRL("CHANNEL_CANCELED"), Channel::ERROR_CANCELED);
+
+    // backward compatibility
     SW_REGISTER_LONG_CONSTANT("SWOOLE_CHANNEL_OK", Channel::ERROR_OK);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_CHANNEL_TIMEOUT", Channel::ERROR_TIMEOUT);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_CHANNEL_CLOSED", Channel::ERROR_CLOSED);

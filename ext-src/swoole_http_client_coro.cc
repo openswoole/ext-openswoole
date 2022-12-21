@@ -647,7 +647,7 @@ bool HttpClient::decompress_response(const char *in, size_t in_len) {
                 }
             } else {
                 swoole_warning("BrotliDecoderDecompressStream() failed, %s",
-                       BrotliDecoderErrorString(BrotliDecoderGetErrorCode(brotli_decoder_state)));
+                               BrotliDecoderErrorString(BrotliDecoderGetErrorCode(brotli_decoder_state)));
                 break;
             }
         }
@@ -1255,15 +1255,15 @@ bool HttpClient::send() {
     }
 
     swoole_trace_log(SW_TRACE_HTTP_CLIENT,
-               "to [%s:%u%s] by fd#%d in cid#%ld with [%zu] bytes: <<EOF\n%.*s\nEOF",
-               host.c_str(),
-               port,
-               path.c_str(),
-               socket->get_fd(),
-               Coroutine::get_current_cid(),
-               buffer->length,
-               (int) buffer->length,
-               buffer->str);
+                     "to [%s:%u%s] by fd#%d in cid#%ld with [%zu] bytes: <<EOF\n%.*s\nEOF",
+                     host.c_str(),
+                     port,
+                     path.c_str(),
+                     socket->get_fd(),
+                     Coroutine::get_current_cid(),
+                     buffer->length,
+                     (int) buffer->length,
+                     buffer->str);
 
     if (socket->send_all(buffer->str, buffer->length) != (ssize_t) buffer->length) {
     _send_fail:
@@ -1430,11 +1430,11 @@ bool HttpClient::recv_http_response(double timeout) {
         total_bytes += retval;
         parsed_n = swoole_http_parser_execute(&parser, &http_parser_settings, buffer->str, retval);
         swoole_trace_log(SW_TRACE_HTTP_CLIENT,
-                   "parsed_n=%ld, retval=%ld, total_bytes=%ld, completed=%d",
-                   parsed_n,
-                   retval,
-                   total_bytes,
-                   parser.state == s_start_res);
+                         "parsed_n=%ld, retval=%ld, total_bytes=%ld, completed=%d",
+                         parsed_n,
+                         retval,
+                         total_bytes,
+                         parser.state == s_start_res);
         if (parser.state == s_start_res) {
             // handle redundant data (websocket packet)
             if (parser.upgrade && (size_t) retval > parsed_n + SW_WEBSOCKET_HEADER_LEN) {
@@ -1629,11 +1629,8 @@ static zend_object *php_swoole_http_client_coro_create_object(zend_class_entry *
 }
 
 void php_swoole_http_client_coro_minit(int module_number) {
-    SW_INIT_CLASS_ENTRY(swoole_http_client_coro,
-                        "Swoole\\Coroutine\\Http\\Client",
-                        nullptr,
-                        "Co\\Http\\Client",
-                        swoole_http_client_coro_methods);
+    SW_INIT_CLASS_ENTRY(
+        swoole_http_client_coro, "Swoole\\Coroutine\\Http\\Client", nullptr, nullptr, swoole_http_client_coro_methods);
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_http_client_coro);
     SW_SET_CLASS_CLONEABLE(swoole_http_client_coro, sw_zend_class_clone_deny);
     SW_SET_CLASS_UNSET_PROPERTY_HANDLER(swoole_http_client_coro, sw_zend_class_unset_property_deny);
@@ -1673,10 +1670,20 @@ void php_swoole_http_client_coro_minit(int module_number) {
     SW_INIT_CLASS_ENTRY_EX(swoole_http_client_coro_exception,
                            "Swoole\\Coroutine\\Http\\Client\\Exception",
                            nullptr,
-                           "Co\\Http\\Client\\Exception",
+                           nullptr,
                            nullptr,
                            swoole_exception);
 
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_CONNECT_FAILED"), HTTP_CLIENT_ESTATUS_CONNECT_FAILED);
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_REQUEST_TIMEOUT"), HTTP_CLIENT_ESTATUS_REQUEST_TIMEOUT);
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_SERVER_RESET"), HTTP_CLIENT_ESTATUS_SERVER_RESET);
+    zend_declare_class_constant_long(
+        swoole_http_client_coro_ce, ZEND_STRL("STATUS_SEND_FAILED"), HTTP_CLIENT_ESTATUS_SEND_FAILED);
+
+    // backward compatibility
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP_CLIENT_ESTATUS_CONNECT_FAILED", HTTP_CLIENT_ESTATUS_CONNECT_FAILED);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP_CLIENT_ESTATUS_REQUEST_TIMEOUT", HTTP_CLIENT_ESTATUS_REQUEST_TIMEOUT);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP_CLIENT_ESTATUS_SERVER_RESET", HTTP_CLIENT_ESTATUS_SERVER_RESET);

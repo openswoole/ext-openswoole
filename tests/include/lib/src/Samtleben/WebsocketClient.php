@@ -16,7 +16,7 @@ class WebsocketClient
 	private $_path;
 	private $_origin;
     /**
-     * @var \Swoole\Client
+     * @var \OpenSwoole\Client
      */
 	private $_Socket = null;
 	private $_connected = false;
@@ -81,7 +81,7 @@ class WebsocketClient
 		}
 		$header.= "Sec-WebSocket-Version: 13\r\n";
 
-		$this->_Socket = new \Swoole\Client(SWOOLE_TCP, SWOOLE_SOCK_SYNC);
+		$this->_Socket = new \OpenSwoole\Client(SWOOLE_TCP, SWOOLE_SOCK_SYNC);
 		$this->_Socket->connect($host, $port, 1);
 		$this->_Socket->send($header."\r\n");
 		$response = $this->_Socket->recv(1500);

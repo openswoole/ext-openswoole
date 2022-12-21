@@ -6,14 +6,14 @@ swoole_channel_coro: channel by return value
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     $foo = foo();
     $ret = $foo->pop(0.001);
     Assert::false($ret);
 });
 function foo()
 {
-    $chan = new \Swoole\Coroutine\Channel();
+    $chan = new \OpenSwoole\Coroutine\Channel();
     go(function () use ($chan) {
         // nothing
     });

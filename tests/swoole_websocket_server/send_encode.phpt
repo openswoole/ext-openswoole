@@ -19,7 +19,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm, &$count, $data_list) {
     for ($c = $count; $c--;) {
         go(function () use ($pm, &$count, $data_list) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 5]);
             $ret = $cli->upgrade('/');
             Assert::assert($ret);

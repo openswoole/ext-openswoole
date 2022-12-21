@@ -6,7 +6,7 @@ swoole_coroutine_system: sleep
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-Swoole\Coroutine::create(function () {
+co::run(function () {
     Swoole\Coroutine\System::usleep(500000);
     echo "OK";
 });

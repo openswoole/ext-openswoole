@@ -13,7 +13,7 @@ $pm->parentFunc = function (int $pid) use ($pm, &$count) {
     for ($c = MAX_CONCURRENCY; $c--;) {
         go(function () use ($pm, &$count) {
             global $count;
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 5]);
             $ret = $cli->upgrade('/');
             Assert::assert($ret);

@@ -11,7 +11,7 @@ use Swoole\Coroutine\Client;
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\Run(function (){
+    Co::run(function (){
         $client = new Client(SWOOLE_SOCK_UNIX_STREAM);
         $r = $client->connect(UNIXSOCK_PATH, 0, -1);
         if ($r === false) {

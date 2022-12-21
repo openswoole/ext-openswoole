@@ -11,7 +11,7 @@ $port = get_one_free_port();
 $pm->parentFunc = function ($pid) use ($pm, $port)
 {
     go(function () use ($port) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $cli->set([
             'open_length_check' => true,
             'package_max_length' => 1024 * 1024,

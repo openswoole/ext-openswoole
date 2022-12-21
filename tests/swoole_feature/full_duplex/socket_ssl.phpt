@@ -1,7 +1,7 @@
 --TEST--
 swoole_feature/full_duplex: socket
 --SKIPIF--
-<?php use Co\Socket;
+<?php use OpenSwoole\Coroutine\Socket;
 
 require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
@@ -34,7 +34,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     for ($c = 0; $c < MAX_CONCURRENCY_LOW; $c++) {
         go(function () use ($pm, $c) {
             global $sockets;
-            $sockets[] = $socket = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+            $sockets[] = $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
             $socket->setProtocol(['open_ssl' => true]);
             $ret = $socket->connect('127.0.0.1', $pm->getFreePort(), -1);
             if (!Assert::assert($ret)) {
@@ -85,8 +85,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    go(function () use ($pm) {
-        $server = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    co::run(function () use ($pm) {
+        $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $server->setProtocol([
             'open_ssl' => true,
             'ssl_cert_file' => SSL_FILE_DIR.'/client.crt',
@@ -96,7 +96,7 @@ $pm->childFunc = function () use ($pm) {
         Assert::assert($server->listen(MAX_CONCURRENCY));
         /** @var $conn Socket */
         while ($conn = $server->accept(-1)) {
-            if (!Assert::assert($conn instanceof Co\Socket)) {
+            if (!Assert::assert($conn instanceof OpenSwoole\Coroutine\Socket)) {
                 throw new RuntimeException('accept failed');
             } else {
                 set_socket_coro_buffer_size($conn, BUFFER_SIZE);

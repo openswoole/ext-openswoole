@@ -5,37 +5,30 @@ swoole_global: deny serialize and unserialize
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     try {
-        $hcc = new \Swoole\Atomic();
+        $hcc = new \OpenSwoole\Atomic();
         serialize($hcc);
         Assert::true(false, 'never here');
     } catch (\Exception $exception) {
         Assert::same(strpos($exception->getMessage(), 'Serialization'), 0);
     }
     try {
-        $hcc = new \Swoole\Client(SWOOLE_TCP);
+        $hcc = new \OpenSwoole\Client(SWOOLE_TCP);
         serialize($hcc);
         Assert::true(false, 'never here');
     } catch (\Exception $exception) {
         Assert::same(strpos($exception->getMessage(), 'Serialization'), 0);
     }
     try {
-        $hcc = new \Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $hcc = new \OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         serialize($hcc);
         Assert::true(false, 'never here');
     } catch (\Exception $exception) {
         Assert::same(strpos($exception->getMessage(), 'Serialization'), 0);
     }
     try {
-        $hcc = new \Swoole\Coroutine\Http\Client('127.0.0.1');
-        serialize($hcc);
-        Assert::true(false, 'never here');
-    } catch (\Exception $exception) {
-        Assert::same(strpos($exception->getMessage(), 'Serialization'), 0);
-    }
-    try {
-        $hcc = new \Swoole\Coroutine\Mysql();
+        $hcc = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1');
         serialize($hcc);
         Assert::true(false, 'never here');
     } catch (\Exception $exception) {
@@ -43,7 +36,7 @@ go(function () {
     }
     if (HAS_ASYNC_REDIS) {
         try {
-            $hcc = new \Swoole\Coroutine\Redis();
+            $hcc = new \OpenSwoole\Coroutine\Redis();
             serialize($hcc);
             Assert::true(false, 'never here');
         } catch (\Exception $exception) {
@@ -51,7 +44,7 @@ go(function () {
         }
     }
     try {
-        $hcc = new \Swoole\Table(1);
+        $hcc = new \OpenSwoole\Table(1);
         serialize($hcc);
         Assert::true(false, 'never here');
     } catch (\Exception $exception) {

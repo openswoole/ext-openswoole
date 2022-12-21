@@ -6,15 +6,12 @@ swoole_http2_client_coro: connect twice
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
-use function Swoole\Coroutine\go;
-
-run(function () {
-    $client = new \Swoole\Coroutine\Http2\Client('www.zhihu.com', 443, true);
-    $chan   = new \Swoole\Coroutine\Channel(1);
+co::run(function () {
+    $client = new \OpenSwoole\Coroutine\Http2\Client('www.zhihu.com', 443, true);
+    $chan   = new \OpenSwoole\Coroutine\Channel(1);
     go(function () use ($client, $chan) {
         $client->connect();
-        $req = new \Swoole\Http2\Request();
+        $req = new \OpenSwoole\Http2\Request();
         $req->method = 'GET';
         $req->path   = '/io?io=' . str_repeat('xxx', 1000);
         $client->send($req);
@@ -26,7 +23,7 @@ run(function () {
     });
     go(function () use ($client, $chan) {
         Assert::eq($client->connect(), false);
-        $req = new \Swoole\Http2\Request();
+        $req = new \OpenSwoole\Http2\Request();
         $req->method = 'GET';
         $req->path   = '/io?io=xxx';
         $client->send($req);

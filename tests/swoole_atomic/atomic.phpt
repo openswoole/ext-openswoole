@@ -6,7 +6,7 @@ swoole_atomic: add/sub/get/cmpset
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$atomic = new swoole_atomic(1);
+$atomic = new OpenSwoole\Atomic(1);
 
 Assert::same($atomic->add(199), 200);
 Assert::same($atomic->sub(35), 165);

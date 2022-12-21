@@ -18,7 +18,7 @@ assert_options(ASSERT_WARNING, 1);
 assert_options(ASSERT_BAIL, 0);
 
 // Swoole settings
-swoole_async_set([
+OpenSwoole\Util::setAio([
     'socket_dontwait' => 1,
     'disable_dns_cache' => true,
     'dns_lookup_random' => true,
@@ -41,6 +41,11 @@ class_alias(SwooleTest\ProcessManager::class, ProcessManager::class);
 class_alias(SwooleTest\ServerManager::class, ServerManager::class);
 class_alias(SwooleTest\RandStr::class, RandStr::class);
 class_alias(SwooleTest\TcpStat::class, TcpStat::class);
+
+function swoole_array_default_value(array $array, $key, $default_value = null)
+{
+    return array_key_exists($key, $array) ? $array[$key] : $default_value;
+}
 
 class Assert extends SwooleTest\Assert
 {

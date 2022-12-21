@@ -26,9 +26,9 @@
 #include "swoole_coroutine_scheduler_arginfo_legacy.h"
 #endif
 
-using swoole::Reactor;
 using swoole::Coroutine;
 using swoole::PHPCoroutine;
+using swoole::Reactor;
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
 
@@ -98,7 +98,7 @@ void php_swoole_coroutine_scheduler_minit(int module_number) {
     SW_INIT_CLASS_ENTRY(swoole_coroutine_scheduler,
                         "Swoole\\Coroutine\\Scheduler",
                         nullptr,
-                        "Co\\Scheduler",
+                        nullptr,
                         swoole_coroutine_scheduler_methods);
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_coroutine_scheduler);
     SW_SET_CLASS_CLONEABLE(swoole_coroutine_scheduler, sw_zend_class_clone_deny);
@@ -131,7 +131,7 @@ static bool php_swoole_coroutine_reactor_can_exit(Reactor *reactor, size_t &even
 void php_swoole_set_coroutine_option(zend_array *vht) {
     zval *ztmp;
     if (php_swoole_array_get_value(vht, "max_coro_num", ztmp) ||
-            php_swoole_array_get_value(vht, "max_coroutine", ztmp)) {
+        php_swoole_array_get_value(vht, "max_coroutine", ztmp)) {
         zend_long max_num = zval_get_long(ztmp);
         PHPCoroutine::set_max_num(max_num <= 0 ? SW_DEFAULT_MAX_CORO_NUM : max_num);
     }

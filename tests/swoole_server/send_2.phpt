@@ -14,7 +14,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $total = 0;
     for ($i = 0; $i < MAX_CONCURRENCY_MID; $i++) {
         go(function () use ($pm, $i, &$total) {
-            $cli = new Co\Client(SWOOLE_SOCK_TCP);
+            $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $cli->set([
                 'open_length_check' => true,
                 'package_max_length' => 4 * 1024 * 1024,
@@ -46,7 +46,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $serv = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $serv = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $serv->set(array(
         "worker_num" => IS_IN_TRAVIS ? 2 : 4,
         'log_level' => SWOOLE_LOG_ERROR,

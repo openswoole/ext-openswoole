@@ -20,7 +20,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm, $data_list) {
     for ($c = MAX_CONCURRENCY_LOW; $c--;) {
         go(function () use ($pm) {
-            $cli = new Co\http\client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\http\client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => -1]);
             $ret = $cli->upgrade('/');
             if ($ret == false) {

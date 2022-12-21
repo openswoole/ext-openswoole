@@ -14,7 +14,7 @@ const GREETER = 'Hello Swoole';
 const CO_NUM = 5;
 $GLOBALS['counter'] = 0;
 
-Coroutine\run(function () {
+co::run(function () {
     $server = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Coroutine::create(function () use ($server) {
         Assert::assert($server->bind('127.0.0.1'));

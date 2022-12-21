@@ -7,13 +7,13 @@ swoole_http_client_coro: set_cookie_headers
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Co\Run(function () use ($pm) {
+    co::run(function () use ($pm) {
         var_dump(httpRequest("http://127.0.0.1:{$pm->getFreePort()}")['set_cookie_headers']);
     });
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Http\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Http\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
     $server->set(['log_file' => '/dev/null']);
     $server->on('workerStart', function () use ($pm) {
         $pm->wakeup();

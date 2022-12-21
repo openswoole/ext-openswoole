@@ -12,9 +12,9 @@ use Swoole\Server;
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         go(function() use ($pm) {
-            $client = new Co\Client(SWOOLE_SOCK_TCP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
             Assert::assert($client->send('test'));
             $client->recv();
@@ -24,11 +24,11 @@ $pm->parentFunc = function () use ($pm) {
             $pm->kill();
         });
         go(function() use ($pm) {
-            $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->close();
         });
         go(function() use ($pm) {
-            $client = new Co\Client(SWOOLE_SOCK_TCP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
             $client->send('test2');
             $client->close();
@@ -36,7 +36,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort());
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort());
     $server->set([
         'worker_num' => 1,
         'log_level' => SWOOLE_LOG_ERROR,

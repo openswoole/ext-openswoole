@@ -32,7 +32,7 @@ function arrayToMultipartString(array $var, string $boundary): string
 
 function sendData(string $host, int $port, array $get, array $post): string
 {
-    $client = new Co\Client(SWOOLE_SOCK_TCP);
+    $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
     if (!$client->connect($host, $port, 1)) {
         exit("connect failed. Error: {$client->errCode}\n");
     }

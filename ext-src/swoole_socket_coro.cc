@@ -699,8 +699,7 @@ static void swoole_socket_coro_register_constants(int module_number) {
 }
 
 void php_swoole_socket_coro_minit(int module_number) {
-    SW_INIT_CLASS_ENTRY(
-        swoole_socket_coro, "Swoole\\Coroutine\\Socket", nullptr, "Co\\Socket", swoole_socket_coro_methods);
+    SW_INIT_CLASS_ENTRY(swoole_socket_coro, "Swoole\\Coroutine\\Socket", nullptr, nullptr, swoole_socket_coro_methods);
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_socket_coro);
     SW_SET_CLASS_CLONEABLE(swoole_socket_coro, sw_zend_class_clone_deny);
     SW_SET_CLASS_UNSET_PROPERTY_HANDLER(swoole_socket_coro, sw_zend_class_unset_property_deny);
@@ -717,10 +716,13 @@ void php_swoole_socket_coro_minit(int module_number) {
     zend_declare_property_long(swoole_socket_coro_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
     zend_declare_property_string(swoole_socket_coro_ce, ZEND_STRL("errMsg"), "", ZEND_ACC_PUBLIC);
 
+    zend_declare_class_constant_long(swoole_socket_coro_ce, ZEND_STRL("EVENT_READ"), SW_EVENT_READ);
+    zend_declare_class_constant_long(swoole_socket_coro_ce, ZEND_STRL("EVENT_WRITE"), SW_EVENT_READ);
+
     SW_INIT_CLASS_ENTRY_EX(swoole_socket_coro_exception,
                            "Swoole\\Coroutine\\Socket\\Exception",
                            nullptr,
-                           "Co\\Socket\\Exception",
+                           nullptr,
                            nullptr,
                            swoole_exception);
 

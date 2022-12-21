@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Client;
 
-use function Swoole\Coroutine\run;
+
 
 $pm = new SwooleTest\ProcessManager;
 
@@ -26,8 +26,8 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    run(function () use ($pm) {
-        $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
+    co::run(function () use ($pm) {
+        $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
         $socket->bind('127.0.0.1', $pm->getFreePort());
         $pm->wakeup();
         $peer = null;
@@ -43,5 +43,5 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Warning: Swoole\Client::sendto(): sendto to server[error_domain:%d] failed. Error: DNS Lookup resolve failed[704] in %ssendto.php on line %d
+Warning: OpenSwoole\Client::sendto(): sendto to server[error_domain:%d] failed. Error: DNS Lookup resolve failed[704] in %ssendto.php on line %d
 DONE

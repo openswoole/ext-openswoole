@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm)
 {
     go(function() use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->addFile(TEST_IMAGE, 'test.jpg');
         $cli->post('/upload_file', array('name' => 'rango'));
         Assert::same($cli->statusCode, 200);

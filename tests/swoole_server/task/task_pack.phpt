@@ -12,7 +12,7 @@ const MSGQ_KEY = 0x70001001;
 use Swoole\Server;
 
 $pm = new SwooleTest\ProcessManager;
-$result = new Swoole\Atomic(0);
+$result = new OpenSwoole\Atomic(0);
 
 $pm->parentFunc = function ($pid) use ($pm) {
     $task = new class(MSGQ_KEY, 0) {
@@ -22,7 +22,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         function __construct($key, $workerId) {
             $this->queueId = msg_get_queue($key);
             if ($this->queueId === false) {
-                throw new \Swoole\Exception("msg_get_queue() failed.");
+                throw new \OpenSwoole\Exception("msg_get_queue() failed.");
             }
             $this->workerId = $workerId;
         }

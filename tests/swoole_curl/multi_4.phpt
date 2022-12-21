@@ -11,10 +11,10 @@ require_once TESTS_API_PATH.'/curl_multi.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $n = 4;
     while ($n--) {
         go(function () {

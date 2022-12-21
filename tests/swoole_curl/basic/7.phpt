@@ -27,5 +27,5 @@ $cm->run(function ($host) {
 
 ?>
 --EXPECTF--
-%string(%d) "No URL set%s"
+%string(%d) "No URL set!"
 int(3)

@@ -8,13 +8,13 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
+
 
 $pm = new ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $content = str_repeat(get_safe_random(1024), 5 * 1024);
         file_put_contents('/tmp/test.jpg', $content);
         $cli->addFile('/tmp/test.jpg', 'test.jpg');
@@ -34,7 +34,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort());
 
     $http->set([
         'log_file' => '/dev/null',

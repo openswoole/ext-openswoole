@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Http\Client;
 use Swoole\Coroutine\System;
 
-Co\Run(function () {
+co::run(function () {
     $client = new Client('www.baidu.com', 443, true);
     $client->set([
         'ssl_verify_peer' => true,

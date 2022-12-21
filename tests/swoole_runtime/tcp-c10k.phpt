@@ -51,6 +51,8 @@ for ($c = MAX_CONCURRENCY_MID; $c--;) {
     });
 }
 
+OpenSwoole\Event::wait();
+
 ?>
 --EXPECT--
 DONE

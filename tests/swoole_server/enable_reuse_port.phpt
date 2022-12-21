@@ -12,17 +12,17 @@ const N = 32;
 const W = 4;
 
 $pm = new SwooleTest\ProcessManager;
-$count = new Swoole\Atomic(0);
+$count = new OpenSwoole\Atomic(0);
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    $c = new Swoole\Coroutine\Scheduler();
+    $c = new OpenSwoole\Coroutine\Scheduler();
 
     $workerCounter = [];
 
     $c->parallel(
         N,
         function () use ($pm, &$workerCounter) {
-            $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
                 echo "Overflow. errno=" . $client->errCode;
                 die("\n");

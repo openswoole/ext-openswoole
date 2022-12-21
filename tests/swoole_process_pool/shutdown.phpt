@@ -7,7 +7,7 @@ swoole_process_pool: shutdown
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$pool = new Swoole\Process\Pool(1);
+$pool = new OpenSwoole\Process\Pool(1);
 $pool->on('workerStart', function (Swoole\Process\Pool $pool, int $workerId)
 {
     $pool->shutdown();

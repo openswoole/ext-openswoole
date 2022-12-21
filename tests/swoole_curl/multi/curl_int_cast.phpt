@@ -7,10 +7,10 @@ swoole_curl/multi: Casting CurlHandle to int returns object ID
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $handle1 = curl_init();
     var_dump((int)$handle1);
     $handle2 = curl_init();

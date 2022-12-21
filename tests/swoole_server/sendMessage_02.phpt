@@ -44,9 +44,9 @@ $pm->childFunc = function () use ($pm)
         'task_worker_num' => 3,
     ]);
 
-    $lock = new swoole\lock();
+    $lock = new OpenSwoole\lock();
 
-    $process = new \Swoole\Process(function ($process) use ($serv) {
+    $process = new \OpenSwoole\Process(function ($process) use ($serv) {
         while (true)
         {
             $r = $process->read();

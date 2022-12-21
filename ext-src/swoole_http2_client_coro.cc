@@ -150,7 +150,7 @@ class Client {
 
     void apply_http2_setting(zval *zset) {
         Http2::Settings *settings = &local_settings;
-        if(ZVAL_IS_ARRAY(zset)) {
+        if (ZVAL_IS_ARRAY(zset)) {
             HashTable *vht = Z_ARRVAL_P(zset);
             zval *ztmp;
             if (php_swoole_array_get_value(vht, "http2_header_table_size", ztmp)) {
@@ -302,11 +302,8 @@ static const zend_function_entry swoole_http2_client_methods[] =
 // clang-format on
 
 void php_swoole_http2_client_coro_minit(int module_number) {
-    SW_INIT_CLASS_ENTRY(swoole_http2_client_coro,
-                        "Swoole\\Coroutine\\Http2\\Client",
-                        nullptr,
-                        "Co\\Http2\\Client",
-                        swoole_http2_client_methods);
+    SW_INIT_CLASS_ENTRY(
+        swoole_http2_client_coro, "Swoole\\Coroutine\\Http2\\Client", nullptr, nullptr, swoole_http2_client_methods);
     SW_SET_CLASS_NOT_SERIALIZABLE(swoole_http2_client_coro);
     SW_SET_CLASS_CLONEABLE(swoole_http2_client_coro, sw_zend_class_clone_deny);
     SW_SET_CLASS_UNSET_PROPERTY_HANDLER(swoole_http2_client_coro, sw_zend_class_unset_property_deny);
@@ -319,7 +316,7 @@ void php_swoole_http2_client_coro_minit(int module_number) {
     SW_INIT_CLASS_ENTRY_EX(swoole_http2_client_coro_exception,
                            "Swoole\\Coroutine\\Http2\\Client\\Exception",
                            nullptr,
-                           "Co\\Http2\\Client\\Exception",
+                           nullptr,
                            nullptr,
                            swoole_exception);
 
@@ -361,6 +358,52 @@ void php_swoole_http2_client_coro_minit(int module_number) {
     zend_declare_property_null(swoole_http2_response_ce, ZEND_STRL("cookies"), ZEND_ACC_PUBLIC);
     zend_declare_property_null(swoole_http2_response_ce, ZEND_STRL("data"), ZEND_ACC_PUBLIC);
 
+    zend_declare_class_constant_long(swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_DATA"), SW_HTTP2_TYPE_DATA);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_HEADERS"), SW_HTTP2_TYPE_HEADERS);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_PRIORITY"), SW_HTTP2_TYPE_PRIORITY);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_RST_STREAM"), SW_HTTP2_TYPE_RST_STREAM);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_SETTINGS"), SW_HTTP2_TYPE_SETTINGS);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_PUSH_PROMISE"), SW_HTTP2_TYPE_PUSH_PROMISE);
+    zend_declare_class_constant_long(swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_PING"), SW_HTTP2_TYPE_PING);
+    zend_declare_class_constant_long(swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_GOAWAY"), SW_HTTP2_TYPE_GOAWAY);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_WINDOW_UPDATE"), SW_HTTP2_TYPE_WINDOW_UPDATE);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_TYPE_CONTINUATION"), SW_HTTP2_TYPE_CONTINUATION);
+
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_NO_ERROR"), SW_HTTP2_ERROR_NO_ERROR);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_PROTOCOL_ERROR"), SW_HTTP2_ERROR_PROTOCOL_ERROR);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_INTERNAL_ERROR"), SW_HTTP2_ERROR_INTERNAL_ERROR);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_FLOW_CONTROL_ERROR"), SW_HTTP2_ERROR_FLOW_CONTROL_ERROR);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_SETTINGS_TIMEOUT"), SW_HTTP2_ERROR_SETTINGS_TIMEOUT);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_STREAM_CLOSED"), SW_HTTP2_ERROR_STREAM_CLOSED);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_FRAME_SIZE_ERROR"), SW_HTTP2_ERROR_FRAME_SIZE_ERROR);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_REFUSED_STREAM"), SW_HTTP2_ERROR_REFUSED_STREAM);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_CANCEL"), SW_HTTP2_ERROR_CANCEL);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_COMPRESSION_ERROR"), SW_HTTP2_ERROR_COMPRESSION_ERROR);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_CONNECT_ERROR"), SW_HTTP2_ERROR_CONNECT_ERROR);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_ENHANCE_YOUR_CALM"), SW_HTTP2_ERROR_ENHANCE_YOUR_CALM);
+    zend_declare_class_constant_long(
+        swoole_http2_client_coro_ce, ZEND_STRL("HTTP2_ERROR_INADEQUATE_SECURITY"), SW_HTTP2_ERROR_INADEQUATE_SECURITY);
+
+    // backward compatibility
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP2_TYPE_DATA", SW_HTTP2_TYPE_DATA);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP2_TYPE_HEADERS", SW_HTTP2_TYPE_HEADERS);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_HTTP2_TYPE_PRIORITY", SW_HTTP2_TYPE_PRIORITY);
@@ -916,14 +959,14 @@ int Client::parse_header(Stream *stream, int flags, char *in, size_t inlen) {
         inlen -= (size_t) rv;
 
         swoole_trace_log(SW_TRACE_HTTP2,
-                   "[" SW_ECHO_GREEN "] %.*s[%lu]: %.*s[%lu]",
-                   "HEADER",
-                   (int) nv.namelen,
-                   nv.name,
-                   nv.namelen,
-                   (int) nv.valuelen,
-                   nv.value,
-                   nv.valuelen);
+                         "[" SW_ECHO_GREEN "] %.*s[%lu]: %.*s[%lu]",
+                         "HEADER",
+                         (int) nv.namelen,
+                         nv.name,
+                         nv.namelen,
+                         (int) nv.valuelen,
+                         nv.value,
+                         nv.valuelen);
 
         if (inflate_flags & NGHTTP2_HD_INFLATE_EMIT) {
             if (nv.name[0] == ':') {
@@ -1169,7 +1212,7 @@ uint32_t Client::send_request(zval *zrequest) {
         flags |= SW_HTTP2_STREAM_USE_PIPELINE_READ;
     }
 
-    if(streams.size() >= remote_settings.max_concurrent_streams) {
+    if (streams.size() >= remote_settings.max_concurrent_streams) {
         return 0;
     }
 
@@ -1184,10 +1227,10 @@ uint32_t Client::send_request(zval *zrequest) {
     Http2::set_frame_header(buffer, SW_HTTP2_TYPE_HEADERS, bytes, flags, stream->stream_id);
 
     swoole_trace_log(SW_TRACE_HTTP2,
-               "[" SW_ECHO_GREEN ", STREAM#%d] length=%zd",
-               Http2::get_type(SW_HTTP2_TYPE_HEADERS),
-               stream->stream_id,
-               bytes);
+                     "[" SW_ECHO_GREEN ", STREAM#%d] length=%zd",
+                     Http2::get_type(SW_HTTP2_TYPE_HEADERS),
+                     stream->stream_id,
+                     bytes);
     if (!send(buffer, SW_HTTP2_FRAME_HEADER_SIZE + bytes)) {
         return 0;
     }
@@ -1215,10 +1258,10 @@ uint32_t Client::send_request(zval *zrequest) {
         }
 
         swoole_trace_log(SW_TRACE_HTTP2,
-                   "[" SW_ECHO_GREEN ", END, STREAM#%d] length=%zu",
-                   Http2::get_type(SW_HTTP2_TYPE_DATA),
-                   stream->stream_id,
-                   len);
+                         "[" SW_ECHO_GREEN ", END, STREAM#%d] length=%zu",
+                         Http2::get_type(SW_HTTP2_TYPE_DATA),
+                         stream->stream_id,
+                         len);
 
         if (!send_data(stream->stream_id, p, len, flag)) {
             return 0;
@@ -1256,11 +1299,11 @@ bool Client::write_data(uint32_t stream_id, zval *zdata, bool end) {
         }
         Http2::set_frame_header(buffer, SW_HTTP2_TYPE_DATA, len, flag, stream_id);
         swoole_trace_log(SW_TRACE_HTTP2,
-                   "[" SW_ECHO_GREEN ",%s STREAM#%d] length=%zu",
-                   Http2::get_type(SW_HTTP2_TYPE_DATA),
-                   end ? " END," : "",
-                   stream_id,
-                   len);
+                         "[" SW_ECHO_GREEN ",%s STREAM#%d] length=%zu",
+                         Http2::get_type(SW_HTTP2_TYPE_DATA),
+                         end ? " END," : "",
+                         stream_id,
+                         len);
         if (!send(buffer, SW_HTTP2_FRAME_HEADER_SIZE) || !send(formstr, len)) {
             smart_str_free(&formstr_s);
             return false;
@@ -1270,11 +1313,11 @@ bool Client::write_data(uint32_t stream_id, zval *zdata, bool end) {
         zend::String data(zdata);
         Http2::set_frame_header(buffer, SW_HTTP2_TYPE_DATA, data.len(), flag, stream_id);
         swoole_trace_log(SW_TRACE_HTTP2,
-                   "[" SW_ECHO_GREEN ",%s STREAM#%d] length=%zu",
-                   Http2::get_type(SW_HTTP2_TYPE_DATA),
-                   end ? " END," : "",
-                   stream_id,
-                   data.len());
+                         "[" SW_ECHO_GREEN ",%s STREAM#%d] length=%zu",
+                         Http2::get_type(SW_HTTP2_TYPE_DATA),
+                         end ? " END," : "",
+                         stream_id,
+                         data.len());
         if (!send(buffer, SW_HTTP2_FRAME_HEADER_SIZE) || !send(data.val(), data.len())) {
             return false;
         }
@@ -1298,10 +1341,10 @@ bool Client::send_goaway_frame(zend_long error_code, const char *debug_data, siz
         memcpy(frame + SW_HTTP2_FRAME_HEADER_SIZE + SW_HTTP2_GOAWAY_SIZE, debug_data, debug_data_len);
     }
     swoole_trace_log(SW_TRACE_HTTP2,
-               "[" SW_ECHO_GREEN "] Send: last-sid=%u, error-code=%ld",
-               Http2::get_type(SW_HTTP2_TYPE_GOAWAY),
-               last_stream_id,
-               error_code);
+                     "[" SW_ECHO_GREEN "] Send: last-sid=%u, error-code=%ld",
+                     Http2::get_type(SW_HTTP2_TYPE_GOAWAY),
+                     last_stream_id,
+                     error_code);
     ret = send(frame, length);
     efree(frame);
     return ret;

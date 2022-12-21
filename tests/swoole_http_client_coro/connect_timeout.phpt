@@ -9,8 +9,8 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
-    $cli = new Swoole\Coroutine\Http\Client('140.207.135.104', 99, true);
+co::run(function () {
+    $cli = new OpenSwoole\Coroutine\Http\Client('140.207.135.104', 99, true);
     $cli->setHeaders([
         'Host' => "login.wx.qq.com",
         "User-Agent" => 'Chrome/49.0.2587.3',

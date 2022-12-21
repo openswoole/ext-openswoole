@@ -8,9 +8,9 @@ swoole_coroutine: async dns lookup [5]
 require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\System;
-use function Swoole\Coroutine\run;
 
-run(function () {
+
+Co::run(function () {
     $ip = System::dnsLookup('localhost');
     Assert::eq($ip, '127.0.0.1');
 });

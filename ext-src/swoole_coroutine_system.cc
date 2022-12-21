@@ -1,6 +1,5 @@
 #include "php_swoole_cxx.h"
 
-
 #if PHP_VERSION_ID >= 80000
 #include "swoole_coroutine_system_arginfo.h"
 #else
@@ -12,16 +11,38 @@
 
 #include <string>
 
-using swoole::TimerNode;
 using swoole::Coroutine;
+using swoole::Event;
 using swoole::PHPCoroutine;
 using swoole::Reactor;
-using swoole::Event;
+using swoole::String;
+using swoole::TimerNode;
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
-using swoole::String;
+
+#include "swoole_socket.h"
+
+#include <vector>
+#include <unordered_map>
+
+using std::string;
+using std::vector;
+using swoole::Timer;
 
 static zend_class_entry *swoole_coroutine_system_ce;
+
+struct DNSCacheEntity {
+    char address[INET6_ADDRSTRLEN];
+    time_t update_time;
+};
+
+static std::unordered_map<std::string, DNSCacheEntity *> request_cache_map;
+
+void php_swoole_async_coro_rshutdown() {
+    for (auto i = request_cache_map.begin(); i != request_cache_map.end(); i++) {
+        efree(i->second);
+    }
+}
 
 SW_EXTERN_C_BEGIN
 PHP_METHOD(swoole_coroutine_system, exec);
@@ -38,6 +59,8 @@ PHP_METHOD(swoole_coroutine_system, wait);
 PHP_METHOD(swoole_coroutine_system, waitPid);
 PHP_METHOD(swoole_coroutine_system, waitSignal);
 PHP_METHOD(swoole_coroutine_system, waitEvent);
+PHP_METHOD(swoole_coroutine_system, dnsLookup);
+PHP_METHOD(swoole_coroutine_system, clearDNSCache);
 SW_EXTERN_C_END
 
 // clang-format off
@@ -45,7 +68,6 @@ SW_EXTERN_C_END
 static const zend_function_entry swoole_coroutine_system_methods[] =
 {
     ZEND_FENTRY(gethostbyname, ZEND_FN(swoole_coroutine_gethostbyname), arginfo_class_Swoole_Coroutine_System_gethostbyname, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(dnsLookup, ZEND_FN(swoole_async_dns_lookup_coro), arginfo_class_Swoole_Coroutine_System_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, exec, arginfo_class_Swoole_Coroutine_System_exec, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, sleep, arginfo_class_Swoole_Coroutine_System_sleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, usleep, arginfo_class_Swoole_Coroutine_System_usleep, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
@@ -57,10 +79,8 @@ static const zend_function_entry swoole_coroutine_system_methods[] =
     PHP_ME(swoole_coroutine_system, waitPid, arginfo_class_Swoole_Coroutine_System_waitPid, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, waitSignal, arginfo_class_Swoole_Coroutine_System_waitSignal, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_ME(swoole_coroutine_system, waitEvent, arginfo_class_Swoole_Coroutine_System_waitEvent, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    /* Deprecated file methods */
-    PHP_ME(swoole_coroutine_system, fread, arginfo_class_Swoole_Coroutine_System_fread, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_DEPRECATED)
-    PHP_ME(swoole_coroutine_system, fwrite, arginfo_class_Swoole_Coroutine_System_fwrite, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_DEPRECATED)
-    PHP_ME(swoole_coroutine_system, fgets, arginfo_class_Swoole_Coroutine_System_fgets, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC | ZEND_ACC_DEPRECATED)
+    PHP_ME(swoole_coroutine_system, dnsLookup, arginfo_class_Swoole_Coroutine_System_dnsLookup, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(swoole_coroutine_system, clearDNSCache, arginfo_class_Swoole_Coroutine_System_clearDNSCache, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
 
@@ -70,7 +90,7 @@ void php_swoole_coroutine_system_minit(int module_number) {
     SW_INIT_CLASS_ENTRY_BASE(swoole_coroutine_system,
                              "Swoole\\Coroutine\\System",
                              nullptr,
-                             "Co\\System",
+                             nullptr,
                              swoole_coroutine_system_methods,
                              nullptr);
     SW_SET_CLASS_CREATE(swoole_coroutine_system, sw_zend_create_object_deny);
@@ -137,193 +157,6 @@ static void co_socket_write(int fd, char *str, size_t l_str, INTERNAL_FUNCTION_P
         ZVAL_LONG(return_value, n);
     }
     _socket.move_fd();
-}
-
-PHP_METHOD(swoole_coroutine_system, fread) {
-    Coroutine::get_current_safe();
-
-    zval *handle;
-    zend_long length = 0;
-
-    ZEND_PARSE_PARAMETERS_START(1, 2)
-    Z_PARAM_RESOURCE(handle)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_LONG(length)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    int async;
-    int fd = php_swoole_convert_to_fd_ex(handle, &async);
-    if (fd < 0) {
-        RETURN_FALSE;
-    }
-
-    if (async) {
-        co_socket_read(fd, length, INTERNAL_FUNCTION_PARAM_PASSTHRU);
-        return;
-    }
-
-    if (length <= 0) {
-        struct stat file_stat;
-        if (swoole_coroutine_fstat(fd, &file_stat) < 0) {
-            swoole_set_last_error(errno);
-            RETURN_FALSE;
-        }
-        off_t _seek = swoole_coroutine_lseek(fd, 0, SEEK_CUR);
-        if (_seek < 0) {
-            swoole_set_last_error(errno);
-            RETURN_FALSE;
-        }
-        if (_seek >= file_stat.st_size) {
-            length = SW_BUFFER_SIZE_STD;
-        } else {
-            length = file_stat.st_size - _seek;
-        }
-    }
-
-    char *buf = (char *) emalloc(length + 1);
-    if (!buf) {
-        RETURN_FALSE;
-    }
-    buf[length] = 0;
-    int ret = -1;
-    swoole_trace("fd=%d, length=%ld", fd, length);
-    php_swoole_check_reactor();
-    bool async_success = swoole::coroutine::async([&]() {
-        while (1) {
-            ret = read(fd, buf, length);
-            if (ret < 0 && errno == EINTR) {
-                continue;
-            }
-            break;
-        }
-    });
-
-    if (async_success && ret >= 0) {
-        // TODO: Optimization: reduce memory copy
-        ZVAL_STRINGL(return_value, buf, ret);
-    } else {
-        ZVAL_FALSE(return_value);
-    }
-
-    efree(buf);
-}
-
-PHP_METHOD(swoole_coroutine_system, fgets) {
-    Coroutine::get_current_safe();
-
-    zval *handle;
-    php_stream *stream;
-
-    ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_RESOURCE(handle)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    int async;
-    int fd = php_swoole_convert_to_fd_ex(handle, &async);
-    if (fd < 0) {
-        RETURN_FALSE;
-    }
-
-    if (async == 1) {
-        php_swoole_fatal_error(E_WARNING, "only support file resources");
-        RETURN_FALSE;
-    }
-
-    php_stream_from_res(stream, Z_RES_P(handle));
-
-    FILE *file;
-    if (stream->stdiocast) {
-        file = stream->stdiocast;
-    } else {
-        if (php_stream_cast(stream, PHP_STREAM_AS_STDIO, (void **) &file, 1) != SUCCESS || file == nullptr) {
-            RETURN_FALSE;
-        }
-    }
-
-    if (stream->readbuf == nullptr) {
-        stream->readbuflen = stream->chunk_size;
-        stream->readbuf = (uchar *) emalloc(stream->chunk_size);
-    }
-
-    if (!stream->readbuf) {
-        RETURN_FALSE;
-    }
-
-    int ret = 0;
-    swoole_trace("fd=%d, length=%ld", fd, stream->readbuflen);
-    php_swoole_check_reactor();
-    bool async_success = swoole::coroutine::async([&]() {
-        char *data = fgets((char *) stream->readbuf, stream->readbuflen, file);
-        if (data == nullptr) {
-            ret = -1;
-            stream->eof = 1;
-        }
-    });
-
-    if (async_success && ret != -1) {
-        ZVAL_STRING(return_value, (char *) stream->readbuf);
-    } else {
-        ZVAL_FALSE(return_value);
-    }
-}
-
-PHP_METHOD(swoole_coroutine_system, fwrite) {
-    Coroutine::get_current_safe();
-
-    zval *handle;
-    char *str;
-    size_t l_str;
-    zend_long length = 0;
-
-    ZEND_PARSE_PARAMETERS_START(2, 3)
-    Z_PARAM_RESOURCE(handle)
-    Z_PARAM_STRING(str, l_str)
-    Z_PARAM_OPTIONAL
-    Z_PARAM_LONG(length)
-    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
-
-    int async;
-    int fd = php_swoole_convert_to_fd_ex(handle, &async);
-    if (fd < 0) {
-        RETURN_FALSE;
-    }
-
-    if (async) {
-        co_socket_write(
-            fd, str, (length <= 0 || (size_t) length > l_str) ? l_str : length, INTERNAL_FUNCTION_PARAM_PASSTHRU);
-        return;
-    }
-
-    if (length <= 0 || (size_t) length > l_str) {
-        length = l_str;
-    }
-
-    char *buf = estrndup(str, length);
-
-    if (!buf) {
-        RETURN_FALSE;
-    }
-
-    int ret = -1;
-    swoole_trace("fd=%d, length=%ld", fd, length);
-    php_swoole_check_reactor();
-    bool async_success = swoole::coroutine::async([&]() {
-        while (1) {
-            ret = write(fd, buf, length);
-            if (ret < 0 && errno == EINTR) {
-                continue;
-            }
-            break;
-        }
-    });
-
-    if (async_success && ret >= 0) {
-        ZVAL_LONG(return_value, ret);
-    } else {
-        ZVAL_FALSE(return_value);
-    }
-
-    efree(buf);
 }
 
 PHP_METHOD(swoole_coroutine_system, readFile) {
@@ -404,7 +237,7 @@ PHP_FUNCTION(swoole_coroutine_gethostbyname) {
     }
 }
 
-PHP_FUNCTION(swoole_clear_dns_cache) {
+PHP_METHOD(swoole_coroutine_system, clearDNSCache) {
     System::clear_dns_cache();
 }
 
@@ -634,4 +467,61 @@ PHP_METHOD(swoole_coroutine_system, waitEvent) {
     }
 
     RETURN_LONG(events);
+}
+
+PHP_METHOD(swoole_coroutine_system, dnsLookup) {
+    Coroutine::get_current_safe();
+
+    zval *domain;
+    long type = AF_INET;
+    double timeout = swoole::network::Socket::default_dns_timeout;
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z|dl", &domain, &timeout, &type) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if (Z_TYPE_P(domain) != IS_STRING) {
+        php_swoole_fatal_error(E_WARNING, "invalid domain name");
+        RETURN_FALSE;
+    }
+
+    if (Z_STRLEN_P(domain) == 0) {
+        php_swoole_fatal_error(E_WARNING, "domain name empty");
+        RETURN_FALSE;
+    }
+
+    // find cache
+    std::string key(Z_STRVAL_P(domain), Z_STRLEN_P(domain));
+    DNSCacheEntity *cache;
+
+    if (request_cache_map.find(key) != request_cache_map.end()) {
+        cache = request_cache_map[key];
+        if (cache->update_time > Timer::get_absolute_msec()) {
+            RETURN_STRING(cache->address);
+        }
+    }
+
+    php_swoole_check_reactor();
+
+    vector<string> result = swoole::coroutine::dns_lookup(Z_STRVAL_P(domain), type, timeout);
+    if (result.empty()) {
+        swoole_set_last_error(SW_ERROR_DNSLOOKUP_RESOLVE_FAILED);
+        RETURN_FALSE;
+    }
+
+    if (SwooleG.dns_lookup_random) {
+        RETVAL_STRING(result[rand() % result.size()].c_str());
+    } else {
+        RETVAL_STRING(result[0].c_str());
+    }
+
+    auto cache_iterator = request_cache_map.find(key);
+    if (cache_iterator == request_cache_map.end()) {
+        cache = (DNSCacheEntity *) emalloc(sizeof(DNSCacheEntity));
+        request_cache_map[key] = cache;
+    } else {
+        cache = cache_iterator->second;
+    }
+    memcpy(cache->address, Z_STRVAL_P(return_value), Z_STRLEN_P(return_value));
+    cache->address[Z_STRLEN_P(return_value)] = '\0';
+    cache->update_time = Timer::get_absolute_msec() + (int64_t) (SwooleG.dns_cache_refresh_time * 1000);
 }

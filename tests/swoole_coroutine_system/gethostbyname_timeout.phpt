@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 Swoole\Coroutine::create(function () {
     $result = Swoole\Coroutine\System::gethostbyname("wwww.xxxx.cccn.xer" . time(), AF_INET, 0.001);
     Assert::eq($result, false);
-    Assert::same(swoole_last_error(), SWOOLE_ERROR_DNSLOOKUP_RESOLVE_TIMEOUT);
+    Assert::same(OpenSwoole\Util::getLastErrorCode(), SWOOLE_ERROR_DNSLOOKUP_RESOLVE_TIMEOUT);
     co::usleep(100000);
     echo "NEXT\n";
     $result = Swoole\Coroutine\System::gethostbyname("www.github.com", AF_INET, 1);

@@ -5,8 +5,8 @@ swoole_global: socket construct check
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
-    $socket = new class (1, 2, 3) extends Co\Socket
+co::run(function () {
+    $socket = new class (1, 2, 3) extends OpenSwoole\Coroutine\Socket
     {
         public function __construct($domain, $type, $protocol)
         {
@@ -17,4 +17,4 @@ go(function () {
 });
 ?>
 --EXPECTF--
-Fatal error: Swoole\Coroutine\Socket::connect(): you must call Socket constructor first in %s on line %d
+Fatal error: OpenSwoole\Coroutine\Socket::connect(): you must call Socket constructor first in %s on line %d

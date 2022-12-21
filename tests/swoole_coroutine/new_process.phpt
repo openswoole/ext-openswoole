@@ -6,13 +6,13 @@ swoole_coroutine: new process
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $process = new Swoole\Process(function () { });
+    $process = new OpenSwoole\Process(function () { });
     $process->start();
 });
 ?>
 --EXPECTF--
-Fatal error: Uncaught Swoole\Error: must be forked outside the coroutine in %s:%d
+Fatal error: Uncaught OpenSwoole\Error: must be forked outside the coroutine in %s:%d
 Stack trace:
-#0 %s(5): Swoole\Process->start()
+#0 %s(5): OpenSwoole\Process->start()
 %A
   thrown in %s on line %d

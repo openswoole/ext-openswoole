@@ -14,10 +14,10 @@ if (!extension_loaded('curl')) {
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $urls = array(
         'unknown://scheme.tld',
     );

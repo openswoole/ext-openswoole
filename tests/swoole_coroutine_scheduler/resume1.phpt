@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine as co;
 
 $id = go(function(){
-    $id = co::getUid();
+    $id = co::getCid();
     echo "start coro $id\n";
     co::yield();
     echo "resume coro $id @1\n";

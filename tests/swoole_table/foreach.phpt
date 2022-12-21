@@ -6,7 +6,7 @@ swoole_table: iterator
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$table = new swoole_table(65536);
+$table = new OpenSwoole\Table(65536);
 
 $table->column('id', swoole_table::TYPE_INT);
 $table->column('name', swoole_table::TYPE_STRING, 128);

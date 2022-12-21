@@ -10,7 +10,7 @@ const EOF = "\r\n\r\n";
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $client = new Co\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         Assert::assert($client->connect('127.0.0.1', $pm->getFreePort()));
         Assert::assert($client->send('null' . EOF));
         Assert::assert($client->send('-1' . EOF));
@@ -21,7 +21,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
         'worker_num' => 1,
         'open_eof_split' => true,
@@ -41,8 +41,8 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Warning: Swoole\Server::send(): fd can not be null in %s/tests/swoole_server/invalid_fd.php on line %d
+Warning: OpenSwoole\Server::send(): fd can not be null in %s/tests/swoole_server/invalid_fd.php on line %d
 
-Warning: Swoole\Server::send(): invalid fd[-1] in %s/tests/swoole_server/invalid_fd.php on line %d
+Warning: OpenSwoole\Server::send(): invalid fd[-1] in %s/tests/swoole_server/invalid_fd.php on line %d
 [%s]	NOTICE	Server::send_to_connection() (ERRNO 1005): send %d byte failed, session#100 does not exist
 [%s]	NOTICE	Server::send_to_connection() (ERRNO 1005): send %d byte failed, session#9223372036854775807 does not exist

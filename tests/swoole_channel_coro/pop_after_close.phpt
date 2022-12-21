@@ -8,9 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine\Channel;
 
-use function Swoole\Coroutine\run;
-
-run(function () {
+co::run(function () {
     $chan = new Channel();
 
     go(function () use ($chan) {

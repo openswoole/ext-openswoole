@@ -16,7 +16,7 @@ $pm->parentFunc = function () use ($pm, $s) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $server = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set(['worker_num' => 4, 'log_file' => '/dev/null']);
     $server->on('workerStart', function () use ($pm) {
         Assert::assert($pm->wakeup());

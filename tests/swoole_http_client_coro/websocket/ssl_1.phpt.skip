@@ -6,8 +6,8 @@ swoole_http_client_coro/websocket: ssl recv
 <?php
 require __DIR__ . '/../../include/bootstrap.php';
 
-Co\run(function ()  {
-    $cli = new Co\http\Client('echo.websocket.org', 443, true);
+co::run(function ()  {
+    $cli = new OpenSwoole\Coroutine\http\Client('echo.websocket.org', 443, true);
     $ret = $cli->upgrade('/');
 
     if (!$ret) {

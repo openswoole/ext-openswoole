@@ -12,7 +12,7 @@ $pm = new ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
-        $cli = new Co\http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['timeout' => -1]);
         $cli->setHeaders([]);
         $ret = $cli->upgrade('/');

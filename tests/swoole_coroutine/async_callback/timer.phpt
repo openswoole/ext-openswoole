@@ -10,7 +10,7 @@ use Swoole\Timer;
 
 $GLOBALS['count'] = 0;
 
-Co\run(function () {
+co::run(function () {
     Timer::tick(50, function ($timer) {
         $GLOBALS['count']++;
         if ($GLOBALS['count'] == 5) {

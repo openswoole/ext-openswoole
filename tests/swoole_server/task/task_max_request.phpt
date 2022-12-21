@@ -15,7 +15,7 @@ $counter1 = new Atomic(); // onTask
 $counter2 = new Atomic(); // onFinish
 $counter3 = new Atomic(); // task num
 
-$process = new Swoole\Process(function() {
+$process = new OpenSwoole\Process(function() {
 
     $serv = new Server('127.0.0.1', get_one_free_port());
     $serv->set([

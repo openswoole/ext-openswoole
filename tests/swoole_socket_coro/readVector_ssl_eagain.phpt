@@ -10,7 +10,7 @@ use Swoole\Coroutine;
 use Swoole\Coroutine\Socket;
 use Swoole\Server;
 
-use function Swoole\Coroutine\run;
+
 
 $totalLength = 0;
 $iovector = [];
@@ -25,7 +25,7 @@ $totalLength2 = rand(strlen($packedStr) / 2, strlen($packedStr) - 1024 * 128);
 
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         global $totalLength, $packedStr;
         $conn = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $conn->setProtocol([
@@ -42,7 +42,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         global $totalLength, $iovector;
         $socket = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         $socket->setProtocol([

@@ -70,7 +70,7 @@ array (
     'type' => 'application/octet-stream',
     'tmp_name' => '/tmp/swoole.upfile.fixture1',
     'error' => 0,
-    'size' => 218787,
+    'size' => 15144,
   ),
   'form' => 
   array (
@@ -80,7 +80,7 @@ array (
       'type' => 'image/jpeg',
       'tmp_name' => '/tmp/swoole.upfile.fixture2',
       'error' => 0,
-      'size' => 218787,
+      'size' => 15144,
     ),
     'group' => 
     array (
@@ -90,7 +90,7 @@ array (
         'type' => 'image/svg+xml',
         'tmp_name' => '/tmp/swoole.upfile.fixture3',
         'error' => 0,
-        'size' => 7424,
+        'size' => 4742,
       ),
     ),
   ),

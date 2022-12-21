@@ -8,15 +8,15 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
 
-define('SSL_DIR', realpath(__DIR__.'/../../examples/ssl'));
+
+define('SSL_DIR', realpath(__DIR__.'/assets/ssl'));
 
 $pm = new ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(), true);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(), true);
         $content = str_repeat(get_safe_random(1024), 5 * 1024);
         file_put_contents('/tmp/test.jpg', $content);
         $cli->addFile('/tmp/test.jpg', 'test.jpg');
@@ -35,7 +35,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP | SWOOLE_SSL);
 
     $http->set([
         'log_file' => '/dev/null',

@@ -12,21 +12,15 @@ require __DIR__ . '/../include/bootstrap.php';
 use  Swoole\Coroutine\System;
 use  Swoole\Coroutine;
 
-use function Swoole\Coroutine\run;
-
-run(function () {
-    $map = IS_IN_TRAVIS ? [
+Co::run(function () {
+    $map = [
         'www.google.com' => null,
         'www.youtube.com' => null,
         'www.facebook.com' => null,
-    ] : [
-        'www.baidu.com' => null,
-        'www.taobao.com' => null,
-        'www.qq.com' => null,
     ];
 
     $first_time = microtime(true);
-    for ($n = MAX_CONCURRENCY_LOW; $n--;) {
+    for ($n = 4; $n--;) {
         foreach ($map as $host => &$ip) {
             $ip = System::gethostbyname($host);
             Assert::assert(preg_match(IP_REGEX, $ip));
@@ -37,7 +31,7 @@ run(function () {
     phpt_var_dump($map);
 
     $cache_time = microtime(true);
-    for ($n = MAX_CONCURRENCY_LOW; $n--;) {
+    for ($n = 4; $n--;) {
         foreach ($map as $host => $ip) {
             $_ip = System::gethostbyname($host);
             Assert::same($ip, $_ip);
@@ -46,24 +40,24 @@ run(function () {
     $cache_time = microtime(true) - $cache_time;
 
     $no_cache_time = microtime(true);
-    for ($n = MAX_CONCURRENCY_LOW; $n--;) {
-        swoole_clear_dns_cache();
+    for ($n = 4; $n--;) {
+        System::clearDNSCache();
         $ip = System::gethostbyname(array_rand($map));
         Assert::assert(preg_match(IP_REGEX, $ip));
     }
     $no_cache_time = microtime(true) - $no_cache_time;
 
-    $chan = new Chan(MAX_CONCURRENCY_LOW);
+    $chan = new Chan(4);
     $no_cache_multi_time = microtime(true);
-    for ($c = MAX_CONCURRENCY_LOW; $c--;) {
+    for ($c = 4; $c--;) {
         go(function () use ($map, $chan) {
-            swoole_clear_dns_cache();
+            System::clearDNSCache();
             $ip = System::gethostbyname(array_rand($map));
             Assert::assert(filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4));
             $chan->push(Assert::assert(preg_match(IP_REGEX, $ip)));
         });
     }
-    for ($c = MAX_CONCURRENCY_LOW; $c--;) {
+    for ($c = 4; $c--;) {
         $chan->pop();
     }
     $no_cache_multi_time = microtime(true) - $no_cache_multi_time;

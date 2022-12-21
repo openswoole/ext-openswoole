@@ -9,13 +9,13 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $domain = 'www.zhihu.com';
-    $cli = new Swoole\Coroutine\Http2\Client($domain, 443, true);
+    $cli = new OpenSwoole\Coroutine\Http2\Client($domain, 443, true);
     $cli->set([
         'timeout' => 5,
         'ssl_host_name' => $domain
     ]);
     $cli->connect();
-    $req = new Swoole\Http2\Request;
+    $req = new OpenSwoole\Http2\Request;
     $req->path = '/';
     $req->headers = [
         'host' => $domain,

@@ -9,7 +9,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
     for ($c = MAX_CONCURRENCY_MID; $c--;) {
         go(function () use ($pm, $c) {
-            $cli = new Co\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => -1]);
             $ret = $cli->upgrade('/');
             Assert::true($ret);
@@ -39,7 +39,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $serv = new Swoole\WebSocket\Server('127.0.0.1', $pm->getFreePort(), SERVER_MODE_RANDOM);
+    $serv = new OpenSwoole\WebSocket\Server('127.0.0.1', $pm->getFreePort(), SERVER_MODE_RANDOM);
     $serv->set(['log_file' => '/dev/null']);
     $serv->on('workerStart', function () use ($pm) { $pm->wakeup(); });
     $serv->on('message', function (Swoole\WebSocket\Server $server, Swoole\WebSocket\Frame $frame) {

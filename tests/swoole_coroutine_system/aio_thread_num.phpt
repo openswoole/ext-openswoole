@@ -11,18 +11,16 @@ require __DIR__ . '/../include/bootstrap.php';
 use  Swoole\Coroutine\System;
 use  Swoole\Coroutine;
 
-use function Swoole\Coroutine\run;
-
 Coroutine::set([
-    'aio_core_worker_num' => swoole_cpu_num(),
+    'aio_core_worker_num' => OpenSwoole\Util::getCPUNum(),
     'aio_max_wait_time' => 0.0005
 ]);
 
-run(function () {
+co::run(function () {
     System::readFile(__FILE__);
 });
 
-$sch = new Swoole\Coroutine\Scheduler();
+$sch = new OpenSwoole\Coroutine\Scheduler();
 $sch->set(['dns_cache_capacity' => 0]);
 $sch->add(function () {
     static $worker_num = 0;
@@ -31,10 +29,10 @@ $sch->add(function () {
         $worker_num = max($worker_num, Coroutine::stats()['aio_worker_num']);
         Swoole\Coroutine\System::usleep(1000);
     }
-    Assert::greaterThan($worker_num, swoole_cpu_num());
+    Assert::greaterThan($worker_num, OpenSwoole\Util::getCPUNum());
     phpt_var_dump($worker_num);
 });
-$sch->parallel(swoole_cpu_num() * [4, 16, 32, 64][PRESSURE_LEVEL], function () {
+$sch->parallel(OpenSwoole\Util::getCPUNum() * [4, 16, 32, 64][PRESSURE_LEVEL], function () {
     System::usleep(mt_rand(1, 5) * 1000);
     $result = Swoole\Coroutine\System::getaddrinfo('www.baidu.com');
     Assert::notEmpty($result);

@@ -12,11 +12,11 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 $pm = new SwooleTest\ProcessManager;
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () use ($pm) {
+co::run(function () use ($pm) {
     $ch = curl_init();
     $code = uniqid('swoole_');
     $url = "http://www.baidu.com/?code=".urlencode($code);

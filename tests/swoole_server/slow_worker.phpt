@@ -11,8 +11,8 @@ use Swoole\Server;
 
 $data_chunks = [];
 
-$counter_server = new Swoole\Atomic(0);
-$counter_client = new Swoole\Atomic(0);
+$counter_server = new OpenSwoole\Atomic(0);
+$counter_client = new OpenSwoole\Atomic(0);
 
 for ($i = 0; $i < MAX_REQUESTS; $i++) {
     $rand = rand(8 * 1024, 1024 * 1024);

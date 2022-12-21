@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 const N = 100;
 
-$socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+$socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
 $socket->bind('127.0.0.1', 9601);
 $socket->listen(128);
 
@@ -37,7 +37,7 @@ for ($i = 0; $i < N; $i++)
 {
     go(function ()
     {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $ret = $cli->connect('127.0.0.1', 9601);
         if ($ret)
         {

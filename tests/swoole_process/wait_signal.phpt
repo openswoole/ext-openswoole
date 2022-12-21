@@ -10,7 +10,7 @@ use Swoole\Process;
 use Swoole\Event;
 
 $proc = new Process(function(Process $process) {
-    swoole_async_set(['wait_signal' => true]);
+    OpenSwoole\Util::setAio(['wait_signal' => true]);
     Process::signal(SIGINT, function () {
         echo "SIGINT\n";
         // Process::signal(SIGINT, null);

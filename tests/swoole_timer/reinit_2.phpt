@@ -27,7 +27,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server("0.0.0.0", $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server("0.0.0.0", $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
         'worker_num' => 1,
         'log_file' => '/dev/null',

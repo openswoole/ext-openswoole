@@ -17,11 +17,13 @@
  
 namespace Swoole {
     final class Server {
-        public function __construct(string $host, int $port = 0, int $mode = SWOOLE_PROCESS, int $sockType = SWOOLE_SOCK_TCP) {}
+        public function __construct(string $host, int $port = 0, int $mode = \OpenSwoole\Server::SIMPLE_MODE, int $sockType = \OpenSwoole\Constant::SOCK_TCP) {}
         public function __destruct() {}
         public function listen(string $host, int $port, int $sockType): false|Server\Port {}
         public function addlistener(string $host, int $port, int $sockType): false|Server\Port {}
         public function on(string $event, callable $callback): bool {}
+        public function handle(callable $callback): bool {}
+        public function setHandler(mixed $handler): bool {}
         public function getCallback(string $event): mixed {}
         public function set(array $settings): bool {}
         public function start(): bool {}
@@ -29,7 +31,6 @@ namespace Swoole {
         public function sendto(string $ip, int $port, string $data, int $serverSocket = -1): bool {}
         public function sendwait(int $fd, string $data): bool {}
         public function exists(int $fd): bool {}
-        public function exist(int $fd): bool {}
         public function protect(int $fd, bool $isProtected = true): bool {}
         public function sendfile(int $fd, string $fileName, int $offset = 0, int $length = 0): bool {}
         public function close(int $fd, bool $reset = false): bool {}
@@ -56,7 +57,7 @@ namespace Swoole {
         public function connection_info(int $fd, int $reactorId = -1, bool $noCheckConn = false): bool|array {}
         public function connection_list(int $startFd = 0, int $pageSize = 10): bool|array {}
         public function sendMessage(mixed $message, int $workerId): bool {}
-        public function addProcess(\Swoole\Process $process): bool|int {}
+        public function addProcess(\OpenSwoole\Process $process): bool|int {}
         public function stats(int $mode = 0): string|array|false {}
         public function getSocket(int $port = -1): mixed {}
         public function bind(int $fd, int $uid): bool {}

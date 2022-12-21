@@ -12,7 +12,7 @@ use Swoole\Event;
 
 Co::set(['log_level' => SWOOLE_LOG_ERROR]);
 
-$cli = new Swoole\Client(SWOOLE_SOCK_TCP);
+$cli = new OpenSwoole\Client(SWOOLE_SOCK_TCP);
 
 $cli->connect("www.qq.com", 80);
 

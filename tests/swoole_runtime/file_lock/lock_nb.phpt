@@ -6,7 +6,7 @@ swoole_runtime/file_lock: lock_nb
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 const FILE = __DIR__ . '/test.data';
-\Swoole\Runtime::enableCoroutine();
+\OpenSwoole\Runtime::enableCoroutine();
 go(function () {
     $fp = fopen(FILE, 'w+');
     Assert::assert(flock($fp, LOCK_EX));

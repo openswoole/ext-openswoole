@@ -5,7 +5,7 @@ swoole_coroutine: iterator
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     $i = Co::list();
     // 1
     var_dump($i->current());

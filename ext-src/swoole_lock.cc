@@ -125,6 +125,7 @@ void php_swoole_lock_minit(int module_number) {
 #endif
     zend_declare_property_long(swoole_lock_ce, ZEND_STRL("errCode"), 0, ZEND_ACC_PUBLIC);
 
+    // backward compatibility
     SW_REGISTER_LONG_CONSTANT("SWOOLE_FILELOCK", Lock::FILE_LOCK);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_MUTEX", Lock::MUTEX);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_SEM", Lock::SEM);

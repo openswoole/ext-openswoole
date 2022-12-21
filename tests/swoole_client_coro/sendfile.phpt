@@ -11,8 +11,8 @@ use Swoole\Server;
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm)
 {
-    Co\Run(function ()  use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+    co::run(function ()  use ($pm) {
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $r = $client->connect(TCP_SERVER_HOST, $pm->getFreePort(), 0.5);
         Assert::assert($r);
         $client->send(pack('N', filesize(TEST_IMAGE)));

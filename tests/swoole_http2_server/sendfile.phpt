@@ -15,12 +15,12 @@ foreach ([SWOOLE_BASE, SWOOLE_PROCESS] as $mode) {
     phpt_var_dump('current mode is ' . ['BASE', 'PROCESS'][$mode - 1]);
     $pm = new ProcessManager;
     $pm->parentFunc = function () use ($pm) {
-        Coroutine\run(function () use ($pm) {
-            $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort(), false);
+        Coroutine::run(function () use ($pm) {
+            $cli = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort(), false);
             $cli->set(['timeout' => -1]);
             Assert::true($cli->connect());
             for ($n = MAX_REQUESTS; $n--;) {
-                Assert::assert($cli->send(new Swoole\Http2\Request));
+                Assert::assert($cli->send(new OpenSwoole\Http2\Request));
             }
             for ($n = MAX_REQUESTS; $n--;) {
                 $response = $cli->recv();

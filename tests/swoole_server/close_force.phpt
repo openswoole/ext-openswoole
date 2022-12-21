@@ -15,7 +15,7 @@ $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $client->set(['socket_buffer_size' => 128*1024]);
         if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
             exit("connect failed\n");

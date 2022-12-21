@@ -33,6 +33,7 @@ class TimerTest {
 
 $timer_test = new TimerTest();
 $timer_test->onTimerTick();
+OpenSwoole\Event::wait();
 
 ?>
 --EXPECT--

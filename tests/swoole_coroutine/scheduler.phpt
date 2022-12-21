@@ -17,7 +17,7 @@ $co1 = go(function () {
 
 go(function () use ($co1) {
     go(function () {
-        co::usleep(1000);
+        co::sleep(1);
         echo "co3\n";
         co::resume(4);
     });
@@ -25,6 +25,7 @@ go(function () use ($co1) {
     echo "co2\n";
 });
 
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--
 co1

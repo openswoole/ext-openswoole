@@ -6,7 +6,9 @@ swoole_socket_coro/setopt: setOption IPV6_PKTINFO
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-$socket = new Co\Socket(AF_INET6, SOCK_DGRAM, SOL_UDP);
+ini_set("openswoole.display_errors", 'off');
+
+$socket = new OpenSwoole\Coroutine\Socket(AF_INET6, SOCK_DGRAM, SOL_UDP);
 
 var_dump(@$socket->setOption(IPPROTO_IPV6, IPV6_PKTINFO, []));
 var_dump($socket->setOption(IPPROTO_IPV6, IPV6_PKTINFO, [

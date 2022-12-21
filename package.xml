@@ -625,7 +625,7 @@
             <file role="src" name="include/swoole_websocket.h" />
             <file role="src" name="include/swoole_wheel_timer.h" />
             <file role="src" name="make.sh" />
-            <file role="src" name="php_swoole.h" />
+            <file role="src" name="php_openswoole.h" />
             <file role="src" name="src/core/base.cc" />
             <file role="src" name="src/core/channel.cc" />
             <file role="src" name="src/core/crc32.cc" />
@@ -2174,8 +2174,6 @@
         <configureoption default="no" name="enable-openssl" prompt="enable openssl support?"/>
         <configureoption default="no" name="enable-http2" prompt="enable http2 support?"/>
         <configureoption default="no" name="enable-mysqlnd" prompt="enable mysqlnd support?"/>
-        <configureoption default="no" name="enable-swoole-json" prompt="enable json support?"/>
-        <configureoption default="no" name="enable-swoole-curl" prompt="enable curl support?"/>
         <configureoption default="no" name="with-postgres" prompt="enable postgres support?"/>
     </extsrcrelease>
 </package>

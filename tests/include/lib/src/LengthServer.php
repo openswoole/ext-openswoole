@@ -61,7 +61,7 @@ abstract class LengthServer
      * TestServer_Co constructor.
      * @param int $port
      * @param bool $ssl
-     * @throws \Swoole\Exception
+     * @throws \OpenSwoole\Exception
      */
     function __construct(int $port, bool $ssl = false)
     {
@@ -77,7 +77,7 @@ abstract class LengthServer
     }
 
     /**
-     * @param $conn \Swoole\Coroutine\Server\Connection
+     * @param $conn \OpenSwoole\Coroutine\Server\Connection
      * @param $data
      */
     function _receive($conn, $data)
@@ -138,7 +138,7 @@ abstract class LengthServer
         $sid = rand(10000000, 99999999);
         $n = rand(self::$pkg_len_min, self::$pkg_len_max);
 
-        $data = self::$random_bytes ? RandStr::getBytes($n) : (new \Swoole\StringObject('A'))->repeat($n)->toString();
+        $data = self::$random_bytes ? RandStr::getBytes($n) : (new \OpenSwoole\StringObject('A'))->repeat($n)->toString();
         return pack('NNN', $n + 8, $index++, $sid) . $data;
     }
 }

@@ -10,7 +10,7 @@ $pm->setRandomFunc('mt_rand');
 $pm->initRandomDataEx(1, MAX_REQUESTS, 0, 65535);
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $client->set([
             'open_length_check' => true,
             'package_length_func' => function (string $data) {
@@ -36,7 +36,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $server->on('connect', function (Swoole\Server $server, int $fd) use ($pm) {
         for ($n = MAX_REQUESTS; $n--;) {
             $server->send($fd, pack('n', $pm->getRandomData()));

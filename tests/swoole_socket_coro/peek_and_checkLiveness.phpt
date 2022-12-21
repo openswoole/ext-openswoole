@@ -12,7 +12,7 @@ use Swoole\Coroutine\Socket;
 $pm = new ProcessManager;
 $pm->initRandomDataEx(MAX_CONCURRENCY_MID, 1, 1024);
 $pm->parentFunc = function () use ($pm) {
-    Coroutine\run(function () use ($pm) {
+    Coroutine::run(function () use ($pm) {
         for ($c = MAX_CONCURRENCY_MID; $c--;) {
             Coroutine::create(function () use ($pm, $c) {
                 $socket = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
@@ -39,7 +39,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->on('WorkerStart', function () use ($pm) {
         $pm->wakeup();
     });

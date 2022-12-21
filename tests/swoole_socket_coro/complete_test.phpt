@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $port = get_one_free_port();
 $pm->parentFunc = function ($pid) use ($pm, $port) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     Assert::isInstanceOf($socket, Swoole\Coroutine\Socket::class);
     Assert::same($socket->errCode, 0);
     go(function () use ($socket, $port) {
@@ -31,7 +31,7 @@ $pm->parentFunc = function ($pid) use ($pm, $port) {
 };
 
 $pm->childFunc = function () use ($pm, $port) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     Assert::assert($socket->bind('127.0.0.1', $port));
     Assert::assert($socket->listen(128));
     go(function () use ($socket, $pm) {
@@ -55,6 +55,7 @@ $pm->childFunc = function () use ($pm, $port) {
         $client->close();
         $socket->close();
     });
+    swoole_event_wait();
 };
 
 $pm->childFirst();

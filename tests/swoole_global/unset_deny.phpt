@@ -27,5 +27,5 @@ try {
 }
 ?>
 --EXPECT--
-Trying to clone an uncloneable object of class Swoole\Coroutine\Channel
-Property errCode of class Swoole\Coroutine\Channel cannot be unset
+Trying to clone an uncloneable object of class OpenSwoole\Coroutine\Channel
+Property errCode of class OpenSwoole\Coroutine\Channel cannot be unset

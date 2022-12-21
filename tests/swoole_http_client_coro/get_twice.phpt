@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine\Http\Client;
 const N = 2;
 
-Swoole\Coroutine\Run(function () {
+co::run(function () {
     $client = new Client('www.baidu.com', 443, true);
     $client->set(['timeout' => 5,]);
     for ($i = 0; $i < N; $i++) {

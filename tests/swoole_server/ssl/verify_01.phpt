@@ -12,8 +12,8 @@ require __DIR__ . '/../../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    go(function () use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_SSL);
+    co::run(function () use ($pm) {
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_SSL);
         $client->set([
             'ssl_cert_file' => __DIR__ . '/../../include/api/ssl-ca/client-cert.pem',
             'ssl_key_file' => __DIR__ . '/../../include/api/ssl-ca/client-key.pem',

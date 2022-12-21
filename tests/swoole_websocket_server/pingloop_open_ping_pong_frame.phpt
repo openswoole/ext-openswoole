@@ -14,7 +14,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function (int $pid) use ($pm) {
     for ($i = MAX_CONCURRENCY_MID; $i--;) {
         go(function () use ($pm) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $ret = $cli->upgrade('/');
             Assert::assert($ret);
             $loop = 0;
@@ -82,7 +82,7 @@ $pm->childFunc = function () use ($pm) {
     });
     $serv->on('open', function ($server, $req) {
     });
-    $atomic = new Swoole\Atomic;
+    $atomic = new OpenSwoole\Atomic;
     $serv->on('message', function ($server, swoole_websocket_frame $frame) use ($atomic) {
         if ($frame->opcode === WEBSOCKET_OPCODE_PONG) {
             Assert::same($frame->data, 'pong');

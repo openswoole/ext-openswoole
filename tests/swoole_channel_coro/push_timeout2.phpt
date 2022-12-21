@@ -6,7 +6,7 @@ swoole_channel_coro: pop timeout 2
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$chan = new \Swoole\Coroutine\Channel(1);
+$chan = new \OpenSwoole\Coroutine\Channel(1);
 
 go(function () use ($chan) {
     co::usleep(500000);

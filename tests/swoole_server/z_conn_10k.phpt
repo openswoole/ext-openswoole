@@ -19,7 +19,7 @@ $pm->parentFunc = function () use ($pm) {
         go(function () use ($pm, $c) {
             for ($n = MAX_REQUESTS; $n--;) {
                 global $count, $client_map;
-                $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+                $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
                 $client_map["{$c}.{$n}"] = $client;
                 if ($client->connect('127.0.0.1', $pm->getFreePort(), -1)) {
                     if (Assert::assert($client->recv() === 'Hello Swoole!')) {
@@ -47,9 +47,9 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
-        "worker_num" => swoole_cpu_num() * 2,
+        "worker_num" => OpenSwoole\Util::getCPUNum() * 2,
         'log_file' => '/dev/null',
         'max_connection' => MAX_CONCURRENCY_MID * MAX_REQUESTS
     ]);

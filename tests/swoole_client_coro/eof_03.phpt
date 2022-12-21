@@ -5,12 +5,13 @@ swoole_client_coro: eof with smtp qq
 require __DIR__ . '/../include/skipif.inc';
 skip_if_in_travis();
 skip_if_offline();
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
-    $client = new Co\Client(SWOOLE_TCP);
+co::run(function () {
+    $client = new OpenSwoole\Coroutine\Client(SWOOLE_TCP);
     $client->set([
         'open_eof_check' => true,
         'package_eof' => "\r\n",
@@ -28,7 +29,6 @@ go(function () {
     });
     $client->send("ehlo smtp.qq.com\r\n");
 });
-Swoole\Event::wait();
 echo "DONE\n";
 ?>
 --EXPECT--

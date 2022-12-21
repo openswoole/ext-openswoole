@@ -6,7 +6,7 @@ swoole_client_coro: close in other coroutine
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $cid = go(function () {
-    $sock = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    $sock = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::assert($sock->bind('127.0.0.1', 9601));
     Assert::assert($sock->listen(512));
     $conn = $sock->accept();
@@ -15,7 +15,7 @@ $cid = go(function () {
     Co::yield();
 });
 
-$client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+$client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
 
 go(function () use ($client) {
     $client->connect('127.0.0.1', 9601);

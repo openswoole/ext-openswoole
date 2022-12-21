@@ -6,7 +6,7 @@
 
 namespace SwooleTest;
 
-use Co\Socket;
+use OpenSwoole\Coroutine\Socket;
 use RuntimeException;
 
 class CoServer

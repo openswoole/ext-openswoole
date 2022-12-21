@@ -160,7 +160,7 @@ static const zend_function_entry swoole_process_methods[] =
     PHP_ME(swoole_process, exit, arginfo_class_Swoole_Process_exit, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_process, exec, arginfo_class_Swoole_Process_exec, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_process, exportSocket, arginfo_class_Swoole_Process_exportSocket, ZEND_ACC_PUBLIC)
-    PHP_FALIAS(name, swoole_set_process_name, arginfo_class_Swoole_Process_name)
+    // PHP_FALIAS(name, swoole_set_process_name, arginfo_class_Swoole_Process_name)
     PHP_FE_END
 };
 // clang-format on

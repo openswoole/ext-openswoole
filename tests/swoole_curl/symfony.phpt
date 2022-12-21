@@ -17,11 +17,11 @@ use Symfony\Component\HttpClient\HttplugClient as SymfonyHttplugClient;
 use Http\Client\Common\PluginClient;
 use Http\Discovery\Psr17FactoryDiscovery;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $httpClient = new SymfonyHttplugClient(
         SymfonyHttpClient::create(['max_duration' => 5])
     );

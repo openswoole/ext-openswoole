@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
-Co\run(function () {
+co::run(function () {
     $nodes = array('https://www.google.com', 'https://www.php.net', 'https://openswoole.com');
     $node_count = count($nodes);
 

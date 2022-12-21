@@ -7,14 +7,14 @@ swoole_http2_client_coro: http2 response cookies
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $domain = 'www.bing.com';
-    $cli = new Swoole\Coroutine\Http2\Client($domain, 443, true);
+    $cli = new OpenSwoole\Coroutine\Http2\Client($domain, 443, true);
     $cli->set([
         'timeout' => 10,
         'ssl_host_name' => $domain
     ]);
     $cli->connect();
 
-    $req = new Swoole\Http2\Request;
+    $req = new OpenSwoole\Http2\Request;
     $req->path = '/';
     $req->headers = [
         'Host' => $domain,

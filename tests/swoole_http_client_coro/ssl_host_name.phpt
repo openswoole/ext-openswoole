@@ -9,7 +9,7 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 
 go(function () {
-    $c = new Co\Http\Client('httpbin.org', 443, true);
+    $c = new OpenSwoole\Coroutine\http\Client('httpbin.org', 443, true);
     $c->set([
         'timeout' => 5,
         'ssl_host_name' => 'httpbin.org'

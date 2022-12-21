@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    go(function () use ($pm) {
+    co::run(function () use ($pm) {
         $fp = stream_socket_client("tcp://127.0.0.1:{$pm->getFreePort()}", $errno, $errstr, 1);
         if (!$fp) {
             exit("$errstr ($errno)\n");
@@ -46,6 +46,7 @@ $pm->childFunc = function () use ($pm) {
         }
         $pm->wakeup();
     });
+    OpenSwoole\Event::wait();
 };
 $pm->childFirst();
 $pm->run();

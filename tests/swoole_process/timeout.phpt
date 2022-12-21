@@ -11,7 +11,7 @@ $proc = new \swoole_process(function(\swoole_process $process) {
 });
 $r = $proc->start();
 Assert::assert($r > 0);
-ini_set("swoole.display_errors", "off");
+ini_set("openswoole.display_errors", "off");
 $proc->setTimeout(0.5);
 $ret = $proc->read();
 Assert::false($ret);

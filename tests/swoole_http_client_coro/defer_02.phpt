@@ -16,7 +16,7 @@ $pm->parentFunc = function () use ($pm, $randomData) {
         $clients = [];
         // normal
         for ($n = MAX_CONCURRENCY; $n--;) {
-            $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 1]);
             $cli->setDefer();
             $clients[$n] = $cli;

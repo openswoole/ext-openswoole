@@ -25,7 +25,7 @@ $pm->childFunc = function () use ($pm) {
         }
     }
 
-    $http = new Swoole\Http\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('0.0.0.0', $pm->getFreePort(), SWOOLE_BASE);
     $http->set([
         'worker_num' => 1,
         'log_file' => '/dev/null'

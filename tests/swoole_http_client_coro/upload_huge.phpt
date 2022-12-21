@@ -8,8 +8,8 @@ skip_if_constant_not_defined('HTTPBIN_LOCALLY');
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
-    $cli = new Swoole\Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);
+co::run(function () {
+    $cli = new OpenSwoole\Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);
     $cli->set(['timeout' => 10]);
     $content = str_repeat(get_safe_random(IS_IN_TRAVIS ? 16 : 64), 1024 * 1024); // 64M
     file_put_contents('/tmp/test.jpg', $content);

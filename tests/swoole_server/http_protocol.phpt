@@ -13,14 +13,14 @@ use Swoole\Constant;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Coroutine\Http\Client;
-use function Swoole\Coroutine\run;
+
 
 define('GREETER', 'hello world');
 
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $httpClient = new Client(HTTP_SERVER_HOST, $pm->getFreePort(), false);
         $httpClient->setMethod("POST");
         $httpClient->setData("HELLO");

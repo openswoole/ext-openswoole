@@ -11,12 +11,12 @@ use Swoole\Coroutine\Http\Client;
 use Swoole\WebSocket\Frame;
 use SwooleTest\ProcessManager as ProcessManager;
 
-phpt_var_dump(defined('SWOOLE_HAVE_ZLIB'));
+phpt_var_dump(OpenSwoole\Constant::HAVE_ZLIB);
 
 $pm = new ProcessManager;
 $pm->initRandomData(MAX_REQUESTS);
 $pm->parentFunc = function (int $pid) use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = new Client('127.0.0.1', $pm->getFreePort());
         $cli->set([
             'timeout' => 5,
@@ -37,7 +37,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
             if (!Assert::same($frame->data, $data)) {
                 return;
             }
-            if (!Assert::eq($frame->flags & SWOOLE_WEBSOCKET_FLAG_COMPRESS, defined('SWOOLE_HAVE_ZLIB'))) {
+            if (!Assert::eq($frame->flags & SWOOLE_WEBSOCKET_FLAG_COMPRESS, OpenSwoole\Constant::HAVE_ZLIB)) {
                 return;
             }
         }
@@ -59,7 +59,7 @@ $pm->childFunc = function () use ($pm) {
             $server->close($frame->fd);
             return;
         }
-        if (!Assert::eq($frame->flags & SWOOLE_WEBSOCKET_FLAG_COMPRESS, defined('SWOOLE_HAVE_ZLIB'))) {
+        if (!Assert::eq($frame->flags & SWOOLE_WEBSOCKET_FLAG_COMPRESS, OpenSwoole\Constant::HAVE_ZLIB)) {
             $server->close($frame->fd);
             return;
         }

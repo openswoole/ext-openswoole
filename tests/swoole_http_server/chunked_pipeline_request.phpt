@@ -29,7 +29,7 @@ function generateChunkBody(array $a): string
 $pm = new ProcessManager;
 $pm->initRandomData(1);
 $pm->parentFunc = function () use ($pm) {
-    Coroutine\run(function () use ($pm) {
+    Coroutine::run(function () use ($pm) {
         $request_empty_chunked =
             "DELETE /locks?password=9c1858261b4337b49af4fb8c57a9ec98&lock_id=1&amount=1.2&c=6331b32ac32f4c128ce0016114e11dbd&lang=zh_CN HTTP/1.1\r\n" .
             "x-real-ip: 10.2.100.1\r\n" .
@@ -133,7 +133,7 @@ $pm->parentFunc = function () use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort());
     $http->set([
         'log_file' => '/dev/null',
         // 'log_level' => SWOOLE_LOG_DEBUG,

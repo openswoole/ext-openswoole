@@ -10,10 +10,10 @@ if (!extension_loaded('curl')) print 'skip';
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'file://'. __FILE__);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

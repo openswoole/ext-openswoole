@@ -1,7 +1,7 @@
 PROJECT(libopenswoole)
 
 ENABLE_LANGUAGE(ASM)
-set(SWOOLE_VERSION 4.12.1)
+set(SWOOLE_VERSION 22.0.0-dev)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -g")
@@ -43,6 +43,7 @@ if(CODE_COVERAGE)
 endif(CODE_COVERAGE)
 
 file(GLOB_RECURSE SRC_LIST FOLLOW_SYMLINKS src/*.c src/*.cc
+            thirdparty/boost/asmv1/combined.S
             thirdparty/boost/asm/combined.S
             thirdparty/hiredis/alloc.c
             thirdparty/hiredis/async.c
@@ -125,16 +126,16 @@ if(CODE_COVERAGE)
 endif(CODE_COVERAGE)
 
 # test_server
-set(TEST_SRC_LIST examples/cpp/test_server.cc)
-add_executable(test_server ${TEST_SRC_LIST})
-add_dependencies(test_server lib-openswoole)
-target_link_libraries(test_server openswoole pthread)
+#set(TEST_SRC_LIST examples/cpp/test_server.cc)
+#add_executable(test_server ${TEST_SRC_LIST})
+#add_dependencies(test_server lib-openswoole)
+#target_link_libraries(test_server openswoole pthread)
 
 # co
-set(TEST_SRC_LIST examples/cpp/co.cc)
-add_executable(co ${TEST_SRC_LIST})
-add_dependencies(co lib-openswoole)
-target_link_libraries(co openswoole)
+#set(TEST_SRC_LIST examples/cpp/co.cc)
+#add_executable(co ${TEST_SRC_LIST})
+#add_dependencies(co lib-openswoole)
+#target_link_libraries(co openswoole)
 
 # ext-openswoole
 file(GLOB ext_cxx_files ext-src/*.cc)

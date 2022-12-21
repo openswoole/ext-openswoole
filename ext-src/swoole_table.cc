@@ -173,8 +173,6 @@ static const zend_function_entry swoole_table_methods[] =
     PHP_ME(swoole_table, next,        arginfo_class_Swoole_Table_next, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_table, current,     arginfo_class_Swoole_Table_current, ZEND_ACC_PUBLIC)
     PHP_ME(swoole_table, key,         arginfo_class_Swoole_Table_key, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_table, delete, del, arginfo_class_Swoole_Table_del, ZEND_ACC_PUBLIC)
-    PHP_MALIAS(swoole_table, exist, exists, arginfo_class_Swoole_Table_exists, ZEND_ACC_PUBLIC)
     PHP_FE_END
 };
 // clang-format on
@@ -257,7 +255,8 @@ static PHP_METHOD(swoole_table, create) {
         RETURN_FALSE;
     }
     zend_update_property_long(swoole_table_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("size"), table->get_size());
-    zend_update_property_long(swoole_table_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("memorySize"), table->get_memory_size());
+    zend_update_property_long(
+        swoole_table_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("memorySize"), table->get_memory_size());
     RETURN_TRUE;
 }
 
@@ -294,7 +293,8 @@ static PHP_METHOD(swoole_table, set) {
     TableRow *row = table->set(key, keylen, &_rowlock, &out_flags);
     if (!row) {
         _rowlock->unlock();
-        zend_throw_exception(swoole_exception_ce, "failed to set key value, try to increase the table_size", SW_ERROR_MALLOC_FAIL);
+        zend_throw_exception(
+            swoole_exception_ce, "failed to set key value, try to increase the table_size", SW_ERROR_MALLOC_FAIL);
         RETURN_FALSE;
     }
 
@@ -305,27 +305,45 @@ static PHP_METHOD(swoole_table, set) {
             TableColumn *col = *i;
             zval *zv = zend_hash_str_find(ht, col->name.c_str(), col->name.length());
             if (zv == nullptr || ZVAL_IS_NULL(zv)) {
-                 col->clear(row);
+                col->clear(row);
             } else {
                 if (col->type == TableColumn::TYPE_STRING) {
-                    if(Z_TYPE_P(zv) != IS_STRING) {
-                        zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] type error for TYPE_STRING column", key, col->name.c_str());
+                    if (Z_TYPE_P(zv) != IS_STRING) {
+                        zend_throw_exception_ex(swoole_exception_ce,
+                                                -1,
+                                                "[key=%s,field=%s] type error for TYPE_STRING column",
+                                                key,
+                                                col->name.c_str());
                     }
                     zend_string *str = zval_get_string(zv);
-                    if(ZSTR_LEN(str) > col->size - sizeof(TableStringLength)) {
-                        zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] value is too long: %zu, maximum length: %lu", key, col->name.c_str(), ZSTR_LEN(str), col->size - sizeof(TableStringLength));
+                    if (ZSTR_LEN(str) > col->size - sizeof(TableStringLength)) {
+                        zend_throw_exception_ex(swoole_exception_ce,
+                                                -1,
+                                                "[key=%s,field=%s] value is too long: %zu, maximum length: %lu",
+                                                key,
+                                                col->name.c_str(),
+                                                ZSTR_LEN(str),
+                                                col->size - sizeof(TableStringLength));
                     }
                     row->set_value(col, ZSTR_VAL(str), ZSTR_LEN(str));
                     zend_string_release(str);
                 } else if (col->type == TableColumn::TYPE_FLOAT) {
-                    if(Z_TYPE_P(zv) != IS_DOUBLE) {
-                        zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] type error for TYPE_FLOAT column", key, col->name.c_str());
+                    if (Z_TYPE_P(zv) != IS_DOUBLE) {
+                        zend_throw_exception_ex(swoole_exception_ce,
+                                                -1,
+                                                "[key=%s,field=%s] type error for TYPE_FLOAT column",
+                                                key,
+                                                col->name.c_str());
                     }
                     double _value = zval_get_double(zv);
                     row->set_value(col, &_value, 0);
                 } else {
-                    if(Z_TYPE_P(zv) != IS_LONG) {
-                        zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] type error for TYPE_INT column", key, col->name.c_str());
+                    if (Z_TYPE_P(zv) != IS_LONG) {
+                        zend_throw_exception_ex(swoole_exception_ce,
+                                                -1,
+                                                "[key=%s,field=%s] type error for TYPE_INT column",
+                                                key,
+                                                col->name.c_str());
                     }
                     long _value = zval_get_long(zv);
                     row->set_value(col, &_value, 0);
@@ -345,24 +363,42 @@ static PHP_METHOD(swoole_table, set) {
             if (col == nullptr) {
                 continue;
             } else if (col->type == TableColumn::TYPE_STRING) {
-                if(Z_TYPE_P(zv) != IS_STRING) {
-                    zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] type error for TYPE_STRING column", key, col->name.c_str());
+                if (Z_TYPE_P(zv) != IS_STRING) {
+                    zend_throw_exception_ex(swoole_exception_ce,
+                                            -1,
+                                            "[key=%s,field=%s] type error for TYPE_STRING column",
+                                            key,
+                                            col->name.c_str());
                 }
                 zend_string *str = zval_get_string(zv);
-                if(ZSTR_LEN(str) > col->size - sizeof(TableStringLength)) {
-                    zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] value is too long: %zu, maximum length: %lu", key, col->name.c_str(), ZSTR_LEN(str), col->size - sizeof(TableStringLength));
+                if (ZSTR_LEN(str) > col->size - sizeof(TableStringLength)) {
+                    zend_throw_exception_ex(swoole_exception_ce,
+                                            -1,
+                                            "[key=%s,field=%s] value is too long: %zu, maximum length: %lu",
+                                            key,
+                                            col->name.c_str(),
+                                            ZSTR_LEN(str),
+                                            col->size - sizeof(TableStringLength));
                 }
                 row->set_value(col, ZSTR_VAL(str), ZSTR_LEN(str));
                 zend_string_release(str);
             } else if (col->type == TableColumn::TYPE_FLOAT) {
-                if(Z_TYPE_P(zv) != IS_DOUBLE) {
-                    zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] type error for TYPE_FLOAT column", key, col->name.c_str());
+                if (Z_TYPE_P(zv) != IS_DOUBLE) {
+                    zend_throw_exception_ex(swoole_exception_ce,
+                                            -1,
+                                            "[key=%s,field=%s] type error for TYPE_FLOAT column",
+                                            key,
+                                            col->name.c_str());
                 }
                 double _value = zval_get_double(zv);
                 row->set_value(col, &_value, 0);
             } else {
-                if(Z_TYPE_P(zv) != IS_LONG) {
-                    zend_throw_exception_ex(swoole_exception_ce, -1, "[key=%s,field=%s] type error for TYPE_INT column", key, col->name.c_str());
+                if (Z_TYPE_P(zv) != IS_LONG) {
+                    zend_throw_exception_ex(swoole_exception_ce,
+                                            -1,
+                                            "[key=%s,field=%s] type error for TYPE_INT column",
+                                            key,
+                                            col->name.c_str());
                 }
                 long _value = zval_get_long(zv);
                 row->set_value(col, &_value, 0);

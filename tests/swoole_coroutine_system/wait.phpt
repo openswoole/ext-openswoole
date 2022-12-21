@@ -18,11 +18,11 @@ $process = new Process(function () use ($atomic) {
 });
 $process->start();
 
-Coroutine\run(function () use ($process, $atomic) {
+Coroutine::run(function () use ($process, $atomic) {
     for ($n = MAX_REQUESTS; $n--;) {
         $status = System::wait(0.001);
         Assert::false($status);
-        Assert::same(swoole_last_error(), SOCKET_ETIMEDOUT);
+        Assert::same(OpenSwoole\Util::getLastErrorCode(), SOCKET_ETIMEDOUT);
     }
     $atomic->wakeup();
     $status = System::wait(1);

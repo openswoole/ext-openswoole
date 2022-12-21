@@ -12,11 +12,11 @@ use Swoole\Constant;
 
 $pm = new SwooleTest\ProcessManager;
 
-$GLOBALS['atomic'] = new Swoole\Atomic(0);
+$GLOBALS['atomic'] = new OpenSwoole\Atomic(0);
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\run(function () use ($pm) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         if ($cli->connect('127.0.0.1', $pm->getFreePort(), 100) == false) {
             echo "ERROR\n";
             return;
@@ -30,7 +30,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $serv = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $serv = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $serv->set(array(
         "worker_num" => 2,
         'log_file' => TEST_LOG_FILE,
@@ -42,7 +42,7 @@ $pm->childFunc = function () use ($pm) {
     $serv->on(Constant::EVENT_PIPE_MESSAGE, function ($serv, $workerId, $msg) {
         Assert::assert($serv->close($msg['fd']));
         Assert::false($serv->close(99999));
-        Assert::eq($serv->getLastError(), SWOOLE_ERROR_SESSION_NOT_EXIST);
+        Assert::eq(OpenSwoole\Util::getLastErrorCode(), SWOOLE_ERROR_SESSION_NOT_EXIST);
     });
 
     $serv->on(Constant::EVENT_RECEIVE, function (Swoole\Server $serv, $fd, $rid, $data) {

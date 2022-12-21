@@ -14,7 +14,7 @@ $pm->parentFunc = function () use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
     $mode = SERVER_MODE_RANDOM;
-    $server = new Swoole\Server('127.0.0.1', $pm->getFreePort(), $mode);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), $mode);
     $server->set([
         'worker_num' => mt_rand(1, 4),
         'log_file' => '/dev/null',

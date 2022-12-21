@@ -13,10 +13,10 @@ if (false === getenv('PHP_CURL_FTP_REMOTE_PASSWD'))  exit("skip PHP_CURL_FTP_REM
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $host = getenv('PHP_CURL_FTP_REMOTE_SERVER');
     $username = getenv('PHP_CURL_FTP_REMOTE_USER');
     $password = getenv('PHP_CURL_FTP_REMOTE_PASSWD');

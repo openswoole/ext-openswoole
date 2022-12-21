@@ -16,7 +16,7 @@ $pm->parentFunc = function (int $pid) use ($pm) {
             $client->get('/');
         }
 
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         go(function () use ($cli) {
             (function () use ($cli) {
                 (function () use ($cli) {

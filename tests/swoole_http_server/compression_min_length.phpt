@@ -5,13 +5,13 @@ swoole_http_server: compression_min_length
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-use function Swoole\Coroutine\run;
+
 use Swoole\Coroutine\Http\Client;
 
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm)
 {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $cli = new Client('127.0.0.1', $pm->getFreePort());
         $cli->setHeaders(['Accept-Encoding' => 'gzip', ]);
         $cli->get('/?bytes=128');
@@ -27,7 +27,7 @@ $pm->parentFunc = function () use ($pm)
 };
 $pm->childFunc = function () use ($pm)
 {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $http->set(['compression_min_length' => 128,]);
     $http->on("WorkerStart", function ($serv, $wid) {
         global $pm;

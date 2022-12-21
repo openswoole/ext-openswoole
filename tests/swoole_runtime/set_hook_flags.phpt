@@ -21,7 +21,7 @@ $load = function ($name) {
 };
 
 spl_autoload_register($load);
-Co\run(function () {
+co::run(function () {
 
     go(function () {
         new InexistentClass;

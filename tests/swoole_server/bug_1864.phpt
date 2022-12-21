@@ -17,7 +17,7 @@ $pm->parentFunc = function ($pid) use ($pm)
     function run()
     {
         global $pm;
-        $client = new \Swoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
+        $client = new \OpenSwoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
         static $index = 0;
         if ($client->connect('127.0.0.1', $pm->getFreePort()) == false) {
             echo "connect error\n";
@@ -36,7 +36,7 @@ $pm->parentFunc = function ($pid) use ($pm)
         }
     }
     for ($i = 0; $i < N; $i ++) {
-        run();
+        co::run(function(){});
     }
     $pm->kill();
 };

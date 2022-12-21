@@ -6,7 +6,7 @@ swoole_coroutine: coro channel
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
+co::run(function () {
     echo "co[1] start\n";
     co::usleep(10000);
     go(function () {
@@ -16,11 +16,9 @@ go(function () {
     });
     echo "co[1] exit\n";
 });
-echo "end\n";
 ?>
 --EXPECT--
 co[1] start
-end
 co[2] start
 co[1] exit
 co[2] exit

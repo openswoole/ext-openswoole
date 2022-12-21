@@ -22,12 +22,12 @@ $pm->initFreePorts(2);
 $pm->parentFunc = function ($pid) use ($pm, $tcp_options) {
     go(function () use ($pm, $tcp_options) {
         // http
-        $http_client = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(0));
+        $http_client = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort(0));
         Assert::assert($http_client->post('/', 'Swoole Http'));
         var_dump($http_client->body);
 
         // http2
-        $http2_client = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort(0));
+        $http2_client = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort(0));
         $http2_client->connect();
         $http2_request = new swoole_http2_request;
         $http2_request->method = 'POST';
@@ -42,7 +42,7 @@ $pm->parentFunc = function ($pid) use ($pm, $tcp_options) {
         var_dump($http_client->recv()->data);
 
         // tcp
-        $tcp_client = new Swoole\Coroutine\Client(SWOOLE_TCP);
+        $tcp_client = new OpenSwoole\Coroutine\Client(SWOOLE_TCP);
         $tcp_client->set($tcp_options);
         $tcp_client->connect('127.0.0.1', $pm->getFreePort(1));
         $tcp_client->send(tcp_pack('Swoole Tcp'));

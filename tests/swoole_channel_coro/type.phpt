@@ -17,7 +17,7 @@ $exit_status_list = [
 ];
 
 
-$chan = new Swoole\Coroutine\Channel;
+$chan = new OpenSwoole\Coroutine\Channel;
 
 go(function () use ($chan, $exit_status_list)
 {

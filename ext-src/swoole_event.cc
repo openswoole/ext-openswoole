@@ -52,7 +52,6 @@ static PHP_FUNCTION(swoole_event_set);
 static PHP_FUNCTION(swoole_event_del);
 static PHP_FUNCTION(swoole_event_write);
 static PHP_FUNCTION(swoole_event_wait);
-static PHP_FUNCTION(swoole_event_rshutdown);
 static PHP_FUNCTION(swoole_event_exit);
 static PHP_FUNCTION(swoole_event_defer);
 static PHP_FUNCTION(swoole_event_cycle);
@@ -73,7 +72,6 @@ static const zend_function_entry swoole_event_methods[] =
     ZEND_FENTRY(cycle, ZEND_FN(swoole_event_cycle), arginfo_class_Swoole_Event_cycle, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     ZEND_FENTRY(write, ZEND_FN(swoole_event_write), arginfo_class_Swoole_Event_write, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     ZEND_FENTRY(wait, ZEND_FN(swoole_event_wait), arginfo_class_Swoole_Event_wait, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
-    ZEND_FENTRY(rshutdown, ZEND_FN(swoole_event_rshutdown), arginfo_class_Swoole_Event_rshutdown, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     ZEND_FENTRY(exit, ZEND_FN(swoole_event_exit), arginfo_class_Swoole_Event_exit, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
     PHP_FE_END
 };
@@ -214,9 +212,6 @@ int php_swoole_reactor_init() {
             php_swoole_fatal_error(E_ERROR, "Unable to create event-loop reactor");
             return SW_ERR;
         }
-        
-        // @TODO: users have to call swoole_event_wait() implicitly 
-        php_swoole_register_shutdown_function("Swoole\\Event::rshutdown");
     }
 
     if (sw_reactor() && SwooleG.user_exit_condition &&
@@ -684,22 +679,6 @@ static PHP_FUNCTION(swoole_event_wait) {
         return;
     }
     php_swoole_event_wait();
-}
-
-// @DEPRECATED: users have to call swoole_event_wait() implicitly 
-static PHP_FUNCTION(swoole_event_rshutdown) {
-    /* prevent the program from jumping out of the rshutdown */
-    zend_try {
-        if (!sw_reactor()) {
-            return;
-        }
-        // when throw Exception, do not show the info
-        if (!sw_reactor()->bailout) {
-            php_swoole_fatal_error(E_DEPRECATED, "Event::wait() in shutdown function is deprecated");
-        }
-        php_swoole_event_wait();
-    }
-    zend_end_try();
 }
 
 static PHP_FUNCTION(swoole_event_dispatch) {

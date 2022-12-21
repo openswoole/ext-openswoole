@@ -8,13 +8,13 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Server;
 use Swoole\Server\Packet;
-use function Swoole\Coroutine\run;
+
 
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    run(function () use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
+    co::run(function () use ($pm) {
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
         if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
             echo "Over flow. errno=" . $client->errCode;
             die("\n");

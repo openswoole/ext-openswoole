@@ -6,7 +6,7 @@ swoole_runtime/stream_select: timeout
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
-go(function () {
+co::run(function () {
     Swoole\Runtime::enableCoroutine();
     $fp1 = stream_socket_client("tcp://www.google.com:80", $errno, $errstr, 30);
     if (!$fp1) {

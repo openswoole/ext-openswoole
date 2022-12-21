@@ -9,7 +9,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 $domain = AF_INET;
 $level = IPPROTO_IP;
 
-$socket = new Co\Socket($domain, SOCK_DGRAM, SOL_UDP);
+$socket = new OpenSwoole\Coroutine\Socket($domain, SOCK_DGRAM, SOL_UDP);
 
 echo "Setting IP_MULTICAST_TTL\n";
 $r = $socket->setOption($level, IP_MULTICAST_TTL, 9);

@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use Swoole\Coroutine;
 
-Coroutine\run(function () {
+Coroutine::run(function () {
     $client = stream_socket_client('tcp://www.qq.com:80', $errno, $errstr, 30);
     $events = Coroutine::waitEvent($client, SWOOLE_EVENT_READ | SWOOLE_EVENT_WRITE);
     Assert::eq($events, SWOOLE_EVENT_WRITE);

@@ -9,12 +9,12 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
+
 
 Co::set(['log_level' => SWOOLE_LOG_WARNING]);
 
-run(function () {
-    $cli = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
+co::run(function () {
+    $cli = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     $cli->setProtocol(['open_ssl' => true,]);
 
     Assert::false ($cli->connect('www.baidu.com', 80));

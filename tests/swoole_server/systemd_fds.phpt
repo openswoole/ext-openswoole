@@ -1,7 +1,7 @@
 --TEST--
 swoole_server: systemd fds
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php require __DIR__ . '/../include/skipif.inc'; skip("TODOv22"); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
@@ -52,8 +52,6 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
     $sockets = [];
-    $start_fd = swoole_array(scandir('/proc/self/fd'))->sort()->last();
-    putenv('LISTEN_FDS_START='. $start_fd);
 
     $sockets[] = stream_socket_server('tcp://127.0.0.1:'.$pm->getFreePort(0), $errno, $errstr);
     $sockets[] = stream_socket_server('udp://0.0.0.0:'.$pm->getFreePort(1), $errno, $errstr, STREAM_SERVER_BIND);

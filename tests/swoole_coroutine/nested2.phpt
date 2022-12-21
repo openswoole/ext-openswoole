@@ -6,7 +6,7 @@ swoole_coroutine: coro nested2
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
+co::run(function () {
     echo "co[1] start\n";
     go(function () {
         echo "co[2] start\n";
@@ -21,6 +21,6 @@ echo "end\n";
 --EXPECT--
 co[1] start
 co[2] start
-end
 co[1] exit
 co[2] exit
+end

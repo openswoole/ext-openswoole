@@ -6,7 +6,7 @@ swoole_socket_coro/setopt: multicast
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-$socket = new Co\Socket(AF_INET, SOCK_DGRAM, SOL_UDP);
+$socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, SOL_UDP);
 $socket->bind('0.0.0.0', 9905);
 
 $ret = $socket->setOption(IPPROTO_IP, MCAST_JOIN_GROUP, array(
@@ -31,7 +31,7 @@ go(function () use ($socket) {
 });
 
 go(function () use ($socket) {
-    $client = new Co\Client(SWOOLE_SOCK_UDP);
+    $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
     $client->connect('224.10.20.30', 9905);
     $n = 10;
     while($n--) {

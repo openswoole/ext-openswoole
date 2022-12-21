@@ -6,13 +6,13 @@ swoole_websocket_server: onDisconnect
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
+
 use Swoole\Coroutine\Http\Client;
 
 $pm = new ProcessManager;
 
 $pm->parentFunc = function (int $pid) use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $data = httpGetBody('http://127.0.0.1:' . $pm->getFreePort() . '/');
         Assert::contains($data, 'HTTP 400 Bad Request');
 

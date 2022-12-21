@@ -18,7 +18,7 @@ swoole_timer_after(10, function() use($proc) {
     // swoole_event_exit();
 });
 
-\swoole_process::wait(true);
+OpenSwoole\Event::wait(true);
 ?>
 --EXPECT--
 SUCCESS

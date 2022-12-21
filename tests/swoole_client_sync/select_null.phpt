@@ -23,7 +23,7 @@ $pm->parentFunc = function ($pid) use ($pm)
     $r = [$client];
     $w = $e = null;
     $client->send("hello world\n");
-    swoole_select($r, $w, $e);
+    $client->select($r, $w, $e);
     echo $client->recv();
     $client->close();
     $pm->kill();

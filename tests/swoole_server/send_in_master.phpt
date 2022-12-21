@@ -19,8 +19,8 @@ $GLOBALS['atomic'] = new Atomic(0);
 $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\run(function () use ($pm) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         if ($cli->connect('127.0.0.1', $pm->getFreePort(), 100) == false) {
             echo "ERROR\n";
             return;
@@ -33,7 +33,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $serv = new Swoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $serv = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $serv->set(array(
         "worker_num" => 2,
         'log_file' => TEST_LOG_FILE,

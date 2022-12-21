@@ -12,7 +12,7 @@ $pm = new SwooleTest\ProcessManager;
 use Swoole\Server;
 use Swoole\Client;
 
-$counter = new Swoole\Atomic(0);
+$counter = new OpenSwoole\Atomic(0);
 
 $pm->parentFunc = function ($pid) use ($pm) {
     $client = new Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);

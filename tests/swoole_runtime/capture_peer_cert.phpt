@@ -5,6 +5,7 @@ swoole_runtime: ssl capture_peer_cert
 require __DIR__ . '/../include/skipif.inc';
 skip_if_no_ssl();
 skip_if_offline();
+skip("TODOv22");
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -30,13 +31,13 @@ function capture_peer_cert($domain)
     return $cont;
 }
 
-Swoole\Runtime::setHookFlags(SWOOLE_HOOK_ALL);
+OpenSwoole\Runtime::setHookFlags(SWOOLE_HOOK_ALL);
 
-Co\run(function ()  {
-    $result = capture_peer_cert('www.baidu.com');
+co::run(function ()  {
+    $result = capture_peer_cert('www.google.com');
     $info1 = openssl_x509_parse($result["options"]["ssl"]["peer_certificate"]);
     Assert::isArray($info1);
-    Assert::contains($info1['name'], 'baidu.com');
+    Assert::contains($info1['name'], 'google.com');
 });
 ?>
 --EXPECT--

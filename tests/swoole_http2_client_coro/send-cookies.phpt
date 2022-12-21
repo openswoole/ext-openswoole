@@ -14,11 +14,11 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {
         co::usleep(100000);
-        $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
         $cli->connect();
 
         $filename = pathinfo(__FILE__, PATHINFO_BASENAME);
-        $req = new Swoole\Http2\Request;
+        $req = new OpenSwoole\Http2\Request;
         $req->path = "/{$filename}";
         $req->cookies = [
             'foo' => 'bar',

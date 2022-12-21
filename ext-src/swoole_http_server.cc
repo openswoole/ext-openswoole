@@ -40,7 +40,7 @@ static bool http_context_sendfile(HttpContext *ctx, const char *file, uint32_t l
 static bool http_context_disconnect(HttpContext *ctx);
 
 void php_swoole_http_request_onTimeout(Timer *timer, TimerNode *tnode) {
-    HttpContext *ctx = (HttpContext*) tnode->data;
+    HttpContext *ctx = (HttpContext *) tnode->data;
     if (!ctx || (ctx->end_ || ctx->detached) || !ctx->fd) {
         return;
     }
@@ -81,11 +81,11 @@ int php_swoole_http_server_onReceive(Server *serv, RecvData *req) {
     php_swoole_get_recv_data(serv, zdata, req);
 
     swoole_trace_log(SW_TRACE_SERVER,
-               "http request from %ld with %d bytes: <<EOF\n%.*s\nEOF",
-               session_id,
-               (int) Z_STRLEN_P(zdata),
-               (int) Z_STRLEN_P(zdata),
-               Z_STRVAL_P(zdata));
+                     "http request from %ld with %d bytes: <<EOF\n%.*s\nEOF",
+                     session_id,
+                     (int) Z_STRLEN_P(zdata),
+                     (int) Z_STRLEN_P(zdata),
+                     Z_STRVAL_P(zdata));
 
     zval args[2], *zrequest_object = &args[0], *zresponse_object = &args[1];
     args[0] = *ctx->request.zobject;
@@ -101,7 +101,8 @@ int php_swoole_http_server_onReceive(Server *serv, RecvData *req) {
         ctx->send(ctx, SW_STRL(SW_HTTP_BAD_REQUEST_PACKET));
 #endif
         ctx->close(ctx);
-        swoole_notice("request is illegal and it has been discarded, %ld bytes unprocessed", Z_STRLEN_P(zdata) - parsed_n);
+        swoole_notice("request is illegal and it has been discarded, %ld bytes unprocessed",
+                      Z_STRLEN_P(zdata) - parsed_n);
         goto _dtor_and_return;
     }
 
@@ -137,8 +138,11 @@ int php_swoole_http_server_onReceive(Server *serv, RecvData *req) {
             }
         }
 
-        if(serv->max_request_execution_time > 0) {
-            swoole_timer_add((long) (serv->max_request_execution_time * 1000), false, php_swoole_http_request_onTimeout, (HttpContext*) ctx);
+        if (serv->max_request_execution_time > 0) {
+            swoole_timer_add((long) (serv->max_request_execution_time * 1000),
+                             false,
+                             php_swoole_http_request_onTimeout,
+                             (HttpContext *) ctx);
         }
 
         if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, serv->is_enable_coroutine()))) {
@@ -205,6 +209,29 @@ void HttpContext::init(Server *serv) {
 
 void HttpContext::bind(Server *serv) {
     private_data = serv;
+    send = http_context_send_data;
+    sendfile = http_context_sendfile;
+    close = http_context_disconnect;
+}
+
+void HttpContext::init(Socket *sock) {
+    parse_cookie = 1;
+    parse_body = 1;
+    parse_files = 1;
+#ifdef SW_HAVE_COMPRESSION
+    enable_compression = 1;
+    compression_level = SW_Z_BEST_SPEED;
+#endif
+#ifdef SW_HAVE_ZLIB
+    websocket_compression = 0;
+#endif
+    upload_tmp_dir = "/tmp";
+    bind(sock);
+}
+
+void HttpContext::bind(Socket *sock) {
+    private_data = sock;
+    co_socket = 1;
     send = http_context_send_data;
     sendfile = http_context_sendfile;
     close = http_context_disconnect;

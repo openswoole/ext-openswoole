@@ -27,7 +27,7 @@ class Protocol
     }
 }
 
-Co\run(function () {
+co::run(function () {
     $server = new Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     $server->setProtocol([
         'open_length_check' => true,

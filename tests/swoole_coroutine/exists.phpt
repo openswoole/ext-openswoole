@@ -5,7 +5,7 @@ swoole_coroutine: exists
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     go(function () {
         go(function () {
             Co::usleep(1000);

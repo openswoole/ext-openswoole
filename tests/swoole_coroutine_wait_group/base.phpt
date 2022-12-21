@@ -1,11 +1,11 @@
 --TEST--
 swoole_coroutine_wait_group: base
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php require __DIR__ . '/../include/skipif.inc'; skip('TODOv22'); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$wg = new Swoole\Coroutine\WaitGroup;
+$wg = new OpenSwoole\Coroutine\WaitGroup;
 go(function () use ($wg) {
     go(function () use ($wg) {
         $wg->add();

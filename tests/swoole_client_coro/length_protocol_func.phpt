@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function() use ($pm) {
-        $client = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $client->set([
             'open_length_check' => true,
             'package_max_length' => 1024 * 1024,

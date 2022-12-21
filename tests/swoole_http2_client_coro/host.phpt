@@ -9,12 +9,12 @@ require __DIR__ . '/../include/skipif.inc';
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $domain = '127.0.0.1';
-        $cli = new Swoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
+        $cli = new OpenSwoole\Coroutine\Http2\Client($domain, $pm->getFreePort(), true);
         $cli->set(['timeout' => 5]);
         $cli->connect();
-        $request = new Swoole\Http2\Request;
+        $request = new OpenSwoole\Http2\Request;
         for ($n = MAX_REQUESTS; $n--;) {
             $request->path = '/';
             $request->headers = [

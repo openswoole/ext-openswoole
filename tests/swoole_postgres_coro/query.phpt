@@ -5,8 +5,8 @@ swoole_postgres_coro: query tests
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-Co\run(function() {
-    $pg = new Swoole\Coroutine\PostgreSQL();
+co::run(function() {
+    $pg = new OpenSwoole\Coroutine\PostgreSQL();
 
     Assert::false($pg->connect(''));
 

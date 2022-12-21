@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cookie = '123_,; abc';
         Assert::assert($cli->get('/?cookie=' . urlencode($cookie)));
         Assert::same($cli->statusCode, 200);
@@ -21,7 +21,7 @@ $pm->parentFunc = function () use ($pm) {
     });
     for ($i = MAX_CONCURRENCY_LOW; $i--;) {
         go(function () use ($pm) {
-            $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $random = get_safe_random();
             Assert::assert($cli->get('/?cookie=' . $random));
             Assert::same($cli->statusCode, 200);

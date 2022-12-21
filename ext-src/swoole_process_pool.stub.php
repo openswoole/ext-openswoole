@@ -18,13 +18,13 @@
 /** @not-serializable */
 namespace Swoole\Process {
     class Pool {
-        public function __construct(int $workerNum, int $ipcType = SWOOLE_IPC_NONE, int $msgqueue_key = 0, bool $enableCoroutine = false) {}
+        public function __construct(int $workerNum, int $ipcType = Pool::IPC_NONE, int $msgqueue_key = 0, bool $enableCoroutine = false) {}
         public function set(array $settings): ?bool {}
         public function on(string $event, callable $callback): bool {}
         public function listen(string $host, int $port = 0, int $backlog = 2048): bool {}
         public function write(string $data): bool {}
         public function detach(): bool {}
-        public function getProcess(int $workerId = -1): \Swoole\Process|false {}
+        public function getProcess(int $workerId = -1): \OpenSwoole\Process|false {}
         public function start(): ?bool {}
         public function stop(): void {}
         public function shutdown(): bool {}

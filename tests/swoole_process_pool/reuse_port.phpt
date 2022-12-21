@@ -15,10 +15,10 @@ use Swoole\Process;
 $pm = new ProcessManager;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    $sch = new Swoole\Coroutine\Scheduler();
+    $sch = new OpenSwoole\Coroutine\Scheduler();
     $pids = [];
     $sch->parallel(10, function () use ($pm, &$pids) {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         if (!$cli->connect('127.0.0.1', $pm->getFreePort())) {
             echo "ERROR [1]\n";
             return;
@@ -47,8 +47,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm) {
 
-    $atomic = new \Swoole\Atomic();
-    $pool = new Swoole\Process\Pool(2);
+    $atomic = new \OpenSwoole\Atomic();
+    $pool = new OpenSwoole\Process\Pool(2);
     $pool->set(['enable_coroutine' => true]);
     $pool->on(Constant::EVENT_WORKER_START, function ($pool, $id) use ($pm, $atomic) {
 

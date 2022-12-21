@@ -144,7 +144,7 @@ TEST(socket, recvfrom_blocking) {
 }
 
 TEST(socket, sendfile_blocking) {
-    string file = test::get_root_path() + "/examples/test.jpg";
+    string file = test::get_root_path() + "/tests/assets/test.jpg";
     mutex m;
     m.lock();
 

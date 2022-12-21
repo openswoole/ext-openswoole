@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 const URL = "http://www.gov.cn/";
 const KEYWORDS = '中国政府网';
 // 1
-$sch = new Swoole\Coroutine\Scheduler();
+$sch = new OpenSwoole\Coroutine\Scheduler();
 $sch->set(['hook_flags' => SWOOLE_HOOK_ALL,]);
 $sch->add(function () {
     Assert::contains(file_get_contents(URL), KEYWORDS);
@@ -21,7 +21,7 @@ $sch->start();
 Assert::contains(file_get_contents(URL), KEYWORDS);
 
 // 2
-$sch = new Swoole\Coroutine\Scheduler();
+$sch = new OpenSwoole\Coroutine\Scheduler();
 $sch->set(['hook_flags' => SWOOLE_HOOK_ALL,]);
 $sch->add(function ()  {
     Assert::contains(file_get_contents(URL), KEYWORDS);

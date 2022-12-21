@@ -7,8 +7,8 @@ swoole_feature/cross_close: client closed by server
 require __DIR__ . '/../../include/bootstrap.php';
 $pm = new ProcessManager();
 $pm->parentFunc = function () use ($pm) {
-    go(function () use ($pm) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         Assert::assert($cli->connect('127.0.0.1', $pm->getFreePort()));
         Assert::assert($cli->connected);
         echo "RECV\n";
@@ -29,12 +29,12 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    go(function () use ($pm) {
-        $server = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    co::run(function () use ($pm) {
+        $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::assert($server->bind('127.0.0.1', $pm->getFreePort()));
         Assert::assert($server->listen());
         go(function () use ($pm, $server) {
-            if (Assert::assert(($conn = $server->accept()) && $conn instanceof Co\Socket)) {
+            if (Assert::assert(($conn = $server->accept()) && $conn instanceof OpenSwoole\Coroutine\Socket)) {
                 switch_process();
                 echo "CLOSE\n";
                 $conn->close();

@@ -34,7 +34,7 @@ function arrayToMultipartString(array $var, string $boundary): string
 
 function sendData(string $host, int $port, array $get, array $post): string
 {
-    $client = new Co\Client(SWOOLE_SOCK_TCP);
+    $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
     if (!$client->connect($host, $port, 1)) {
         exit("connect failed. Error: {$client->errCode}\n");
     }
@@ -86,7 +86,7 @@ $pm->parentFunc = function () use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set(['log_file' => '/dev/null']);
     $http->on('WorkerStart', function ($serv, $wid) use ($pm) {
         $pm->wakeup();

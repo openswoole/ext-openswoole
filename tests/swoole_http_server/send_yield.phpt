@@ -10,7 +10,7 @@ foreach ([SWOOLE_BASE, SWOOLE_PROCESS] as $mode) {
     $pm = new ProcessManager;
     $pm->initRandomData(1, 64 * ONE_MEGABYTES);
     $pm->parentFunc = function ($pid) use ($pm) {
-        Swoole\Coroutine\run(function () use ($pm) {
+        co::run(function () use ($pm) {
             $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/");
             Assert::assert($data === $pm->getRandomData());
             phpt_var_dump(strlen($data));
@@ -19,7 +19,7 @@ foreach ([SWOOLE_BASE, SWOOLE_PROCESS] as $mode) {
         echo "DONE\n";
     };
     $pm->childFunc = function () use ($pm, $mode) {
-        $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), $mode);
+        $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), $mode);
         $http->set([
             'log_file' => '/dev/null',
             'send_yield' => true,

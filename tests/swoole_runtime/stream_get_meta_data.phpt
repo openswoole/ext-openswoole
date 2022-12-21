@@ -33,7 +33,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $port = $pm->getFreePort();
     test($port);
     Runtime::setHookFlags(SWOOLE_HOOK_ALL);
-    Co\run(function () use ($port) {
+    co::run(function () use ($port) {
         test($port);
     });
     $pm->kill();

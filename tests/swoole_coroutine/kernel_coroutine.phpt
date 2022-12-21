@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 const N = 4;
 const T = 0.02;
 
-Co\run(function () {
+co::run(function () {
     go(function () {
         for ($i = 0; $i < N; $i++) {
             Co::usleep((int) (T * 1000 * 1000));

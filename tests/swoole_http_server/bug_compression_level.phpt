@@ -19,8 +19,8 @@ $contentLengthArray = [];
 for ($level = MIN_COMPRESSION_LEVEL; $level <= MAX_COMPRESSION_LEVEL; $level++) {
     $pm = new ProcessManager;
     $pm->parentFunc = function () use ($pm) {
-        Co\run(function () use ($pm) {
-            $client = new Co\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+        co::run(function () use ($pm) {
+            $client = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
             if (Assert::true($client->connect('127.0.0.1', $pm->getFreePort()))) {
                 if (Assert::eq($client->sendAll(HTTP_GET_REQUEST), strlen(HTTP_GET_REQUEST))) {
                     $response = $client->recv();
@@ -36,7 +36,7 @@ for ($level = MIN_COMPRESSION_LEVEL; $level <= MAX_COMPRESSION_LEVEL; $level++) 
     };
     $pm->childFunc = function () use ($pm, $level, $randomBytes) {
         phpt_var_dump($level);
-        $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
+        $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort());
         $http->set([
             'log_file' => '/dev/null',
             'http_compression' => true,

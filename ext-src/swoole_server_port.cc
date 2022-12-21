@@ -44,6 +44,146 @@ static std::unordered_map<std::string, ServerPortEvent> server_port_event_map({
     { "message",     ServerPortEvent(SW_SERVER_CB_onMessage,     "Message") },
     { "disconnect",  ServerPortEvent(SW_SERVER_CB_onDisconnect,  "Disconnect") },
 });
+
+static std::unordered_map<std::string, bool> server_options_map({
+
+    // global
+    { "debug_mode", true },
+    { "trace_flags", true },
+    { "log_file", true },
+    { "log_level", true },
+    { "log_date_format", true },
+    { "log_date_with_microseconds", true },
+    { "log_rotation", true },
+    { "display_errors", true },
+    { "dns_server", true },
+    { "socket_dns_timeout", true },
+    { "socket_connect_timeout", true },
+    { "socket_write_timeout", true },
+    { "socket_send_timeout", true },
+    { "socket_read_timeout", true },
+    { "socket_recv_timeout", true },
+    { "socket_buffer_size", true },
+    { "socket_timeout", true },
+
+    // server
+    { "chroot", true },
+    { "user", true },
+    { "group", true },
+    { "daemonize", true },
+    { "pid_file", true },
+    { "reactor_num", true },
+    { "single_thread", true },
+    { "worker_num", true },
+    { "max_wait_time", true },
+    { "max_queued_bytes", true },
+    { "enable_coroutine", true },
+    { "max_coro_num", true },
+    { "max_coroutine", true },
+    { "hook_flags", true },
+    { "send_timeout", true },
+    { "dispatch_mode", true },
+    { "send_yield", true },
+    { "dispatch_func", true },
+    { "discard_timeout_request", true },
+    { "enable_unsafe_event", true },
+    { "enable_delay_receive", true },
+    { "enable_reuse_port", true },
+    { "task_use_object", true },
+    { "task_object", true },
+    { "event_object", true },
+    { "task_enable_coroutine", true },
+    { "task_worker_num", true },
+    { "task_ipc_mode", true },
+    { "task_tmpdir", true },
+    { "task_max_request", true },
+    { "task_max_request_grace", true },
+    { "max_connection", true },
+    { "max_conn", true },
+    { "start_session_id", true },
+    { "heartbeat_check_interval", true },
+    { "heartbeat_idle_time", true },
+    { "max_request", true },
+    { "max_request_grace", true },
+    { "max_request_execution_time", true },
+    { "reload_async", true },
+    { "open_cpu_affinity", true },
+    { "cpu_affinity_ignore", true },
+    { "http_parse_cookie", true },
+    { "http_parse_post", true },
+    { "http_parse_files", true },
+    { "http_compression", true },
+    { "http_compression_level", true },
+    { "compression_min_length", true },
+    { "http_gzip_level", true },
+    { "websocket_compression", true },
+    { "upload_tmp_dir", true },
+    { "enable_static_handler", true },
+    { "document_root", true },
+    { "http_autoindex", true },
+    { "http_index_files", true },
+    { "static_handler_locations", true },
+    { "input_buffer_size", true },
+    { "buffer_input_size", true },
+    { "output_buffer_size", true },
+    { "buffer_output_size", true },
+    { "message_queue_key", true },
+    { "http2_header_table_size", true },
+    { "http2_initial_window_size", true },
+    { "http2_max_concurrent_streams", true },
+    { "http2_max_frame_size", true },
+    { "http2_max_header_list_size", true },
+    { "enable_server_token", true },
+
+    // port
+    { "ssl_cert_file", true },
+    { "ssl_key_file", true },
+    { "backlog", true },
+    { "socket_buffer_size", true },
+    { "kernel_socket_recv_buffer_size", true },
+    { "kernel_socket_send_buffer_size", true },
+    { "buffer_high_watermark", true },
+    { "buffer_low_watermark", true },
+    { "open_tcp_nodelay", true },
+    { "tcp_defer_accept", true },
+    { "open_tcp_keepalive", true },
+    { "open_eof_check", true },
+    { "open_eof_split", true },
+    { "package_eof", true },
+    { "open_http_protocol", true },
+    { "open_websocket_protocol", true },
+    { "websocket_subprotocol", true },
+    { "open_websocket_close_frame", true },
+    { "open_websocket_ping_frame", true },
+    { "open_websocket_pong_frame", true },
+    { "open_http2_protocol", true },
+    { "open_mqtt_protocol", true },
+    { "open_redis_protocol", true },
+    { "max_idle_time", true },
+    { "tcp_keepidle", true },
+    { "tcp_keepinterval", true },
+    { "tcp_keepcount", true },
+    { "tcp_user_timeout", true },
+    { "tcp_fastopen", true },
+    { "open_length_check", true },
+    { "package_length_type", true },
+    { "package_length_offset", true },
+    { "package_body_offset", true },
+    { "package_body_start", true },
+    { "package_length_func", true },
+    { "package_max_length", true },
+    { "ssl_compress", true },
+    { "ssl_protocols", true },
+    { "ssl_verify_peer", true },
+    { "ssl_allow_self_signed", true },
+    { "ssl_client_cert_file", true },
+    { "ssl_verify_depth", true },
+    { "ssl_prefer_server_ciphers", true },
+    { "ssl_ciphers", true },
+    { "ssl_ecdh_curve", true },
+    { "ssl_dhparam", true },
+    { "ssl_sni_certs", true }
+});
 // clang-format on
 
 zend_class_entry *swoole_server_port_ce;
@@ -129,6 +269,8 @@ SW_EXTERN_C_BEGIN
 static PHP_METHOD(swoole_server_port, __construct);
 static PHP_METHOD(swoole_server_port, __destruct);
 static PHP_METHOD(swoole_server_port, on);
+static PHP_METHOD(swoole_server_port, handle);
+static PHP_METHOD(swoole_server_port, setHandler);
 static PHP_METHOD(swoole_server_port, set);
 static PHP_METHOD(swoole_server_port, getCallback);
 
@@ -145,6 +287,8 @@ const zend_function_entry swoole_server_port_methods[] =
     PHP_ME(swoole_server_port, __destruct,      arginfo_class_Swoole_Server_Port___destruct,                    ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, set,             arginfo_class_Swoole_Server_Port_set,         ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, on,              arginfo_class_Swoole_Server_Port_on,          ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server_port, handle,          arginfo_class_Swoole_Server_Port_handle,          ZEND_ACC_PUBLIC)
+    PHP_ME(swoole_server_port, setHandler,      arginfo_class_Swoole_Server_Port_setHandler,          ZEND_ACC_PUBLIC)
     PHP_ME(swoole_server_port, getCallback,     arginfo_class_Swoole_Server_Port_getCallback, ZEND_ACC_PUBLIC)
 #ifdef SWOOLE_SOCKETS_SUPPORT
     PHP_ME(swoole_server_port, getSocket,       arginfo_class_Swoole_Server_Port_getSocket, ZEND_ACC_PUBLIC)
@@ -605,16 +749,93 @@ static PHP_METHOD(swoole_server_port, set) {
     }
 #endif
 
-    if (SWOOLE_G(enable_library)) {
-        zval params[1] = {
-            *zset,
-        };
-        zend::function::call("\\Swoole\\Server\\Helper::checkOptions", 1, params);
+    // verify options key
+    zend_ulong idx;
+    zend_string *key;
+    zval *val;
+    ZEND_HASH_FOREACH_KEY_VAL(vht, idx, key, val) {
+        if (!server_options_map.count(ZSTR_VAL(key))) {
+            php_swoole_fatal_error(E_ERROR, "Invalid server option: %s", ZSTR_VAL(key));
+        }
     }
+    ZEND_HASH_FOREACH_END();
 
     zval *zsetting = sw_zend_read_and_convert_property_array(swoole_server_port_ce, ZEND_THIS, ZEND_STRL("setting"), 0);
     php_array_merge(Z_ARRVAL_P(zsetting), Z_ARRVAL_P(zset));
     property->zsetting = zsetting;
+}
+
+static bool is_core_loaded() {
+    zend_string *class_name =
+        zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    if (zend_lookup_class(class_name) == NULL) {
+        efree(class_name);
+        return false;
+    }
+    efree(class_name);
+    return true;
+}
+
+static PHP_METHOD(swoole_server_port, handle) {
+    zval *cb;
+
+    ServerPortProperty *property = php_swoole_server_port_get_and_check_property(ZEND_THIS);
+    Server *serv = property->serv;
+    if (serv->is_started()) {
+        php_swoole_fatal_error(E_WARNING, "can't register event callback function after server started");
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &cb) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    char *func_name = nullptr;
+    zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+    if (!sw_zend_is_callable_ex(cb, nullptr, 0, &func_name, nullptr, fci_cache, nullptr)) {
+        php_swoole_fatal_error(E_ERROR, "function '%s' is not callable", func_name);
+        return;
+    }
+    efree(func_name);
+
+    if (!is_core_loaded()) {
+        php_swoole_fatal_error(E_ERROR,
+                               "$server->handle API is avaiable in openswoole/core: composer install openswoole/core");
+    }
+
+    zval *zserv = (zval *) serv->private_data_2;
+    zval args[2];
+    args[0] = *zserv;
+    args[1] = *cb;
+    zend::function::call("\\OpenSwoole\\Core\\Helper::handle", 2, args);
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&args[1]);
+
+    RETURN_TRUE;
+}
+
+static PHP_METHOD(swoole_server_port, setHandler) {
+    Server *serv = php_swoole_server_get_and_check_server(ZEND_THIS);
+    if (serv->is_started()) {
+        php_swoole_fatal_error(E_WARNING, "server is running, unable to register event callback function");
+        RETURN_FALSE;
+    }
+
+    zval *handler;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(handler)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (!is_core_loaded()) {
+        php_swoole_fatal_error(
+            E_ERROR, "server->setHandler API is avaiable in openswoole/core: composer install openswoole/core");
+    }
+
+    zval *zserv = (zval *) serv->private_data_2;
+    zval args[2];
+    args[0] = *zserv;
+    args[1] = *handler;
+    zend::function::call("\\OpenSwoole\\Core\\Helper::setHandler", 2, args);
 }
 
 static PHP_METHOD(swoole_server_port, on) {

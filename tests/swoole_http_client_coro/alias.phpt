@@ -9,7 +9,7 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     $domain = 'www.baidu.com';
-    $cli = new Swoole\Coroutine\Http\Client($domain, 443, true);
+    $cli = new OpenSwoole\Coroutine\Http\Client($domain, 443, true);
     $cli->set([
         'timeout' => 10,
         'ssl_host_name' => $domain

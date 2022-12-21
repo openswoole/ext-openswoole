@@ -12,7 +12,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm)
 {
     go(function () use ($pm) {
-        $cli = new Co\Client(SWOOLE_SOCK_TCP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         $cli->set([
             'open_length_check' => true,
             'package_max_length' => 1024 * 1024,

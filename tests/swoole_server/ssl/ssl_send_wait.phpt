@@ -8,11 +8,11 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Server;
 use Swoole\Coroutine\Http\Client;
-use function Swoole\Coroutine\run;
+
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm)  {
+    co::run(function () use ($pm)  {
         $client = new Client('127.0.0.1', $pm->getFreePort(), true);
 
         $ret = $client->get('/');

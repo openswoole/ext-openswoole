@@ -6,8 +6,6 @@ swoole_server_port: heartbeat 1
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\go;
-use function Swoole\Coroutine\run;
 use Swoole\Coroutine\System;
 use Swoole\Server;
 
@@ -16,9 +14,9 @@ $pm->initFreePorts(2);
 
 $pm->parentFunc = function ($pid) use ($pm)
 {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         go(function () use ($pm) {
-            $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $cli->connect('127.0.0.1', $pm->getFreePort(0));
             for ($i = 0; $i < 2; ++$i) {
                 $cli->send('hello');
@@ -37,7 +35,7 @@ $pm->parentFunc = function ($pid) use ($pm)
         });
 
         go(function () use ($pm) {
-            $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             $cli->connect('127.0.0.1', $pm->getFreePort(1));
             for ($i = 0; $i < 2; ++$i) {
                 $cli->send('hello');

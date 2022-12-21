@@ -3,6 +3,7 @@ swoole_runtime/sockets: tcp server
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -10,13 +11,13 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
 
 const N = 4;
 
-run(function () {
+co::run(function () {
     $pair = socket_create_pair(AF_UNIX, SOCK_DGRAM, 0);
     
     go(function () use ($pair) {

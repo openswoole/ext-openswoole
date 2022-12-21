@@ -9,11 +9,9 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Server;
 use Swoole\Coroutine\Client;
 
-use function Swoole\Coroutine\run;
-
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $flag = 0;
         $client = new Client(SWOOLE_SOCK_TCP);
         reconnect:
@@ -22,7 +20,7 @@ $pm->parentFunc = function () use ($pm) {
             * if we want to reconnect server, we should call $client->close() first
             */
             Assert::eq($client->errCode, SOCKET_EISCONN);
-            Assert::eq($client->errMsg, swoole_strerror(SOCKET_EISCONN));
+            Assert::eq($client->errMsg, OpenSwoole\Util::getErrorMessage(SOCKET_EISCONN));
         }
 
         $pm->kill();

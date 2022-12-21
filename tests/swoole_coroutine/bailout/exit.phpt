@@ -5,7 +5,7 @@ swoole_coroutine/bailout: error
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
-$process = new Swoole\Process(function () {
+$process = new OpenSwoole\Process(function () {
     register_shutdown_function(function () {
         echo 'shutdown' . PHP_EOL;
     });

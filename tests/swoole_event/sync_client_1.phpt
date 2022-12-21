@@ -11,7 +11,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Client;
 use Swoole\Event;
 
-swoole_async_set(['enable_coroutine' => false]);
+Co::set(['enable_coroutine' => false]);
 
 $fp = new Client(SWOOLE_SOCK_TCP);
 

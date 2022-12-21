@@ -12,11 +12,11 @@ $pm = new SwooleTest\ProcessManager;
 $pm->initFreePorts(2);
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    $sch = new \Co\Scheduler();
+    $sch = new \OpenSwoole\Coroutine\Scheduler();
     $sch->parallel(
         3,
         function () use ($pm) {
-            $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
+            $c = new OpenSwoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
             $c->upgrade('/');
             $c->recv();
         }
@@ -24,8 +24,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $sch->parallel(
         2,
         function () use ($pm) {
-            \Co\System::usleep(1000);
-            $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(1));
+            \OpenSwoole\Coroutine\System::usleep(1000);
+            $c = new OpenSwoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(1));
             $c->upgrade('/');
             $c->recv();
         }
@@ -34,8 +34,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
     //all
     $sch->add(
         function () use ($pm) {
-            \Co\System::usleep(1500);
-            $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
+            \OpenSwoole\Coroutine\System::usleep(1500);
+            $c = new OpenSwoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
             $c->upgrade('/');
             $c->push('all');
             $frame = $c->recv();
@@ -49,8 +49,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
     //port-0
     $sch->add(
         function () use ($pm) {
-            \Co\System::usleep(1000);
-            $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
+            \OpenSwoole\Coroutine\System::usleep(1000);
+            $c = new OpenSwoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(0));
             $c->upgrade('/');
             $c->push('port-0');
             $frame = $c->recv();
@@ -64,8 +64,8 @@ $pm->parentFunc = function ($pid) use ($pm) {
     //port-1
     $sch->add(
         function () use ($pm) {
-            \Co\System::usleep(1000);
-            $c = new Swoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(1));
+            \OpenSwoole\Coroutine\System::usleep(1000);
+            $c = new OpenSwoole\Coroutine\Http\Client(TCP_SERVER_HOST, $pm->getFreePort(1));
             $c->upgrade('/');
             $c->push('port-1');
             $frame = $c->recv();
@@ -78,7 +78,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
     $sch->add(
         function () use ($pm) {
-            \Co\System::usleep(500000);
+            \OpenSwoole\Coroutine\System::usleep(500000);
             $pm->kill();
         }
     );
@@ -87,7 +87,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
 
 $pm->childFunc = function () use ($pm)
 {
-    $server = new Swoole\WebSocket\Server("0.0.0.0", $pm->getFreePort(0));
+    $server = new OpenSwoole\WebSocket\Server("0.0.0.0", $pm->getFreePort(0));
     $server->set(
         [
             Constant::OPTION_LOG_FILE => '/dev/null',

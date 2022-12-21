@@ -9,7 +9,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 include_once dirname(__FILE__) . "/proc_open_pipes.inc";
 Swoole\Runtime::enableCoroutine();
 
-Co\run(function() {
+co::run(function() {
     $descriptorspec = array(
         0 => array("pipe", "/dev/null"),
         1 => array("pipe", "/dev/null"),
@@ -25,7 +25,7 @@ Co\run(function() {
         proc_terminate($proc);
     });
 
-    $info = Co\System::wait();
+    $info = OpenSwoole\Coroutine\System::wait();
     Assert::notEmpty($info);
     echo "wait end\n";
     proc_close($proc);

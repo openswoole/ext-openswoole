@@ -11,8 +11,8 @@ use Swoole\Server;
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm)
 {
-    Co\Run(function ()  use ($pm) {
-        $conn = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    co::run(function ()  use ($pm) {
+        $conn = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
         Assert::assert($conn->connect('127.0.0.1', $pm->getFreePort()));
 
         $conn->send(pack('N', filesize(TEST_IMAGE)));

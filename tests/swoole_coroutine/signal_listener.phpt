@@ -1,7 +1,7 @@
 --TEST--
 swoole_coroutine: dead lock
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php require __DIR__ . '/../include/skipif.inc'; skip("TODOv22") ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use Swoole\Coroutine;
 use Swoole\Process;
 
-ini_set('swoole.enable_coroutine', 'off');
+ini_set('openswoole.enable_coroutine', 'off');
 
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {

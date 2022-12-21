@@ -7,8 +7,8 @@ swoole_http_server: trailer
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
-    Swoole\Coroutine\run(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->get('/');
         Assert::eq(md5('hello world'), $cli->headers['content-md5']);
         $pm->kill();
@@ -16,7 +16,7 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort());
 
     $http->set([
         'worker_num' => 1,

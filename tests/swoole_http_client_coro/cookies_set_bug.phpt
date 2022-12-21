@@ -17,11 +17,11 @@ function getCookies()
     return $result;
 }
 
-go(function () {
+co::run(function () {
     $url_info = parse_url('http://httpbin.org/cookies/set/a/1');
     $domain = $url_info['host'];
     $path = $url_info['path'];
-    $cli = new Swoole\Coroutine\Http\Client($domain);
+    $cli = new OpenSwoole\Coroutine\Http\Client($domain);
     $cli->set(['timeout' => 5]);
     $cli->setHeaders([
         'Host' => $domain,

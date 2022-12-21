@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use Swoole\Process;
 
-Co\run(function () {
+co::run(function () {
     Process::signal(SIGUSR1, function ($signo) {
         co::usleep(500000);
         var_dump($signo);
@@ -19,5 +19,5 @@ Co\run(function () {
     co::usleep(20000);
 });
 ?>
---EXPECT--
-int(10)
+--EXPECTREGEX--
+int\(10\)|int\(30\)

@@ -13,10 +13,10 @@ if (!extension_loaded("curl")) {
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-run(function () {
+co::run(function () {
     $mh = curl_multi_init();
     $errno = curl_multi_errno($mh);
     echo $errno . PHP_EOL;

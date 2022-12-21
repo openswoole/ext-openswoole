@@ -14,7 +14,7 @@ $simple_http_server = __DIR__ . "/../include/api/swoole_http_server/simple_http_
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function() use ($pm) {
-        $httpClient = new Co\http\Client(HTTP_SERVER_HOST, $pm->getFreePort(), false);
+        $httpClient = new OpenSwoole\Coroutine\http\Client(HTTP_SERVER_HOST, $pm->getFreePort(), false);
         $httpClient->setMethod("POST");
         $httpClient->setData("HELLO");
         $ok = $httpClient->execute("/rawcookie");

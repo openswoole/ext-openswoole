@@ -8,8 +8,9 @@ require __DIR__ . '/../include/bootstrap.php';
 for ($n = 2; $n--;) {
     $randoms[] = get_safe_random();
 }
+co::run(function() use ($randoms) {
 go(function () use ($randoms) {
-    $server = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::true($server->bind('127.0.0.1', 9601));
     Assert::true($server->listen(512));
     $conn = $server->accept();
@@ -20,7 +21,7 @@ go(function () use ($randoms) {
     $server->close();
 });
 go(function () use ($randoms) {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     Assert::true($socket->connect('127.0.0.1', 9601));
     Assert::greaterThan($socket->send((string)array_shift($randoms)), 0);
     Assert::same($socket->recv(), array_shift($randoms));
@@ -40,8 +41,9 @@ go(function () use ($randoms) {
     Assert::false($socket->recv());
     Assert::same($socket->errCode, SOCKET_EBADF);
 });
-Swoole\Event::wait();
+});
+
 echo "DONE\n";
 ?>
---EXPECT--
+--EXPECTF--
 DONE

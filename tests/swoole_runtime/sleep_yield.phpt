@@ -6,7 +6,7 @@ swoole_runtime: sleep yield
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 Swoole\Runtime::enableCoroutine();
-Co\run(function () {
+co::run(function () {
     $timer1 = Swoole\Timer::tick(1000, function () {
         var_dump('a');
     });

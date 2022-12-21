@@ -10,7 +10,7 @@ if (!extension_loaded('curl')) print 'skip';
 require __DIR__ . '/../../include/bootstrap.php';
 
 Swoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-Co\run(function () {
+co::run(function () {
     $mh = curl_multi_init();
     $array = array($mh);
     $array[] = &$array;

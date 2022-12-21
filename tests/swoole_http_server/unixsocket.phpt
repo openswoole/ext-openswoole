@@ -11,7 +11,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     for ($c = MAX_CONCURRENCY; $c--;) {
         go(function () use ($pm) {
-            $client = new Swoole\Coroutine\Client(SWOOLE_UNIX_STREAM);
+            $client = new OpenSwoole\Coroutine\Client(SWOOLE_UNIX_STREAM);
             Assert::assert($client->connect(UNIXSOCK_PATH, 0, -1));
             for ($n = MAX_REQUESTS; $n--;) {
                 $client->send("GET / HTTP/1.1\r\n\r\n");
@@ -26,7 +26,7 @@ $pm->parentFunc = function () use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new Swoole\Http\Server(UNIXSOCK_PATH, 0, SERVER_MODE_RANDOM, SWOOLE_UNIX_STREAM);
+    $server = new OpenSwoole\Http\Server(UNIXSOCK_PATH, 0, SERVER_MODE_RANDOM, SWOOLE_UNIX_STREAM);
     $server->set(['log_file' => '/dev/null']);
     $server->on('request', function (Swoole\Http\Request $request, Swoole\Http\Response $response) {
         $response->end('Hello Swoole!');

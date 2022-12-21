@@ -16,7 +16,7 @@ use Swoole\Coroutine\System;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
 
-use function Swoole\Coroutine\run;
+
 use function Swoole\Coroutine\go;
 
 const TIMEOUT = 0.5;
@@ -25,7 +25,7 @@ $pm = new SwooleTest\ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
     Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $mh = curl_multi_init();
 
         $add_handle = function ($url) use($mh) {
@@ -52,7 +52,7 @@ $pm->parentFunc = function () use ($pm) {
             $n = curl_multi_select($mh, TIMEOUT);
             Assert::lessThan(microtime(true) - $tm, TIMEOUT + 0.01);
 
-            $error = swoole_last_error();
+            $error = \OpenSwoole\Util::getLastErrorCode();
             phpt_var_dump('select return value: '.$n);
             phpt_var_dump('swoole error: '.$error);
             if ($n != -1) {
@@ -75,7 +75,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "Done\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server("127.0.0.1", $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server("127.0.0.1", $pm->getFreePort());
     $http->set(['worker_num' => 1, 'log_file' => '/dev/null', 'max_wait_time' => 1,]);
     $http->on("start", function ($server) use ($pm) {
         $pm->wakeup();

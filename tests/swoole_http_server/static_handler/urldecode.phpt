@@ -18,7 +18,7 @@ register_shutdown_function(function () use ($filepath) {
 });
 $pm->parentFunc = function () use ($pm, $filename, $content) {
     foreach ([false, true] as $http2) {
-        Coroutine\run(function () use ($pm, $http2, $filename, $content) {
+        co::run(function () use ($pm, $http2, $filename, $content) {
             $data = httpGetBody(
                 "http://127.0.0.1:{$pm->getFreePort()}/" . urlencode($filename),
                 ['http2' => $http2]
@@ -30,7 +30,7 @@ $pm->parentFunc = function () use ($pm, $filename, $content) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->set([
         'log_file' => '/dev/null',
         'open_http2_protocol' => true,

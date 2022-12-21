@@ -6,10 +6,10 @@ swoole_table: bug_2290
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$table = new \Swoole\Table(1024);
-$table->column('h', \Swoole\Table::TYPE_STRING, 128);
-$table->column('b', \Swoole\Table::TYPE_STRING, 1024 * 512);
-$table->column('_e', \Swoole\Table::TYPE_INT);
+$table = new \OpenSwoole\Table(1024);
+$table->column('h', \OpenSwoole\Table::TYPE_STRING, 128);
+$table->column('b', \OpenSwoole\Table::TYPE_STRING, 1024 * 512);
+$table->column('_e', \OpenSwoole\Table::TYPE_INT);
 $table->create();
 
 $headers = ['Content-Type' => 'text/html; charset=utf-8'];

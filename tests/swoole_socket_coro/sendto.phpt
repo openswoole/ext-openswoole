@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 const N = 5;
 //Server
 go(function () {
-    $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
+    $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
     $socket->bind('127.0.0.1', 9601);
     for ($i = 0; $i < N; $i++)
     {

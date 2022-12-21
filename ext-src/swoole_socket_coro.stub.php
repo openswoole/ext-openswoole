@@ -44,7 +44,7 @@ namespace Swoole\Coroutine {
         public function setOption(int $level, int $name, mixed $value): bool {}
         public function sslHandshake(): bool {}
         public function shutdown(int $how = 0): bool {}
-        public function cancel(int $event = SWOOLE_EVENT_READ): bool {}
+        public function cancel(int $event = Socket::EVENT_READ): bool {}
         public function close(): bool {}
         public function getpeername(): bool|array {}
         public function getsockname(): bool|array {}

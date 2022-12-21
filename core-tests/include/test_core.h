@@ -21,8 +21,8 @@
 #define TEST_PORT 9501
 #define TEST_TMP_FILE "/tmp/swoole_core_test_file"
 #define TEST_TMP_DIR  "/tmp/swoole_core_test_dir"
-#define TEST_JPG_FILE "/examples/test.jpg"
-#define TEST_JPG_MD5SUM  "64a42b4c0f3c65a14c23b60d3880a917"
+#define TEST_JPG_FILE "/tests/assets/test.jpg"
+#define TEST_JPG_MD5SUM  "753f6d910f0ae85b5eb9a366dea74927"
 #define TEST_HTTP_PROXY_PORT 8888
 #define TEST_HTTP_PROXY_HOST "127.0.0.1"
 

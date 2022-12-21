@@ -12,7 +12,7 @@ if (!getenv('TEST_PHP_EXECUTABLE')) {
 require __DIR__ . '/../../include/bootstrap.php';
 file_put_contents(__DIR__ . '/child.php', '<?php echo \'test\', PHP_EOL;fread(STDIN, 1);');
 Swoole\Runtime::enableCoroutine();
-Co\run(function () {
+co::run(function () {
 
     $descriptorspec = [
         ['pipe', 'r'],

@@ -16,7 +16,7 @@ if ($curl_version['version_number'] < 0x073d00) {
 require __DIR__ . '/../../include/bootstrap.php';
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 $fn = function() {
     $transfers = 1;
@@ -61,7 +61,7 @@ if (swoole_array_default_value($argv, 1) == 'ori') {
     $fn();
 } else {
     Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-    run($fn);
+    co::run($fn);
 }
 ?>
 --EXPECTREGEX--

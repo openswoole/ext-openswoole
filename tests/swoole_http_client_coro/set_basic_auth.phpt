@@ -6,7 +6,7 @@ swoole_http_client_coro: http client set basic auth
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $cli = new Swoole\Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);
+    $cli = new OpenSwoole\Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);
     $cli->set(['timeout' => 10]);
     $cli->setHeaders([
         'host' => 'httpbin.org',

@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 go(function () {
     function createDeferCli(string $host, bool $ssl = false): Swoole\Coroutine\Http\Client
     {
-        $cli = new Swoole\Coroutine\Http\Client($host, $ssl ? 443 : 80, $ssl);
+        $cli = new OpenSwoole\Coroutine\Http\Client($host, $ssl ? 443 : 80, $ssl);
         $cli->set(['timeout' => 10]);
         $cli->setHeaders([
             'Host' => $host,

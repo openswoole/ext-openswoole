@@ -6,7 +6,7 @@ swoole_function: get mac address
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$macs = swoole_get_local_mac();
+$macs = OpenSwoole\Util::getLocalMac();
 Assert::assert(is_array($macs));
 foreach ($macs as $mac) {
     Assert::same(filter_var($mac, FILTER_VALIDATE_MAC), $mac);

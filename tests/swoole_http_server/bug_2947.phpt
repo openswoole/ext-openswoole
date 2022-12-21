@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->initRandomData(1);
 $pm->parentFunc = function () use ($pm) {
-    Co\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $headers = httpGetHeaders(
             "http://127.0.0.1:{$pm->getFreePort()}",
             [
@@ -30,7 +30,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "DONE\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $http->on('workerStart', function () use ($pm) {
         $pm->wakeup();
     });

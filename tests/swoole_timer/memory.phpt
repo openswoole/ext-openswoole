@@ -29,7 +29,7 @@ Swoole\Timer::tick(1, function ( $id ) use ( &$stat ) {
     }
 });
 
-\Swoole\Event::wait();
+\OpenSwoole\Event::wait();
 $stat->m3 = memory_get_usage();
 $stat->data = null;
 echo 'diff[2] ' . ($stat->m3 - $stat->m0) . "\n";

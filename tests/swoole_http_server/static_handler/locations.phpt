@@ -14,15 +14,15 @@ use Swoole\Http\Server;
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     foreach ([false, true] as $http2) {
-        Swoole\Coroutine\run(function () use ($pm, $http2) {
-            $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/examples/test.jpg", ['http2' => $http2]);
+        co::run(function () use ($pm, $http2) {
+            $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/tests/assets/test.jpg", ['http2' => $http2]);
             Assert::assert(!empty($data));
             Assert::assert(md5($data) === md5_file(TEST_IMAGE));
 
             /**
              * 命中location，但文件不存在，直接返回 404
              */
-            $status = httpGetStatusCode("http://127.0.0.1:{$pm->getFreePort()}/examples/test2.jpg", ['http2' => $http2]);
+            $status = httpGetStatusCode("http://127.0.0.1:{$pm->getFreePort()}/tests/assets/test2.jpg", ['http2' => $http2]);
             Assert::assert($status == 404);
 
             /**
@@ -42,7 +42,7 @@ $pm->childFunc = function () use ($pm) {
         'open_http2_protocol' => true,
         'enable_static_handler' => true,
         'document_root' => dirname(dirname(dirname(__DIR__))) . '/',
-        'static_handler_locations' => ['/examples']
+        'static_handler_locations' => ['/tests/assets']
     ]);
     $http->on('workerStart', function () use ($pm) {
         $pm->wakeup();

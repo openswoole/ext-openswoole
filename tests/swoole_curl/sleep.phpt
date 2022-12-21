@@ -12,7 +12,7 @@ use Swoole\Http\Request;
 use Swoole\Http\Response;
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 $pm = new SwooleTest\ProcessManager;
 
 const N = 8;
@@ -20,7 +20,7 @@ const N = 8;
 $pm->parentFunc = function () use ($pm) {
     Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
     $s = microtime(true);
-    run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $n = N;
         while($n--) {
             go(function() use ($pm) {
@@ -49,7 +49,7 @@ $pm->parentFunc = function () use ($pm) {
     echo "Done\n";
 };
 $pm->childFunc = function () use ($pm) {
-    $http = new Swoole\Http\Server("127.0.0.1", $pm->getFreePort());
+    $http = new OpenSwoole\Http\Server("127.0.0.1", $pm->getFreePort());
     $http->set(['worker_num' => N, 'log_file' => '/dev/null']);
 
     $http->on("start", function ($server) use ($pm) {

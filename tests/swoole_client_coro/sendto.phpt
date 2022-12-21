@@ -2,18 +2,17 @@
 swoole_client_coro: sendto
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
+skip('TODOv22');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use function Swoole\Coroutine\run;
-
-run(function () {
+co::run(function () {
     $port = get_one_free_port();
 
     go(function () use ($port) {
-        $socket = new Swoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
+        $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
         $socket->bind('127.0.0.1', $port);
         $peer = null;
         $ret = $socket->recvfrom($peer);
@@ -24,7 +23,7 @@ run(function () {
     });
 
     go(function () use ($port) {
-        $cli = new Swoole\Coroutine\Client(SWOOLE_SOCK_UDP);
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
         $cli->sendto('127.0.0.1', $port, "hello\n");
         $cli->sendto('localhost', $port, "hello\n");
         Assert::false($cli->sendto('error_domain', $port, "hello\n"));

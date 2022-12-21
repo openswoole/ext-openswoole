@@ -15,7 +15,7 @@ $pm->parentFunc = function (int $pid) use ($pm, &$count) {
     $raw_file_content = file_get_contents(TEST_IMAGE);
     for ($c = MAX_CONCURRENCY_LOW; $c--;) {
         go(function () use ($pm, &$count, $c, $raw_file_size, $raw_file_content) {
-            $cli = new \Swoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+            $cli = new \OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $cli->set(['timeout' => 5]);
             $filename = '/tmp/test-' . $c . '.jpg';
             $offset = mt_rand(0, $raw_file_size);
@@ -28,7 +28,7 @@ $pm->parentFunc = function (int $pid) use ($pm, &$count) {
             // read content
             $raw_file = fopen(TEST_IMAGE, 'r+');
             fseek($raw_file, $offset);
-            if (!Assert::assert(co::fread($raw_file) === co::readFile($filename))) {
+            if (!Assert::assert(fread($raw_file, $raw_file_size) === co::readFile($filename))) {
                 goto _end;
             }
 
@@ -51,7 +51,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $serv->on('request', function (swoole_http_request $request, swoole_http_response $response) {
-        $offset = (int) @explode('-', explode('=', $request->header['range'])[1])[0];
+        $offset = (int) @explode('-', (string)explode('=', (string)$request->header['range'])[1])[0];
         $response->sendfile(TEST_IMAGE, $offset);
     });
     $serv->start();

@@ -10,11 +10,11 @@ require_once TESTS_LIB_PATH . '/vendor/autoload.php';
 
 use Swoole\Runtime;
 
-use function Swoole\Coroutine\run;
+
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-run(function () {
+co::run(function () {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, "https://httpbin.org/anything");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);

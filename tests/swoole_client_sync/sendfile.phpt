@@ -9,7 +9,7 @@ $port = get_one_free_port();
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($port)
 {
-    $client = new Swoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
+    $client = new OpenSwoole\Client(SWOOLE_SOCK_TCP, SWOOLE_SOCK_SYNC);
     $r = $client->connect(TCP_SERVER_HOST, $port, 0.5);
     Assert::assert($r);
     $client->send(pack('N', filesize(TEST_IMAGE)));

@@ -14,7 +14,7 @@ use Swoole\Http\Server;
 $pm = new ProcessManager;
 
 $pm->parentFunc = function () use ($pm) {
-    Coroutine\run(function () use ($pm) {
+    co::run(function () use ($pm) {
         $data = httpGetBody("http://127.0.0.1:{$pm->getFreePort()}/");
         $files = scan_dir(DOCUMENT_ROOT);
         foreach ($files as $f) {

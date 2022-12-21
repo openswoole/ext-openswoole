@@ -24,7 +24,7 @@ $proc1 = new Process(function (Process $proc) {
             echo "END\n";
             return;
         }
-        Assert::lengthBetween($data, 1024, 61000);
+        Assert::lengthBetween((string)$data, 1024, 61000);
     }
     echo "ERROR\n";
 }, false, 1, true);

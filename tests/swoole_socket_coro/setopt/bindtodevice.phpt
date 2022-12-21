@@ -17,7 +17,7 @@ if (!function_exists("posix_getuid") || posix_getuid() != 0) {
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-$socket = new Co\Socket(AF_INET, SOCK_STREAM, SOL_TCP);
+$socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, SOL_TCP);
 
 $retval_1 = $socket->setOption(SOL_SOCKET, SO_BINDTODEVICE, "lo");
 Assert::assert($retval_1 === true);
@@ -26,4 +26,4 @@ $retval_2 = $socket->setOption(SOL_SOCKET, SO_BINDTODEVICE, "ethIDONOTEXIST");
 Assert::assert($retval_2 === false);
 ?>
 --EXPECTF--
-Warning: Swoole\Coroutine\Socket::setOption(): setsockopt(%d) failed, Error: No such device[%d] in %s on line %d
+Warning: OpenSwoole\Coroutine\Socket::setOption(): setsockopt(%d) failed, Error: No such device[%d] in %s on line %d

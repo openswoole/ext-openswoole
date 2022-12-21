@@ -18,7 +18,7 @@ $pm = new SwooleTest\ProcessManager;
 
 Co::set(['log_level' => SWOOLE_LOG_WARNING]);
 
-define('SSL_DIR', realpath(__DIR__.'/../../examples/ssl'));
+define('SSL_DIR', realpath(__DIR__.'/../assets/ssl'));
 
 $pm->parentFunc = function ($pid) use ($pm) {
     go(function () use ($pm) {

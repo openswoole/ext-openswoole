@@ -92,7 +92,7 @@ void Multi::del_event(CURL *cp, void *socket_ptr, curl_socket_t sockfd) {
     curl_multi_assign(multi_handle_, sockfd, NULL);
 
     Handle *handle = get_handle(cp);
-    if(handle) {
+    if (handle) {
         handle->socket = nullptr;
     }
 

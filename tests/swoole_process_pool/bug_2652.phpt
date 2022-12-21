@@ -7,7 +7,7 @@ swoole_process_pool: bug Github#2639
 require __DIR__ . '/../include/bootstrap.php';
 
 const MSGQ_KEY = 0x666;
-$pool = new Swoole\Process\Pool(1);
+$pool = new OpenSwoole\Process\Pool(1);
 
 $pool->on('workerStart', function (Swoole\Process\Pool $pool, int $workerId) {
     $pool->getProcess($workerId)->useQueue(MSGQ_KEY);

@@ -32,6 +32,7 @@ makeCoTcpClient(TCP_SERVER_HOST, $port, function(Client $cli) {
     TImer::clear($timer);
     echo "SUCCESS";
 });
+OpenSwoole\Event::wait();
 
 ?>
 --EXPECT--

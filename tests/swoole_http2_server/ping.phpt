@@ -7,11 +7,11 @@ swoole_http2_server: ping
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    go(function () use ($pm) {
-        $cli = new Swoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
+    co::run(function () use ($pm) {
+        $cli = new OpenSwoole\Coroutine\Http2\Client('127.0.0.1', $pm->getFreePort());
         $cli->set(['timeout' => 10]);
         Assert::true($cli->connect());
-        Assert::greaterThan($streamId = $cli->send(new Swoole\Http2\Request), 0);
+        Assert::greaterThan($streamId = $cli->send(new OpenSwoole\Http2\Request), 0);
         $s = microtime(true);
         $response = $cli->recv();
         time_approximate(0.5, microtime(true) - $s);
