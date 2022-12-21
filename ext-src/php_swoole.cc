@@ -1284,7 +1284,7 @@ PHP_MINFO_FUNCTION(openswoole) {
     php_info_print_table_row(2, "http2", "enabled");
 #endif
 #ifdef SW_USE_CURL
-    php_info_print_table_row(2, "curl-native", "enabled");
+    php_info_print_table_row(2, "hook-curl", "enabled");
 #endif
 #ifdef HAVE_PCRE
     php_info_print_table_row(2, "pcre", "enabled");
