@@ -771,14 +771,14 @@ PHP_MINIT_FUNCTION(openswoole) {
         swoole_error, "Swoole\\Error", "swoole_error", nullptr, nullptr, zend_ce_error, zend_get_std_object_handlers());
 
     /** <Sort by dependency> **/
-    php_swoole_event_minit(module_number);
+    ZEND_MINIT(swoole_event)(INIT_FUNC_ARGS_PASSTHRU);
     // base
     php_swoole_atomic_minit(module_number);
     php_swoole_lock_minit(module_number);
     php_swoole_process_minit(module_number);
     php_swoole_process_pool_minit(module_number);
     php_swoole_table_minit(module_number);
-    php_swoole_timer_minit(module_number);
+    ZEND_MINIT(swoole_timer)(INIT_FUNC_ARGS_PASSTHRU);
     // coroutine
     php_swoole_coroutine_minit(module_number);
     php_swoole_coroutine_system_minit(module_number);

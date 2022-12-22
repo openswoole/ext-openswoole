@@ -204,14 +204,14 @@ PHP_FUNCTION(swoole_async_dns_lookup_coro);
  * MINIT <Sort by dependency>
  * ==============================================================
  */
-void php_swoole_event_minit(int module_number);
+extern PHP_MINIT_FUNCTION(swoole_event);
 // base
 void php_swoole_atomic_minit(int module_number);
 void php_swoole_lock_minit(int module_number);
 void php_swoole_process_minit(int module_number);
 void php_swoole_process_pool_minit(int module_number);
 void php_swoole_table_minit(int module_number);
-void php_swoole_timer_minit(int module_number);
+extern PHP_MINIT_FUNCTION(swoole_timer);
 // coroutine
 void php_swoole_coroutine_minit(int module_number);
 void php_swoole_coroutine_system_minit(int module_number);
