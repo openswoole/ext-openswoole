@@ -35,10 +35,16 @@ co::run(function() {
 
     go(function() use ($pg) {
       co::sleep(1);
-      $pg->prepare('selectTwo', 'SELECT 2');
-      $result2 = $pg->execute('selectTwo', []);
-      $row3 = $pg->fetchAssoc($result2);
-      var_dump($row3);
+      // Any queries with no fetch methods
+      $pg->query('SELECT 1'); // AFTER this all another fetching result reset iterator to begin result rows
+        
+      // Also prepared queries: 
+      // $pg->prepare('selectTwo', 'SELECT 2');
+      // $pg->execute('selectTwo', []);
+        
+      // or INSERT/UPDATE request (where most like will not using fetching result)
+      // $pg->prepare('update', 'UPDATE weather SET prcp = 0.3 WHERE id = 1');
+      // $pg->execute('update', []); // No need fetching results
     });
 });
 ?>
@@ -56,10 +62,6 @@ array(6) {
   float(0.25)
   ["date"]=>
   string(10) "1994-11-27"
-}
-array(1) {
-  ["?column?"]=>
-  int(2)
 }
 array(6) {
   ["id"]=>
