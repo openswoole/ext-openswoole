@@ -94,11 +94,13 @@ static const zend_function_entry swoole_event_funcs[] =
 };
 // clang-format on
 
-void php_swoole_event_minit(int module_number) {
+PHP_MINIT_FUNCTION(swoole_event) {
     SW_INIT_CLASS_ENTRY(swoole_event, "Swoole\\Event", "swoole_event", nullptr, swoole_event_methods);
     SW_SET_CLASS_CREATE(swoole_event, sw_zend_create_object_deny);
 
-    zend_register_functions(NULL, swoole_event_funcs, NULL, MODULE_PERSISTENT);
+    zend_register_functions(NULL, swoole_event_funcs, NULL, type);
+
+    return SUCCESS;
 }
 
 static void event_object_free(void *data) {

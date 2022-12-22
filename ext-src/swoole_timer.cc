@@ -78,7 +78,7 @@ static const zend_function_entry swoole_timer_funcs[] =
 };
 // clang-format on
 
-void php_swoole_timer_minit(int module_number) {
+PHP_MINIT_FUNCTION(swoole_timer) {
     SW_INIT_CLASS_ENTRY(swoole_timer, "Swoole\\Timer", "swoole_timer", nullptr, swoole_timer_methods);
     SW_SET_CLASS_CREATE(swoole_timer, sw_zend_create_object_deny);
 
@@ -89,12 +89,14 @@ void php_swoole_timer_minit(int module_number) {
                              nullptr,
                              spl_ce_ArrayIterator);
 
-    zend_register_functions(NULL, swoole_timer_funcs, NULL, MODULE_PERSISTENT);
+    zend_register_functions(NULL, swoole_timer_funcs, NULL, type);
 
     SW_REGISTER_LONG_CONSTANT("SWOOLE_TIMER_MIN_MS", SW_TIMER_MIN_MS);
     SW_REGISTER_DOUBLE_CONSTANT("SWOOLE_TIMER_MIN_SEC", SW_TIMER_MIN_SEC);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_TIMER_MAX_MS", SW_TIMER_MAX_MS);
     SW_REGISTER_DOUBLE_CONSTANT("SWOOLE_TIMER_MAX_SEC", SW_TIMER_MAX_SEC);
+
+    return SUCCESS;
 }
 
 static void timer_dtor(TimerNode *tnode) {
