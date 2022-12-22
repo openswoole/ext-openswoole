@@ -35,7 +35,7 @@ co::run(function() {
 
     go(function() use ($pg) {
       co::sleep(1);
-      $result2 = $pg->query('SELECT 1');
+      $result2 = $pg->query("INSERT INTO weather(city, temp_lo, temp_hi, prcp, date) VALUES ('Paris', 30, 40, 0.4, '1994-11-27') RETURNING id;");
       $row3 = $pg->fetchAssoc($result2);
       var_dump($row3);
     });
@@ -58,7 +58,7 @@ array(6) {
 }
 array(1) {
   ["?column?"]=>
-  int(1)
+  int(3)
 }
 array(6) {
   ["id"]=>
