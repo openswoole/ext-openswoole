@@ -14,8 +14,8 @@ co::run(function() {
     Assert::false($pg->escapeLiteral(''));
     Assert::false($pg->escapeIdentifier(''));
     Assert::false($pg->query(''));
-    Assert::false($pg->prepare('', ''));
-    //Assert::false($pg->execute('', []));
+    Assert::false($pg->prepare(''));
+    //Assert::false($pg->execute([]));
     Assert::false($pg->metaData(''));
     Assert::false($pg->status());
     Assert::false($pg->reset());
