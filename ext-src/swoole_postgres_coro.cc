@@ -31,6 +31,11 @@ BEGIN_EXTERN_C()
 #include "swoole_postgresql_coro_arginfo.h"
 #else
 #include "swoole_postgresql_coro_legacy_arginfo.h"
+#ifndef ZEND_PARSE_PARAMETERS_NONE
+#define ZEND_PARSE_PARAMETERS_NONE() \
+    ZEND_PARSE_PARAMETERS_START(0, 0) \
+    ZEND_PARSE_PARAMETERS_END()
+#endif
 #endif
 END_EXTERN_C()
 
@@ -212,8 +217,10 @@ static void php_swoole_postgresql_coro_statement_free_object(zend_object *object
         efree(statement->query);
         statement->query = nullptr;
     }
+    #if PHP_VERSION_ID >= 80000
     statement->pg_object->statements.remove(statement);
     OBJ_RELEASE(SW_Z8_OBJ_P(statement->pg_object->object));
+    #endif
     delete statement;
     zend_object_std_dtor(&postgresql_coro_statement->std);
 }
@@ -240,8 +247,9 @@ static zend_object *php_swoole_postgresql_coro_statement_create_object(PGObject 
         ZVAL_OBJ(object->object, &postgresql_coro_statement->std);
         pg_object->statements.push_back(object);
     } while (0);
-
+    #if PHP_VERSION_ID >= 80000
     GC_ADDREF(SW_Z8_OBJ_P(pg_object->object));
+    #endif
     return &postgresql_coro_statement->std;
 }
 
@@ -271,7 +279,7 @@ struct swoole_pgsql_lob_self {
     Oid oid;
 };
 
-static ssize_t pgsql_lob_write(php_stream *stream, const char *buf, size_t count) {
+static php_stream_size_t pgsql_lob_write(php_stream *stream, const char *buf, size_t count) {
     struct swoole_pgsql_lob_self *self = (struct swoole_pgsql_lob_self *) stream->abstract;
     int result = 0;
     swoole::coroutine::async([&]() { result = lo_write(self->conn, self->lfd, (char *) buf, count); });
@@ -281,7 +289,7 @@ static ssize_t pgsql_lob_write(php_stream *stream, const char *buf, size_t count
     return result;
 }
 
-static ssize_t pgsql_lob_read(php_stream *stream, char *buf, size_t count) {
+static php_stream_size_t pgsql_lob_read(php_stream *stream, char *buf, size_t count) {
     struct swoole_pgsql_lob_self *self = (struct swoole_pgsql_lob_self *) stream->abstract;
     int result = 0;
     swoole::coroutine::async([&]() { result = lo_read(self->conn, self->lfd, buf, count); });
@@ -322,11 +330,11 @@ static int pgsql_lob_seek(php_stream *stream, zend_off_t offset, int whence, zen
     return pos >= 0 ? 0 : -1;
 }
 
-const php_stream_ops swoole_pgsql_lob_stream_ops = {pgsql_lob_write,
+static php_stream_ops swoole_pgsql_lob_stream_ops {pgsql_lob_write,
                                                     pgsql_lob_read,
                                                     pgsql_lob_close,
                                                     pgsql_lob_flush,
-                                                    "swoole pgsql lob stream",
+                                                    "pgsql_client/coroutine",
                                                     pgsql_lob_seek,
                                                     nullptr,
                                                     NULL,
@@ -1661,7 +1669,11 @@ static PHP_METHOD(swoole_postgresql_coro, openLOB) {
     char *modestr = "rb";
     size_t modestrlen;
     if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l|s", &oid, &modestr, &modestrlen)) {
-        RETURN_THROWS();
+        #if PHP_VERSION_ID >= 80000
+                    RETURN_THROWS();
+        #else
+                    RETURN_FALSE;
+        #endif
     }
 
     PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
@@ -1706,7 +1718,11 @@ static PHP_METHOD(swoole_postgresql_coro, unlinkLOB) {
     Oid oid = 0;
 
     if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l", &oid)) {
-        RETURN_THROWS();
+        #if PHP_VERSION_ID >= 80000
+                    RETURN_THROWS();
+        #else
+                    RETURN_FALSE;
+        #endif
     }
 
     PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
