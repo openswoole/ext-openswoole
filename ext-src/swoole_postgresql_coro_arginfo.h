@@ -19,7 +19,7 @@ ZEND_END_ARG_INFO()
 
 #define arginfo_class_Swoole_Coroutine_PostgreSQL_escapeIdentifier arginfo_class_Swoole_Coroutine_PostgreSQL_escape
 
-ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_PostgreSQL_query, 0, 1, Swoole\\Coroutine\\PostgreSQLStatement, MAY_BE_FALSE)
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_PostgreSQL_query, 0, 1, OpenSwoole\\Coroutine\\PostgreSQLStatement, MAY_BE_FALSE)
 	ZEND_ARG_TYPE_INFO(0, query, IS_STRING, 0)
 ZEND_END_ARG_INFO()
 
@@ -52,7 +52,7 @@ ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_Swoole_Coroutine_PostgreSQ
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_PostgreSQLStatement_fetchAll, 0, 0, MAY_BE_FALSE|MAY_BE_ARRAY)
-	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, result_type, IS_LONG, 0, "SW_PGSQL_ASSOC")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, result_type, IS_LONG, 0, "OPENSWOOLE_PGSQL_ASSOC")
 ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_Swoole_Coroutine_PostgreSQLStatement_affectedRows, 0, 0, MAY_BE_FALSE|MAY_BE_LONG)

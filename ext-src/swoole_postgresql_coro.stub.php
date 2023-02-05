@@ -20,7 +20,7 @@ namespace Swoole\Coroutine {
 
     class PostgreSQLStatement {
         public function execute(array $params = []): bool {}
-        public function fetchAll(int $result_type = SW_PGSQL_ASSOC): false|array {}
+        public function fetchAll(int $result_type = OPENSWOOLE_PGSQL_ASSOC): false|array {}
         public function affectedRows(): false|int {}
         public function numRows(): false|int {}
         public function fieldCount(): false|int {}
