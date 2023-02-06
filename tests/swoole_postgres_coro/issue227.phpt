@@ -36,6 +36,8 @@ co::run(function() {
     go(function() use ($pg) {
       co::sleep(1);
       $selectSecond = $pg->query('SELECT 1');
+      $row3 = $selectSecond->fetchAssoc();
+      var_dump($row3);
     });
 });
 ?>
@@ -53,6 +55,10 @@ array(6) {
   float(0.25)
   ["date"]=>
   string(10) "1994-11-27"
+}
+array(1) {
+  ["?column?"]=>
+  int(1)
 }
 array(6) {
   ["id"]=>
