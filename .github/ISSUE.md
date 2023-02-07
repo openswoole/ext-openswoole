@@ -5,7 +5,7 @@
 If you think you have found a bug in OpenSwoole, please report it.
 The OpenSwoole developers probably don't know about it,
 and unless you report it, chances are it won't be fixed.
-You can report bugs at https://github.com/openswoole/swoole-src/issues.
+You can report bugs at https://github.com/openswoole/ext-openswoole/issues.
 The issue page is also suitable to submit feature requests.
 
 Please read the **How to report a bug document** and check the docs at https://openswoole.com/docs before submitting any bug reports.
@@ -43,7 +43,7 @@ WARNING	swManager_check_exit_status: worker#1 abnormal exit, status=0, signal=11
 ```
 
 When a segmentation error occurs with Swoole, You can use the `gdb` tool and use `bt` command.
-> Using `gdb` to track the core file need to add the `--enable-debug` parameter when compiling `swoole`.
+> Using `gdb` to track the core file need to add the `--enable-debug` parameter when compiling `openswoole`.
 
 Enable core dump
 ```shell
@@ -66,7 +66,7 @@ Use the f command in gdb to view the code segment corresponding to the ID.
 (gdb)f 0
 ```
 
-If there is no function call stack information, it may be that the compiler has removed the debug information. Please manually modify the `Makefile` file in the swoole source directory and modify CFLAGS to
+If there is no function call stack information, it may be that the compiler has removed the debug information. Please manually modify the `Makefile` file in the openswoole source directory and modify CFLAGS to
 
 ```shell
 CFLAGS = -Wall -pthread -g -O0

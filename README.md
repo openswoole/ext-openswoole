@@ -1,9 +1,9 @@
 <p align="center"><a href="https://openswoole.com" target="_blank"><img src="https://openswoole.com/images/swoole-logo.svg#gh-light-mode-only" width="200" /></a></p>
 
 
-<p align="center"><a href="https://github.com/openswoole/swoole-src/actions?query=workflow%3Alib-openswoole"><img src="https://github.com/openswoole/swoole-src/workflows/lib-openswoole/badge.svg" alt="lib-openswoole" style="max-width: 100%;"></a>
-<a href="https://github.com/openswoole/swoole-src/actions?query=workflow%3Aext-openswoole"><img src="https://github.com/openswoole/swoole-src/workflows/ext-openswoole/badge.svg" alt="ext-openswoole" style="max-width: 100%;"></a>
-<a href="https://github.com/openswoole/swoole-src/actions?query=workflow%3Atest-linux"><img src="https://github.com/openswoole/swoole-src/workflows/test-linux/badge.svg" alt="test-linux" style="max-width: 100%;"></a>
+<p align="center"><a href="https://github.com/openswoole/ext-openswoole/actions?query=workflow%3Alib-openswoole"><img src="https://github.com/openswoole/ext-openswoole/workflows/lib-openswoole/badge.svg" alt="lib-openswoole" style="max-width: 100%;"></a>
+<a href="https://github.com/openswoole/ext-openswoole/actions?query=workflow%3Aext-openswoole"><img src="https://github.com/openswoole/ext-openswoole/workflows/ext-openswoole/badge.svg" alt="ext-openswoole" style="max-width: 100%;"></a>
+<a href="https://github.com/openswoole/ext-openswoole/actions?query=workflow%3Atest-linux"><img src="https://github.com/openswoole/ext-openswoole/workflows/test-linux/badge.svg" alt="test-linux" style="max-width: 100%;"></a>
 <a href="https://scan.coverity.com/projects/open-swoole-src" rel="nofollow"><img src="https://camo.githubusercontent.com/74ce2aa24f7fc272064e7afeec3712e0e548cda19202c4af7e42e7cacf2e7f6f/68747470733a2f2f7363616e2e636f7665726974792e636f6d2f70726f6a656374732f32333937302f62616467652e737667" alt="Coverity Scan Build Status" data-canonical-src="https://scan.coverity.com/projects/23970/badge.svg" style="max-width: 100%;"></a></p>
 
 ## Open Swoole
@@ -36,11 +36,11 @@ Please check [Open Swoole Installation Guide](https://openswoole.com/docs/get-st
 + PHP 7.4.0 or later (The higher the version, the better the performance.)
 + GCC 4.8 or later
 
-Download the source packages from [Releases](https://github.com/openswoole/swoole-src/releases) or:
+Download the source packages from [Releases](https://github.com/openswoole/ext-openswoole/releases) or:
 
 ```shell
-git clone https://github.com/openswoole/swoole-src.git && \
-cd swoole-src
+git clone https://github.com/openswoole/ext-openswoole.git && \
+cd ext-openswoole
 git checkout v22.0.0
 phpize && \
 ./configure && \
@@ -68,7 +68,7 @@ After compiling and installing the openswoole extension, you have to add a new l
 
 > PR are welcome if your framework is using openswoole
  
- - [**Laravel Octane**](https://laravel.com/docs/8.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
+ - [**Laravel Octane**](https://laravel.com/docs/9.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
  - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kinds of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
  - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on Open Swoole.
 
@@ -76,10 +76,10 @@ After compiling and installing the openswoole extension, you have to add a new l
 
 If you like to involve the maintenance of this repo, it is better to get started by submitting PR, you will be invited to the dev group once there are significant contributions. Or join Slack group firstly, the team will provide mentoring and internal support to help you get started.
 
-* [Report issues and feedback](https://github.com/openswoole/swoole-src/issues)
+* [Report issues and feedback](https://github.com/openswoole/ext-openswoole/issues)
 * Submit fixes, features via Pull Request
 
-This project exists thanks to all the historical [[Contributors](https://github.com/openswoole/swoole-src/graphs/contributors)].
+This project exists thanks to all the historical [[Contributors](https://github.com/openswoole/ext-openswoole/graphs/contributors)].
 
 ## Security issues
 

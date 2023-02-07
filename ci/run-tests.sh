@@ -2,7 +2,7 @@
 __CURRENT__=`pwd`
 __DIR__=$(cd "$(dirname "$0")";pwd)
 
-[ -z "${SWOOLE_BRANCH}" ] && export SWOOLE_BRANCH="master"
+[ -z "${CI_BRANCH}" ] && export CI_BRANCH="master"
 
 #-------------PHPT-------------
 cd ${__DIR__} && cd ../tests/
@@ -44,7 +44,7 @@ has_failures(){
 }
 
 should_exit_with_error(){
-    if [ "${SWOOLE_BRANCH}" = "valgrind" ]; then
+    if [ "${CI_BRANCH}" = "valgrind" ]; then
         set +e
         find ./ -type f -name "*.mem"
         set -e
@@ -59,8 +59,8 @@ trap "rm -f tests.list; echo ''; echo '⌛ Done on '`date "+%Y-%m-%d %H:%M:%S"`;
 cpu_num=`nproc --all`
 options="-j${cpu_num}"
 
-echo "" && echo "🌵️️ Current branch is ${SWOOLE_BRANCH}" && echo ""
-if [ "${SWOOLE_BRANCH}" = "valgrind" ]; then
+echo "" && echo "🌵️️ Current branch is ${CI_BRANCH}" && echo ""
+if [ "${CI_BRANCH}" = "valgrind" ]; then
     dir="base"
     options="${options} -m"
 else

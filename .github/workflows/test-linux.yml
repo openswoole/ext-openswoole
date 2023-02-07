@@ -36,14 +36,14 @@ jobs:
           PHP_VERSION: "${{ matrix.php }}"
     # - name: Run pecl-install.sh
     #   run: |
-    #     sudo ${{runner.workspace}}/swoole-src/travis/pecl-install.sh
+    #     sudo ${{runner.workspace}}/ext-openswoole/travis/pecl-install.sh
     # - name: Run simple-compile-on-github.sh
     #   run: |
-    #     sudo ${{runner.workspace}}/swoole-src/travis/simple-compile-on-github.sh
+    #     sudo ${{runner.workspace}}/ext-openswoole/travis/simple-compile-on-github.sh
     - name: Run Openswoole test
       run: |
-        export TRAVIS_BRANCH=${GITHUB_REF##*/}
-        ${{runner.workspace}}/swoole-src/travis/route.sh
+        export CI_BRANCH=${GITHUB_REF##*/}
+        ${{runner.workspace}}/ext-openswoole/ci/route.sh
       env:
           PHP_VERSION: "${{ matrix.php }}"
     - name: Upload Unit Test Results
