@@ -24,19 +24,19 @@ co::run(function() {
     $retval = $pg->query("INSERT INTO weather(city, temp_lo, temp_hi, prcp, date) VALUES ('New York', 35, 45, 0.5, '1994-11-27') RETURNING id;");
 
     go(function() use ($pg) {
-      $pg->prepare('selectOne', 'SELECT * FROM weather');
-      $result1 = $pg->execute('selectOne', []);
-      $row1 = $pg->fetchAssoc($result1);
+      $selectOne = $pg->prepare('SELECT * FROM weather');
+      $result1 = $selectOne->execute([]);
+      $row1 = $selectOne->fetchAssoc();
       var_dump($row1);
       co::sleep(2);
-      $row2 = $pg->fetchAssoc($result1);
+      $row2 = $selectOne->fetchAssoc();
       var_dump($row2);
     });
 
     go(function() use ($pg) {
       co::sleep(1);
-      $result2 = $pg->query('SELECT 1');
-      $row3 = $pg->fetchAssoc($result2);
+      $selectSecond = $pg->query('SELECT 1');
+      $row3 = $selectSecond->fetchAssoc();
       var_dump($row3);
     });
 });

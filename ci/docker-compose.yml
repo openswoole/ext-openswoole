@@ -4,8 +4,8 @@ services:
     container_name: "openswoole"
     image: "openswoole/php:${PHP_VERSION}"
     volumes:
-      - "${TRAVIS_BUILD_DIR}:/swoole-src:rw"
-    working_dir: /swoole-src
+      - "${CI_BUILD_DIR}:/ext-openswoole:rw"
+    working_dir: /ext-openswoole
     ulimits:
       core: -1
     privileged: true
@@ -18,7 +18,7 @@ services:
       - 8.8.8.8
       - 1.1.1.1
     environment:
-      SWOOLE_BRANCH: "${TRAVIS_BRANCH}"
+      SWOOLE_BRANCH: "${CI_BRANCH}"
     command: tail -f /etc/group
   mysql:
     container_name: "mysql"
