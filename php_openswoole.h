@@ -55,6 +55,10 @@ ZEND_END_MODULE_GLOBALS(openswoole)
 
 extern ZEND_DECLARE_MODULE_GLOBALS(openswoole);
 
+#ifdef ZTS
+#define SWOOLE_G(v) TSRMG(openswoole_globals_id, zend_openswoole_globals *, v)
+#else
 #define SWOOLE_G(v) (openswoole_globals.v)
+#endif
 
 #endif /* PHP_SWOOLE_H */
