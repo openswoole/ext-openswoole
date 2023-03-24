@@ -1320,9 +1320,7 @@ static PHP_METHOD(swoole_postgresql_coro_statement, execute) {
     }
 
     if (PQsendQueryPrepared(pgsql, statement->name, num_params, (const char *const *) params, nullptr, nullptr, 0)) {
-        _php_pgsql_free_params(params, num_params);
     } else if (is_non_blocking) {
-        _php_pgsql_free_params(params, num_params);
         RETURN_FALSE;
     } else {
         /*
@@ -1332,7 +1330,6 @@ static PHP_METHOD(swoole_postgresql_coro_statement, execute) {
         */
         if (!PQsendQueryPrepared(
                 pgsql, statement->name, num_params, (const char *const *) params, nullptr, nullptr, 0)) {
-            _php_pgsql_free_params(params, num_params);
             RETURN_FALSE;
         }
     }
