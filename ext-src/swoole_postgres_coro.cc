@@ -1308,7 +1308,6 @@ static PHP_METHOD(swoole_postgresql_coro_statement, execute) {
                     if (Z_TYPE(tmp_val) != IS_STRING) {
                         php_swoole_fatal_error(E_WARNING, "Error converting parameter");
                         zval_ptr_dtor(&tmp_val);
-                        _php_pgsql_free_params(params, num_params);
                         RETURN_FALSE;
                     }
                 }
