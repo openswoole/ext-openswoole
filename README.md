@@ -1,7 +1,5 @@
 <p align="center"><a href="https://openswoole.com" target="_blank"><img src="https://openswoole.com/images/swoole-logo.svg#gh-light-mode-only" width="200" /></a></p>
 
-
-<p align="center"><a href="https://github.com/openswoole/ext-openswoole/actions?query=workflow%3Alib-openswoole"><img src="https://github.com/openswoole/ext-openswoole/workflows/lib-openswoole/badge.svg" alt="lib-openswoole" style="max-width: 100%;"></a>
 <a href="https://github.com/openswoole/ext-openswoole/actions?query=workflow%3Aext-openswoole"><img src="https://github.com/openswoole/ext-openswoole/workflows/ext-openswoole/badge.svg" alt="ext-openswoole" style="max-width: 100%;"></a>
 <a href="https://github.com/openswoole/ext-openswoole/actions?query=workflow%3Atest-linux"><img src="https://github.com/openswoole/ext-openswoole/workflows/test-linux/badge.svg" alt="test-linux" style="max-width: 100%;"></a>
 <a href="https://scan.coverity.com/projects/open-swoole-src" rel="nofollow"><img src="https://camo.githubusercontent.com/74ce2aa24f7fc272064e7afeec3712e0e548cda19202c4af7e42e7cacf2e7f6f/68747470733a2f2f7363616e2e636f7665726974792e636f6d2f70726f6a656374732f32333937302f62616467652e737667" alt="Coverity Scan Build Status" data-canonical-src="https://scan.coverity.com/projects/23970/badge.svg" style="max-width: 100%;"></a></p>

@@ -6,7 +6,7 @@ swoole_coroutine: getBackTrace form listCoroutines
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
+co::run(function () {
     go(function () {
         go(function () {
             $main = go(function () {
@@ -36,36 +36,9 @@ go(function () {
         });
     });
 });
-swoole_event_wait();
 ?>
 --EXPECTF--
 int(1)
-array(2) {
-  [0]=>
-  array(4) {
-    ["file"]=>
-    string(%d) "%s"
-    ["line"]=>
-    int(%d)
-    ["function"]=>
-    string(2) "go"
-    ["args"]=>
-    array(1) {
-      [0]=>
-      object(Closure)#2 (0) {
-      }
-    }
-  }
-  [1]=>
-  array(2) {
-    ["function"]=>
-    string(9) "{closure}"
-    ["args"]=>
-    array(0) {
-    }
-  }
-}
-int(2)
 array(2) {
   [0]=>
   array(4) {
@@ -91,6 +64,32 @@ array(2) {
     }
   }
 }
+int(2)
+array(2) {
+  [0]=>
+  array(4) {
+    ["file"]=>
+    string(%d) "%s"
+    ["line"]=>
+    int(%d)
+    ["function"]=>
+    string(2) "go"
+    ["args"]=>
+    array(1) {
+      [0]=>
+      object(Closure)#5 (0) {
+      }
+    }
+  }
+  [1]=>
+  array(2) {
+    ["function"]=>
+    string(9) "{closure}"
+    ["args"]=>
+    array(0) {
+    }
+  }
+}
 int(3)
 array(2) {
   [0]=>
@@ -104,7 +103,7 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#6 (1) {
+      object(Closure)#7 (1) {
         ["static"]=>
         array(1) {
           ["main"]=>
@@ -164,7 +163,7 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#10 (1) {
+      object(Closure)#11 (1) {
         ["static"]=>
         array(1) {
           ["main"]=>
