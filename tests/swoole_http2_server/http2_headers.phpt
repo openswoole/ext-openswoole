@@ -7,9 +7,7 @@ swoole_http2_server: array headers
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    $output = `curl --http2-prior-knowledge --silent -I http://127.0.0.1:{$pm->getFreePort()}`;
-    echo $output;
-    $output = `curl --http2-prior-knowledge --silent -I http://127.0.0.1:{$pm->getFreePort()}`;
+    $output = `curl --http2-prior-knowledge --silent -i http://127.0.0.1:{$pm->getFreePort()}`;
     echo $output;
     $pm->kill();
 };
@@ -32,7 +30,7 @@ $pm->childFunc = function () use ($pm) {
             5678,
             3.1415926,
         ]);
-        $response->end("<h1>Hello Swoole.</h1>");
+        $response->end("<h1>Hello openswoole.</h1>");
     });
     $http->start();
 };
@@ -49,4 +47,6 @@ test-value: 3.1415926
 server: OpenSwoole %s
 date: %s
 content-type: text/html
-content-length: 22
+content-length: %d
+
+<h1>Hello openswoole.</h1>
