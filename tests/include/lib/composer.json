@@ -18,5 +18,8 @@
     "psr/http-factory": "^1.0",
     "symfony/http-client": "*",
     "nyholm/psr7": "^1.4"
+  },
+  "config": {
+      "allow-plugins": false
   }
 }
