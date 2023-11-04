@@ -23,22 +23,6 @@ jobs:
         --enable-openssl --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
-  build-ubuntu-old:
-    runs-on: ubuntu-18.04
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-    steps:
-    - uses: actions/checkout@v1
-    - name: install-deps
-      run: sudo apt update -y && sudo apt install -y libcurl4-openssl-dev php-curl libc-ares-dev
-    - name: phpize
-      run: phpize
-    - name: build1
-      run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
-    - name: build2
-      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
-        --enable-openssl --enable-cares --enable-debug-log &&
-        make clean && make -j$(sysctl -n hw.ncpu)
-
   build-centos:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
