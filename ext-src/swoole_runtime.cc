@@ -1370,7 +1370,7 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
         } else {
             php_swoole_fatal_error(
                 E_ERROR,
-                "HOOK_BLOCKING_FUNCTION option is avaiable in openswoole/core: composer install openswoole/core");
+                "HOOK_BLOCKING_FUNCTION option is avaiable in openswoole/core: composer require openswoole/core");
         }
     }
 
@@ -1436,7 +1436,7 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
 
         } else {
             php_swoole_fatal_error(
-                E_ERROR, "HOOK_SOCKETS option is avaiable in openswoole/core: composer install openswoole/core");
+                E_ERROR, "HOOK_SOCKETS option is avaiable in openswoole/core: composer require openswoole/core");
         }
     }
 
@@ -1913,7 +1913,7 @@ static void hook_func(const char *name, size_t l_name, zif_handler handler, zend
         zend_fcall_info_cache *func_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
         if (!sw_zend_is_callable_ex(&rf->name, nullptr, 0, &func_name, nullptr, func_cache, nullptr)) {
             php_swoole_fatal_error(
-                E_ERROR, "Coroutine hook function '%s' is not callable, composer install openswoole/core", func_name);
+                E_ERROR, "Coroutine hook function '%s' is not callable, composer require openswoole/core", func_name);
             efree(func_name);
             return;
         }
