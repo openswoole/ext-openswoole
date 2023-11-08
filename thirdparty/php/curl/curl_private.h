@@ -66,12 +66,7 @@ typedef struct {
 	zval                  func_name;
 	zend_fcall_info_cache fci_cache;
 	int                   method;
-} php_curl_progress, php_curl_fnmatch, php_curlm_server_push;
-
-typedef struct {
-	zval                  func_name;
-	zend_fcall_info_cache fci_cache;
-} php_curl_callback;
+} php_curl_progress, php_curl_fnmatch, php_curlm_server_push, php_curl_fnxferinfo, php_curl_fnsshhostkey;
 
 typedef struct {
 	php_curl_write    *write;
@@ -81,11 +76,14 @@ typedef struct {
 	php_curl_progress *progress;
 #if PHP_VERSION_ID >= 80200
 #if LIBCURL_VERSION_NUM >= 0x072000
-	php_curl_callback  *xferinfo;
+	php_curl_fnxferinfo  *xferinfo;
 #endif
 #endif
 #if LIBCURL_VERSION_NUM >= 0x071500 /* Available since 7.21.0 */
 	php_curl_fnmatch  *fnmatch;
+#endif
+#if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
+	php_curl_fnsshhostkey  *sshhostkey;
 #endif
 } php_curl_handlers;
 
@@ -115,9 +113,6 @@ struct _php_curl_free {
     HashTable *slist;
 };
 #endif
-
-
-using CurlCallback = std::function<bool(void)>;
 
 typedef struct {
 	CURL                         *cp;

@@ -58,6 +58,15 @@ class Context {
 #if !defined(SW_USE_THREAD_CONTEXT) && defined(SW_CONTEXT_DETECT_STACK_USAGE)
     ssize_t get_stack_usage();
 #endif
+
+    char* get_stack() {
+        return stack_;
+    }
+
+    size_t get_stack_size() {
+        return stack_size_;
+    }
+
     inline bool is_end() {
         return end_;
     }

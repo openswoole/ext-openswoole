@@ -15,7 +15,7 @@ nproc --all
 echo "" && echo "⭐️ Initialization for tests..." && echo ""
 ./init
 cd ./include/lib
-composer update
+composer update -vvv
 cd -
 echo ""
 
