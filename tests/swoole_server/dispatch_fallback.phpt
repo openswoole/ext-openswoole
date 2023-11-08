@@ -5,7 +5,6 @@ swoole_server: dispatch_fallback
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-ini_set('zend.max_allowed_stack_size', -1);
 const WORKER_N = 4;
 
 use Swoole\Coroutine\Client;
