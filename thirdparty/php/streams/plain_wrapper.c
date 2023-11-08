@@ -695,6 +695,13 @@ static php_stream_size_t php_plain_files_dirstream_read(php_stream *stream, char
 
     if ((result = readdir(dir))) {
         PHP_STRLCPY(ent->d_name, result->d_name, sizeof(ent->d_name), strlen(result->d_name));
+#if PHP_VERSION_ID >= 80300
+#ifdef _DIRENT_HAVE_D_TYPE
+        ent->d_type = result->d_type;
+#else
+        ent->d_type = DT_UNKNOWN;
+#endif
+#endif
         return sizeof(php_stream_dirent);
     }
     return 0;

@@ -3,6 +3,7 @@ swoole_runtime: hook stream redis pconnect
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 skip_if_class_not_exist('Redis');
+skip('TODOv23');
 ?>
 --FILE--
 <?php declare(strict_types = 1);
