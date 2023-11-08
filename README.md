@@ -31,7 +31,7 @@ Please check [Open Swoole Installation Guide](https://openswoole.com/docs/get-st
 #### Compiling requirements
 
 + Linux, OS X or Cygwin, WSL
-+ PHP 7.4.0 or later (The higher the version, the better the performance.)
++ PHP 8.1.0 or later (The higher the version, the better the performance.)
 + GCC 4.8 or later
 
 Download the source packages from [Releases](https://github.com/openswoole/ext-openswoole/releases) or:
@@ -39,7 +39,7 @@ Download the source packages from [Releases](https://github.com/openswoole/ext-o
 ```shell
 git clone https://github.com/openswoole/ext-openswoole.git && \
 cd ext-openswoole
-git checkout v22.0.0
+git checkout v22.1.0
 phpize && \
 ./configure && \
 make && make install
