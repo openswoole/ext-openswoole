@@ -5,6 +5,7 @@ swoole_server: dispatch_func_memory_leak
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
+ini_set('zend.max_allowed_stack_size', -1);
 
 use Swoole\Server;
 

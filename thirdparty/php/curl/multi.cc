@@ -542,7 +542,7 @@ static int _php_server_push_callback(
 
     if (UNEXPECTED(zend_fcall_info_init(&t->func_name, 0, &fci, &t->fci_cache, NULL, NULL) == FAILURE)) {
         php_error_docref(NULL, E_WARNING, "Cannot call the CURLMOPT_PUSHFUNCTION");
-        return rval;
+        return CURL_PUSH_OK;
     }
 
     parent = Z_CURL_P(pz_parent_ch);
@@ -558,7 +558,12 @@ static int _php_server_push_callback(
         add_next_index_string(&headers, header);
     }
 
-    zend_fcall_info_argn(&fci, 3, pz_parent_ch, &pz_ch, &headers);
+    zend_fcall_info_argn(
+        &fci, 3,
+        pz_parent_ch,
+        &pz_ch,
+        &headers
+    );
 
     fci.retval = &retval;
 
@@ -705,7 +710,7 @@ static zend_function *swoole_curl_multi_get_constructor(zend_object *object) {
     return NULL;
 }
 
-void swoole_curl_multi_free_obj(zend_object *object) {
+static void swoole_curl_multi_free_obj(zend_object *object) {
     php_curlm *mh = (php_curlm *) curl_multi_from_obj(object);
     if (!mh->multi) {
         /* Can happen if constructor throws. */
