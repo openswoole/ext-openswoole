@@ -470,7 +470,7 @@ static HashTable *swoole_curl_get_gc(zend_object *object, zval **table, int *n) 
         }
 #endif
 
-#if LIBCURL_VERSION_NUM >= 0x075400
+#if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
     if (curl_handlers(curl)->sshhostkey) {
         zend_get_gc_buffer_add_zval(gc_buffer, &curl_handlers(curl)->sshhostkey->func_name);
     }
@@ -725,7 +725,7 @@ static size_t fn_progress(void *clientp, double dltotal, double dlnow, double ul
 }
 /* }}} */
 
-#if LIBCURL_VERSION_NUM >= 0x075400
+#if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
 static int fn_ssh_hostkeyfunction(void *clientp, int keytype, const char *key, size_t keylen)
 {
     php_curl *ch = (php_curl *)clientp;
@@ -1069,7 +1069,7 @@ php_curl *swoole_curl_alloc_handle()
 #if LIBCURL_VERSION_NUM >= 0x071500 /* Available since 7.21.0 */
     curl_handlers(ch)->fnmatch = NULL;
 #endif
-#if LIBCURL_VERSION_NUM >= 0x075400
+#if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
      curl_handlers(ch)->sshhostkey = NULL;
 #endif
     ch->clone = (uint32_t *) emalloc(sizeof(uint32_t));
@@ -2269,7 +2269,7 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue) /* {{{
         curl_handlers(ch)->progress->method = PHP_CURL_USER;
         break;
 
-#if LIBCURL_VERSION_NUM >= 0x075400 /* Available since 7.84.0 */
+#if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
         case CURLOPT_SSH_HOSTKEYFUNCTION:
             curl_easy_setopt(ch->cp, CURLOPT_SSH_HOSTKEYFUNCTION, fn_ssh_hostkeyfunction);
             curl_easy_setopt(ch->cp, CURLOPT_SSH_HOSTKEYDATA, ch);
@@ -2987,7 +2987,7 @@ static void _php_curl_free(php_curl *ch) {
     curl_easy_setopt(ch->cp, CURLOPT_WRITEFUNCTION, curl_write_nothing);
 
     swoole::curl::Handle *handle = nullptr;
-    if (curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle) == CURLE_OK && handle) {
+    if (curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle) && handle) {
         if (handle->multi) {
             handle->multi->remove_handle(ch);
         }
@@ -3062,7 +3062,7 @@ static void _php_curl_free(php_curl *ch) {
         efree(curl_handlers(ch)->fnmatch);
     }
 #endif
-#if LIBCURL_VERSION_NUM >= 0x075400
+#if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
     if (curl_handlers(ch)->sshhostkey) {
         zval_ptr_dtor(&curl_handlers(ch)->sshhostkey->func_name);
         efree(curl_handlers(ch)->sshhostkey);
