@@ -1047,7 +1047,7 @@ static sw_inline char *php_swoole_http_build_query(zval *zdata, size_t *length, 
     } else {
 #else
     if (HASH_OF(zdata)) {
-        php_url_encode_hash_ex(HASH_OF(zdata), formstr, NULL, NULL, NULL, NULL, NULL, (int) PHP_QUERY_RFC1738);
+        php_url_encode_hash_ex(HASH_OF(zdata), formstr, NULL, 0, NULL, NULL, NULL, (int) PHP_QUERY_RFC1738);
     } else {
 #endif
         if (formstr->s) {
