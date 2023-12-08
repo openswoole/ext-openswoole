@@ -1727,6 +1727,7 @@
     </dependencies>
     <providesextension>openswoole</providesextension>
     <extsrcrelease>
+        <configureoption default="no" name="enable-cares" prompt="enable c-ares support?"/>
         <configureoption default="no" name="enable-sockets" prompt="enable coroutine sockets?"/>
         <configureoption default="no" name="enable-openssl" prompt="enable openssl support?"/>
         <configureoption default="no" name="enable-http2" prompt="enable http2 protocol?"/>
