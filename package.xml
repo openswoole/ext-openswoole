@@ -12,10 +12,10 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2022-12-21</date>
-    <time>21:00:00</time>
+    <date>2023-11-08</date>
+    <time>11:00:00</time>
     <version>
-        <release>22.0.0</release>
+        <release>22.1.0</release>
         <api>22.0</api>
     </version>
     <stability>
@@ -24,53 +24,12 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-         . Rename `co\run` to be `co::run`
-         . Security update: Remove embedded PHP codes, hot code execution with eval and remove `ini` option `enable_library`
-         . Added server Constants class: OpenSwoole\Constant
-         . Use \OpenSwoole as the main namespace, although \Swoole is still supported
-         . Pre-check server options
-         . Security update: New server option `enable_server_token`, disabled by default
-         . Built-in Psr7 API support added
-         . Boost ASM library upgrade
-         . New Psr API: $server->setHandler(\Psr\Http\Server\RequestHandlerInterface $handler)
-         . New Psr API: $server->handle(callable $callback)
-         . Redis Server API: $server->setHandler() -> $server->addCommand()
-         . Redis Server API: $server->getHandler() -> $server->getCommand()
-         . Disable sockets_*, exec, shell_exec, `gethostbyname` coroutines hook by default, remove HOOK_BLOCKING_FUNCTION and HOOK_SOCKETS in HOOK_ALL; Enable them explicitly if they are used
-         . Remove deprecated custom coroutine MySQL client, prefer the hooked native coroutine MySQL client
-         . Remove deprecated custom coroutine Redis client, prefer the hooked native coroutine Redis client
-         . Remove deprecated experimental coroutine HTTP server
-         . Remove deprecated experimental Redis protocol server
-         . Remove deprecated function `swoole_timer_set()` and `Timer->set()`
-         . Remove deprecated function `swoole_event_rshutdown`
-         . Remove deprecated function `Swoole\Runtime::fread`, `Swoole\Runtime::fwrite`, `Swoole\Runtime::fgets`
-         . Remove deprecated function `Coroutine::suspend`, use `Coroutine::yield`
-         . Remove deprecated function `Coroutine::getuid`, use `Coroutine::getCid`
-         . Remove deprecated function `Coroutine::listCoroutines`, use `Coroutine::list`
-         . Remove deprecated function `Table::exist`, use `Table::exists`
-         . Remove deprecated function `Table::delete`, use `Table::del`
-         . Remove deprecated function `Server->connection_info()`, use `Server->getClientInfo()`
-         . Remove deprecated function `Server->connection_list()`, use `Server->getClientList()`
-         . Remove deprecated function `Server->exist`, use `Server->exists`
-         . Move global constants under namespace: SWOOLE_CHANNEL_OK -> `OpenSwoole\Coroutine\Channel::CHANNEL_OK`, SWOOLE_CHANNEL_TIMEOUT -> `OpenSwoole\Coroutine\Channel::CHANNEL_TIMEOUT`, SWOOLE_CHANNEL_CLOSED -> `OpenSwoole\Coroutine\Channel::CHANNEL_CLOSED`...
-         . Move global constants under namespace: SWOOLE_DEFAULT_MAX_CORO_NUM -> `OpenSwoole\Coroutine::DEFAULT_MAX_CORO_NUM`...
-         . Remove `$server->getLastError()`, use `OpenSwoole\Util::getLastErrorCode()`
-         . Remove `$process->name()`, use `OpenSwoole\Util::setProcessName()`
-         . New Util API class: added `OpenSwoole\Util` class
-         . Remove option `swoole.use_shortname`, remove `Co\*` alias. `go`, `chan`, `defer`, `co::*` are available by default
-         . Remove `swoole_async_dns_lookup_coro`, use `OpenSwoole\Coroutine::dnsLookup` or `OpenSwoole\Coroutine\System::dnsLookup`; remove `swoole_async_set`, use `OpenSwoole\Until::setAio([])` or `$server->set([])` for `aio` options;
-         . Rename PHP `ini` options from `swoole.*` to be `openswoole.*`
-         . Remove `swoole_clear_dns_cache`, use OpenSwoole\Coroutine::clearDNSCache` or `OpenSwoole\Coroutine\System::clearDNSCache`
-         . Remove custom unserialize functions: `swoole_substr_unserialize` and `swoole_substr_unserialize`
-         . Remove `swoole_client_select` and `swoole_select`, use `OpenSwoole\Client::select`
-         . Remove `swoole_last_error`, use `OpenSwoole\Util::getLastErrorCode`
-         . `OpenSwoole\Event::wait();` should be added explicitly to wait for all the IO events
-         . Use `\OpenSwoole\Server::SIMPLE_MODE` and `\OpenSwoole\Server::POOL_MODE` at server structure config
-         . Fix: ignore user set illegal HTTP header at server
-         . Fix: ignore user set encoding header at client if it is not supported
-         . Remove hard requirements and links of json and remove compile flag `--enable-swoole-json`
-         . Rename compile flag `--enable-swoole-curl` to be `--enable-hook-curl`
-         . Fix convert double sec to long microseconds in hooked usleep by @shandyDev
+         . PHP 8.3 support
+         . Latest curl support
+         . Fix php_url_encode_hash_ex call for 8.3 @remicollet
+         . Add missing header for GCC 13 @remicollet @erfanmola
+         . Implement draft statements object LOB for postgresql @mrVrAlex
+         . Bug fix for postgresql
     </notes>
     <contents>
         <dir name="/">
@@ -81,6 +40,19 @@
             <file role="src" name="LICENSE.prev-v4.7.1" />
             <file role="src" name="Makefile.frag" />
             <file role="doc" name="README.md" />
+            <file role="src" name="ci/.gitignore" />
+            <file role="doc" name="ci/README.md" />
+            <file role="src" name="ci/debug/swoole_info.php" />
+            <file role="src" name="ci/debug/swoole_table_implements.php" />
+            <file role="src" name="ci/docker-compile.sh" />
+            <file role="src" name="ci/docker-compose.yml" />
+            <file role="src" name="ci/docker-route.sh" />
+            <file role="src" name="ci/pecl-install.sh" />
+            <file role="src" name="ci/route.sh" />
+            <file role="src" name="ci/run-tests.sh" />
+            <file role="src" name="ci/simple-compile-on-github.sh" />
+            <file role="src" name="ci/simple-compile.sh" />
+            <file role="src" name="ci/test-laravel.sh" />
             <file role="src" name="clear.sh" />
             <file role="src" name="code_format.sh" />
             <file role="src" name="code_stats.sh" />
@@ -216,6 +188,9 @@
             <file role="src" name="ext-src/swoole_lock_arginfo.h" />
             <file role="src" name="ext-src/swoole_lock_arginfo_legacy.h" />
             <file role="src" name="ext-src/swoole_postgres_coro.cc" />
+            <file role="src" name="ext-src/swoole_postgresql_coro.stub.php" />
+            <file role="src" name="ext-src/swoole_postgresql_coro_arginfo.h" />
+            <file role="src" name="ext-src/swoole_postgresql_coro_legacy_arginfo.h" />
             <file role="src" name="ext-src/swoole_process.cc" />
             <file role="src" name="ext-src/swoole_process.stub.php" />
             <file role="src" name="ext-src/swoole_process_arginfo.h" />
@@ -1738,25 +1713,12 @@
             <file role="src" name="tools/send-http-data.php" />
             <file role="src" name="tools/show-big-files.php" />
             <file role="src" name="tools/templates/version.tpl.h" />
-            <file role="src" name="travis/.gitignore" />
-            <file role="doc" name="travis/README.md" />
-            <file role="src" name="travis/debug/swoole_info.php" />
-            <file role="src" name="travis/debug/swoole_table_implements.php" />
-            <file role="src" name="travis/docker-compile.sh" />
-            <file role="src" name="travis/docker-compose.yml" />
-            <file role="src" name="travis/docker-route.sh" />
-            <file role="src" name="travis/pecl-install.sh" />
-            <file role="src" name="travis/route.sh" />
-            <file role="src" name="travis/run-tests.sh" />
-            <file role="src" name="travis/simple-compile-on-github.sh" />
-            <file role="src" name="travis/simple-compile.sh" />
-            <file role="src" name="travis/test-laravel.sh" />
         </dir>
     </contents>
     <dependencies>
         <required>
             <php>
-                <min>7.4.0</min>
+                <min>8.1.0</min>
             </php>
             <pearinstaller>
                 <min>1.4.0</min>
@@ -1766,11 +1728,11 @@
     <providesextension>openswoole</providesextension>
     <extsrcrelease>
         <configureoption default="no" name="enable-cares" prompt="enable c-ares support?"/>
-        <configureoption default="no" name="enable-sockets" prompt="enable sockets supports?"/>
+        <configureoption default="no" name="enable-sockets" prompt="enable coroutine sockets?"/>
         <configureoption default="no" name="enable-openssl" prompt="enable openssl support?"/>
-        <configureoption default="no" name="enable-http2" prompt="enable http2 support?"/>
-        <configureoption default="no" name="enable-mysqlnd" prompt="enable mysqlnd support?"/>
-        <configureoption default="no" name="enable-hook-curl" prompt="enable hook curl support?"/>
-        <configureoption default="no" name="with-postgres" prompt="enable postgres support?"/>
+        <configureoption default="no" name="enable-http2" prompt="enable http2 protocol?"/>
+        <configureoption default="no" name="enable-mysqlnd" prompt="enable coroutine mysqlnd?"/>
+        <configureoption default="no" name="enable-hook-curl" prompt="enable coroutine curl?"/>
+        <configureoption default="no" name="with-postgres" prompt="enable coroutine postgres?"/>
     </extsrcrelease>
 </package>

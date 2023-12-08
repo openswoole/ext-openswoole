@@ -26,13 +26,13 @@ Assert::assert($info['c_stack_size'] == M);
 Assert::assert($info['coroutine_num'] == 100);
 Assert::assert($info['coroutine_peak_num'] == 100);
 
-co::set(['c_stack_size' => 1 * K]); // will be extend
+co::set(['c_stack_size' => 100 * K]); // will be extend
 for ($n = 100; $n--;) {
     go(function () { Co::usleep(1000); });
 }
 // echo "256K\n";
 $info = co::stats();
-Assert::assert($info['c_stack_size'] == 64 * K);
+Assert::assert($info['c_stack_size'] == 100 * K);
 Assert::assert($info['coroutine_num'] == 200);
 Assert::assert($info['coroutine_peak_num'] == 200);
 

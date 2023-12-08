@@ -56,6 +56,10 @@ struct PHPContext {
 #if PHP_VERSION_ID >= 80000
     uint32_t jit_trace_num;
 #endif
+#ifdef ZEND_CHECK_STACK_LIMIT
+    void *stack_base;
+    void *stack_limit;
+#endif
     zend_error_handling_t error_handling;
     zend_class_entry *exception_class;
     zend_object *exception;

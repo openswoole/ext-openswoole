@@ -800,7 +800,7 @@ static PHP_METHOD(swoole_server_port, handle) {
 
     if (!is_core_loaded()) {
         php_swoole_fatal_error(E_ERROR,
-                               "$server->handle API is avaiable in openswoole/core: composer install openswoole/core");
+                               "$server->handle API is avaiable in openswoole/core: composer require openswoole/core");
     }
 
     zval *zserv = (zval *) serv->private_data_2;
@@ -828,7 +828,7 @@ static PHP_METHOD(swoole_server_port, setHandler) {
 
     if (!is_core_loaded()) {
         php_swoole_fatal_error(
-            E_ERROR, "server->setHandler API is avaiable in openswoole/core: composer install openswoole/core");
+            E_ERROR, "server->setHandler API is avaiable in openswoole/core: composer require openswoole/core");
     }
 
     zval *zserv = (zval *) serv->private_data_2;

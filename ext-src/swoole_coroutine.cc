@@ -469,6 +469,10 @@ inline void PHPCoroutine::save_vm_stack(PHPContext *task) {
 #if PHP_VERSION_ID >= 80000
     task->jit_trace_num = EG(jit_trace_num);
 #endif
+#ifdef ZEND_CHECK_STACK_LIMIT
+    task->stack_base = EG(stack_base);
+    task->stack_limit = EG(stack_limit);
+#endif
     task->error_handling = EG(error_handling);
     task->exception_class = EG(exception_class);
     task->exception = EG(exception);
@@ -500,6 +504,10 @@ inline void PHPCoroutine::restore_vm_stack(PHPContext *task) {
     EG(current_execute_data) = task->execute_data;
 #if PHP_VERSION_ID >= 80000
     EG(jit_trace_num) = task->jit_trace_num;
+#endif
+#ifdef ZEND_CHECK_STACK_LIMIT
+    EG(stack_base) = task->stack_base;
+    EG(stack_limit) = task->stack_limit;
 #endif
     EG(error_handling) = task->error_handling;
     EG(exception_class) = task->exception_class;
@@ -709,6 +717,19 @@ void PHPCoroutine::main_func(void *arg) {
         task->context = nullptr;
         task->enable_scheduler = true;
 
+#ifdef ZEND_CHECK_STACK_LIMIT
+        if(task->co) {
+            EG(stack_base) = (void*)((uintptr_t)task->co->get_context().get_stack() + task->co->get_context().get_stack_size());
+            zend_ulong reserve = EG(reserved_stack_size);
+        #ifdef __APPLE__
+            reserve = reserve * 2;
+        #endif
+            EG(stack_limit) = (int8_t*)task->co->get_context().get_stack() + reserve;
+        } else {
+            EG(stack_base) = nullptr;
+            EG(stack_limit) = nullptr;
+        }
+#endif
         save_vm_stack(task);
         record_last_msec(task);
 
