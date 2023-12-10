@@ -26,6 +26,7 @@ make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
 make install && echo "" && \
 docker-php-ext-enable --ini-name zzz-docker-php-ext-openswoole.ini openswoole && \
+echo "zend.max_allowed_stack_size=-1" > /usr/local/etc/php/conf.d/zzz-stack-size.ini && \
 php --ri curl && \
 php --ri openswoole
 

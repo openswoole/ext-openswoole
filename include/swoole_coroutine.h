@@ -94,6 +94,10 @@ class Coroutine {
         return task;
     }
 
+    coroutine::Context &get_context() {
+        return ctx;
+    }
+
     inline bool is_end() {
         return ctx.is_end();
     }

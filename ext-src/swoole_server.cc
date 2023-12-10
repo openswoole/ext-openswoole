@@ -2949,7 +2949,7 @@ static PHP_METHOD(swoole_server, stats) {
         zend_string *class_name =
             zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
         if (zend_lookup_class(class_name) == NULL) {
-            php_swoole_fatal_error(E_WARNING, "composer dependency required: composer install openswoole/core");
+            php_swoole_fatal_error(E_WARNING, "composer dependency required: composer require openswoole/core");
             efree(class_name);
             RETURN_FALSE;
         }

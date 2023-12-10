@@ -39,7 +39,7 @@ $pm->parentFunc = function ($pid) use ($port)
     {
         $pkg = $client->recv();
         Assert::assert($pkg != false);
-        $_pkg = unserialize($pkg);
+        $_pkg = @unserialize($pkg);
         Assert::assert(is_array($_pkg));
         Assert::same($_pkg['i'], $i);
         Assert::assert(strlen($_pkg['data']) <= 256 * 1024);
