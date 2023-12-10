@@ -13,9 +13,9 @@
         <active>yes</active>
     </lead>
     <date>2023-12-10</date>
-    <time>18:00:00</time>
+    <time>22:00:00</time>
     <version>
-        <release>22.1.1</release>
+        <release>22.1.2</release>
         <api>22.0</api>
     </version>
     <stability>
@@ -1725,7 +1725,6 @@
     </dependencies>
     <providesextension>openswoole</providesextension>
     <extsrcrelease>
-        <configureoption default="no" name="enable-cares" prompt="enable c-ares support?"/>
         <configureoption default="no" name="enable-sockets" prompt="enable coroutine sockets?"/>
         <configureoption default="no" name="enable-openssl" prompt="enable openssl support?"/>
         <configureoption default="no" name="enable-http2" prompt="enable http2 protocol?"/>

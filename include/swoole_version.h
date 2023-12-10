@@ -14,10 +14,10 @@
 
 #define SWOOLE_MAJOR_VERSION 22
 #define SWOOLE_MINOR_VERSION 1
-#define SWOOLE_RELEASE_VERSION 1
+#define SWOOLE_RELEASE_VERSION 2
 #define SWOOLE_EXTRA_VERSION ""
-#define SWOOLE_VERSION "22.1.1"
-#define SWOOLE_VERSION_ID 220101
+#define SWOOLE_VERSION "22.1.2"
+#define SWOOLE_VERSION_ID 220102
 #define SWOOLE_API_VERSION_ID 0x202012a
 
 #define SWOOLE_BUG_REPORT                                                                                              \
