@@ -23,7 +23,9 @@
 #include "php_config.h"
 #endif
 
+#ifdef SW_USE_ASM_CONTEXT
 #define USE_BOOST_V2 1
+#endif
 
 #ifdef __cplusplus
 #define SW_EXTERN_C_BEGIN extern "C" {
