@@ -26,6 +26,7 @@
     <notes>
          . Add missing c-ares configure opt (@nberlee)
          . Fix php_url_encode_hash_ex call for 8.3 (alpine builds) (@thecaliskan)
+         . Fix cygwin build
     </notes>
     <contents>
         <dir name="/">
