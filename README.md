@@ -39,7 +39,7 @@ Download the source packages from [Releases](https://github.com/openswoole/ext-o
 ```shell
 git clone https://github.com/openswoole/ext-openswoole.git && \
 cd ext-openswoole
-git checkout v22.1.0
+git checkout v22.1.1
 phpize && \
 ./configure && \
 make && make install

@@ -12,10 +12,10 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2023-11-08</date>
-    <time>11:00:00</time>
+    <date>2023-12-10</date>
+    <time>18:00:00</time>
     <version>
-        <release>22.1.0</release>
+        <release>22.1.1</release>
         <api>22.0</api>
     </version>
     <stability>
@@ -24,12 +24,8 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-         . PHP 8.3 support
-         . Latest curl support
-         . Fix php_url_encode_hash_ex call for 8.3 @remicollet
-         . Add missing header for GCC 13 @remicollet @erfanmola
-         . Implement draft statements object LOB for postgresql @mrVrAlex
-         . Bug fix for postgresql
+         . Add missing c-ares configure opt (@nberlee)
+         . Fix php_url_encode_hash_ex call for 8.3 (alpine builds) (@thecaliskan)
     </notes>
     <contents>
         <dir name="/">
@@ -671,6 +667,7 @@
             <file role="test" name="tests/swoole_coroutine/exit.phpt" />
             <file role="test" name="tests/swoole_coroutine/exit_exception_backtrace.phpt" />
             <file role="test" name="tests/swoole_coroutine/fatal_error.phpt" />
+            <file role="test" name="tests/swoole_coroutine/file_get_content.phpt" />
             <file role="test" name="tests/swoole_coroutine/forbidden_case/array_map.phpt" />
             <file role="test" name="tests/swoole_coroutine/forbidden_case/call_user.phpt" />
             <file role="test" name="tests/swoole_coroutine/forbidden_case/invoke.phpt" />
