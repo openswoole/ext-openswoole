@@ -456,6 +456,10 @@ if test "$PHP_SWOOLE" != "no"; then
     fi
     
     if test "$PHP_CARES" = "yes"; then
+        if test -d "/opt/homebrew/opt/c-ares/include"; then
+            CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/c-ares/include"
+            LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/c-ares/lib"
+        fi
         AC_DEFINE(SW_USE_CARES, 1, [do we enable c-ares support])
         PHP_ADD_LIBRARY(cares, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
