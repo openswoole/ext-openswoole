@@ -54,9 +54,9 @@ jobs:
         brew link --overwrite --force shivammathur/php/php@8.2
         brew install pcre2
         ln -s /opt/homebrew/include/pcre2.h /opt/homebrew/opt/php@8.2/include/php/ext/pcre/pcre2.h
-        export CFLAGS="-I$(brew --prefix openssl)/include"
-        export LDFLAGS="-L$(brew --prefix openssl)/lib"
-        openssl version -d
+        echo 'export CFLAGS="-I$(brew --prefix openssl)/include $CFLAGS"' >> $GITHUB_ENV
+        echo 'export LDFLAGS="-L$(brew --prefix openssl)/lib $LDFLAGS"' >> $GITHUB_ENV
+        brew --prefix openssl
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
@@ -64,7 +64,7 @@ jobs:
       run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
     - name: build2
       run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
-        --enable-openssl --with-openssl-dir=/opt/homebrew/etc/openssl@1.1 --enable-cares --enable-debug-log &&
+        --enable-openssl --with-openssl-dir=/usr/local/opt/openssl@3.4 --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
   build-alpine-latest:
