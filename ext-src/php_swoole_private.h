@@ -664,7 +664,7 @@ static sw_inline int sw_zend_register_class_alias(const char *name, size_t name_
 
     zend_string *_interned_name = zend_new_interned_string(_name);
 
-    return zend_register_class_alias_ex(ZSTR_VAL(_interned_name), ZSTR_LEN(_interned_name), ce);
+    return zend_register_class_alias_ex(ZSTR_VAL(_interned_name), ZSTR_LEN(_interned_name), ce, 1);
 }
 
 static sw_inline zend_object *sw_zend_create_object(zend_class_entry *ce, zend_object_handlers *handlers) {

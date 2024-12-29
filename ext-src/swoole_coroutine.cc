@@ -62,8 +62,6 @@ bool PHPCoroutine::interrupt_thread_running = false;
 
 // extern void php_swoole_load_library();
 
-static zend_atomic_bool *zend_vm_interrupt = nullptr;
-
 static user_opcode_handler_t ori_exit_handler = nullptr;
 static user_opcode_handler_t ori_begin_silence_handler = nullptr;
 static user_opcode_handler_t ori_end_silence_handler = nullptr;
