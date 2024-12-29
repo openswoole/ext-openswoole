@@ -79,8 +79,7 @@ jobs:
         export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix c-ares)/lib $LDFLAGS"
         echo "CFLAGS: $CFLAGS"
         echo "LDFLAGS: $LDFLAGS"
-        ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
-        --enable-openssl --with-openssl-dir=/opt/homebrew/opt/openssl@3 --enable-cares --enable-debug-log &&
+        ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl --enable-openssl --with-openssl-dir=/opt/homebrew/opt/openssl@3 --enable-cares --enable-debug-log
         make clean && make -j$(sysctl -n hw.ncpu)
 
   build-alpine-latest:
