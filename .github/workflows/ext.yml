@@ -48,7 +48,6 @@ jobs:
     - name: Install dependencies
       run: |
         brew install autoconf
-        brew install openssl@1.1 && brew link openssl
         brew install curl && brew link curl
         brew install c-ares && brew link c-ares
         brew install shivammathur/php/php@8.2
@@ -62,7 +61,7 @@ jobs:
       run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
     - name: build2
       run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
-        --enable-openssl --with-openssl-dir=/usr/local/opt/openssl@1.1 --enable-cares --enable-debug-log &&
+        --enable-openssl --with-openssl-dir=/usr/local/opt/openssl@3.4 --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
   build-alpine-latest:
