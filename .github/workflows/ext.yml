@@ -54,8 +54,8 @@ jobs:
         brew link --overwrite --force shivammathur/php/php@8.2
         brew install pcre2
         ln -s /opt/homebrew/include/pcre2.h /opt/homebrew/opt/php@8.2/include/php/ext/pcre/pcre2.h
-        echo 'export CFLAGS="-I$(brew --prefix openssl)/include $CFLAGS"' >> $GITHUB_ENV
-        echo 'export LDFLAGS="-L$(brew --prefix openssl)/lib $LDFLAGS"' >> $GITHUB_ENV
+        echo 'export CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix c-ares)/include $CFLAGS"' >> $GITHUB_ENV
+        echo 'export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix c-ares)/lib $LDFLAGS"' >> $GITHUB_ENV
         brew --prefix openssl
     - uses: actions/checkout@v4
     - name: phpize
