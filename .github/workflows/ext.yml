@@ -53,7 +53,7 @@ jobs:
         brew install pcre2
         brew install c-ares
         ln -s /opt/homebrew/include/pcre2.h /opt/homebrew/opt/php@8.2/include/php/ext/pcre/pcre2.h
-        ln -s /usr/homebrew/opt/c-ares/include/ares.h /usr/local/include/ares.h
+        ln -s /opt/homebrew/opt/c-ares/include/ares.h /usr/local/include/ares.h
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
