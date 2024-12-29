@@ -66,6 +66,11 @@ jobs:
       run: phpize
     - name: build1
       run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
+    - name: build2-test
+      run: |
+        echo "CFLAGS: $CFLAGS"
+        echo "LDFLAGS: $LDFLAGS"
+        ls $(brew --prefix c-ares)/include/ares.h
     - name: build2
       run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
         --enable-openssl --with-openssl-dir=/opt/homebrew/opt/openssl@3 --enable-cares --enable-debug-log &&
