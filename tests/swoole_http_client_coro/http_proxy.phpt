@@ -10,7 +10,7 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 co::run(function () {
-    $domain = 'www.qq.com';
+    $domain = 'openswoole.com';
     $cli = new OpenSwoole\Coroutine\Http\Client($domain, 443, true);
     // $cli->setHeaders(['Host' => $domain]); // without host header it can also work well
     $cli->set([
@@ -20,7 +20,7 @@ co::run(function () {
     ]);
     $result = $cli->get('/');
     Assert::assert($result);
-    Assert::assert(stripos($cli->body, 'tencent') !== false);
+    Assert::assert(stripos($cli->body, 'openswoole') !== false);
     echo "DONE\n";
 });
 ?>
