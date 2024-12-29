@@ -16,7 +16,7 @@ ENV PHPIZE_DEPS="autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c 
 RUN set -ex \
     && apk update \
     && apk add --no-cache libstdc++ openssl git bash \
-    && apk add --no-cache $PHPIZE_DEPS php${PHP_VERSION%%.*}${PHP_VERSION#*.}-dev php${PHP_VERSION%%.*}${PHP_VERSION#*.}-pear libaio-dev openssl-dev curl-dev \
+    && apk add --no-cache $PHPIZE_DEPS php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-dev php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-pear libaio-dev openssl-dev curl-dev \
     && apk add --no-cache ca-certificates \
     curl \
     wget \
@@ -25,32 +25,32 @@ RUN set -ex \
     libressl \
     tzdata \
     pcre \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-bcmath \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-curl \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-ctype \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-dom \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-gd \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-iconv \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-mbstring \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-mysqlnd \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-openssl \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-pdo \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-pdo_mysql \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-pdo_sqlite \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-phar \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-posix \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-redis \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-sockets \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-sodium \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-sysvshm \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-sysvmsg \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-sysvsem \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-zip \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-zlib \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-xml \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-xmlreader \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-pcntl \
-    php${PHP_VERSION%%.*}${PHP_VERSION#*.}-opcache \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-bcmath \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-curl \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-ctype \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-dom \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-gd \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-iconv \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-mbstring \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-mysqlnd \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-openssl \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-pdo \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-pdo_mysql \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-pdo_sqlite \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-phar \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-posix \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-redis \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-sockets \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-sodium \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-sysvshm \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-sysvmsg \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-sysvsem \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-zip \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-zlib \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-xml \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-xmlreader \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-pcntl \
+    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-opcache \
     && ln -sf /usr/bin/php8 /usr/local/bin/php \
     && ln -sf /usr/bin/phpize8 /usr/local/bin/phpize \
     && ln -sf /usr/bin/php-config8 /usr/local/bin/php-config \
@@ -63,8 +63,8 @@ RUN set -ex \
     && phpize \
     && ./configure --enable-openssl --enable-http2 --enable-hook-curl \
     && make -s -j$(nproc) && make install \
-    && echo /etc/php${PHP_VERSION%%.*}${PHP_VERSION#*.}/conf.d/50_openswoole.ini \
-    && echo "extension=openswoole.so" > /etc/php${PHP_VERSION%%.*}${PHP_VERSION#*.}/conf.d/50_openswoole.ini \
+    && echo /etc/php${PHP_VERSION:0:1}${PHP_VERSION:2:1}/conf.d/50_openswoole.ini \
+    && echo "extension=openswoole.so" > /etc/php${PHP_VERSION:0:1}${PHP_VERSION:2:1}/conf.d/50_openswoole.ini \
     && php -v \
     && php -m \
     && php --ri openswoole \
