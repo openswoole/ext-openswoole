@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: install-deps
       run: sudo apt update -y && sudo apt install -y libcurl4-openssl-dev php-curl libc-ares-dev
     - name: phpize
@@ -28,7 +28,7 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     container: 'centos:latest'
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: fix-repo
       run: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && 
            sed -i 's|#baseurl=http://mirror.centos.org|baseurl=https://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
@@ -77,7 +77,7 @@ jobs:
       max-parallel: 8
       fail-fast: false
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: build
         run: |
           cp .github/workflows/alpine.Dockerfile alpine.Dockerfile
