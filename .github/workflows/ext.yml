@@ -49,6 +49,7 @@ jobs:
       run: |
         brew install autoconf
         brew install shivammathur/php/php@8.2
+        brew link --overwrite --force shivammathur/php/php@8.2
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
