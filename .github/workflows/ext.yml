@@ -47,14 +47,8 @@ jobs:
     steps:
     - name: Install dependencies
       run: |
-        brew install openssl
-        brew install curl
-        brew install c-ares
         brew install autoconf
-        brew install php@8.2
-        ls -l /opt/homebrew/opt/php@8.2/sbin
-        echo 'export PATH="/opt/homebrew/opt/php@8.2/bin:$PATH"' >> $GITHUB_ENV
-        echo 'export PATH="/opt/homebrew/opt/php@8.2/sbin:$PATH"' >> $GITHUB_ENV
+        brew install shivammathur/php/php@8.2
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
