@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: install-deps
       run: sudo apt update -y && sudo apt install -y libcurl4-openssl-dev php-curl libc-ares-dev
     - name: phpize
@@ -28,7 +28,7 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     container: 'centos:latest'
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v4
     - name: fix-repo
       run: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && 
            sed -i 's|#baseurl=http://mirror.centos.org|baseurl=https://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
@@ -45,16 +45,24 @@ jobs:
     runs-on: macos-latest
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
-    - name: install dependencies
-      run: brew install openssl && brew link openssl && brew install curl && brew link curl && brew install c-ares && brew link c-ares
-    - uses: actions/checkout@v1
+    - name: Install dependencies
+      run: |
+        brew install autoconf
+        brew install shivammathur/php/php@8.2
+        brew link --overwrite --force shivammathur/php/php@8.2
+        brew install pcre2
+        brew install c-ares
+        ln -s /opt/homebrew/include/pcre2.h /opt/homebrew/opt/php@8.2/include/php/ext/pcre/pcre2.h
+    - uses: actions/checkout@v4
     - name: phpize
       run: phpize
     - name: build1
       run: ./configure && make clean && make -j$(sysctl -n hw.ncpu)
     - name: build2
-      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
-        --enable-openssl --with-openssl-dir=/usr/local/opt/openssl@1.1 --enable-cares --enable-debug-log &&
+      run: |
+        export CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix c-ares)/include $CFLAGS"
+        export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix c-ares)/lib $LDFLAGS"
+        ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl --enable-openssl --with-openssl-dir=/opt/homebrew/opt/openssl@3 --enable-cares --enable-debug-log
         make clean && make -j$(sysctl -n hw.ncpu)
 
   build-alpine-latest:
@@ -62,15 +70,15 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     strategy:
       matrix:
-        php-version: [ '8.1.0']
-        alpine-version: [ '3.15' ]
+        php-version: [ '8.2.26']
+        alpine-version: [ '3.20' ]
         include:
-          - php-version: '8.2.0'
-            alpine-version: '3.16'
+          - php-version: '8.3.15'
+            alpine-version: '3.20'
       max-parallel: 8
       fail-fast: false
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v4
       - name: build
         run: |
           cp .github/workflows/alpine.Dockerfile alpine.Dockerfile

@@ -26,8 +26,8 @@ $pm->childFunc = function () use ($pm) {
         'log_file' => '/dev/null',
     ));
     $serv->on("start", function (Server $serv) use ($pm) {
-        $fp = stream_socket_client("tcp://www.qq.com:80", $errno, $errstr, 30);
-        fwrite($fp, "GET / HTTP/1.1\r\nHost: www.qq.com\r\n\r\n");
+        $fp = stream_socket_client("tcp://openswoole.com:80", $errno, $errstr, 30);
+        fwrite($fp, "GET / HTTP/1.1\r\nHost: openswoole.com\r\n\r\n");
 
         swoole_event_add($fp, function ($fp) use ($pm) {
             $resp = fread($fp, 8192);
