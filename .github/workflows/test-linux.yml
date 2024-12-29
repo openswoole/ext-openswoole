@@ -3,7 +3,6 @@ name: test-linux
 on:
   push:
   pull_request:
-  # Allow to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
@@ -16,10 +15,6 @@ jobs:
         php: ['8.1', '8.2', '8.3']
     steps:
     - uses: actions/checkout@v1
-    # - name: Setup PHP
-    #   uses: shivammathur/setup-php@v2
-    #   with:
-    #     php-version: "${{ matrix.php }}"
     - name: Show machine information
       run: |
         date
@@ -34,12 +29,6 @@ jobs:
         echo "`git log -10 --stat --pretty --oneline`"
       env:
           PHP_VERSION: "${{ matrix.php }}"
-    # - name: Run pecl-install.sh
-    #   run: |
-    #     sudo ${{runner.workspace}}/ext-openswoole/travis/pecl-install.sh
-    # - name: Run simple-compile-on-github.sh
-    #   run: |
-    #     sudo ${{runner.workspace}}/ext-openswoole/travis/simple-compile-on-github.sh
     - name: Run Openswoole test
       run: |
         export CI_BRANCH=${GITHUB_REF##*/}

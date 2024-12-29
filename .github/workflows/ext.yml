@@ -46,8 +46,15 @@ jobs:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     steps:
     - name: install dependencies
-      run: brew install openssl && brew link openssl && brew install curl && brew link curl && brew install c-ares && brew link c-ares
-    - uses: actions/checkout@v1
+      run: |
+        brew install openssl
+        brew link openssl
+        brew install curl
+        brew link curl
+        brew install c-ares
+        brew link c-ares
+        brew install php
+    - uses: actions/checkout@v4
     - name: phpize
       run: phpize
     - name: build1
