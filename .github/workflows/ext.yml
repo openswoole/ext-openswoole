@@ -52,8 +52,8 @@ jobs:
         brew install c-ares
         brew install autoconf
         brew install php@8.2
-        echo 'export PATH="/usr/local/opt/php@8.2/bin:$PATH"' >> $GITHUB_ENV
-        echo 'export PATH="/usr/local/opt/php@8.2/sbin:$PATH"' >> $GITHUB_ENV
+        echo 'export PATH="/opt/homebrew/opt/php@8.2/bin:$PATH"' >> /Users/runner/.bash_profile
+        echo 'export PATH="/opt/homebrew/opt/php@8.2/sbin:$PATH"' >> /Users/runner/.bash_profile
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
