@@ -24,11 +24,7 @@
 #include <net/if_dl.h>
 #endif
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_util_arginfo.h"
-#else
-#include "swoole_util_arginfo_legacy.h"
-#endif
 
 zend_class_entry *swoole_util_ce;
 static zend_object_handlers swoole_util_handlers;

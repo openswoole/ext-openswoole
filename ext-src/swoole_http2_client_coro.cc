@@ -26,11 +26,7 @@
 
 #include "swoole_http2.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_http2_client_coro_arginfo.h"
-#else
-#include "swoole_http2_client_coro_arginfo_legacy.h"
-#endif
 
 #define HTTP2_CLIENT_HOST_HEADER_INDEX 3
 

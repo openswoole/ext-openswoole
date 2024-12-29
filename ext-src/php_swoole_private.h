@@ -98,8 +98,8 @@ extern PHPAPI int php_array_merge(zend_array *dest, zend_array *src);
 #define SWOOLE_SOCKETS_SUPPORT
 #endif
 
-#if PHP_VERSION_ID < 70200
-#error "require PHP version 7.2 or later"
+#if PHP_VERSION_ID < 80200
+#error "require PHP version 8.2 or later"
 #endif
 
 #if defined(ZTS) && defined(SW_USE_THREAD_CONTEXT)
@@ -377,22 +377,12 @@ zend_bool php_swoole_signal_isset_handler(int signo);
 /*}}}*/
 
 /* PHP 8 compatibility macro {{{*/
-#if PHP_VERSION_ID < 80000
-#define sw_zend7_object zval
-#define SW_Z7_OBJ_P(object) Z_OBJ_P(object)
-#define SW_Z8_OBJ_P(zobj) zobj
-#else
 #define sw_zend7_object zend_object
 #define SW_Z7_OBJ_P(object) object
 #define SW_Z8_OBJ_P(zobj) Z_OBJ_P(zobj)
-#endif
 /*}}}*/
 
-#if PHP_VERSION_ID < 70400
-typedef size_t php_stream_size_t;
-#else
 typedef ssize_t php_stream_size_t;
-#endif
 
 /* PHP 7 wrapper functions / macros */
 
@@ -406,18 +396,8 @@ typedef ssize_t php_stream_size_t;
         (ptr) = &(val);                                                                                                \
     } while (0)
 
-#if PHP_VERSION_ID < 80000
-#define SW_ZVAL_SOCKET(return_value, result)                                                                           \
-    ZVAL_RES(return_value, zend_register_resource((void *) (result), php_sockets_le_socket()))
-#else
 #define SW_ZVAL_SOCKET(return_value, result) ZVAL_OBJ(return_value, &result->std)
-#endif
-
-#if PHP_VERSION_ID < 80000
-#define SW_Z_SOCKET_P(zsocket) (php_socket *) zend_fetch_resource_ex(zsocket, nullptr, php_sockets_le_socket())
-#else
 #define SW_Z_SOCKET_P(zsocket) Z_SOCKET_P(zsocket)
-#endif
 
 #ifndef ZVAL_IS_BOOL
 static sw_inline zend_bool ZVAL_IS_BOOL(zval *v) {
@@ -613,13 +593,7 @@ static sw_inline void add_assoc_ulong_safe(zval *arg, const char *key, zend_ulon
         }                                                                                                              \
     } while (0)
 
-#if PHP_VERSION_ID < 80100
-#define SW_SET_CLASS_NOT_SERIALIZABLE(module)                                                                          \
-    module##_ce->serialize = zend_class_serialize_deny;                                                                \
-    module##_ce->unserialize = zend_class_unserialize_deny;
-#else
 #define SW_SET_CLASS_NOT_SERIALIZABLE(module) module##_ce->ce_flags |= ZEND_ACC_NOT_SERIALIZABLE;
-#endif
 
 #define sw_zend_class_clone_deny NULL
 #define SW_SET_CLASS_CLONEABLE(module, _clone_obj) module##_handlers.clone_obj = _clone_obj
@@ -690,24 +664,8 @@ static sw_inline int sw_zend_register_class_alias(const char *name, size_t name_
 
     zend_string *_interned_name = zend_new_interned_string(_name);
 
-#if PHP_VERSION_ID >= 70300
-    return zend_register_class_alias_ex(ZSTR_VAL(_interned_name), ZSTR_LEN(_interned_name), ce, 1);
-#else
     return zend_register_class_alias_ex(ZSTR_VAL(_interned_name), ZSTR_LEN(_interned_name), ce);
-#endif
 }
-
-#if PHP_VERSION_ID < 70300
-/* Allocates object type and zeros it, but not the properties.
- * Properties MUST be initialized using object_properties_init(). */
-static zend_always_inline void *zend_object_alloc(size_t obj_size, zend_class_entry *ce) {
-    void *obj = emalloc(obj_size + zend_object_properties_size(ce));
-    /* Subtraction of sizeof(zval) is necessary, because zend_object_properties_size() may be
-     * -sizeof(zval), if the object has no properties. */
-    memset(obj, 0, obj_size - sizeof(zval));
-    return obj;
-}
-#endif
 
 static sw_inline zend_object *sw_zend_create_object(zend_class_entry *ce, zend_object_handlers *handlers) {
     zend_object *object = (zend_object *) zend_object_alloc(sizeof(zend_object), ce);
@@ -733,21 +691,6 @@ static sw_inline zend_object *sw_zend_create_object_deny(zend_class_entry *ce) {
     return object;
 }
 
-#if PHP_VERSION_ID < 80000
-static sw_inline void sw_zend_class_unset_property_deny(zval *zobject, zval *zmember, void **cache_slot) {
-    zend_class_entry *ce = Z_OBJCE_P(zobject);
-    while (ce->parent) {
-        ce = ce->parent;
-    }
-    SW_ASSERT(ce->type == ZEND_INTERNAL_CLASS);
-    if (EXPECTED(zend_hash_find(&ce->properties_info, Z_STR_P(zmember)))) {
-        zend_throw_error(
-            NULL, "Property %s of class %s cannot be unset", Z_STRVAL_P(zmember), SW_Z_OBJCE_NAME_VAL_P(zobject));
-        return;
-    }
-    std_object_handlers.unset_property(zobject, zmember, cache_slot);
-}
-#else
 static sw_inline void sw_zend_class_unset_property_deny(zend_object *object, zend_string *member, void **cache_slot) {
     zend_class_entry *ce = object->ce;
     while (ce->parent) {
@@ -760,7 +703,6 @@ static sw_inline void sw_zend_class_unset_property_deny(zend_object *object, zen
     }
     std_object_handlers.unset_property(object, member, cache_slot);
 }
-#endif
 
 static sw_inline zval *sw_zend_read_property(zend_class_entry *ce, zval *obj, const char *s, int len, int silent) {
     zval rv, *property = zend_read_property(ce, SW_Z8_OBJ_P(obj), s, len, silent, &rv);
@@ -873,12 +815,8 @@ static sw_inline zend_bool sw_zend_is_callable_at_frame(zval *zcallable,
                                                         char **error) {
     zend_string *name;
     zend_bool ret;
-#if PHP_VERSION_ID < 80000
-    ret = zend_is_callable_ex(zcallable, zobject ? Z_OBJ_P(zobject) : NULL, check_flags, &name, fci_cache, error);
-#else
     ret = zend_is_callable_at_frame(zcallable, zobject ? Z_OBJ_P(zobject) : NULL, frame, check_flags, fci_cache, error);
     name = zend_get_callable_name_ex(zcallable, zobject ? Z_OBJ_P(zobject) : NULL);
-#endif
     if (callable_name) {
         *callable_name = estrndup(ZSTR_VAL(name), ZSTR_LEN(name));
     }
@@ -921,11 +859,7 @@ static sw_inline int sw_zend_call_function_ex(
     fci.retval = retval ? retval : &_retval;
     fci.param_count = param_count;
     fci.params = params;
-#if PHP_VERSION_ID >= 80000
     fci.named_params = NULL;
-#else
-    fci.no_separation = 0;
-#endif
 
     ret = zend_call_function(&fci, fci_cache);
 
@@ -1038,10 +972,7 @@ static sw_inline char *php_swoole_url_encode(const char *value, size_t value_len
 }
 
 static sw_inline char *php_swoole_http_build_query(zval *zdata, size_t *length, smart_str *formstr) {
-#if PHP_VERSION_ID < 80000
-    if (php_url_encode_hash_ex(
-            HASH_OF(zdata), formstr, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, (int) PHP_QUERY_RFC1738) == FAILURE) {
-#elif PHP_VERSION_ID < 80300
+#if PHP_VERSION_ID < 80300
     if (HASH_OF(zdata)) {
         php_url_encode_hash_ex(HASH_OF(zdata), formstr, NULL, 0, NULL, 0, NULL, 0, NULL, NULL, (int) PHP_QUERY_RFC1738);
     } else {

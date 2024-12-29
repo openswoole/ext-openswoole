@@ -27,16 +27,7 @@
 #include <libpq/libpq-fs.h>
 
 BEGIN_EXTERN_C()
-#if PHP_VERSION_ID >= 80000
 #include "swoole_postgresql_coro_arginfo.h"
-#else
-#include "swoole_postgresql_coro_legacy_arginfo.h"
-#ifndef ZEND_PARSE_PARAMETERS_NONE
-#define ZEND_PARSE_PARAMETERS_NONE() \
-    ZEND_PARSE_PARAMETERS_START(0, 0) \
-    ZEND_PARSE_PARAMETERS_END()
-#endif
-#endif
 END_EXTERN_C()
 
 namespace swoole {
@@ -217,10 +208,8 @@ static void php_swoole_postgresql_coro_statement_free_object(zend_object *object
         efree(statement->query);
         statement->query = nullptr;
     }
-    #if PHP_VERSION_ID >= 80000
     statement->pg_object->statements.remove(statement);
     OBJ_RELEASE(SW_Z8_OBJ_P(statement->pg_object->object));
-    #endif
     delete statement;
     zend_object_std_dtor(&postgresql_coro_statement->std);
 }
@@ -247,9 +236,7 @@ static zend_object *php_swoole_postgresql_coro_statement_create_object(PGObject 
         ZVAL_OBJ(object->object, &postgresql_coro_statement->std);
         pg_object->statements.push_back(object);
     } while (0);
-    #if PHP_VERSION_ID >= 80000
     GC_ADDREF(SW_Z8_OBJ_P(pg_object->object));
-    #endif
     return &postgresql_coro_statement->std;
 }
 
@@ -1470,11 +1457,7 @@ static inline void php_pgsql_get_field_value(
 #endif
             {
                 zend_long long_value;
-#if PHP_VERSION_ID < 80100
-                ZEND_ATOL(long_value, element);
-#else
                 long_value = ZEND_ATOL(element);
-#endif
                 ZVAL_LONG(value, long_value);
                 break;
             }
@@ -1665,11 +1648,7 @@ static PHP_METHOD(swoole_postgresql_coro, openLOB) {
     char *modestr = "rb";
     size_t modestrlen;
     if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l|s", &oid, &modestr, &modestrlen)) {
-        #if PHP_VERSION_ID >= 80000
-                    RETURN_THROWS();
-        #else
-                    RETURN_FALSE;
-        #endif
+        RETURN_THROWS();
     }
 
     PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
@@ -1714,11 +1693,7 @@ static PHP_METHOD(swoole_postgresql_coro, unlinkLOB) {
     Oid oid = 0;
 
     if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l", &oid)) {
-        #if PHP_VERSION_ID >= 80000
-                    RETURN_THROWS();
-        #else
-                    RETURN_FALSE;
-        #endif
+        RETURN_THROWS();
     }
 
     PGObject *object = php_swoole_postgresql_coro_get_object(ZEND_THIS);
@@ -1874,15 +1849,8 @@ static void php_pgsql_fetch_hash(INTERNAL_FUNCTION_PARAMETERS, zend_long result_
                 }
             }
 
-#if PHP_VERSION_ID < 70300
-            fcc.initialized = 1;
-#endif
             fcc.function_handler = ce->constructor;
-#if PHP_VERSION_ID >= 70100
             fcc.calling_scope = zend_get_executed_scope();
-#else
-            fcc.calling_scope = EG(scope);
-#endif
             fcc.called_scope = Z_OBJCE_P(return_value);
             fcc.object = Z_OBJ_P(return_value);
 

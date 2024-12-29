@@ -22,11 +22,7 @@
 #include "thirdparty/php/curl/curl_interface.h"
 #endif
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_runtime_arginfo.h"
-#else
-#include "swoole_runtime_arginfo_legacy.h"
-#endif
 
 #include <unordered_map>
 
@@ -333,11 +329,6 @@ static php_stream_size_t socket_write(php_stream *stream, const char *buf, size_
     }
 
 _exit:
-#if PHP_VERSION_ID < 70400
-    if (didwrite < 0) {
-        didwrite = 0;
-    }
-#endif
     return didwrite;
 }
 
@@ -378,11 +369,6 @@ static php_stream_size_t socket_read(php_stream *stream, char *buf, size_t count
     }
 
 _exit:
-#if PHP_VERSION_ID < 70400
-    if (nr_bytes < 0) {
-        nr_bytes = 0;
-    }
-#endif
     return nr_bytes;
 }
 
@@ -1886,12 +1872,6 @@ static void hook_func(const char *name, size_t l_name, zif_handler handler, zend
         return;
     }
 
-#if PHP_VERSION_ID < 80000
-    if (zf->internal_function.handler == ZEND_FN(display_disabled_function)) {
-        return;
-    }
-#endif
-
     rf = (real_func *) emalloc(sizeof(real_func));
     sw_memset_zero(rf, sizeof(*rf));
     rf->function = zf;
@@ -2002,11 +1982,7 @@ static PHP_FUNCTION(swoole_user_func_handler) {
     fci.retval = return_value;
     fci.param_count = ZEND_NUM_ARGS();
     fci.params = ZEND_CALL_ARG(execute_data, 1);
-#if PHP_VERSION_ID >= 80000
     fci.named_params = NULL;
-#else
-    fci.no_separation = 1;
-#endif
 
     real_func *rf = (real_func *) zend_hash_find_ptr(tmp_function_table, execute_data->func->common.function_name);
     zend_call_function(&fci, rf->fci_cache);

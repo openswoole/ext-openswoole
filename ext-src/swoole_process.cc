@@ -24,11 +24,7 @@
 #include <sys/ipc.h>
 #include <sys/resource.h>
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_process_arginfo.h"
-#else
-#include "swoole_process_arginfo_legacy.h"
-#endif
 
 using namespace swoole;
 

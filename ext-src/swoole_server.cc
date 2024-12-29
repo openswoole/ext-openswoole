@@ -24,11 +24,7 @@ BEGIN_EXTERN_C()
 #include "zend_smart_str.h"
 END_EXTERN_C()
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_server_arginfo.h"
-#else
-#include "swoole_server_arginfo_legacy.h"
-#endif
 
 #ifdef SW_HAVE_ZLIB
 #include <zlib.h>
@@ -120,17 +116,8 @@ void php_swoole_server_rshutdown() {
             swoole_error_log(SW_LOG_ERROR,
                              SW_ERROR_PHP_FATAL_ERROR,
                              "Fatal error: %s in %s on line %d",
-#if PHP_VERSION_ID < 80000
-                             PG(last_error_message),
-#else
                              PG(last_error_message)->val,
-#endif
-
-#if PHP_VERSION_ID >= 80100
                              PG(last_error_file) ? PG(last_error_file)->val : "-",
-#else
-                             PG(last_error_file) ? PG(last_error_file) : "-",
-#endif
                              PG(last_error_lineno));
         } else {
             swoole_error_log(

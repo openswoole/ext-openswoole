@@ -1,10 +1,6 @@
 #include "php_swoole_cxx.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_coroutine_system_arginfo.h"
-#else
-#include "swoole_coroutine_system_arginfo_legacy.h"
-#endif
 
 #include "ext/standard/file.h"
 #include <sys/file.h>

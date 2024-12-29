@@ -20,11 +20,7 @@
 #include "swoole_server.h"
 #include "ext/spl/spl_array.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_timer_arginfo.h"
-#else
-#include "swoole_timer_arginfo_legacy.h"
-#endif
 
 using swoole::Timer;
 using swoole::TimerNode;
