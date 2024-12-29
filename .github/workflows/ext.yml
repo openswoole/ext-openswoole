@@ -50,7 +50,9 @@ jobs:
         brew install autoconf
         brew install shivammathur/php/php@8.2
         brew link --overwrite --force shivammathur/php/php@8.2
-        brew install pcre
+        brew install pcre2
+        pcre2_h="$(find "$(brew --cellar pcre2)" -name "pcre2.h")"
+        cp -f "$pcre2_h" "$(brew --cellar php)"/*/include/php/ext/pcre
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
