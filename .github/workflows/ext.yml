@@ -48,11 +48,10 @@ jobs:
     - name: Install dependencies
       run: |
         brew install autoconf
+        brew install openssl && brew link openssl && brew install curl && brew link curl && brew install c-ares && brew link c-ares
         brew install shivammathur/php/php@8.2
         brew link --overwrite --force shivammathur/php/php@8.2
         brew install pcre2
-        ls -l /opt/homebrew/opt/php@8.2/include/php/ext/pcre/
-        ls -l /opt/homebrew/include
         ln -s /opt/homebrew/include/pcre2.h /opt/homebrew/opt/php@8.2/include/php/ext/pcre/pcre2.h
     - uses: actions/checkout@v4
     - name: phpize
