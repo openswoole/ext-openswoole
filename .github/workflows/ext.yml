@@ -48,8 +48,6 @@ jobs:
     - name: Install dependencies
       run: |
         brew install autoconf
-        brew install curl && brew link curl
-        brew install c-ares && brew link c-ares
         brew install shivammathur/php/php@8.2
         brew link --overwrite --force shivammathur/php/php@8.2
         brew install pcre2
@@ -57,6 +55,9 @@ jobs:
         echo 'export CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix c-ares)/include $CFLAGS"' >> $GITHUB_ENV
         echo 'export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix c-ares)/lib $LDFLAGS"' >> $GITHUB_ENV
         brew --prefix openssl
+        brew --prefix c-ares
+        echo "CFLAGS: $CFLAGS"
+        echo "LDFLAGS: $LDFLAGS"
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
