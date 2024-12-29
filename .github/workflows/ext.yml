@@ -56,6 +56,8 @@ jobs:
         echo 'export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix c-ares)/lib $LDFLAGS"' >> $GITHUB_ENV
         brew --prefix openssl
         brew --prefix c-ares
+        export CFLAGS="-I$(brew --prefix openssl)/include -I$(brew --prefix c-ares)/include $CFLAGS"
+        export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix c-ares)/lib $LDFLAGS"
         echo "CFLAGS: $CFLAGS"
         echo "LDFLAGS: $LDFLAGS"
     - uses: actions/checkout@v4
