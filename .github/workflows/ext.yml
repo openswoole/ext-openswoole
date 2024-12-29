@@ -52,6 +52,7 @@ jobs:
         brew install c-ares
         brew install autoconf
         brew install php@8.2
+        ls -l /opt/homebrew/opt/php@8.2/sbin
         echo 'export PATH="/opt/homebrew/opt/php@8.2/bin:$PATH"' >> /Users/runner/.bash_profile
         echo 'export PATH="/opt/homebrew/opt/php@8.2/sbin:$PATH"' >> /Users/runner/.bash_profile
     - uses: actions/checkout@v4
