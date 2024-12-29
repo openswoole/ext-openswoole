@@ -53,7 +53,7 @@ jobs:
         brew link curl
         brew install c-ares
         brew link c-ares
-        brew install php
+        brew install php@8.2
     - uses: actions/checkout@v4
     - name: phpize
       run: phpize
