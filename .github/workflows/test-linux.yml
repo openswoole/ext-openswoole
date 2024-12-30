@@ -42,20 +42,20 @@ jobs:
         name: PHP ${{ matrix.php }}
         path: tests/test-results.xml
 
-  publish-test-results:
-    name: "Publish PHP Unit Tests Results"
-    needs: test-linux
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+  # publish-test-results:
+  #   name: "Publish PHP Unit Tests Results"
+  #   needs: test-linux
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
 
-    steps:
-      - name: Download Artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: artifacts
+  #   steps:
+  #     - name: Download Artifacts
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         path: artifacts
 
-      - name: Publish PHP Test Results
-        uses: EnricoMi/publish-unit-test-result-action@v1
-        with:
-          check_name: PHP Test Results
-          files: artifacts/**/*.xml
+  #     - name: Publish PHP Test Results
+  #       uses: EnricoMi/publish-unit-test-result-action@v1
+  #       with:
+  #         check_name: PHP Test Results
+  #         files: artifacts/**/*.xml
