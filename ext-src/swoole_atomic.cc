@@ -17,11 +17,7 @@
 #include "php_swoole_private.h"
 #include "swoole_memory.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_atomic_arginfo.h"
-#else
-#include "swoole_atomic_arginfo_legacy.h"
-#endif
 
 #ifdef HAVE_FUTEX
 #include <linux/futex.h>

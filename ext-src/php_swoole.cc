@@ -160,26 +160,11 @@ static void php_swoole_init_globals(zend_openswoole_globals *openswoole_globals)
 
 void php_swoole_register_shutdown_function(const char *function) {
     php_shutdown_function_entry shutdown_function_entry;
-#if PHP_VERSION_ID >= 80100
     zval function_name;
     ZVAL_STRING(&function_name, function);
     zend_fcall_info_init(
         &function_name, 0, &shutdown_function_entry.fci, &shutdown_function_entry.fci_cache, NULL, NULL);
     register_user_shutdown_function(Z_STRVAL(function_name), Z_STRLEN(function_name), &shutdown_function_entry);
-#else
-    zval *function_name;
-#if PHP_VERSION_ID >= 80000
-    shutdown_function_entry.arg_count = 0;
-    shutdown_function_entry.arguments = NULL;
-    function_name = &shutdown_function_entry.function_name;
-#else
-    shutdown_function_entry.arg_count = 1;
-    shutdown_function_entry.arguments = (zval *) safe_emalloc(sizeof(zval), 1, 0);
-    function_name = &shutdown_function_entry.arguments[0];
-#endif
-    ZVAL_STRING(function_name, function);
-    register_user_shutdown_function(Z_STRVAL_P(function_name), Z_STRLEN_P(function_name), &shutdown_function_entry);
-#endif
 }
 
 void php_swoole_set_global_option(HashTable *vht) {
@@ -1198,7 +1183,7 @@ PHP_MINIT_FUNCTION(openswoole) {
     SwooleG.dns_cache_refresh_time = 60;
 
     // enable pcre.jit and use swoole extension on MacOS will lead to coredump, disable it temporarily
-#if defined(PHP_PCRE_VERSION) && defined(HAVE_PCRE_JIT_SUPPORT) && PHP_VERSION_ID >= 70300 && __MACH__ &&              \
+#if defined(PHP_PCRE_VERSION) && defined(HAVE_PCRE_JIT_SUPPORT) && __MACH__ &&              \
     !defined(SW_DEBUG)
     PCRE_G(jit) = 0;
 #endif

@@ -21,11 +21,7 @@
 
 #include "swoole_coroutine_channel.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_channel_coro_arginfo.h"
-#else
-#include "swoole_channel_coro_arginfo_legacy.h"
-#endif
 
 using swoole::coroutine::Channel;
 

@@ -23,23 +23,23 @@ jobs:
         --enable-openssl --enable-cares --enable-debug-log &&
         make clean && make -j$(sysctl -n hw.ncpu)
 
-  build-centos:
-    runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
-    container: 'centos:latest'
-    steps:
-    - uses: actions/checkout@v4
-    - name: fix-repo
-      run: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && 
-           sed -i 's|#baseurl=http://mirror.centos.org|baseurl=https://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
-    - name: install-deps
-      run: yum update -y && yum install -y gcc gcc-c++ make c-ares-devel php-devel curl php-curl libcurl-devel openssl-devel postgresql-devel
-    - name: phpize
-      run: phpize
-    - name: build
-      run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
-        --enable-openssl --enable-cares --with-postgres --enable-debug-log &&
-        make clean && make -j$(sysctl -n hw.ncpu)
+  # build-centos:
+  #   runs-on: ubuntu-latest
+  #   if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+  #   container: 'centos:latest'
+  #   steps:
+  #   - uses: actions/checkout@v4
+  #   - name: fix-repo
+  #     run: sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-Linux-* && 
+  #          sed -i 's|#baseurl=http://mirror.centos.org|baseurl=https://vault.centos.org|g' /etc/yum.repos.d/CentOS-Linux-*
+  #   - name: install-deps
+  #     run: yum update -y && yum install -y gcc gcc-c++ make c-ares-devel php-devel curl php-curl libcurl-devel openssl-devel postgresql-devel
+  #   - name: phpize
+  #     run: phpize
+  #   - name: build
+  #     run: ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl
+  #       --enable-openssl --enable-cares --with-postgres --enable-debug-log &&
+  #       make clean && make -j$(sysctl -n hw.ncpu)
 
   build-macos-latest:
     runs-on: macos-latest

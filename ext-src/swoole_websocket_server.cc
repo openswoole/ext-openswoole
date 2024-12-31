@@ -22,11 +22,7 @@ SW_EXTERN_C_END
 
 #include "swoole_base64.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_websocket_server_arginfo.h"
-#else
-#include "swoole_websocket_server_arginfo_legacy.h"
-#endif
 
 using swoole::Connection;
 using swoole::ListenPort;

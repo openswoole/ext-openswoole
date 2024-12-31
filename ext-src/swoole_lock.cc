@@ -18,11 +18,7 @@
 #include "swoole_memory.h"
 #include "swoole_lock.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_lock_arginfo.h"
-#else
-#include "swoole_lock_arginfo_legacy.h"
-#endif
 
 using swoole::Lock;
 using swoole::Mutex;

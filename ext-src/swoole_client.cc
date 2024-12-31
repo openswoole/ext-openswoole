@@ -18,11 +18,7 @@
 #include "php_swoole_client.h"
 #include "swoole_mqtt.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_client_arginfo.h"
-#else
-#include "swoole_client_arginfo_legacy.h"
-#endif
 
 #include <string>
 #include <queue>

@@ -19,11 +19,7 @@
 #include "swoole_table.h"
 #include "zend_exceptions.h"
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_table_arginfo.h"
-#else
-#include "swoole_table_arginfo_legacy.h"
-#endif
 
 using namespace swoole;
 

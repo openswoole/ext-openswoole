@@ -53,9 +53,7 @@ struct PHPContext {
     zend_vm_stack vm_stack;
     size_t vm_stack_page_size;
     zend_execute_data *execute_data;
-#if PHP_VERSION_ID >= 80000
     uint32_t jit_trace_num;
-#endif
 #ifdef ZEND_CHECK_STACK_LIMIT
     void *stack_base;
     void *stack_limit;
@@ -64,10 +62,6 @@ struct PHPContext {
     zend_class_entry *exception_class;
     zend_object *exception;
     zend_output_globals *output_ptr;
-#if PHP_VERSION_ID < 80100
-    /* for array_walk non-reentrancy */
-    zend::Function *array_walk_fci;
-#endif
     /* for error control `@` */
     bool in_silence;
     bool enable_scheduler;

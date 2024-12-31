@@ -20,11 +20,7 @@
 
 #include <queue>
 
-#if PHP_VERSION_ID >= 80000
 #include "swoole_coroutine_scheduler_arginfo.h"
-#else
-#include "swoole_coroutine_scheduler_arginfo_legacy.h"
-#endif
 
 using swoole::Coroutine;
 using swoole::PHPCoroutine;
