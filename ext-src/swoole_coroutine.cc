@@ -181,6 +181,7 @@ static const zend_function_entry swoole_exit_exception_methods[] = {
     PHP_ME(swoole_exit_exception, getFlags, arginfo_swoole_coroutine_void, ZEND_ACC_PUBLIC)
         PHP_ME(swoole_exit_exception, getStatus, arginfo_swoole_coroutine_void, ZEND_ACC_PUBLIC) PHP_FE_END};
 
+#ifdef ZEND_EXIT
 static int coro_exit_handler(zend_execute_data *execute_data) {
     zval ex;
     zend_object *obj;
@@ -225,6 +226,7 @@ static int coro_exit_handler(zend_execute_data *execute_data) {
 
     return ZEND_USER_OPCODE_DISPATCH;
 }
+#endif
 
 static int coro_begin_silence_handler(zend_execute_data *execute_data) {
     PHPContext *task = PHPCoroutine::get_context();
@@ -846,9 +848,11 @@ void php_swoole_coroutine_minit(int module_number) {
 
 void php_swoole_coroutine_rinit() {
     if (SWOOLE_G(cli)) {
+
+#ifdef ZEND_EXIT
         ori_exit_handler = zend_get_user_opcode_handler(ZEND_EXIT);
         zend_set_user_opcode_handler(ZEND_EXIT, coro_exit_handler);
-
+#endif
         ori_begin_silence_handler = zend_get_user_opcode_handler(ZEND_BEGIN_SILENCE);
         zend_set_user_opcode_handler(ZEND_BEGIN_SILENCE, coro_begin_silence_handler);
 
