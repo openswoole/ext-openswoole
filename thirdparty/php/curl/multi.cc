@@ -357,25 +357,28 @@ static int _php_server_push_callback(
     php_curl *parent;
     php_curlm *mh = (php_curlm *) userp;
     size_t rval = CURL_PUSH_DENY;
+#if PHP_VERSION_ID < 80400
     php_curlm_server_push *t = mh->handlers.server_push;
+#endif
     zval *pz_parent_ch = NULL;
     zval pz_ch;
     zval headers;
     zval retval;
+#if PHP_VERSION_ID < 80400
     char *header;
     int error;
     zend_fcall_info fci = empty_fcall_info;
-
+#endif
     pz_parent_ch = _php_curl_multi_find_easy_handle(mh, parent_ch);
     if (pz_parent_ch == NULL) {
         return rval;
     }
-
+#if PHP_VERSION_ID < 80400
     if (UNEXPECTED(zend_fcall_info_init(&t->func_name, 0, &fci, &t->fci_cache, NULL, NULL) == FAILURE)) {
         php_error_docref(NULL, E_WARNING, "Cannot call the CURLMOPT_PUSHFUNCTION");
         return CURL_PUSH_OK;
     }
-
+#endif
     parent = Z_CURL_P(pz_parent_ch);
 
     ch = swoole_curl_init_handle_into_zval(&pz_ch);
@@ -384,11 +387,11 @@ static int _php_server_push_callback(
 
     size_t i;
     array_init(&headers);
-    for (i = 0; i < num_headers; i++) {
-        header = curl_pushheader_bynum(push_headers, i);
+    for (size_t i = 0; i < num_headers; i++) {
+        char *header = curl_pushheader_bynum(push_headers, i);
         add_next_index_string(&headers, header);
     }
-
+#if PHP_VERSION_ID < 80400
     zend_fcall_info_argn(
         &fci, 3,
         pz_parent_ch,
@@ -397,11 +400,16 @@ static int _php_server_push_callback(
     );
 
     fci.retval = &retval;
-
     error = zend_call_function(&fci, &t->fci_cache);
     zend_fcall_info_args_clear(&fci, 1);
+#else
+    zval call_args[3] = {*pz_parent_ch, pz_ch, headers};
+    zend_call_known_fcc(&mh->handlers.server_push, &retval, /* param_count */ 3, call_args, /* named_params */ NULL);
+#endif
+    
     zval_ptr_dtor_nogc(&headers);
 
+#if PHP_VERSION_ID < 80400
     if (error == FAILURE) {
         php_error_docref(NULL, E_WARNING, "Cannot call the CURLMOPT_PUSHFUNCTION");
     } else if (!Z_ISUNDEF(retval)) {
@@ -413,6 +421,17 @@ static int _php_server_push_callback(
             ch->cp = NULL;
         }
     }
+#else
+    if (!Z_ISUNDEF(retval)) {
+        if (CURL_PUSH_DENY != zval_get_long(&retval)) {
+            rval = CURL_PUSH_OK;
+            zend_llist_add_element(&mh->easyh, &pz_ch);
+        } else {
+            /* libcurl will free this easy handle, avoid double free */
+            ch->cp = NULL;
+        }
+    }
+#endif
 
     return rval;
 }
@@ -450,6 +469,7 @@ static int _php_curl_multi_setopt(php_curlm *mh, zend_long option, zval *zvalue,
         break;
     }
 #if LIBCURL_VERSION_NUM > 0x072D00 /* Available since 7.45.0 */
+#if PHP_VERSION_ID < 80400
     case CURLMOPT_PUSHFUNCTION:
 
         if (mh->handlers.server_push == NULL) {
@@ -467,6 +487,30 @@ static int _php_curl_multi_setopt(php_curlm *mh, zend_long option, zval *zvalue,
         }
         error = curl_multi_setopt(mh->multi->get_multi_handle(), CURLMOPT_PUSHDATA, mh);
         break;
+#else
+    case CURLMOPT_PUSHFUNCTION: {
+        if (ZEND_FCC_INITIALIZED(mh->handlers.server_push)) {
+            zend_fcc_dtor(&mh->handlers.server_push);
+        }
+
+        char *error_str = NULL;
+        if (UNEXPECTED(!zend_is_callable_ex(zvalue, /* object */ NULL, /* check_flags */ 0, /* callable_name */ NULL, &mh->handlers.server_push, /* error */ &error_str))) {
+            if (!EG(exception)) {
+                zend_argument_type_error(2, "must be a valid callback for option CURLMOPT_PUSHFUNCTION, %s", error_str);
+            }
+            efree(error_str);
+            return false;
+        }
+        zend_fcc_addref(&mh->handlers.server_push);
+
+        error = curl_multi_setopt(mh->multi, CURLMOPT_PUSHFUNCTION, _php_server_push_callback);
+        if (error != CURLM_OK) {
+            return false;
+        }
+        error = curl_multi_setopt(mh->multi, CURLMOPT_PUSHDATA, mh);
+        break;
+    }
+#endif
 #endif
     default:
 
@@ -539,11 +583,15 @@ static HashTable *swoole_curl_multi_get_gc(zend_object *object, zval **table, in
 
     zend_get_gc_buffer *gc_buffer = zend_get_gc_buffer_create();
 
-
+#if PHP_VERSION_ID < 80400
     if (curl_multi->handlers.server_push) {
         zend_get_gc_buffer_add_zval(gc_buffer, &curl_multi->handlers.server_push->func_name);
     }
-
+#else
+    if (ZEND_FCC_INITIALIZED(curl_multi->handlers.server_push)) {
+        zend_get_gc_buffer_add_fcc(gc_buffer, &curl_multi->handlers.server_push);
+    }
+#endif
     zend_llist_position pos;
     for (zval *pz_ch = (zval *) zend_llist_get_first_ex(&curl_multi->easyh, &pos); pz_ch;
          pz_ch = (zval *) zend_llist_get_next_ex(&curl_multi->easyh, &pos)) {
@@ -601,11 +649,16 @@ if (mh->multi) {
 
 zend_llist_clean(&mh->easyh);
 
-
+#if PHP_VERSION_ID < 80400
     if (mh->handlers.server_push) {
         zval_ptr_dtor(&mh->handlers.server_push->func_name);
         efree(mh->handlers.server_push);
     }
+#else
+    if (ZEND_FCC_INITIALIZED(mh->handlers.server_push)) {
+        zend_fcc_dtor(&mh->handlers.server_push);
+    }
+#endif
 }
 
 #endif

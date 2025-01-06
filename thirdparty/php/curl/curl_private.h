@@ -45,8 +45,12 @@
     do { (__handle)->err.no = (int) __err; } while (0)
 
 typedef struct {
+#if PHP_VERSION_ID < 80400
 	zval                  func_name;
 	zend_fcall_info_cache fci_cache;
+#else
+	zend_fcall_info_cache fcc;
+#endif
 	FILE                 *fp;
 	smart_str             buf;
 	int                   method;
@@ -54,25 +58,32 @@ typedef struct {
 } php_curl_write;
 
 typedef struct {
+#if PHP_VERSION_ID < 80400
 	zval                  func_name;
 	zend_fcall_info_cache fci_cache;
+#else
+	zend_fcall_info_cache fcc;
+#endif
 	FILE                 *fp;
 	zend_resource        *res;
 	int                   method;
 	zval                  stream;
 } php_curl_read;
 
+#if PHP_VERSION_ID < 80400
 typedef struct {
 	zval                  func_name;
 	zend_fcall_info_cache fci_cache;
 	int                   method;
 } php_curl_progress, php_curl_fnmatch, php_curlm_server_push, php_curl_fnxferinfo, php_curl_fnsshhostkey;
+#endif
 
 typedef struct {
 	php_curl_write    *write;
 	php_curl_write    *write_header;
 	php_curl_read     *read;
 	zval               std_err;
+#if PHP_VERSION_ID < 80400
 	php_curl_progress *progress;
 #if LIBCURL_VERSION_NUM >= 0x072000
 	php_curl_fnxferinfo  *xferinfo;
@@ -82,6 +93,18 @@ typedef struct {
 #endif
 #if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
 	php_curl_fnsshhostkey  *sshhostkey;
+#endif
+#else
+	zend_fcall_info_cache progress;
+	zend_fcall_info_cache xferinfo;
+	zend_fcall_info_cache fnmatch;
+	zend_fcall_info_cache debug;
+#if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
+	zend_fcall_info_cache prereq;
+#endif
+#if LIBCURL_VERSION_NUM >= 0x075400
+	zend_fcall_info_cache sshhostkey;
+#endif
 #endif
 } php_curl_handlers;
 
@@ -121,9 +144,15 @@ typedef struct {
 
 #define CURLOPT_SAFE_UPLOAD -1
 
+#if PHP_VERSION_ID < 80400
 typedef struct {
 	php_curlm_server_push	*server_push;
 } php_curlm_handlers;
+#else
+typedef struct {
+	zend_fcall_info_cache server_push;
+} php_curlm_handlers;
+#endif
 
 namespace swoole  { namespace curl {
 class Multi;
