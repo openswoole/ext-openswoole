@@ -1673,6 +1673,10 @@ static bool php_curl_set_callable_handler(zend_fcall_info_cache *const handler_f
     if (ZEND_FCC_INITIALIZED(*handler_fcc)) {
         zend_fcc_dtor(handler_fcc);
     }
+
+    if (Z_TYPE_P(callable) == IS_NULL) {
+        return true;
+    }
     char *error = NULL;
     if (UNEXPECTED(!zend_is_callable_ex(callable, /* object */ NULL, /* check_flags */ 0, /* callable_name */ NULL, handler_fcc, /* error */ &error))) {
         if (!EG(exception)) {
@@ -1710,6 +1714,17 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
     zend_long lval;
 
     switch (option) {
+#if PHP_VERSION_ID >= 80400
+        HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_WRITE, write);
+        HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_HEADER, write_header);
+        HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_READ, read);
+        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_PROGRESS, handlers.progress, fn_progress);
+        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_XFERINFO, handlers.xferinfo, fn_xferinfo);
+        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_FNMATCH_, handlers.fnmatch, fn_fnmatch);
+#if LIBCURL_VERSION_NUM >= 0x075400 /* Available since 7.84.0 */
+        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_SSH_HOSTKEY, handlers.sshhostkey, fn_ssh_hostkeyfunction);
+#endif
+#endif
     /* Long options */
     case CURLOPT_SSL_VERIFYHOST:
         lval = zval_get_long(zvalue);
@@ -2107,17 +2122,6 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
 
         error = CURLE_OK;
         switch (option) {
-#if PHP_VERSION_ID >= 80400
-        HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_WRITE, write);
-        HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_HEADER, write_header);
-        HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_READ, read);
-        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_PROGRESS, handlers.progress, fn_progress);
-        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_XFERINFO, handlers.xferinfo, fn_xferinfo);
-        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_FNMATCH_, handlers.fnmatch, fn_fnmatch);
-#if LIBCURL_VERSION_NUM >= 0x075400 /* Available since 7.84.0 */
-        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_SSH_HOSTKEY, handlers.sshhostkey, fn_ssh_hostkeyfunction);
-#endif
-#endif
         case CURLOPT_FILE:
             if (!what) {
                 if (!Z_ISUNDEF(curl_handlers(ch)->write->stream)) {
