@@ -31,7 +31,7 @@ swoole_fork_exec(function () {
 Fatal error: Uncaught TypeError: OpenSwoole\Timer::after(): Argument #2 ($callback) must be a valid callback, class Test does not have a method "not_exist" in %s/tests/swoole_timer/call_private.php:%d
 Stack trace:
 #0 %s/tests/swoole_timer/call_private.php(%d): OpenSwoole\Timer::after(1, Array)
-#1 [internal function]: {closure}(Object(OpenSwoole\Process))
+#1 [internal function]: {closure%S}(Object(OpenSwoole\Process))
 #2 %s/tests/include/functions.php(%d): OpenSwoole\Process->start()
 #3 %s/tests/swoole_timer/call_private.php(%d): swoole_fork_exec(Object(Closure))
 #4 {main}
@@ -40,7 +40,7 @@ Stack trace:
 Fatal error: Uncaught TypeError: OpenSwoole\Timer::after(): Argument #2 ($callback) must be a valid callback, cannot access private method Test::foo() in %s/tests/swoole_timer/call_private.php:%d
 Stack trace:
 #0 %s/tests/swoole_timer/call_private.php(%d): OpenSwoole\Timer::after(1, Array)
-#1 [internal function]: {closure}(Object(OpenSwoole\Process))
+#1 [internal function]: {closure%S}(Object(OpenSwoole\Process))
 #2 %s/tests/include/functions.php(%d): OpenSwoole\Process->start()
 #3 %s/tests/swoole_timer/call_private.php(%d): swoole_fork_exec(Object(Closure))
 #4 {main}
@@ -49,7 +49,7 @@ Stack trace:
 Fatal error: Uncaught TypeError: OpenSwoole\Timer::after(): Argument #2 ($callback) must be a valid callback, cannot access private method Test::bar() in %s/tests/swoole_timer/call_private.php:%d
 Stack trace:
 #0 %s/tests/swoole_timer/call_private.php(%d): OpenSwoole\Timer::after(1, Array)
-#1 [internal function]: {closure}(Object(OpenSwoole\Process))
+#1 [internal function]: {closure%S}(Object(OpenSwoole\Process))
 #2 %s/tests/include/functions.php(%d): OpenSwoole\Process->start()
 #3 %s/tests/swoole_timer/call_private.php(%d): swoole_fork_exec(Object(Closure))
 #4 {main}
