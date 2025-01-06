@@ -28,7 +28,7 @@ co::run(function () {
     ];
 
     // Wait on all of the requests to complete.
-    $results = Promise\unwrap($promises);
+    $results = Promise\Utils::unwrap($promises);
 
     // You can access each result using the key provided to the unwrap
     // function.
