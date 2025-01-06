@@ -2,7 +2,7 @@
 swoole_coroutine: getBackTrace form listCoroutines
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID < 80100 || PHP_VERSION_ID >= 80400) die("Skipped: php version >= 8.1"); ?>
+<?php if (PHP_VERSION_ID < 80400) die("Skipped"); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
@@ -43,22 +43,28 @@ array(2) {
   [0]=>
   array(4) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(4)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#4 (0) {
+      object(Closure)#4 (3) {
+        ["name"]=>
+        string(88) "{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}"
+        ["file"]=>
+        string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
+        ["line"]=>
+        int(4)
       }
     }
   }
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(76) "{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}"
     ["args"]=>
     array(0) {
     }
@@ -69,22 +75,28 @@ array(2) {
   [0]=>
   array(4) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(5)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#5 (0) {
+      object(Closure)#5 (3) {
+        ["name"]=>
+        string(100) "{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}"
+        ["file"]=>
+        string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
+        ["line"]=>
+        int(5)
       }
     }
   }
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(88) "{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}"
     ["args"]=>
     array(0) {
     }
@@ -95,15 +107,21 @@ array(2) {
   [0]=>
   array(4) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(16)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#7 (1) {
+      object(Closure)#7 (4) {
+        ["name"]=>
+        string(113) "{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}"
+        ["file"]=>
+        string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
+        ["line"]=>
+        int(16)
         ["static"]=>
         array(1) {
           ["main"]=>
@@ -115,7 +133,7 @@ array(2) {
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(100) "{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}"
     ["args"]=>
     array(0) {
     }
@@ -126,9 +144,9 @@ array(2) {
   [0]=>
   array(6) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(13)
     ["function"]=>
     string(12) "getBackTrace"
     ["class"]=>
@@ -144,7 +162,7 @@ array(2) {
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(112) "{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:6}"
     ["args"]=>
     array(0) {
     }
@@ -155,15 +173,21 @@ array(2) {
   [0]=>
   array(4) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(26)
     ["function"]=>
     string(2) "go"
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#11 (1) {
+      object(Closure)#11 (4) {
+        ["name"]=>
+        string(126) "{closure:{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}:26}"
+        ["file"]=>
+        string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
+        ["line"]=>
+        int(26)
         ["static"]=>
         array(1) {
           ["main"]=>
@@ -175,7 +199,7 @@ array(2) {
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(113) "{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}"
     ["args"]=>
     array(0) {
     }
@@ -186,9 +210,9 @@ array(2) {
   [0]=>
   array(6) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(18)
     ["function"]=>
     string(6) "usleep"
     ["class"]=>
@@ -204,7 +228,7 @@ array(2) {
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(126) "{closure:{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}:17}"
     ["args"]=>
     array(0) {
     }
@@ -215,9 +239,9 @@ array(2) {
   [0]=>
   array(6) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(21)
     ["function"]=>
     string(8) "readFile"
     ["class"]=>
@@ -227,13 +251,13 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      string(%d) "%s"
+      string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     }
   }
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(126) "{closure:{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}:20}"
     ["args"]=>
     array(0) {
     }
@@ -244,9 +268,9 @@ array(2) {
   [0]=>
   array(6) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(24)
     ["function"]=>
     string(11) "getaddrinfo"
     ["class"]=>
@@ -256,13 +280,13 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      string(%d) "%s"
+      string(9) "localhost"
     }
   }
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(126) "{closure:{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}:23}"
     ["args"]=>
     array(0) {
     }
@@ -273,9 +297,9 @@ array(2) {
   [0]=>
   array(6) {
     ["file"]=>
-    string(%d) "%s"
+    string(64) "/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php"
     ["line"]=>
-    int(%d)
+    int(27)
     ["function"]=>
     string(6) "resume"
     ["class"]=>
@@ -291,7 +315,7 @@ array(2) {
   [1]=>
   array(2) {
     ["function"]=>
-    string(9) "{closure}"
+    string(126) "{closure:{closure:{closure:{closure:{closure:/ext-openswoole/tests/swoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}:26}"
     ["args"]=>
     array(0) {
     }

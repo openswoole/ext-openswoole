@@ -2,7 +2,7 @@
 swoole_coroutine/bailout: error
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID >= 80400) die("Skipped: php version < 8.4"); ?>
+<?php if (PHP_VERSION_ID < 80400) die("Skipped: php version < 8.4"); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
@@ -30,5 +30,4 @@ if (Assert::isArray($status)) {
 }
 ?>
 --EXPECT--
-swoole exit
 shutdown
