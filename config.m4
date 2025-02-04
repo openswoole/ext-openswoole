@@ -124,11 +124,13 @@ AC_DEFUN([AC_SWOOLE_CPU_AFFINITY],
 [
     AC_MSG_CHECKING([for cpu affinity])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #define _GNU_SOURCE 1
         #ifdef __FreeBSD__
         #include <sys/types.h>
         #include <sys/cpuset.h>
         typedef cpuset_t cpu_set_t;
         #else
+        #define _GNU_SOURCE 1
         #include <sched.h>
         #endif
     ]], [[
@@ -324,8 +326,7 @@ AC_COMPILE_IFELSE([
 )
 AC_MSG_RESULT([$CLANG])
 
-AC_PROG_CC
-CFLAGS="$CFLAGS -std=c99"
+m4_version_prereq([2.70], [], [AC_PROG_CC_C99])
 
 AC_CANONICAL_HOST
 
