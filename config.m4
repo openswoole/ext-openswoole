@@ -129,6 +129,7 @@ AC_DEFUN([AC_SWOOLE_CPU_AFFINITY],
         #include <sys/cpuset.h>
         typedef cpuset_t cpu_set_t;
         #else
+        #define _GNU_SOURCE 1
         #include <sched.h>
         #endif
     ]], [[
@@ -162,6 +163,7 @@ AC_DEFUN([AC_SWOOLE_HAVE_FUTEX],
 [
     AC_MSG_CHECKING([for futex])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #define _GNU_SOURCE 1
         #include <linux/futex.h>
         #include <syscall.h>
         #include <unistd.h>
