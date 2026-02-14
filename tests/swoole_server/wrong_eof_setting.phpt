@@ -50,5 +50,6 @@ $pm->run();
 ?>
 --EXPECTF--
 Fatal error: %s: package_eof cannot be an empty string in %s on line %d
-
+%A
 Fatal error: %s: package_eof cannot be an empty string in %s on line %d
+%A

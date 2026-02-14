@@ -21,7 +21,7 @@ $proc = new \swoole_process(function ($childProc) {
 });
 
 $pid = $proc->start();
-$count = (int)trim(`ps aux|grep $name|grep -v grep|wc -l`);
+$count = (int)trim(shell_exec("ps aux|grep $name|grep -v grep|wc -l"));
 Assert::same($count, 1);
 \swoole_process::kill($pid, SIGKILL);
 

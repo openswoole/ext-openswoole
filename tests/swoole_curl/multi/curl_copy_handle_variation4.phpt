@@ -40,9 +40,9 @@ $cm->run(function ($host) {
 });
 ?>
 ===DONE===
---EXPECT--
+--EXPECTF--
 bool(true)
-АБВ.txt|application/octet-stream|5АБВ.txt|application/octet-stream|5===DONE===
+АБВ.txt|application/octet-stream|5%sАБВ.txt|application/octet-stream|5===DONE===
 --CLEAN--
 <?php
 @unlink(__DIR__ . '/АБВ.txt');

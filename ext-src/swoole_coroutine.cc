@@ -62,7 +62,11 @@ bool PHPCoroutine::interrupt_thread_running = false;
 
 // extern void php_swoole_load_library();
 
+#if PHP_VERSION_ID >= 80500
+static zif_handler ori_exit_handler = nullptr;
+#else
 static user_opcode_handler_t ori_exit_handler = nullptr;
+#endif
 static user_opcode_handler_t ori_begin_silence_handler = nullptr;
 static user_opcode_handler_t ori_end_silence_handler = nullptr;
 static unordered_map<long, Coroutine *> user_yield_coros;
@@ -225,6 +229,44 @@ static int coro_exit_handler(zend_execute_data *execute_data) {
     }
 
     return ZEND_USER_OPCODE_DISPATCH;
+}
+#endif
+#if PHP_VERSION_ID >= 80500
+/* PHP 8.5+: exit() is a regular function, intercept via function handler replacement */
+PHP_FUNCTION(swoole_exit) {
+    zend_long flags = 0;
+    if (Coroutine::get_current()) {
+        flags |= SW_EXIT_IN_COROUTINE;
+    }
+    if (sw_server() && sw_server()->is_started()) {
+        flags |= SW_EXIT_IN_SERVER;
+    }
+
+    zend_string *message = NULL;
+    zend_long status = 0;
+
+    ZEND_PARSE_PARAMETERS_START(0, 1)
+        Z_PARAM_OPTIONAL
+        Z_PARAM_STR_OR_LONG(message, status)
+    ZEND_PARSE_PARAMETERS_END();
+
+    if (flags) {
+        zval ex;
+        zend_object *obj = zend_throw_exception(swoole_exit_exception_ce,
+            (message ? ZSTR_VAL(message) : "swoole exit"), 0);
+        ZVAL_OBJ(&ex, obj);
+        zend_update_property_long(swoole_exit_exception_ce, SW_Z8_OBJ_P(&ex), ZEND_STRL("flags"), flags);
+        if (message) {
+            zend_update_property_str(swoole_exit_exception_ce, SW_Z8_OBJ_P(&ex), ZEND_STRL("status"), message);
+        } else {
+            zend_update_property_long(swoole_exit_exception_ce, SW_Z8_OBJ_P(&ex), ZEND_STRL("status"), status);
+        }
+    } else {
+        /* Not in coroutine/server context, call the original exit() */
+        if (ori_exit_handler) {
+            ori_exit_handler(INTERNAL_FUNCTION_PARAM_PASSTHRU);
+        }
+    }
 }
 #endif
 
@@ -853,6 +895,14 @@ void php_swoole_coroutine_rinit() {
         ori_exit_handler = zend_get_user_opcode_handler(ZEND_EXIT);
         zend_set_user_opcode_handler(ZEND_EXIT, coro_exit_handler);
 #endif
+#if PHP_VERSION_ID >= 80500
+        /* PHP 8.5+: exit() is a regular function, replace its handler */
+        zend_function *exit_fn = (zend_function *) zend_hash_str_find_ptr(EG(function_table), ZEND_STRL("exit"));
+        if (exit_fn) {
+            ori_exit_handler = exit_fn->internal_function.handler;
+            exit_fn->internal_function.handler = PHP_FN(swoole_exit);
+        }
+#endif
         ori_begin_silence_handler = zend_get_user_opcode_handler(ZEND_BEGIN_SILENCE);
         zend_set_user_opcode_handler(ZEND_BEGIN_SILENCE, coro_begin_silence_handler);
 
@@ -862,6 +912,16 @@ void php_swoole_coroutine_rinit() {
 }
 
 void php_swoole_coroutine_rshutdown() {
+#if PHP_VERSION_ID >= 80500
+    /* Restore original exit() handler */
+    if (ori_exit_handler) {
+        zend_function *exit_fn = (zend_function *) zend_hash_str_find_ptr(EG(function_table), ZEND_STRL("exit"));
+        if (exit_fn) {
+            exit_fn->internal_function.handler = ori_exit_handler;
+        }
+        ori_exit_handler = nullptr;
+    }
+#endif
     PHPCoroutine::shutdown();
 }
 

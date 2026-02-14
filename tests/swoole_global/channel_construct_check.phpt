@@ -18,3 +18,4 @@ go(function () {
 ?>
 --EXPECTF--
 Fatal error: OpenSwoole\Coroutine\Channel::push(): you must call Channel constructor first in %s on line %d
+%A

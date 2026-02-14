@@ -7,7 +7,7 @@ swoole_http2_server: array headers
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
-    $output = `curl --http2-prior-knowledge --silent -i http://127.0.0.1:{$pm->getFreePort()}`;
+    $output = shell_exec("curl --http2-prior-knowledge --silent -i http://127.0.0.1:{$pm->getFreePort()}");
     echo $output;
     $pm->kill();
 };

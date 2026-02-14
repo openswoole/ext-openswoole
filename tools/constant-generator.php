@@ -8,7 +8,7 @@ if (!file_exists($constant_php)) {
 }
 
 $root_dir = ROOT_DIR;
-$file_list = explode("\n", `cd {$root_dir} && git ls-files`);
+$file_list = explode("\n", shell_exec("cd {$root_dir} && git ls-files"));
 $file_list = array_filter($file_list, function (string $filename) {
     $ext = pathinfo($filename, PATHINFO_EXTENSION);
     return $ext === 'h' || $ext === 'c' || $ext === 'cc';

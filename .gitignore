@@ -65,13 +65,14 @@ modules/*
 /tmp-php.ini
 .settings/
 tests/.idea
-/tests/swoole_*/*.log
-/tests/swoole_*/*.sh
-/tests/swoole_*/*.diff
-/tests/swoole_*/*.out
-/tests/swoole_*/*.exp
-/tests/swoole_*/*.mem
-/tests/swoole_*/*.php
+/tests/swoole_*/**/*.log
+/tests/swoole_*/**/*.sh
+/tests/swoole_*/**/*.diff
+/tests/swoole_*/**/*.out
+/tests/swoole_*/**/*.exp
+/tests/swoole_*/**/*.mem
+/tests/swoole_*/**/*.php
+/tests/**/core
 /tests/swoole_library/curl/skip
 /tests/test-*.xml
 /core-tests/server/*.log
@@ -110,6 +111,7 @@ tools/PHP-Parser-*/
 /html
 /tests/include/lib/vendor/
 travis/octane/
+.claude/
 
 # package
 openswoole-*.tgz

@@ -72,7 +72,7 @@ define('REDIS_SERVER_PWD', getenv('REDIS_SERVER_PWD') ?: 'root');
 define('REDIS_SERVER_DB', (int)(getenv('REDIS_SERVER_DB') ?: 0));
 
 if (!getenv('SWOOLE_TEST_NO_DOCKER')) {
-    if (!empty($info = `docker ps 2>&1 | grep httpbin 2>&1`) &&
+    if (!empty($info = shell_exec('docker ps 2>&1 | grep httpbin 2>&1')) &&
         preg_match('/\s+?[^:]+:(\d+)->\d+\/tcp\s+/', $info, $matches) &&
         is_numeric($matches[1])) {
         define('HTTPBIN_SERVER_PORT_IN_DOCKER', (int)$matches[1]);

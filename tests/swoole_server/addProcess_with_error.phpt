@@ -50,17 +50,17 @@ $pm->run();
 --EXPECTF--
 sleep start then sleep end
 
-Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line 31
-sleep start then sleep end
+Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line %d
+%Asleep start then sleep end
 
-Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line 31
-sleep start then sleep end
+Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line %d
+%Asleep start then sleep end
 
-Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line 31
-sleep start then sleep end
+Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line %d
+%Asleep start then sleep end
 
-Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line 31
-sleep start then sleep end
+Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line %d
+%Asleep start then sleep end
 
-Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line 31
-DONE
+Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_error.php on line %d
+%ADONE

@@ -15,7 +15,7 @@ if (!$table->create())
 {
     echo __LINE__." error";
 }
-$table->set('test1', ['v1' => 0, 'v2' => (double)0]);
+$table->set('test1', ['v1' => 0, 'v2' => (float)0]);
 
 Assert::same($table->decr('test1', 'v1', 1), -1);
 Assert::same($table->decr('test1', 'v2', 1.5), -1.5);

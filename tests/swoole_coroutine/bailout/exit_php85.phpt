@@ -1,8 +1,8 @@
 --TEST--
-swoole_coroutine/bailout: error
+swoole_coroutine/bailout: exit in coroutine php85
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
-<?php if (PHP_VERSION_ID < 80400 || PHP_VERSION_ID >= 80500) die("Skipped: php version not 8.4.x"); ?>
+<?php if (PHP_VERSION_ID < 80500) die("Skipped: php version < 8.5"); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
@@ -30,4 +30,5 @@ if (Assert::isArray($status)) {
 }
 ?>
 --EXPECT--
+swoole exit
 shutdown

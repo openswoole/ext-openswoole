@@ -6,7 +6,7 @@ require __DIR__ . '/bootstrap.php';
 $GLOBALS['error'] = 0;
 
 $root_dir = ROOT_DIR;
-$file_list_raw = explode("\n", `cd {$root_dir} && git ls-files`);
+$file_list_raw = explode("\n", shell_exec("cd {$root_dir} && git ls-files"));
 $file_list_raw = array_filter($file_list_raw, function (string $filename) {
     $ext = pathinfo($filename, PATHINFO_EXTENSION);
     return $ext === 'h' || $ext === 'c' || $ext === 'cc';

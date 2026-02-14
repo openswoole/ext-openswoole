@@ -58,16 +58,16 @@ $pm->run();
 sleep start then sleep end
 
 Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_tick.php on line %d
-sleep start then sleep end
+%Asleep start then sleep end
 
 Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_tick.php on line %d
-sleep start then sleep end
+%Asleep start then sleep end
 
 Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_tick.php on line %d
-sleep start then sleep end
+%Asleep start then sleep end
 
 Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_tick.php on line %d
-sleep start then sleep end
+%Asleep start then sleep end
 
 Fatal error: ERROR in %s/tests/swoole_server/addProcess_with_tick.php on line %d
-DONE
+%ADONE

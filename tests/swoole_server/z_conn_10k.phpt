@@ -4,7 +4,7 @@ swoole_server: 10k connections
 <?php
 require __DIR__ . '/../include/skipif.inc';
 require __DIR__ . '/../include/config.php';
-if ((int)`ulimit -n 2>&1` < MAX_CONCURRENCY_MID * MAX_REQUESTS) {
+if ((int)shell_exec("ulimit -n 2>&1") < MAX_CONCURRENCY_MID * MAX_REQUESTS) {
     skip('ulimit -n failed');
 }
 ?>
@@ -49,7 +49,7 @@ $pm->parentFunc = function () use ($pm) {
 $pm->childFunc = function () use ($pm) {
     $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
     $server->set([
-        "worker_num" => OpenSwoole\Util::getCPUNum() * 2,
+        "worker_num" => min(OpenSwoole\Util::getCPUNum() * 2, MAX_PROCESS_NUM),
         'log_file' => '/dev/null',
         'max_connection' => MAX_CONCURRENCY_MID * MAX_REQUESTS
     ]);

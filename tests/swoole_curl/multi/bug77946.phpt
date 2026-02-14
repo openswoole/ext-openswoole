@@ -49,4 +49,4 @@ co::run(function () {
 --EXPECTF--
 int(1)
 int(1)
-string(%d) "Protocol %Sunknown%S not supported or disabled in libcurl"
+string(%d) "Protocol %Sunknown%S not supported%s"

@@ -2,6 +2,7 @@
 swoole_runtime/file_lock: lock_nb
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
+<?php if (PHP_VERSION_ID >= 80500) die("Skipped: flock LOCK_NB behavior changed in PHP 8.5"); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';

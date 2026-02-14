@@ -12,7 +12,7 @@ $pm = new ProcessManager;
 const N = 265537;
 
 $pm->parentFunc = function ($pid) use ($pm) {
-    if (Assert::assert(!empty($res = `curl -s --http2-prior-knowledge http://127.0.0.1:{$pm->getFreePort()}/ > /dev/stdout 2>/dev/null`))) {
+    if (Assert::assert(!empty($res = shell_exec("curl -s --http2-prior-knowledge http://127.0.0.1:{$pm->getFreePort()}/ > /dev/stdout 2>/dev/null")))) {
         Assert::length($res, N);
         echo "DONE\n";
     }

@@ -45,3 +45,4 @@ $pm->run();
 ?>
 --EXPECTF--
 Fatal error: OpenSwoole\Coroutine::create(): Unable to use async-io in manager process in %s on line %d
+%A

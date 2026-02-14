@@ -3,7 +3,7 @@ swoole_http2_client_coro: nghttp2 big data with ssl
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
-if (strpos(`nghttpd --version 2>&1`, 'nghttp2') === false) {
+if (strpos(shell_exec("nghttpd --version 2>&1"), 'nghttp2') === false) {
     skip('no nghttpd');
 }
 ?>
@@ -29,14 +29,14 @@ $pm->parentFunc = function ($pid) use ($pm) {
             $response = $cli->recv(1);
             Assert::same($response->data, co::readFile(__FILE__));
         }
-        `ps -A | grep nghttpd | awk '{print $1}' | xargs kill -9 > /dev/null 2>&1`;
+        shell_exec("ps -A | grep nghttpd | awk '{print \$1}' | xargs kill -9 > /dev/null 2>&1");
         echo "DONE\n";
         $pm->kill();
     });
 };
 $pm->childFunc = function () use ($pm) {
     $root = __DIR__;
-    `nghttpd -v -d {$root}/ -a 0.0.0.0 {$pm->getFreePort()} --no-tls&`;
+    shell_exec("nghttpd -v -d {$root}/ -a 0.0.0.0 {$pm->getFreePort()} --no-tls &");
     $pm->wakeup();
 };
 $pm->childFirst();

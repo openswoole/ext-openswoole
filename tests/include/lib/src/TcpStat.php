@@ -40,10 +40,10 @@ class TcpStat
     public static function xCount($path)
     {
         if (PHP_OS === "Darwin") {
-            $n = `netstat -x | grep $path | wc -l`;
+            $n = shell_exec("netstat -x | grep $path | wc -l");
             return intval(trim($n));
         } else {
-            $n = `ss -x src $path | wc -l`;
+            $n = shell_exec("ss -x src $path | wc -l");
             return intval(trim($n)) - 1;
         }
     }
@@ -72,7 +72,7 @@ class TcpStat
             $pipe = " | $pipe";
         }
         // $4 src $5 dst $6 stats
-        return `netstat -an | awk '(\$5 == "$host.$port" && \$6 == "$state") || NR==2  {print \$0}' $pipe`;
+        return shell_exec("netstat -an | awk '(\$5 == \"$host.$port\" && \$6 == \"$state\") || NR==2  {print \$0}' $pipe");
     }
 
     private static function ss($host, $port, $state, $pipe = "")
@@ -80,7 +80,7 @@ class TcpStat
         if ($pipe) {
             $pipe = " | $pipe";
         }
-        return `ss state $state dst $host:$port $pipe`;
+        return shell_exec("ss state $state dst $host:$port $pipe");
     }
 
     private static function fmtTcpState(array $states, $type)

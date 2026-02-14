@@ -7,6 +7,14 @@ if [ ! -f "/.dockerenv" ]; then
     exit
 fi
 
+#-----------install dependencies------------
+export DEBIAN_FRONTEND=noninteractive
+apt-get update > /dev/null && apt-get install -y \
+    git unzip procps libssl-dev libcurl4-openssl-dev libpq-dev libc-ares-dev libnghttp2-dev \
+    > /dev/null 2>&1
+docker-php-ext-install sockets mysqli pdo pdo_mysql pdo_pgsql > /dev/null 2>&1 || true
+curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
 #-----------compile------------
 #-------print error only-------
 cd "${__DIR__}" && cd ../ && \
@@ -24,8 +32,8 @@ phpize > /dev/null && \
 > /dev/null && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
-make install && echo "" && \
-docker-php-ext-enable --ini-name zzz-docker-php-ext-openswoole.ini openswoole && \
+make install > /dev/null 2>&1 && echo "" && \
+docker-php-ext-enable --ini-name zzz-docker-php-ext-openswoole.ini openswoole > /dev/null 2>&1 && \
 echo "zend.max_allowed_stack_size=-1" > /usr/local/etc/php/conf.d/zzz-stack-size.ini && \
 php --ri curl && \
 php --ri openswoole
