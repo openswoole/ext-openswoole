@@ -6,6 +6,9 @@ swoole_curl/multi: Bug #76675 (Segfault with H2 server push write/writeheader ha
 if (getenv("SKIP_ONLINE_TESTS")) {
     die("skip online test");
 }
+if (gethostbyname('h2demo') === 'h2demo') {
+    die("skip h2demo host not available");
+}
 $curl_version = curl_version();
 if ($curl_version['version_number'] < 0x080100) {
     exit("skip: test may crash with curl < 8.1.0");

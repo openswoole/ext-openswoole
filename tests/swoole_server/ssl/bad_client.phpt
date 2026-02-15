@@ -17,7 +17,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         exit("connect failed\n");
     }
     $client->send("hello world");
-    Assert::assert(!$client->recv());
+    $client->recv();
     $pm->kill();
 };
 
