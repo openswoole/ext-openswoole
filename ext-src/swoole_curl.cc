@@ -162,7 +162,7 @@ CURLcode Multi::exec(php_curl *ch) {
     bool is_canceled = false;
 
     SW_LOOP {
-        if (handle->socket && handle->socket->removed) {
+        if (handle->socket && handle->socket->removed && handle->socket->fd > 0) {
             if (swoole_event_add(handle->socket, get_event(handle->action)) == SW_OK) {
                 event_count_++;
             }
@@ -200,7 +200,7 @@ CURLcode Multi::exec(php_curl *ch) {
             break;
         }
         set_timer();
-        if (sockfd >= 0 && handle->socket && handle->socket->removed) {
+        if (sockfd >= 0 && handle->socket && handle->socket->removed && handle->socket->fd > 0) {
             if (swoole_event_add(handle->socket, get_event(handle->action)) == SW_OK) {
                 event_count_++;
             }
@@ -268,7 +268,7 @@ long Multi::select(php_curlm *mh, double timeout) {
             continue;
         }
         Handle *handle = get_handle(ch->cp);
-        if (handle && handle->socket && handle->socket->removed) {
+        if (handle && handle->socket && handle->socket->removed && handle->socket->fd > 0) {
             if (swoole_event_add(handle->socket, get_event(handle->action)) == SW_OK) {
                 event_count_++;
             }

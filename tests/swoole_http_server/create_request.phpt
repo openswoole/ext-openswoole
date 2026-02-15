@@ -26,7 +26,7 @@ $req = Request::create();
 Assert::count($req->header, 0);
 Assert::false($req->isCompleted());
 
-$data1 = substr($data, 0, rand(100, 600));
+$data1 = substr($data, 0, rand(100, 400));
 $data2 = substr($data, strlen($data1));
 
 Assert::eq($req->parse($data1), strlen($data1));
