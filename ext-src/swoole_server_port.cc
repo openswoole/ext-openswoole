@@ -749,6 +749,8 @@ static PHP_METHOD(swoole_server_port, set) {
     zend_ulong idx;
     zend_string *key;
     zval *val;
+    (void) idx;
+    (void) val;
     ZEND_HASH_FOREACH_KEY_VAL(vht, idx, key, val) {
         if (!server_options_map.count(ZSTR_VAL(key))) {
             php_swoole_fatal_error(E_ERROR, "Invalid server option: %s", ZSTR_VAL(key));

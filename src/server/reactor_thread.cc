@@ -741,7 +741,6 @@ int Server::start_reactor_threads() {
      * create reactor thread
      */
     ReactorThread *thread;
-    int i;
 
     store_listen_socket();
 

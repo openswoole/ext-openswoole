@@ -1305,6 +1305,7 @@ static PHP_METHOD(swoole_coroutine, select) {
     zend_ulong num_idx;
     zend_string *key;
     zval *val;
+    (void) key;
 
     std::vector<Channel *> pull_chans_vector;
     std::vector<Channel *> push_chans_vector;

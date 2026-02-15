@@ -1226,7 +1226,6 @@ static PHP_METHOD(swoole_postgresql_coro_statement, execute) {
     char **params = nullptr;
     PGconn *pgsql;
     int is_non_blocking;
-    PGresult *pgsql_result;
 
     ZEND_PARSE_PARAMETERS_START(0, 1)
     Z_PARAM_OPTIONAL
@@ -1645,7 +1644,8 @@ static PHP_METHOD(swoole_postgresql_coro, createLOB) {
 
 static PHP_METHOD(swoole_postgresql_coro, openLOB) {
     Oid oid = 0;
-    char *modestr = "rb";
+    char modestr_buf[] = "rb";
+    char *modestr = modestr_buf;
     size_t modestrlen;
     if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "l|s", &oid, &modestr, &modestrlen)) {
         RETURN_THROWS();

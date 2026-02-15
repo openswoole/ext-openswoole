@@ -81,7 +81,6 @@ Http2Session::Session(SessionId _fd) {
 }
 
 void Http2Session::apply_setting(Server *serv) {
-    Http2::Settings *settings = &local_settings;
     if (serv->http2_header_table_size > 0) {
         local_settings.header_table_size = serv->http2_header_table_size;
     }
