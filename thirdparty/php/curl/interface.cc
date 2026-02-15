@@ -912,8 +912,6 @@ static size_t fn_read(char *data, size_t size, size_t nmemb, void *ctx) {
     case PHP_CURL_USER: {
         zval argv[3];
         zval retval;
-        int error;
-        zend_fcall_info fci;
 
         GC_ADDREF(&ch->std);
         ZVAL_OBJ(&argv[0], &ch->std);
@@ -927,6 +925,8 @@ static size_t fn_read(char *data, size_t size, size_t nmemb, void *ctx) {
         ZVAL_LONG(&argv[2], (int) size * nmemb);
 
 #if PHP_VERSION_ID < 80400
+        int error;
+        zend_fcall_info fci;
         fci.size = sizeof(fci);
         ZVAL_COPY_VALUE(&fci.function_name, &read_handler->func_name);
         fci.object = NULL;
@@ -997,8 +997,6 @@ static size_t fn_write_header(char *data, size_t size, size_t nmemb, void *ctx) 
     case PHP_CURL_USER: {
         zval argv[2];
         zval retval;
-        int error;
-        zend_fcall_info fci;
 
         GC_ADDREF(&ch->std);
         ZVAL_OBJ(&argv[0], &ch->std);
@@ -1007,6 +1005,8 @@ static size_t fn_write_header(char *data, size_t size, size_t nmemb, void *ctx) 
         ZVAL_STRINGL(&argv[1], data, length);
 
 #if PHP_VERSION_ID < 80400
+        int error;
+        zend_fcall_info fci;
         fci.size = sizeof(fci);
         ZVAL_COPY_VALUE(&fci.function_name, &write_handler->func_name);
         fci.object = NULL;

@@ -9,10 +9,11 @@ fi
 
 #-----------compile------------
 #-------print error only-------
+export TERM=${TERM:-dumb}
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
 phpize --clean > /dev/null && \
-phpize > /dev/null && \
+phpize > /dev/null 2>&1 && \
 ./configure \
 --enable-openssl \
 --enable-http2 \
