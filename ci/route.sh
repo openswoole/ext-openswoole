@@ -13,8 +13,14 @@ if [ "${CI_BRANCH}" = "alpine" ]; then
     export PHP_VERSION="${PHP_VERSION}-alpine"
 fi
 
-# Use official PHP image
-export DOCKER_IMAGE="php:${PHP_VERSION}"
+# Use official PHP image for 8.5+, openswoole image for older versions
+PHP_MAJOR=${PHP_VERSION:0:1}
+PHP_MINOR=${PHP_VERSION:2:1}
+if [ "$(( PHP_MAJOR * 10 + PHP_MINOR ))" -ge 85 ]; then
+    export DOCKER_IMAGE="php:${PHP_VERSION}"
+else
+    export DOCKER_IMAGE="openswoole/php:${PHP_VERSION}"
+fi
 
 echo "\n🗻 With PHP version ${PHP_VERSION} on ${CI_BRANCH} branch"
 
