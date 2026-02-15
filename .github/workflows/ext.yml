@@ -77,6 +77,8 @@ jobs:
             alpine-version: '3.20'
           - php-version: '8.4.2'
             alpine-version: '3.21'
+          - php-version: '8.5.0'
+            alpine-version: '3.23'
       max-parallel: 8
       fail-fast: false
     steps:

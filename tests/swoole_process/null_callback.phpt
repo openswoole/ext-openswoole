@@ -16,4 +16,4 @@ usleep(100);
 $process->wait();
 ?>
 --EXPECTF--
-Fatal error: OpenSwoole\Process::start(): Illegal callback function of OpenSwoole\Process in %s
+Fatal error: OpenSwoole\Process::start(): Illegal callback function of OpenSwoole\Process in %s%A

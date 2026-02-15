@@ -159,12 +159,21 @@ static void php_swoole_init_globals(zend_openswoole_globals *openswoole_globals)
 }
 
 void php_swoole_register_shutdown_function(const char *function) {
+#if PHP_VERSION_ID >= 80500
+    php_shutdown_function_entry shutdown_function_entry = {};
+    zend_function *fn_entry = (zend_function *) zend_hash_str_find_ptr(CG(function_table), function, strlen(function));
+    if (fn_entry) {
+        shutdown_function_entry.fci_cache.function_handler = fn_entry;
+        register_user_shutdown_function(function, strlen(function), &shutdown_function_entry);
+    }
+#else
     php_shutdown_function_entry shutdown_function_entry;
     zval function_name;
     ZVAL_STRING(&function_name, function);
     zend_fcall_info_init(
         &function_name, 0, &shutdown_function_entry.fci, &shutdown_function_entry.fci_cache, NULL, NULL);
     register_user_shutdown_function(Z_STRVAL(function_name), Z_STRLEN(function_name), &shutdown_function_entry);
+#endif
 }
 
 void php_swoole_set_global_option(HashTable *vht) {

@@ -16,7 +16,7 @@ function switch_process()
 
 function clear_php()
 {
-    `ps -A | grep php | grep -v phpstorm | grep -v 'run-tests' | awk '{print $1}' | xargs kill -9 > /dev/null 2>&1`;
+    shell_exec("ps -A | grep php | grep -v phpstorm | grep -v 'run-tests' | awk '{print \$1}' | xargs kill -9 > /dev/null 2>&1");
 }
 
 function puts($msg) {
@@ -26,12 +26,12 @@ function puts($msg) {
 function top(int $pid)
 {
     static $available;
-    $available = $available ?? !(IS_MAC_OS || empty(`top help 2>&1 | grep -i usage`));
+    $available = $available ?? !(IS_MAC_OS || empty(shell_exec('top help 2>&1 | grep -i usage')));
     if (!$available) {
         return false;
     }
     do {
-        $top = @`top -b -n 1 -p {$pid}`;
+        $top = @shell_exec("top -b -n 1 -p {$pid}");
         if (empty($top)) {
             trigger_error("top {$pid} failed: " . swoole_strerror(swoole_errno()), E_USER_WARNING);
             return false;
@@ -47,7 +47,7 @@ function top(int $pid)
 function is_busybox_ps(): bool
 {
     static $bool;
-    $bool = $bool ?? !empty(`ps --help 2>&1 | grep -i busybox`);
+    $bool = $bool ?? !empty(shell_exec('ps --help 2>&1 | grep -i busybox'));
     return $bool;
 }
 
@@ -64,7 +64,7 @@ function get_process_pid_by_name(string $name): bool
 function is_musl_libc(): bool
 {
     static $bool;
-    $bool = $bool ?? !empty(`ldd 2>&1 | grep -i musl`);
+    $bool = $bool ?? !empty(shell_exec('ldd 2>&1 | grep -i musl'));
     return $bool;
 }
 

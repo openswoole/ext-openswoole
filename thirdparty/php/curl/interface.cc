@@ -912,8 +912,6 @@ static size_t fn_read(char *data, size_t size, size_t nmemb, void *ctx) {
     case PHP_CURL_USER: {
         zval argv[3];
         zval retval;
-        int error;
-        zend_fcall_info fci;
 
         GC_ADDREF(&ch->std);
         ZVAL_OBJ(&argv[0], &ch->std);
@@ -927,6 +925,8 @@ static size_t fn_read(char *data, size_t size, size_t nmemb, void *ctx) {
         ZVAL_LONG(&argv[2], (int) size * nmemb);
 
 #if PHP_VERSION_ID < 80400
+        int error;
+        zend_fcall_info fci;
         fci.size = sizeof(fci);
         ZVAL_COPY_VALUE(&fci.function_name, &read_handler->func_name);
         fci.object = NULL;
@@ -997,8 +997,6 @@ static size_t fn_write_header(char *data, size_t size, size_t nmemb, void *ctx) 
     case PHP_CURL_USER: {
         zval argv[2];
         zval retval;
-        int error;
-        zend_fcall_info fci;
 
         GC_ADDREF(&ch->std);
         ZVAL_OBJ(&argv[0], &ch->std);
@@ -1007,6 +1005,8 @@ static size_t fn_write_header(char *data, size_t size, size_t nmemb, void *ctx) 
         ZVAL_STRINGL(&argv[1], data, length);
 
 #if PHP_VERSION_ID < 80400
+        int error;
+        zend_fcall_info fci;
         fci.size = sizeof(fci);
         ZVAL_COPY_VALUE(&fci.function_name, &write_handler->func_name);
         fci.object = NULL;
@@ -1147,9 +1147,15 @@ void swoole_curl_init_handle(php_curl *ch)
 #if LIBCURL_VERSION_NUM >= 0x071500 /* Available since 7.21.0 */
     curl_handlers(ch)->fnmatch = empty_fcall_info_cache;
 #endif
-#if LIBCURL_VERSION_NUM >= 0x075400 && PHP_VERSION_ID >= 80300
+#if PHP_VERSION_ID >= 80500
+    curl_handlers(ch)->debug = empty_fcall_info_cache;
+#if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
+    curl_handlers(ch)->prereq = empty_fcall_info_cache;
+#endif
+#endif
+#if LIBCURL_VERSION_NUM >= 0x075400
      curl_handlers(ch)->sshhostkey = empty_fcall_info_cache;
-#endif   
+#endif
 #endif
     ch->clone = (uint32_t *) emalloc(sizeof(uint32_t));
     *ch->clone = 1;
@@ -1162,8 +1168,10 @@ void swoole_curl_init_handle(php_curl *ch)
     zend_llist_init(&ch->to_free->post, sizeof(struct HttpPost *), (llist_dtor_func_t) curl_free_post, 0);
     zend_llist_init(&ch->to_free->stream, sizeof(struct mime_data_cb_arg *), (llist_dtor_func_t) curl_free_cb_arg, 0);
 
+#if PHP_VERSION_ID < 80500
     ch->to_free->slist = (HashTable *) emalloc(sizeof(HashTable));
-    zend_hash_init(ch->to_free->slist, 4, NULL, curl_free_slist, 0);
+#endif
+    zend_hash_init(curl_to_free_slist(ch->to_free), 4, NULL, curl_free_slist, 0);
 #if LIBCURL_VERSION_NUM >= 0x073800 /* 7.56.0 */
     ZVAL_UNDEF(&ch->postfields);
 #endif
@@ -1318,6 +1326,16 @@ void swoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source) {
     if (!Z_ISUNDEF(curl_handlers(source)->write_header->func_name)) {
         ZVAL_COPY(&curl_handlers(ch)->write_header->func_name, &curl_handlers(source)->write_header->func_name);
     }
+#elif PHP_VERSION_ID >= 80500
+    if (ZEND_FCC_INITIALIZED(source->handlers.read->fcc)) {
+        zend_fcc_dup(&ch->handlers.read->fcc, &source->handlers.read->fcc);
+    }
+    if (ZEND_FCC_INITIALIZED(source->handlers.write->fcc)) {
+        zend_fcc_dup(&ch->handlers.write->fcc, &source->handlers.write->fcc);
+    }
+    if (ZEND_FCC_INITIALIZED(source->handlers.write_header->fcc)) {
+        zend_fcc_dup(&ch->handlers.write_header->fcc, &source->handlers.write_header->fcc);
+    }
 #else
     if (ZEND_FCC_INITIALIZED(source->handlers.read->fcc)) {
         zend_fcc_dup(&source->handlers.read->fcc, &source->handlers.read->fcc);
@@ -1379,7 +1397,9 @@ void swoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source) {
 #endif
 #endif
     ZVAL_COPY(&ch->private_data, &source->private_data);
+#if PHP_VERSION_ID < 80500
     efree(ch->to_free->slist);
+#endif
     efree(ch->to_free);
     ch->to_free = source->to_free;
     efree(ch->clone);
@@ -2284,9 +2304,9 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
 
         if (slist) {
             if ((*ch->clone) == 1) {
-                zend_hash_index_update_ptr(ch->to_free->slist, option, slist);
+                zend_hash_index_update_ptr(curl_to_free_slist(ch->to_free), option, slist);
             } else {
-                zend_hash_next_index_insert_ptr(ch->to_free->slist, slist);
+                zend_hash_next_index_insert_ptr(curl_to_free_slist(ch->to_free), slist);
             }
         }
 
@@ -2999,6 +3019,15 @@ static void _php_curl_free(php_curl *ch) {
     curl_easy_setopt(ch->cp, CURLOPT_WRITEFUNCTION, curl_write_nothing);
 
     swoole::curl::Handle *handle = nullptr;
+#if PHP_VERSION_ID >= 80500
+    if (curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle) == CURLE_OK && handle) {
+        if (handle->multi) {
+            handle->multi->remove_handle(ch->cp);
+        }
+    } else {
+        handle = nullptr;
+    }
+#else
     if (curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle) && handle) {
         if (handle->multi) {
             handle->multi->remove_handle(ch);
@@ -3006,10 +3035,19 @@ static void _php_curl_free(php_curl *ch) {
     } else {
         handle = nullptr;
     }
+#endif
 
     if(!ch->clone) {
         return;
     }
+
+#if PHP_VERSION_ID >= 80500
+    /* PHP 8.5+: cleanup curl handle before freeing shared resources */
+    if (ch->cp != NULL) {
+        curl_easy_cleanup(ch->cp);
+        ch->cp = NULL;
+    }
+#endif
 
     /* cURL destructors should be invoked only by last curl handle */
     if (--(*ch->clone) == 0) {
@@ -3018,20 +3056,26 @@ static void _php_curl_free(php_curl *ch) {
 #endif
         zend_llist_clean(&ch->to_free->post);
         zend_llist_clean(&ch->to_free->stream);
-        zend_hash_destroy(ch->to_free->slist);
+        zend_hash_destroy(curl_to_free_slist(ch->to_free));
+#if PHP_VERSION_ID < 80500
         efree(ch->to_free->slist);
+#endif
         efree(ch->to_free);
         efree(ch->clone);
 
         if (handle) {
             delete handle;
         }
+#if PHP_VERSION_ID < 80500
         curl_easy_setopt(ch->cp, CURLOPT_PRIVATE, nullptr);
+#endif
     }
 
+#if PHP_VERSION_ID < 80500
     if (ch->cp != NULL) {
         curl_easy_cleanup(ch->cp);
     }
+#endif
 
     smart_str_free(&curl_handlers(ch)->write->buf);
 

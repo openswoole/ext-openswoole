@@ -2,6 +2,7 @@
 swoole_server: process force exit
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php skip_if_function_not_exist('pcntl_signal'); ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';

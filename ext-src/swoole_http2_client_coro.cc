@@ -145,7 +145,6 @@ class Client {
     }
 
     void apply_http2_setting(zval *zset) {
-        Http2::Settings *settings = &local_settings;
         if (ZVAL_IS_ARRAY(zset)) {
             HashTable *vht = Z_ARRVAL_P(zset);
             zval *ztmp;

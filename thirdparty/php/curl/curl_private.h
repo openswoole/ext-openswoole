@@ -123,8 +123,19 @@ struct _php_curl_free {
 #if LIBCURL_VERSION_NUM < 0x073800 /* 7.56.0 */
     zend_llist buffers;
 #endif
+#if PHP_VERSION_ID >= 80500
+    HashTable slist;
+#else
     HashTable *slist;
+#endif
 };
+
+/* In PHP 8.5 slist is embedded, in older versions it's a pointer */
+#if PHP_VERSION_ID >= 80500
+#define curl_to_free_slist(tf) (&(tf)->slist)
+#else
+#define curl_to_free_slist(tf) ((tf)->slist)
+#endif
 
 typedef struct {
 	CURL                         *cp;
@@ -132,7 +143,11 @@ typedef struct {
 	struct _php_curl_free        *to_free;
 	struct _php_curl_send_headers header;
 	struct _php_curl_error        err;
+#if PHP_VERSION_ID >= 80500
+	bool                          in_callback;
+#else
 	zend_bool                     in_callback;
+#endif
 	uint32_t*                     clone;
 	zval                          postfields;
 	/* For CURLOPT_PRIVATE */

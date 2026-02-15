@@ -67,12 +67,12 @@ else
     dir="swoole_*"
 fi
 echo "${dir}" > tests.list
-for i in 1 2 3 4 5 6
+for i in 1 2 3 4 5
 do
     if [ "`has_failures`" ]; then
         if [ ${i} -gt "1" ]; then
             sleep ${i}
-            echo "" && echo "😮 Retry failed tests#${i}:" && echo ""
+            echo "" && echo "😮 Retry failed tests:" && echo ""
         fi
         cat tests.list
         timeout=`echo | expr ${i} \* 15 + 15`
@@ -84,6 +84,31 @@ do
     fi
 done
 ./merge-test-results >test-results.xml
+
+# print failed test diffs
+if [ "`has_failures`" ]; then
+    echo "" && echo "❌ Failed tests:" && echo ""
+    cat tests.list
+    echo ""
+    for failed_phpt in $(cat tests.list); do
+        diff_file=$(echo "$failed_phpt" | sed 's/\.phpt$/.diff/')
+        if [ -f "$diff_file" ]; then
+            echo "========DIFF========" && echo "[FAIL] $failed_phpt" && echo ""
+            cat "$diff_file"
+            echo "========DONE========"
+        fi
+    done
+fi
+
+# dump backtraces from any core files
+if command -v gdb > /dev/null 2>&1; then
+    for core in $(find /tmp -name "core.*" -type f 2>/dev/null) $(find . -name "core" -type f 2>/dev/null); do
+        echo "" && echo "💥 Core dump found: $core" && echo ""
+        gdb -batch -ex "bt full" -ex "info registers" -ex "quit" "$(which php)" "$core" 2>/dev/null || true
+        echo ""
+    done
+fi
+
 if [ "`should_exit_with_error`" ]; then
     exit 255
 fi

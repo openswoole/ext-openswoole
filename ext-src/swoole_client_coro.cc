@@ -733,7 +733,7 @@ static PHP_METHOD(swoole_client_coro, peek) {
         RETURN_FALSE;
     }
 
-    buf = (char *) emalloc(buf_len + 1);
+    buf = (char *) emalloc((size_t) buf_len + 1);
     ret = cli->peek(buf, buf_len);
     if (ret < 0) {
         zend_update_property_long(swoole_client_coro_ce, SW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("errCode"), cli->errCode);

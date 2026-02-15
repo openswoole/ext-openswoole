@@ -50,7 +50,7 @@ RUN set -ex \
     php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-xml \
     php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-xmlreader \
     php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-pcntl \
-    php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-opcache \
+    && apk add --no-cache php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-opcache 2>/dev/null || true \
     && ln -sf /usr/bin/php${PHP_VERSION:0:1}${PHP_VERSION:2:1} /usr/local/bin/php \
     && ln -sf /usr/bin/phpize${PHP_VERSION:0:1}${PHP_VERSION:2:1} /usr/local/bin/phpize \
     && ln -sf /usr/bin/php-config${PHP_VERSION:0:1}${PHP_VERSION:2:1} /usr/local/bin/php-config \

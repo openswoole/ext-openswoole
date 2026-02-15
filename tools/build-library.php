@@ -118,7 +118,7 @@ foreach ($files as $file) {
 $source_str = $eval_str = '';
 foreach ($files as $file) {
     $php_file = LIBRARY_SRC_DIR . '/' . $file;
-    if (strpos(`/usr/bin/env php -n -l {$php_file} 2>&1`, 'No syntax errors detected') === false) {
+    if (strpos(shell_exec("/usr/bin/env php -n -l {$php_file} 2>&1"), 'No syntax errors detected') === false) {
         swoole_error("Syntax error in file [{$php_file}]");
     } else {
         swoole_ok("Syntax correct in [{$file}]");

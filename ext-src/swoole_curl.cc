@@ -74,9 +74,11 @@ Socket *Multi::create_socket(CURL *cp, curl_socket_t sockfd) {
     curl_multi_assign(multi_handle_, sockfd, (void *) socket);
 
     Handle *handle = get_handle(cp);
-    handle->socket = socket;
-    handle->cp = cp;
-    socket->object = handle;
+    if (handle) {
+        handle->socket = socket;
+        handle->cp = cp;
+        socket->object = handle;
+    }
 
     return socket;
 }
@@ -92,7 +94,7 @@ void Multi::del_event(CURL *cp, void *socket_ptr, curl_socket_t sockfd) {
     curl_multi_assign(multi_handle_, sockfd, NULL);
 
     Handle *handle = get_handle(cp);
-    if (handle) {
+    if (handle && handle->socket == socket) {
         handle->socket = nullptr;
     }
 
@@ -118,7 +120,9 @@ void Multi::set_event(CURL *cp, void *socket_ptr, curl_socket_t sockfd, int acti
         }
     }
     Handle *handle = get_handle(cp);
-    handle->action = action;
+    if (handle) {
+        handle->action = action;
+    }
 
     swoole_trace_log(
         SW_TRACE_CO_CURL, SW_ECHO_GREEN " handle=%p, curl=%p, fd=%d, events=%d", "[ADD]", handle, cp, sockfd, events);
@@ -158,7 +162,7 @@ CURLcode Multi::exec(php_curl *ch) {
     bool is_canceled = false;
 
     SW_LOOP {
-        if (handle->socket && handle->socket->removed) {
+        if (handle->socket && handle->socket->removed && handle->socket->fd > 0) {
             if (swoole_event_add(handle->socket, get_event(handle->action)) == SW_OK) {
                 event_count_++;
             }
@@ -196,12 +200,12 @@ CURLcode Multi::exec(php_curl *ch) {
             break;
         }
         set_timer();
-        if (sockfd >= 0 && handle->socket && handle->socket->removed) {
+        if (sockfd >= 0 && handle->socket && handle->socket->removed && handle->socket->fd > 0) {
             if (swoole_event_add(handle->socket, get_event(handle->action)) == SW_OK) {
                 event_count_++;
             }
         }
-        if (!timer && handle->socket->removed) {
+        if (!timer && handle->socket && handle->socket->removed) {
             break;
         }
     }
@@ -264,7 +268,7 @@ long Multi::select(php_curlm *mh, double timeout) {
             continue;
         }
         Handle *handle = get_handle(ch->cp);
-        if (handle && handle->socket && handle->socket->removed) {
+        if (handle && handle->socket && handle->socket->removed && handle->socket->fd > 0) {
             if (swoole_event_add(handle->socket, get_event(handle->action)) == SW_OK) {
                 event_count_++;
             }

@@ -17,4 +17,4 @@ co::run(function () {
 });
 ?>
 --EXPECTF--
-Fatal error: OpenSwoole\Coroutine\Socket::connect(): you must call Socket constructor first in %s on line %d
+Fatal error: OpenSwoole\Coroutine\Socket::connect(): you must call Socket constructor first in %s on line %d%A

@@ -23,4 +23,4 @@ try {
 
 ?>
 --EXPECTF--
-Fatal error: OpenSwoole\Server\Port::set(): Invalid server option: invalid_option in %s/invalid_option.php on line %d
+Fatal error: OpenSwoole\Server\Port::set(): Invalid server option: invalid_option in %s/invalid_option.php on line %d%A

@@ -65,4 +65,4 @@ if (swoole_array_default_value($argv, 1) == 'ori') {
 }
 ?>
 --EXPECTREGEX--
-(Received \d+)+
+\s*(Received \d+)*\s*

@@ -148,7 +148,7 @@ function file_size(string $filename, int $decimals = 2): string
 function swoole_git_files(): array
 {
     $root = SWOOLE_SOURCE_ROOT;
-    return explode(PHP_EOL, `cd {$root} && git ls-files`);
+    return explode(PHP_EOL, shell_exec("cd {$root} && git ls-files"));
 }
 
 function swoole_source_list(array $ext_list = [], array $excepts = []): array

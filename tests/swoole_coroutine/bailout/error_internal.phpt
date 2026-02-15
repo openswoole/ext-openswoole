@@ -13,4 +13,4 @@ go(function () {
 });
 ?>
 --EXPECTF--
-Fatal error: Allowed memory size of %d bytes exhausted %s
+Fatal error: Allowed memory size of %d bytes exhausted %s%A

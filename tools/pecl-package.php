@@ -96,7 +96,7 @@ swoole_execute_and_check(['php', __DIR__ . '/phpt-fixer.php']);
 swoole_ok('Start to package...');
 $this_dir = __DIR__;
 $tests_dir = ROOT_DIR . '/tests/';
-`cd {$tests_dir} && ./clean && cd {$this_dir}`;
+shell_exec("cd {$tests_dir} && ./clean && cd {$this_dir}");
 
 $root_dir = SWOOLE_SOURCE_ROOT;
 
@@ -205,7 +205,7 @@ if (!file_put_contents(__DIR__ . '/../package.xml', $content)) {
 }
 
 // pack
-$package = trim(`cd {$root_dir} && pecl package`);
+$package = trim(shell_exec("cd {$root_dir} && pecl package"));
 if (preg_match('/Warning/i', $package)) {
     $warn = explode("\n", $package);
     $package = array_pop($warn);

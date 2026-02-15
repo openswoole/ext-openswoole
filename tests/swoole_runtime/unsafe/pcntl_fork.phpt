@@ -3,6 +3,7 @@ swoole_runtime/unsafe: pcntl_fork
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc';
 skip_if_offline();
+skip_if_function_not_exist('pcntl_fork');
 ?>
 --FILE--
 <?php declare(strict_types = 1);

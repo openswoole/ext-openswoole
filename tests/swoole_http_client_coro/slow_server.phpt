@@ -11,6 +11,7 @@ use Swoole\Coroutine as co;
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     co::create(function () use ($pm) {
+        usleep(100 * 1000);
         $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
         $cli->set([
             'timeout' => 10

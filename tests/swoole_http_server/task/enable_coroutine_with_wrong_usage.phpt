@@ -14,6 +14,7 @@ $pm->childFunc = function () use ($pm) {
     $server = new swoole_http_server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
     $server->set([
         'log_file' => '/dev/null',
+        'log_level' => SWOOLE_LOG_ERROR,
         'task_worker_num' => 1,
         'task_enable_coroutine' => true
     ]);
@@ -35,4 +36,4 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Fatal error: OpenSwoole\Server::finish(): please use OpenSwoole\Server\Task->finish instead when task_enable_coroutine is enable in %s/task/enable_coroutine_with_wrong_usage.php on line %d
+Fatal error: OpenSwoole\Server::finish(): please use OpenSwoole\Server\Task->finish instead when task_enable_coroutine is enable in %s/task/enable_coroutine_with_wrong_usage.php on line %d%A

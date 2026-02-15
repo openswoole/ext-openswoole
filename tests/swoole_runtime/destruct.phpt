@@ -5,6 +5,7 @@ all
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
+skip_if_class_not_exist('Redis');
 ?>
 --FILE--
 <?php declare(strict_types = 1);

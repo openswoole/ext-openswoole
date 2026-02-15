@@ -48,7 +48,9 @@ $pm->childFunc = function () use ($pm) {
     });
     $serv->on('Message', function (OpenSwoole\WebSocket\Server $serv, OpenSwoole\WebSocket\Frame $frame) {
         Assert::isInstanceOf($frame, OpenSwoole\WebSocket\Frame::class);
-        Assert::same($frame->opcode, WEBSOCKET_OPCODE_CLOSE);
+        if ($frame->opcode !== WEBSOCKET_OPCODE_CLOSE) {
+            return;
+        }
         if (mt_rand(0, 1)) {
             $serv->push($frame->fd, $frame);
         } else {

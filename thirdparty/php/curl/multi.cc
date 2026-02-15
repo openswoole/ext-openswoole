@@ -365,7 +365,6 @@ static int _php_server_push_callback(
     zval headers;
     zval retval;
 #if PHP_VERSION_ID < 80400
-    char *header;
     int error;
     zend_fcall_info fci = empty_fcall_info;
 #endif
@@ -385,7 +384,6 @@ static int _php_server_push_callback(
     ch->cp = easy;
     swoole_setup_easy_copy_handlers(ch, parent);
 
-    size_t i;
     array_init(&headers);
     for (size_t i = 0; i < num_headers; i++) {
         char *header = curl_pushheader_bynum(push_headers, i);
