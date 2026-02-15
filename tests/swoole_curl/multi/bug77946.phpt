@@ -49,4 +49,4 @@ co::run(function () {
 --EXPECTF--
 int(1)
 int(1)
-string(%d) "Protocol %Sunknown%S not supported%s"
+string(%d) "Protocol %Sunknown%S not supported%S"
