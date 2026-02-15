@@ -74,9 +74,11 @@ Socket *Multi::create_socket(CURL *cp, curl_socket_t sockfd) {
     curl_multi_assign(multi_handle_, sockfd, (void *) socket);
 
     Handle *handle = get_handle(cp);
-    handle->socket = socket;
-    handle->cp = cp;
-    socket->object = handle;
+    if (handle) {
+        handle->socket = socket;
+        handle->cp = cp;
+        socket->object = handle;
+    }
 
     return socket;
 }
@@ -118,7 +120,9 @@ void Multi::set_event(CURL *cp, void *socket_ptr, curl_socket_t sockfd, int acti
         }
     }
     Handle *handle = get_handle(cp);
-    handle->action = action;
+    if (handle) {
+        handle->action = action;
+    }
 
     swoole_trace_log(
         SW_TRACE_CO_CURL, SW_ECHO_GREEN " handle=%p, curl=%p, fd=%d, events=%d", "[ADD]", handle, cp, sockfd, events);
@@ -201,7 +205,7 @@ CURLcode Multi::exec(php_curl *ch) {
                 event_count_++;
             }
         }
-        if (!timer && handle->socket->removed) {
+        if (!timer && handle->socket && handle->socket->removed) {
             break;
         }
     }
