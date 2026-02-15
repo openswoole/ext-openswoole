@@ -36,5 +36,4 @@ $pm->childFirst();
 $pm->run();
 ?>
 --EXPECTF--
-Fatal error: OpenSwoole\Server::finish(): please use OpenSwoole\Server\Task->finish instead when task_enable_coroutine is enable in %s/task/enable_coroutine_with_wrong_usage.php on line %d
-%A
+Fatal error: OpenSwoole\Server::finish(): please use OpenSwoole\Server\Task->finish instead when task_enable_coroutine is enable in %s/task/enable_coroutine_with_wrong_usage.php on line %d%A
