@@ -14,7 +14,7 @@ apt-get update > /dev/null && apt-get install -y \
     libssl-dev libcurl4-openssl-dev libpq-dev libc-ares-dev libnghttp2-dev \
     libcurl4 libpq5 libc-ares2 libnghttp2-14 \
     > /dev/null 2>&1
-docker-php-ext-install pcntl sockets mysqli pdo pdo_mysql pdo_pgsql > /dev/null 2>&1 || true
+docker-php-ext-install curl pcntl sockets mysqli pdo pdo_mysql pdo_pgsql > /dev/null 2>&1 || true
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 #-----------compile------------
