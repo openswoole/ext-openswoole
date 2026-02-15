@@ -13,14 +13,6 @@ if [ "${CI_BRANCH}" = "alpine" ]; then
     export PHP_VERSION="${PHP_VERSION}-alpine"
 fi
 
-# Use official PHP image for 8.5+, openswoole image for older versions
-PHP_MINOR=$(echo "${PHP_VERSION}" | sed 's/[^0-9.]//g' | cut -d. -f2)
-if [ "${PHP_MINOR:-0}" -ge 5 ]; then
-    export DOCKER_IMAGE="php:${PHP_VERSION}"
-else
-    export DOCKER_IMAGE="openswoole/php:${PHP_VERSION}"
-fi
-
 echo "\n🗻 With PHP version ${PHP_VERSION} on ${CI_BRANCH} branch"
 
 check_docker_dependency(){

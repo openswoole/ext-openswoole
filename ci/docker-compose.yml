@@ -1,7 +1,7 @@
 services:
   openswoole:
     container_name: "openswoole"
-    image: "${DOCKER_IMAGE:-openswoole/php:${PHP_VERSION}}"
+    image: "openswoole/php:${PHP_VERSION}"
     volumes:
       - "${CI_BUILD_DIR}:/ext-openswoole:rw"
     working_dir: /ext-openswoole
