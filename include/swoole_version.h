@@ -12,12 +12,12 @@
 #ifndef SWOOLE_VERSION_H_
 #define SWOOLE_VERSION_H_
 
-#define SWOOLE_MAJOR_VERSION 25
+#define SWOOLE_MAJOR_VERSION 26
 #define SWOOLE_MINOR_VERSION 2
 #define SWOOLE_RELEASE_VERSION 0
-#define SWOOLE_EXTRA_VERSION ""
-#define SWOOLE_VERSION "25.2.0"
-#define SWOOLE_VERSION_ID 250200
+#define SWOOLE_EXTRA_VERSION "dev"
+#define SWOOLE_VERSION "26.2.0-dev"
+#define SWOOLE_VERSION_ID 260200
 #define SWOOLE_API_VERSION_ID 0x202012a
 
 #define SWOOLE_BUG_REPORT                                                                                              \
