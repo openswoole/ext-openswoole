@@ -4,7 +4,7 @@ __DIR__=$(cd "$(dirname "$0")";pwd)
 
 export DOCKER_COMPOSE_VERSION="5.0.2"
 
-export PHP_VERSION=${PHP_VERSION:-${1:-"8.2"}}
+export PHP_VERSION=${PHP_VERSION:-${1:-"8.3"}}
 export CI_BRANCH=${CI_BRANCH:-${2:-"master"}}
 
 [ -z "${CI_BRANCH}" ] && export CI_BRANCH="master"
