@@ -4,7 +4,7 @@ __DIR__=$(cd "$(dirname "$0")";pwd)
 
 export DOCKER_COMPOSE_VERSION="5.0.2"
 
-export PHP_VERSION=${PHP_VERSION:-${1:-"8.2"}}
+export PHP_VERSION=${PHP_VERSION:-${1:-"8.3"}}
 export CI_BRANCH=${CI_BRANCH:-${2:-"master"}}
 
 [ -z "${CI_BRANCH}" ] && export CI_BRANCH="master"
@@ -31,6 +31,19 @@ check_docker_dependency(){
     fi
 }
 
+wait_for_mysql(){
+    echo "⏳ Waiting for MySQL to be ready..."
+    for i in $(seq 1 30); do
+        if docker exec mysql mysqladmin ping -h 127.0.0.1 -u root -proot --silent > /dev/null 2>&1; then
+            echo "✅ MySQL is ready"
+            return 0
+        fi
+        sleep 2
+    done
+    echo "❌ MySQL failed to start within 60 seconds!"
+    return 1
+}
+
 start_docker_containers(){
     remove_docker_containers
     cd ${__DIR__} && \
@@ -40,12 +53,12 @@ start_docker_containers(){
         echo "\n❌ Create containers failed!"
         exit 1
     fi
+    wait_for_mysql
 }
 
 remove_docker_containers(){
     cd ${__DIR__} && \
-    docker compose kill > /dev/null 2>&1 && \
-    docker compose rm -f > /dev/null 2>&1
+    docker compose down --remove-orphans -v > /dev/null 2>&1
 }
 
 run_tests_in_docker(){

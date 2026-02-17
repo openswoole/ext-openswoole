@@ -15,6 +15,7 @@ echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern 2>/dev/null || true
 #-----------compile------------
 #-------print error only-------
 export TERM=${TERM:-dumb}
+
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
 phpize --clean > /dev/null && \
@@ -35,3 +36,10 @@ docker-php-ext-enable --ini-name zzz-docker-php-ext-openswoole.ini openswoole > 
 echo "zend.max_allowed_stack_size=-1" > /usr/local/etc/php/conf.d/zzz-stack-size.ini && \
 php --ri curl && \
 php --ri openswoole
+
+#-----------install xdebug for fiber context tests (disabled by default)------------
+echo "" && echo "📦 Installing xdebug..." && echo ""
+pecl install xdebug > /dev/null 2>&1 && \
+docker-php-ext-enable xdebug > /dev/null 2>&1 && \
+echo "xdebug.mode=off" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
+echo "xdebug installed (mode=off)" || echo "⚠️ xdebug installation failed, fiber xdebug tests will be skipped"

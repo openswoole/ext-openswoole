@@ -5,6 +5,9 @@ __DIR__=$(cd "$(dirname "$0")";pwd)
 # enter the dir
 cd "${__DIR__}"
 
+# map SWOOLE_BRANCH (from docker-compose) to CI_BRANCH (used by run-tests.sh)
+[ -n "${SWOOLE_BRANCH}" ] && export CI_BRANCH="${SWOOLE_BRANCH}"
+
 # show system info
 date && echo ""
 uname -a && echo ""

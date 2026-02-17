@@ -641,6 +641,7 @@ if test "$PHP_SWOOLE" != "no"; then
         src/coroutine/base.cc \
         src/coroutine/channel.cc \
         src/coroutine/context.cc \
+        src/coroutine/fiber_context.cc \
         src/coroutine/file_lock.cc \
         src/coroutine/hook.cc \
         src/coroutine/selector.cc \

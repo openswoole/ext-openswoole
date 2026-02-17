@@ -24,6 +24,7 @@ long Coroutine::last_cid = 0;
 std::unordered_map<long, Coroutine *> Coroutine::coroutines;
 uint64_t Coroutine::peak_num = 0;
 bool Coroutine::activated = false;
+bool Coroutine::use_fiber_context = false;
 
 size_t Coroutine::stack_size = SW_DEFAULT_C_STACK_SIZE;
 Coroutine::SwapCallback Coroutine::on_yield = nullptr;
@@ -134,8 +135,10 @@ void Coroutine::close() {
         on_close(task);
     }
 #if !defined(SW_USE_THREAD_CONTEXT) && defined(SW_CONTEXT_DETECT_STACK_USAGE)
-    swoole_trace_log(
-        SW_TRACE_CONTEXT, "coroutine#%ld stack memory use less than %ld bytes", get_cid(), ctx.get_stack_usage());
+    if (!use_fiber_context) {
+        swoole_trace_log(
+            SW_TRACE_CONTEXT, "coroutine#%ld stack memory use less than %ld bytes", get_cid(), ctx.get_stack_usage());
+    }
 #endif
     current = origin;
     coroutines.erase(cid);

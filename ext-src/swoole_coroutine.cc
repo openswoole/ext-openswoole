@@ -62,7 +62,7 @@ bool PHPCoroutine::interrupt_thread_running = false;
 
 // extern void php_swoole_load_library();
 
-#if PHP_VERSION_ID >= 80500
+#if PHP_VERSION_ID >= 80400
 static zif_handler ori_exit_handler = nullptr;
 #else
 static user_opcode_handler_t ori_exit_handler = nullptr;
@@ -203,12 +203,7 @@ static int coro_exit_handler(zend_execute_data *execute_data) {
 
         if (opline->op1_type != IS_UNUSED) {
             if (opline->op1_type == IS_CONST) {
-                // see: https://github.com/php/php-src/commit/e70618aff6f447a298605d07648f2ce9e5a284f5
-#ifdef EX_CONSTANT
-                exit_status = EX_CONSTANT(opline->op1);
-#else
                 exit_status = RT_CONSTANT(opline, opline->op1);
-#endif
             } else {
                 exit_status = EX_VAR(opline->op1.var);
             }
@@ -231,8 +226,8 @@ static int coro_exit_handler(zend_execute_data *execute_data) {
     return ZEND_USER_OPCODE_DISPATCH;
 }
 #endif
-#if PHP_VERSION_ID >= 80500
-/* PHP 8.5+: exit() is a regular function, intercept via function handler replacement */
+#if PHP_VERSION_ID >= 80400
+/* PHP 8.4+: exit() is a regular function, intercept via function handler replacement */
 PHP_FUNCTION(swoole_exit) {
     zend_long flags = 0;
     if (Coroutine::get_current()) {
@@ -313,10 +308,9 @@ void PHPCoroutine::activate() {
         return;
     }
 
-    if (zend_hash_str_find_ptr(&module_registry, ZEND_STRL("xdebug"))) {
-        php_swoole_fatal_error(
-            E_WARNING,
-            "Using Xdebug in coroutines is extremely dangerous, please notice that it may lead to coredump!");
+    /* Apply INI setting for fiber context if not already set via Co::set() */
+    if (SWOOLE_G(use_fiber_context)) {
+        Coroutine::set_use_fiber_context(true);
     }
 
     /* init reactor and register event wait */
@@ -488,32 +482,40 @@ inline void PHPCoroutine::save_vm_stack(PHPContext *task) {
     task->error_handling = EG(error_handling);
     task->exception_class = EG(exception_class);
     task->exception = EG(exception);
-    if (UNEXPECTED(task->in_silence)) {
-        task->tmp_error_reporting = EG(error_reporting);
-        EG(error_reporting) = task->ori_error_reporting;
+    if (!Coroutine::use_fiber_context) {
+        // With fiber context, zend_fiber_switch_context manages EG(error_reporting).
+        // Do not modify it here to avoid conflicts.
+        if (UNEXPECTED(task->in_silence)) {
+            task->tmp_error_reporting = EG(error_reporting);
+            EG(error_reporting) = task->ori_error_reporting;
+        }
     }
 }
 
 inline void PHPCoroutine::restore_vm_stack(PHPContext *task) {
+    if (!Coroutine::use_fiber_context) {
+        // With fiber context, zend_fiber_switch_context() saves/restores these fields
+        // automatically. Restoring them here would conflict and corrupt VM state.
 #ifdef SW_CORO_SWAP_BAILOUT
-    EG(bailout) = task->bailout;
+        EG(bailout) = task->bailout;
 #endif
-    EG(vm_stack_top) = task->vm_stack_top;
-    EG(vm_stack_end) = task->vm_stack_end;
-    EG(vm_stack) = task->vm_stack;
-    EG(vm_stack_page_size) = task->vm_stack_page_size;
-    EG(current_execute_data) = task->execute_data;
-    EG(jit_trace_num) = task->jit_trace_num;
+        EG(vm_stack_top) = task->vm_stack_top;
+        EG(vm_stack_end) = task->vm_stack_end;
+        EG(vm_stack) = task->vm_stack;
+        EG(vm_stack_page_size) = task->vm_stack_page_size;
+        EG(current_execute_data) = task->execute_data;
+        EG(jit_trace_num) = task->jit_trace_num;
 #ifdef ZEND_CHECK_STACK_LIMIT
-    EG(stack_base) = task->stack_base;
-    EG(stack_limit) = task->stack_limit;
+        EG(stack_base) = task->stack_base;
+        EG(stack_limit) = task->stack_limit;
 #endif
+        if (UNEXPECTED(task->in_silence)) {
+            EG(error_reporting) = task->tmp_error_reporting;
+        }
+    }
     EG(error_handling) = task->error_handling;
     EG(exception_class) = task->exception_class;
     EG(exception) = task->exception;
-    if (UNEXPECTED(task->in_silence)) {
-        EG(error_reporting) = task->tmp_error_reporting;
-    }
 }
 
 inline void PHPCoroutine::save_og(PHPContext *task) {
@@ -608,7 +610,18 @@ void PHPCoroutine::on_close(void *arg) {
     if (SwooleG.max_concurrency > 0 && task->pcid == -1) {
         SwooleWG.worker_concurrency--;
     }
-    vm_stack_destroy();
+    if (Coroutine::use_fiber_context) {
+        // With fiber context, EG(vm_stack) is the caller's (restored by zend_fiber_switch_context).
+        // Destroy the coroutine's VM stack using the pointer saved in the task struct.
+        zend_vm_stack stack = task->vm_stack;
+        while (stack != nullptr) {
+            zend_vm_stack p = stack->prev;
+            efree(stack);
+            stack = p;
+        }
+    } else {
+        vm_stack_destroy();
+    }
     restore_task(origin_task);
 
     swoole_trace_log(SW_TRACE_COROUTINE,
@@ -696,16 +709,20 @@ void PHPCoroutine::main_func(void *arg) {
         task->enable_scheduler = true;
 
 #ifdef ZEND_CHECK_STACK_LIMIT
-        if(task->co) {
-            EG(stack_base) = (void*)((uintptr_t)task->co->get_context().get_stack() + task->co->get_context().get_stack_size());
-            zend_ulong reserve = EG(reserved_stack_size);
-        #ifdef __APPLE__
-            reserve = reserve * 2;
-        #endif
-            EG(stack_limit) = (int8_t*)task->co->get_context().get_stack() + reserve;
-        } else {
-            EG(stack_base) = nullptr;
-            EG(stack_limit) = nullptr;
+        if (!Coroutine::use_fiber_context) {
+            // Fiber context: zend_fiber_switch_context() sets EG(stack_base/stack_limit) automatically.
+            // Other backends: we must set them manually from the coroutine stack.
+            if(task->co) {
+                EG(stack_base) = (void*)((uintptr_t)task->co->get_context().get_stack() + task->co->get_context().get_stack_size());
+                zend_ulong reserve = EG(reserved_stack_size);
+            #ifdef __APPLE__
+                reserve = reserve * 2;
+            #endif
+                EG(stack_limit) = (int8_t*)task->co->get_context().get_stack() + reserve;
+            } else {
+                EG(stack_base) = nullptr;
+                EG(stack_limit) = nullptr;
+            }
         }
 #endif
         save_vm_stack(task);
@@ -787,6 +804,14 @@ void PHPCoroutine::main_func(void *arg) {
             OBJ_RELEASE(fci_cache.object);
         }
         zval_ptr_dtor(retval);
+
+        if (Coroutine::use_fiber_context) {
+            // Save the coroutine's final VM stack state so on_close can properly
+            // destroy it. After main_func returns, fiber_func returns to the PHP
+            // fiber trampoline which does the final context switch. The coroutine's
+            // EG(vm_stack) is only accessible via this saved pointer in on_close.
+            save_vm_stack(task);
+        }
 
         if (UNEXPECTED(EG(exception))) {
             zend_exception_error(EG(exception), E_ERROR);
@@ -895,8 +920,8 @@ void php_swoole_coroutine_rinit() {
         ori_exit_handler = zend_get_user_opcode_handler(ZEND_EXIT);
         zend_set_user_opcode_handler(ZEND_EXIT, coro_exit_handler);
 #endif
-#if PHP_VERSION_ID >= 80500
-        /* PHP 8.5+: exit() is a regular function, replace its handler */
+#if PHP_VERSION_ID >= 80400
+        /* PHP 8.4+: exit() is a regular function, replace its handler */
         zend_function *exit_fn = (zend_function *) zend_hash_str_find_ptr(EG(function_table), ZEND_STRL("exit"));
         if (exit_fn) {
             ori_exit_handler = exit_fn->internal_function.handler;
@@ -912,7 +937,7 @@ void php_swoole_coroutine_rinit() {
 }
 
 void php_swoole_coroutine_rshutdown() {
-#if PHP_VERSION_ID >= 80500
+#if PHP_VERSION_ID >= 80400
     /* Restore original exit() handler */
     if (ori_exit_handler) {
         zend_function *exit_fn = (zend_function *) zend_hash_str_find_ptr(EG(function_table), ZEND_STRL("exit"));
@@ -993,6 +1018,7 @@ static PHP_METHOD(swoole_coroutine, stats) {
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_num"), Coroutine::count());
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_peak_num"), Coroutine::get_peak_num());
     add_assoc_long_ex(return_value, ZEND_STRL("coroutine_last_cid"), Coroutine::get_last_cid());
+    add_assoc_bool_ex(return_value, ZEND_STRL("use_fiber_context"), Coroutine::use_fiber_context);
 }
 
 static PHP_METHOD(swoole_coroutine, run) {
