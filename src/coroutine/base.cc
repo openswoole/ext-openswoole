@@ -133,7 +133,7 @@ void Coroutine::close() {
     if (on_close && task) {
         on_close(task);
     }
-#if !defined(SW_USE_THREAD_CONTEXT) && defined(SW_CONTEXT_DETECT_STACK_USAGE)
+#if !defined(SW_USE_THREAD_CONTEXT) && !defined(SW_USE_FIBER_CONTEXT) && defined(SW_CONTEXT_DETECT_STACK_USAGE)
     swoole_trace_log(
         SW_TRACE_CONTEXT, "coroutine#%ld stack memory use less than %ld bytes", get_cid(), ctx.get_stack_usage());
 #endif

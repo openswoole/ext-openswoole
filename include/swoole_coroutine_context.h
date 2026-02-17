@@ -19,7 +19,12 @@
 
 #include "swoole.h"
 
-#ifdef SW_USE_THREAD_CONTEXT
+#ifdef SW_USE_FIBER_CONTEXT
+extern "C" {
+#include "main/php.h"
+#include "zend_fibers.h"
+}
+#elif defined(SW_USE_THREAD_CONTEXT)
 #include <thread>
 #include <mutex>
 #elif !defined(SW_USE_ASM_CONTEXT)
@@ -38,10 +43,12 @@
 #include <valgrind/valgrind.h>
 #endif
 
+#if !defined(SW_USE_FIBER_CONTEXT)
 #ifdef USE_UCONTEXT
 typedef ucontext_t coroutine_context_t;
 #elif defined(USE_ASM_CONTEXT)
 typedef fcontext_t coroutine_context_t;
+#endif
 #endif
 
 typedef std::function<void(void *)> CoroutineFunc;
@@ -55,10 +62,11 @@ class Context {
     ~Context();
     bool swap_in();
     bool swap_out();
-#if !defined(SW_USE_THREAD_CONTEXT) && defined(SW_CONTEXT_DETECT_STACK_USAGE)
+#if !defined(SW_USE_THREAD_CONTEXT) && !defined(SW_USE_FIBER_CONTEXT) && defined(SW_CONTEXT_DETECT_STACK_USAGE)
     ssize_t get_stack_usage();
 #endif
 
+#if !defined(SW_USE_FIBER_CONTEXT) && !defined(SW_USE_THREAD_CONTEXT)
     char* get_stack() {
         return stack_;
     }
@@ -66,6 +74,7 @@ class Context {
     size_t get_stack_size() {
         return stack_size_;
     }
+#endif
 
     inline bool is_end() {
         return end_;
@@ -73,7 +82,12 @@ class Context {
 
   protected:
     CoroutineFunc fn_;
-#ifdef SW_USE_THREAD_CONTEXT
+#ifdef SW_USE_FIBER_CONTEXT
+    zend_fiber_context fiber_context_;
+    zend_fiber_context *caller_context_;
+    uint32_t stack_size_;
+    static void fiber_func(zend_fiber_transfer *transfer);
+#elif defined(SW_USE_THREAD_CONTEXT)
     std::thread thread_;
     std::mutex lock_;
     std::mutex *swap_lock_;
@@ -89,10 +103,12 @@ class Context {
     void *private_data_;
     bool end_;
 
+#if !defined(SW_USE_FIBER_CONTEXT) && !defined(SW_USE_THREAD_CONTEXT)
 #if USE_BOOST_V2
     static void context_func_v2(transfer_t transfer);
 #else
     static void context_func(void *arg);
+#endif
 #endif
 };
 

@@ -23,7 +23,7 @@
 #endif
 #endif
 
-#ifndef SW_USE_THREAD_CONTEXT
+#if !defined(SW_USE_THREAD_CONTEXT) && !defined(SW_USE_FIBER_CONTEXT)
 
 #define MAGIC_STRING "swoole_coroutine#5652a7fb2b38be"
 #define START_OFFSET (64 * 1024)

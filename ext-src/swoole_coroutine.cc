@@ -314,9 +314,13 @@ void PHPCoroutine::activate() {
     }
 
     if (zend_hash_str_find_ptr(&module_registry, ZEND_STRL("xdebug"))) {
+#ifdef SW_USE_FIBER_CONTEXT
+        swoole_trace_log(SW_TRACE_COROUTINE, "Xdebug detected, fiber context backend enables safe xdebug tracing");
+#else
         php_swoole_fatal_error(
             E_WARNING,
             "Using Xdebug in coroutines is extremely dangerous, please notice that it may lead to coredump!");
+#endif
     }
 
     /* init reactor and register event wait */
@@ -488,13 +492,20 @@ inline void PHPCoroutine::save_vm_stack(PHPContext *task) {
     task->error_handling = EG(error_handling);
     task->exception_class = EG(exception_class);
     task->exception = EG(exception);
+#ifndef SW_USE_FIBER_CONTEXT
+    // With fiber context, zend_fiber_switch_context manages EG(error_reporting).
+    // Do not modify it here to avoid conflicts.
     if (UNEXPECTED(task->in_silence)) {
         task->tmp_error_reporting = EG(error_reporting);
         EG(error_reporting) = task->ori_error_reporting;
     }
+#endif
 }
 
 inline void PHPCoroutine::restore_vm_stack(PHPContext *task) {
+#ifndef SW_USE_FIBER_CONTEXT
+    // With fiber context, zend_fiber_switch_context() saves/restores these fields
+    // automatically. Restoring them here would conflict and corrupt VM state.
 #ifdef SW_CORO_SWAP_BAILOUT
     EG(bailout) = task->bailout;
 #endif
@@ -508,12 +519,13 @@ inline void PHPCoroutine::restore_vm_stack(PHPContext *task) {
     EG(stack_base) = task->stack_base;
     EG(stack_limit) = task->stack_limit;
 #endif
-    EG(error_handling) = task->error_handling;
-    EG(exception_class) = task->exception_class;
-    EG(exception) = task->exception;
     if (UNEXPECTED(task->in_silence)) {
         EG(error_reporting) = task->tmp_error_reporting;
     }
+#endif
+    EG(error_handling) = task->error_handling;
+    EG(exception_class) = task->exception_class;
+    EG(exception) = task->exception;
 }
 
 inline void PHPCoroutine::save_og(PHPContext *task) {
@@ -608,7 +620,20 @@ void PHPCoroutine::on_close(void *arg) {
     if (SwooleG.max_concurrency > 0 && task->pcid == -1) {
         SwooleWG.worker_concurrency--;
     }
+#ifdef SW_USE_FIBER_CONTEXT
+    // With fiber context, EG(vm_stack) is the caller's (restored by zend_fiber_switch_context).
+    // Destroy the coroutine's VM stack using the pointer saved in the task struct.
+    {
+        zend_vm_stack stack = task->vm_stack;
+        while (stack != nullptr) {
+            zend_vm_stack p = stack->prev;
+            efree(stack);
+            stack = p;
+        }
+    }
+#else
     vm_stack_destroy();
+#endif
     restore_task(origin_task);
 
     swoole_trace_log(SW_TRACE_COROUTINE,
@@ -696,6 +721,9 @@ void PHPCoroutine::main_func(void *arg) {
         task->enable_scheduler = true;
 
 #ifdef ZEND_CHECK_STACK_LIMIT
+#ifndef SW_USE_FIBER_CONTEXT
+        // Fiber context: zend_fiber_switch_context() sets EG(stack_base/stack_limit) automatically.
+        // Other backends: we must set them manually from the coroutine stack.
         if(task->co) {
             EG(stack_base) = (void*)((uintptr_t)task->co->get_context().get_stack() + task->co->get_context().get_stack_size());
             zend_ulong reserve = EG(reserved_stack_size);
@@ -707,6 +735,7 @@ void PHPCoroutine::main_func(void *arg) {
             EG(stack_base) = nullptr;
             EG(stack_limit) = nullptr;
         }
+#endif
 #endif
         save_vm_stack(task);
         record_last_msec(task);
@@ -787,6 +816,14 @@ void PHPCoroutine::main_func(void *arg) {
             OBJ_RELEASE(fci_cache.object);
         }
         zval_ptr_dtor(retval);
+
+#ifdef SW_USE_FIBER_CONTEXT
+        // Save the coroutine's final VM stack state so on_close can properly
+        // destroy it. After main_func returns, fiber_func returns to the PHP
+        // fiber trampoline which does the final context switch. The coroutine's
+        // EG(vm_stack) is only accessible via this saved pointer in on_close.
+        save_vm_stack(task);
+#endif
 
         if (UNEXPECTED(EG(exception))) {
             zend_exception_error(EG(exception), E_ERROR);

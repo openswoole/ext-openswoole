@@ -1224,7 +1224,9 @@ PHP_MINFO_FUNCTION(openswoole) {
     php_info_print_table_row(2, "Version", SWOOLE_VERSION);
     snprintf(buf, sizeof(buf), "%s %s", __DATE__, __TIME__);
     php_info_print_table_row(2, "Built", buf);
-#if defined(SW_USE_THREAD_CONTEXT)
+#if defined(SW_USE_FIBER_CONTEXT)
+    php_info_print_table_row(2, "coroutine", "enabled with fiber context");
+#elif defined(SW_USE_THREAD_CONTEXT)
     php_info_print_table_row(2, "coroutine", "enabled with thread context");
 #elif defined(SW_USE_ASM_CONTEXT)
     php_info_print_table_row(2, "coroutine", "enabled with boost asm context");
