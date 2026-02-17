@@ -99,9 +99,20 @@ static inline int lock_release(const char *filename, int fd) {
 
 #ifdef LOCK_NB
 static inline int lock_nb(const char *filename, int fd, int operation) {
+    LockManager *lm = get_manager(filename);
+    if (operation == LOCK_EX) {
+        if (lm->lock_ex || lm->lock_sh) {
+            errno = EWOULDBLOCK;
+            return -1;
+        }
+    } else if (operation == LOCK_SH) {
+        if (lm->lock_ex) {
+            errno = EWOULDBLOCK;
+            return -1;
+        }
+    }
     int retval = ::flock(fd, operation | LOCK_NB);
     if (retval == 0) {
-        LockManager *lm = get_manager(filename);
         if (operation == LOCK_EX) {
             lm->lock_ex = true;
         } else {
