@@ -23,11 +23,13 @@
 #include <thread>
 #include <mutex>
 #else
-/* Always include fiber headers (PHP >= 8.2 guarantees zend_fibers.h) */
+/* Include fiber headers only when building as PHP extension */
+#ifdef ENABLE_PHP_SWOOLE
 extern "C" {
 #include "main/php.h"
 #include "zend_fibers.h"
 }
+#endif
 /* Also include the native context backend (ASM or ucontext) */
 #if !defined(SW_USE_ASM_CONTEXT)
 #define USE_UCONTEXT 1
@@ -71,7 +73,11 @@ class Context {
 
 #if !defined(SW_USE_THREAD_CONTEXT)
     char* get_stack() {
+#ifdef ENABLE_PHP_SWOOLE
         return native_.stack;
+#else
+        return stack;
+#endif
     }
 
     size_t get_stack_size() {
@@ -90,6 +96,7 @@ class Context {
     std::mutex lock_;
     std::mutex *swap_lock_;
 #else
+#ifdef ENABLE_PHP_SWOOLE
     /* Union for fiber vs native (ASM/ucontext) backends.
      * At runtime, Coroutine::use_fiber_context selects which branch to use. */
     union {
@@ -103,14 +110,22 @@ class Context {
             char *stack;
         } native_;
     };
+#else
+    /* Core-tests build: only native backend available */
+    coroutine_context_t ctx;
+    coroutine_context_t swap_ctx;
+    char *stack;
+#endif
     uint32_t stack_size_;
 
+#ifdef ENABLE_PHP_SWOOLE
     /* Fiber backend helpers (fiber_context.cc) */
     static void fiber_func(zend_fiber_transfer *transfer);
     void fiber_init(size_t stack_size);
     void fiber_destroy();
     bool fiber_swap_in();
     bool fiber_swap_out();
+#endif
 
     /* Native backend helpers (context.cc) */
 #if USE_BOOST_V2

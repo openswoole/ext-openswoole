@@ -14,7 +14,7 @@
 
 #include "swoole_coroutine_context.h"
 
-#ifndef SW_USE_THREAD_CONTEXT
+#if !defined(SW_USE_THREAD_CONTEXT) && defined(ENABLE_PHP_SWOOLE)
 
 namespace swoole {
 namespace coroutine {
