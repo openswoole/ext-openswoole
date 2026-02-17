@@ -48,6 +48,7 @@ ZEND_BEGIN_MODULE_GLOBALS(openswoole)
     zend_bool cli;
     zend_bool enable_coroutine;
     zend_bool enable_preemptive_scheduler;
+    zend_bool use_fiber_context;
     long socket_buffer_size;
     int req_status;
 ZEND_END_MODULE_GLOBALS(openswoole)

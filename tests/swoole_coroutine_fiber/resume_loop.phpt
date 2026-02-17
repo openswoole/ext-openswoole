@@ -2,17 +2,10 @@
 swoole_coroutine_fiber: resume loop with many coroutines
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
-<?php
-ob_start();
-phpinfo(INFO_MODULES);
-$info = ob_get_clean();
-if (strpos($info, 'enabled with fiber context') === false) {
-    die('skip fiber context not enabled');
-}
-?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
+Co::set(['use_fiber_context' => true]);
 $cos = [];
 for ($n = 500; $n--;) {
     $cos[] = go(function () {

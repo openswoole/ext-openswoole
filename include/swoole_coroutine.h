@@ -124,6 +124,9 @@ class Coroutine {
 
     static std::unordered_map<long, Coroutine *> coroutines;
 
+    static bool use_fiber_context;
+    static void set_use_fiber_context(bool val) { use_fiber_context = val; }
+
     static void set_on_yield(SwapCallback func);
     static void set_on_resume(SwapCallback func);
     static void set_on_close(SwapCallback func);

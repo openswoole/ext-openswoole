@@ -2,18 +2,11 @@
 swoole_coroutine_fiber: coroutine context with fiber context
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
-<?php
-ob_start();
-phpinfo(INFO_MODULES);
-$info = ob_get_clean();
-if (strpos($info, 'enabled with fiber context') === false) {
-    die('skip fiber context not enabled');
-}
-?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+Co::set(['use_fiber_context' => true]);
 co::run(function () {
     $context = Co::getContext();
     Assert::isInstanceOf($context, Swoole\Coroutine\Context::class);

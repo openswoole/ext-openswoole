@@ -93,11 +93,6 @@ PHP_ARG_ENABLE([thread-context],
   [AS_HELP_STRING([--enable-thread-context],
     [Use Thread Context])], [no], [no])
 
-PHP_ARG_ENABLE([fiber-context],
-  [whether to enable fiber context],
-  [AS_HELP_STRING([--enable-fiber-context],
-    [Use PHP Fiber Context for coroutines (enables xdebug tracing, requires PHP >= 8.1)])], [no], [no])
-
 AC_DEFUN([SWOOLE_HAVE_PHP_EXT], [
     extname=$1
     haveext=$[PHP_]translit($1,a-z_-,A-Z__)
@@ -818,11 +813,6 @@ if test "$PHP_SWOOLE" != "no"; then
 
     if test "$PHP_THREAD_CONTEXT" != "no"; then
 		AC_DEFINE(SW_USE_THREAD_CONTEXT, 1, [do we enable thread context])
-		SW_USE_ASM_CONTEXT="no"
-    fi
-
-    if test "$PHP_FIBER_CONTEXT" != "no"; then
-		AC_DEFINE(SW_USE_FIBER_CONTEXT, 1, [use PHP fiber context for coroutines])
 		SW_USE_ASM_CONTEXT="no"
     fi
 

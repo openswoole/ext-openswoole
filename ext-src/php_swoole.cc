@@ -141,6 +141,10 @@ STD_ZEND_INI_BOOLEAN("openswoole.enable_coroutine", "On", PHP_INI_ALL, OnUpdateB
  */
 STD_ZEND_INI_BOOLEAN("openswoole.enable_preemptive_scheduler", "Off", PHP_INI_ALL, OnUpdateBool, enable_preemptive_scheduler, zend_openswoole_globals, openswoole_globals)
 /**
+ * use PHP fiber context for coroutines (enables xdebug tracing)
+ */
+STD_ZEND_INI_BOOLEAN("openswoole.use_fiber_context", "Off", PHP_INI_ALL, OnUpdateBool, use_fiber_context, zend_openswoole_globals, openswoole_globals)
+/**
  * display error
  */
 STD_ZEND_INI_BOOLEAN("openswoole.display_errors", "On", PHP_INI_ALL, OnUpdateBool, display_errors, zend_openswoole_globals, openswoole_globals)
@@ -154,6 +158,7 @@ PHP_INI_END()
 static void php_swoole_init_globals(zend_openswoole_globals *openswoole_globals) {
     openswoole_globals->enable_coroutine = 1;
     openswoole_globals->enable_preemptive_scheduler = 0;
+    openswoole_globals->use_fiber_context = 0;
     openswoole_globals->socket_buffer_size = SW_SOCKET_BUFFER_SIZE;
     openswoole_globals->display_errors = 1;
 }
@@ -1224,14 +1229,21 @@ PHP_MINFO_FUNCTION(openswoole) {
     php_info_print_table_row(2, "Version", SWOOLE_VERSION);
     snprintf(buf, sizeof(buf), "%s %s", __DATE__, __TIME__);
     php_info_print_table_row(2, "Built", buf);
-#if defined(SW_USE_FIBER_CONTEXT)
-    php_info_print_table_row(2, "coroutine", "enabled with fiber context");
-#elif defined(SW_USE_THREAD_CONTEXT)
+#if defined(SW_USE_THREAD_CONTEXT)
     php_info_print_table_row(2, "coroutine", "enabled with thread context");
-#elif defined(SW_USE_ASM_CONTEXT)
-    php_info_print_table_row(2, "coroutine", "enabled with boost asm context");
 #else
-    php_info_print_table_row(2, "coroutine", "enabled with ucontext");
+    if (swoole::Coroutine::use_fiber_context) {
+        php_info_print_table_row(2, "coroutine", "enabled with fiber context");
+    }
+#if defined(SW_USE_ASM_CONTEXT)
+    else {
+        php_info_print_table_row(2, "coroutine", "enabled with boost asm context");
+    }
+#else
+    else {
+        php_info_print_table_row(2, "coroutine", "enabled with ucontext");
+    }
+#endif
 #endif
 #ifdef SW_DEBUG
     php_info_print_table_row(2, "debug", "enabled");

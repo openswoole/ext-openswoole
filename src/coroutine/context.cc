@@ -23,7 +23,9 @@
 #endif
 #endif
 
-#if !defined(SW_USE_THREAD_CONTEXT) && !defined(SW_USE_FIBER_CONTEXT)
+#ifndef SW_USE_THREAD_CONTEXT
+
+#include "swoole_coroutine.h"
 
 #define MAGIC_STRING "swoole_coroutine#5652a7fb2b38be"
 #define START_OFFSET (64 * 1024)
@@ -31,10 +33,43 @@
 namespace swoole {
 namespace coroutine {
 
+/* ---- Dispatch: constructor, destructor, swap_in, swap_out ---- */
+
 Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
     : fn_(fn), stack_size_(stack_size), private_data_(private_data) {
     end_ = false;
+    if (Coroutine::use_fiber_context) {
+        fiber_init(stack_size);
+    } else {
+        native_init(stack_size);
+    }
+}
 
+Context::~Context() {
+    if (Coroutine::use_fiber_context) {
+        fiber_destroy();
+    } else {
+        native_destroy();
+    }
+}
+
+bool Context::swap_in() {
+    if (Coroutine::use_fiber_context) {
+        return fiber_swap_in();
+    }
+    return native_swap_in();
+}
+
+bool Context::swap_out() {
+    if (Coroutine::use_fiber_context) {
+        return fiber_swap_out();
+    }
+    return native_swap_out();
+}
+
+/* ---- Native backend (ASM/ucontext) ---- */
+
+void Context::native_init(size_t stack_size) {
 #ifdef SW_CONTEXT_PROTECT_STACK_PAGE
     int mapflags = MAP_PRIVATE | MAP_ANONYMOUS;
 #ifdef __OpenBSD__
@@ -42,41 +77,41 @@ Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
     // However necessary on OpenBSD.
     mapflags |= MAP_STACK;
 #endif
-    stack_ = (char *) ::mmap(0, stack_size_, PROT_READ | PROT_WRITE, mapflags, -1, 0);
+    native_.stack = (char *) ::mmap(0, stack_size_, PROT_READ | PROT_WRITE, mapflags, -1, 0);
 #else
-    stack_ = (char *) sw_malloc(stack_size_);
+    native_.stack = (char *) sw_malloc(stack_size_);
 #endif
-    if (!stack_) {
+    if (!native_.stack) {
         swoole_fatal_error(SW_ERROR_MALLOC_FAIL, "failed to malloc stack memory.");
         exit(254);
     }
-    swoole_trace_log(SW_TRACE_COROUTINE, "alloc stack: size=%u, ptr=%p", stack_size_, stack_);
+    swoole_trace_log(SW_TRACE_COROUTINE, "alloc stack: size=%u, ptr=%p", stack_size_, native_.stack);
 
-    void *sp = (void *) ((char *) stack_ + stack_size_);
+    void *sp = (void *) ((char *) native_.stack + stack_size_);
 #ifdef USE_VALGRIND
-    valgrind_stack_id = VALGRIND_STACK_REGISTER(sp, stack_);
+    valgrind_stack_id = VALGRIND_STACK_REGISTER(sp, native_.stack);
 #endif
 
 #if USE_UCONTEXT
-    if (-1 == getcontext(&ctx_)) {
+    if (-1 == getcontext(&native_.ctx)) {
         swoole_throw_error(SW_ERROR_CO_GETCONTEXT_FAILED);
-        sw_free(stack_);
+        sw_free(native_.stack);
         return;
     }
-    ctx_.uc_stack.ss_sp = stack_;
-    ctx_.uc_stack.ss_size = stack_size;
-    ctx_.uc_link = nullptr;
-    makecontext(&ctx_, (void (*)(void)) & context_func, 1, this);
+    native_.ctx.uc_stack.ss_sp = native_.stack;
+    native_.ctx.uc_stack.ss_size = stack_size;
+    native_.ctx.uc_link = nullptr;
+    makecontext(&native_.ctx, (void (*)(void)) & context_func, 1, this);
 #else
 
 #if USE_BOOST_V2
-    ctx_ = make_fcontext(sp, stack_size_, context_func_v2);
+    native_.ctx = make_fcontext(sp, stack_size_, context_func_v2);
     swoole_trace_log(SW_TRACE_COROUTINE, "========v2");
 #else
-    ctx_ = make_fcontext_v1(sp, stack_size_, (void (*)(intptr_t)) & context_func);
+    native_.ctx = make_fcontext_v1(sp, stack_size_, (void (*)(intptr_t)) & context_func);
     swoole_trace_log(SW_TRACE_COROUTINE, "========v1");
 #endif
-    swap_ctx_ = nullptr;
+    native_.swap_ctx = nullptr;
 #endif
 
 #ifdef SW_CONTEXT_DETECT_STACK_USAGE
@@ -88,23 +123,23 @@ Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
 #endif
 
 #ifdef SW_CONTEXT_PROTECT_STACK_PAGE
-    mprotect(stack_, SwooleG.pagesize, PROT_NONE);
+    mprotect(native_.stack, SwooleG.pagesize, PROT_NONE);
 #endif
 }
 
-Context::~Context() {
-    if (stack_) {
-        swoole_trace_log(SW_TRACE_COROUTINE, "free stack: ptr=%p", stack_);
+void Context::native_destroy() {
+    if (native_.stack) {
+        swoole_trace_log(SW_TRACE_COROUTINE, "free stack: ptr=%p", native_.stack);
 #ifdef USE_VALGRIND
         VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
 #endif
 
 #ifdef SW_CONTEXT_PROTECT_STACK_PAGE
-        ::munmap(stack_, stack_size_);
+        ::munmap(native_.stack, stack_size_);
 #else
-        sw_free(stack_);
+        sw_free(native_.stack);
 #endif
-        stack_ = nullptr;
+        native_.stack = nullptr;
     }
 }
 
@@ -113,7 +148,7 @@ ssize_t Context::get_stack_usage() {
     size_t offset = START_OFFSET;
     size_t retval = START_OFFSET;
 
-    void *sp = (void *) ((char *) stack_ + stack_size_);
+    void *sp = (void *) ((char *) native_.stack + stack_size_);
 
     while (offset < stack_size_) {
         if (memcmp((char *) sp - offset + (sizeof(MAGIC_STRING) - 1), SW_STRL(MAGIC_STRING)) != 0) {
@@ -126,30 +161,30 @@ ssize_t Context::get_stack_usage() {
 }
 #endif
 
-bool Context::swap_in() {
+bool Context::native_swap_in() {
 #if USE_UCONTEXT
-    return 0 == swapcontext(&swap_ctx_, &ctx_);
+    return 0 == swapcontext(&native_.swap_ctx, &native_.ctx);
 #else
 
 #if USE_BOOST_V2
-    transfer_t t = jump_fcontext(ctx_, this);
-    ctx_ = t.fctx;
+    transfer_t t = jump_fcontext(native_.ctx, this);
+    native_.ctx = t.fctx;
 #else
-    jump_fcontext_v1(&swap_ctx_, ctx_, (intptr_t) this, true);
+    jump_fcontext_v1(&native_.swap_ctx, native_.ctx, (intptr_t) this, true);
 #endif
     return true;
 #endif
 }
 
-bool Context::swap_out() {
+bool Context::native_swap_out() {
 #if USE_UCONTEXT
-    return 0 == swapcontext(&ctx_, &swap_ctx_);
+    return 0 == swapcontext(&native_.ctx, &native_.swap_ctx);
 #else
 #if USE_BOOST_V2
-    transfer_t t = jump_fcontext(swap_ctx_, this);
-    swap_ctx_ = t.fctx;
+    transfer_t t = jump_fcontext(native_.swap_ctx, this);
+    native_.swap_ctx = t.fctx;
 #else
-    jump_fcontext_v1(&ctx_, swap_ctx_, (intptr_t) this, true);
+    jump_fcontext_v1(&native_.ctx, native_.swap_ctx, (intptr_t) this, true);
 #endif
     return true;
 #endif
@@ -159,10 +194,10 @@ bool Context::swap_out() {
 
 void Context::context_func_v2(transfer_t transfer) {
     Context *_this = (Context *) transfer.data;
-    _this->swap_ctx_ = transfer.fctx;
+    _this->native_.swap_ctx = transfer.fctx;
     _this->fn_(_this->private_data_);
     _this->end_ = true;
-    _this->swap_out();
+    _this->native_swap_out();
 }
 
 #else
@@ -171,7 +206,7 @@ void Context::context_func(void *arg) {
     Context *_this = (Context *) arg;
     _this->fn_(_this->private_data_);
     _this->end_ = true;
-    _this->swap_out();
+    _this->native_swap_out();
 }
 
 #endif

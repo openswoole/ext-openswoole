@@ -2,18 +2,11 @@
 swoole_coroutine_fiber: coroutine stats with fiber context
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
-<?php
-ob_start();
-phpinfo(INFO_MODULES);
-$info = ob_get_clean();
-if (strpos($info, 'enabled with fiber context') === false) {
-    die('skip fiber context not enabled');
-}
-?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+Co::set(['use_fiber_context' => true]);
 Assert::same(Co::stats()['coroutine_num'], 0);
 Assert::same(Co::stats()['coroutine_peak_num'], 0);
 go(function () {

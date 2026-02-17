@@ -15,11 +15,6 @@ echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern 2>/dev/null || true
 #-----------compile------------
 #-------print error only-------
 export TERM=${TERM:-dumb}
-EXTRA_FLAGS=""
-if echo "${SWOOLE_BRANCH}" | grep -q "fiber"; then
-    EXTRA_FLAGS="--enable-fiber-context"
-    echo "🧵 Fiber context enabled for branch: ${SWOOLE_BRANCH}"
-fi
 
 cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
@@ -33,7 +28,6 @@ phpize > /dev/null 2>&1 && \
 --enable-hook-curl \
 --enable-cares \
 --with-postgres \
-${EXTRA_FLAGS} \
 > /dev/null && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
