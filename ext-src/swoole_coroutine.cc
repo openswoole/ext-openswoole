@@ -313,16 +313,6 @@ void PHPCoroutine::activate() {
         Coroutine::set_use_fiber_context(true);
     }
 
-    if (zend_hash_str_find_ptr(&module_registry, ZEND_STRL("xdebug"))) {
-        if (Coroutine::use_fiber_context) {
-            swoole_trace_log(SW_TRACE_COROUTINE, "Xdebug detected, fiber context backend enables safe xdebug tracing");
-        } else {
-            php_swoole_fatal_error(
-                E_WARNING,
-                "Using Xdebug in coroutines is extremely dangerous, please notice that it may lead to coredump!");
-        }
-    }
-
     /* init reactor and register event wait */
     php_swoole_check_reactor();
 
