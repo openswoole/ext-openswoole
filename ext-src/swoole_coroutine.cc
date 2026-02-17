@@ -203,12 +203,7 @@ static int coro_exit_handler(zend_execute_data *execute_data) {
 
         if (opline->op1_type != IS_UNUSED) {
             if (opline->op1_type == IS_CONST) {
-                // see: https://github.com/php/php-src/commit/e70618aff6f447a298605d07648f2ce9e5a284f5
-#ifdef EX_CONSTANT
-                exit_status = EX_CONSTANT(opline->op1);
-#else
                 exit_status = RT_CONSTANT(opline, opline->op1);
-#endif
             } else {
                 exit_status = EX_VAR(opline->op1.var);
             }
