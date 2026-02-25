@@ -28,7 +28,7 @@ CONFIGURE_OPTS="--enable-openssl \
 --enable-cares \
 --with-postgres"
 
-if pkg-config --exists liburing 2>/dev/null; then
+if [ -f /usr/include/liburing.h ] || [ -f /usr/local/include/liburing.h ]; then
     CONFIGURE_OPTS="$CONFIGURE_OPTS --enable-io-uring"
     echo "📦 liburing detected, enabling io_uring"
 fi
