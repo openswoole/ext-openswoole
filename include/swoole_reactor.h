@@ -74,6 +74,7 @@ class Reactor {
   public:
     enum Type {
         TYPE_AUTO,
+        TYPE_IO_URING,
         TYPE_EPOLL,
         TYPE_KQUEUE,
         TYPE_POLL,

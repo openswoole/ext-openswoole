@@ -1251,6 +1251,9 @@ PHP_MINFO_FUNCTION(openswoole) {
 #ifdef SW_LOG_TRACE_OPEN
     php_info_print_table_row(2, "trace_log", "enabled");
 #endif
+#ifdef HAVE_IO_URING
+    php_info_print_table_row(2, "io_uring", "enabled");
+#endif
 #ifdef HAVE_EPOLL
     php_info_print_table_row(2, "epoll", "enabled");
 #endif

@@ -142,6 +142,12 @@ function skip_if_darwin()
     skip('not support on darwin', stripos(PHP_OS, 'Darwin') !== false);
 }
 
+function skip_if_no_io_uring()
+{
+    $info = shell_exec(PHP_BINARY . ' --ri openswoole 2>/dev/null');
+    skip('io_uring not enabled', strpos($info, 'io_uring => enabled') === false);
+}
+
 function skip_if_musl_libc()
 {
     skip('not support when use musl libc', !empty(shell_exec('ldd 2>&1 | grep -i musl')));

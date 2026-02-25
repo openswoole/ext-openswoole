@@ -34,6 +34,10 @@ using network::Socket;
 
 static void reactor_begin(Reactor *reactor);
 
+#ifdef HAVE_IO_URING
+ReactorImpl *make_reactor_io_uring(Reactor *_reactor, int max_events);
+#endif
+
 #ifdef HAVE_EPOLL
 ReactorImpl *make_reactor_epoll(Reactor *_reactor, int max_events);
 #endif
@@ -60,7 +64,9 @@ void ReactorImpl::after_removal_failure(network::Socket *_socket) {
 
 Reactor::Reactor(int max_event, Type _type) {
     if (_type == TYPE_AUTO) {
-#ifdef HAVE_EPOLL
+#ifdef HAVE_IO_URING
+        type_ = TYPE_IO_URING;
+#elif defined(HAVE_EPOLL)
         type_ = TYPE_EPOLL;
 #elif defined(HAVE_KQUEUE)
         type_ = TYPE_KQUEUE;
@@ -74,6 +80,11 @@ Reactor::Reactor(int max_event, Type _type) {
     }
 
     switch (type_) {
+#ifdef HAVE_IO_URING
+    case TYPE_IO_URING:
+        impl = make_reactor_io_uring(this, max_event);
+        break;
+#endif
 #ifdef HAVE_EPOLL
     case TYPE_EPOLL:
         impl = make_reactor_epoll(this, max_event);

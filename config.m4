@@ -93,6 +93,11 @@ PHP_ARG_ENABLE([thread-context],
   [AS_HELP_STRING([--enable-thread-context],
     [Use Thread Context])], [no], [no])
 
+PHP_ARG_ENABLE([io-uring],
+  [whether to enable io_uring reactor],
+  [AS_HELP_STRING([--enable-io-uring],
+    [Enable io_uring reactor backend (requires liburing)])], [no], [no])
+
 AC_DEFUN([SWOOLE_HAVE_PHP_EXT], [
     extname=$1
     haveext=$[PHP_]translit($1,a-z_-,A-Z__)
@@ -358,7 +363,15 @@ if test "$PHP_SWOOLE" != "no"; then
     AC_CHECK_LIB(pthread, pthread_mutex_consistent, AC_DEFINE(HAVE_PTHREAD_MUTEX_CONSISTENT, 1, [have pthread_mutex_consistent]))
     AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
     AC_CHECK_LIB(cares, ares_gethostbyname, AC_DEFINE(HAVE_CARES, 1, [have c-ares]))
-    
+
+    if test "$PHP_IO_URING" = "yes"; then
+        AC_CHECK_HEADERS([liburing.h], [], [AC_MSG_ERROR([liburing.h not found. Install liburing-dev.])])
+        AC_CHECK_LIB(uring, io_uring_queue_init, [
+            AC_DEFINE(HAVE_IO_URING, 1, [have io_uring])
+            PHP_ADD_LIBRARY(uring, 1, OPENSWOOLE_SHARED_LIBADD)
+        ], [AC_MSG_ERROR([liburing not found. Install liburing-dev.])])
+    fi
+
     if test "$PHP_SWOOLE_DEV" = "yes"; then
         AX_CHECK_COMPILE_FLAG(-Wbool-conversion,                _MAINTAINER_CFLAGS="$_MAINTAINER_CFLAGS -Wbool-conversion")
         AX_CHECK_COMPILE_FLAG(-Wignored-qualifiers,             _MAINTAINER_CFLAGS="$_MAINTAINER_CFLAGS -Wignored-qualifiers")
@@ -688,6 +701,7 @@ if test "$PHP_SWOOLE" != "no"; then
         src/reactor/epoll.cc \
         src/reactor/kqueue.cc \
         src/reactor/poll.cc \
+        src/reactor/io_uring.cc \
         src/reactor/select.cc \
         src/server/base.cc \
         src/server/manager.cc \
