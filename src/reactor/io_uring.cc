@@ -38,6 +38,9 @@ enum IoUringOpType {
  * Socket* is 8-byte aligned, so low 4 bits are always zero and
  * available for storing the operation tag.
  */
+// liburing internal sentinel for timeout CQEs (not in public API)
+static const uint64_t OPENSWOOLE_IO_URING_UDATA_TIMEOUT = (uint64_t) -1;
+
 static const uint64_t IO_URING_TAG_BITS = 4;
 static const uint64_t IO_URING_TAG_MASK = (1ULL << IO_URING_TAG_BITS) - 1;
 
@@ -291,6 +294,12 @@ int ReactorIoUring::wait(struct timeval *timeo) {
         for (i = 0; i < n; i++) {
             struct io_uring_cqe *completion = cqes_[i];
             uint64_t user_data = io_uring_cqe_get_data64(completion);
+
+            // Filter liburing internal timeout CQEs (pre-5.11 kernels)
+            if (user_data == OPENSWOOLE_IO_URING_UDATA_TIMEOUT) {
+                continue;
+            }
+
             IoUringOpType op = decode_op(user_data);
 
             // Ignore cancel completions

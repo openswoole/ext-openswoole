@@ -64,11 +64,11 @@ class IoUringEngine {
     }
 
     static int on_event(Reactor *reactor, Event *event);
+    void process_completions();
 
   private:
     void detect_capabilities();
     int submit_and_yield(IoUringRequest *req);
-    void process_completions();
 
     struct io_uring ring_;
     int event_fd_;

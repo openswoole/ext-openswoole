@@ -98,6 +98,23 @@ IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{},
         SwooleTG.io_uring_engine = nullptr;
     });
 
+    sw_reactor()->set_end_callback(Reactor::PRIORITY_IO_URING, [](Reactor *reactor) {
+        if (SwooleTG.io_uring_engine) {
+            SwooleTG.io_uring_engine->process_completions();
+            // When there are pending io_uring file I/O operations, cap the reactor
+            // timeout to 1ms so the CQ is polled frequently. This makes eventfd a
+            // wake-up optimisation rather than the sole delivery mechanism — if an
+            // eventfd notification is lost in the window between draining and
+            // re-arming the single-shot POLL_ADD, the short timeout ensures
+            // completions are still picked up promptly.
+            if (SwooleTG.io_uring_engine->get_pending_count() > 0) {
+                if (reactor->timeout_msec < 0 || reactor->timeout_msec > 1) {
+                    reactor->timeout_msec = 1;
+                }
+            }
+        }
+    });
+
     SwooleTG.io_uring_engine = this;
 
     swoole_trace_log(SW_TRACE_AIO,
@@ -226,6 +243,10 @@ void IoUringEngine::process_completions() {
 
     io_uring_for_each_cqe(&ring_, head, cqe) {
         count++;
+        // Filter liburing internal timeout CQEs (pre-5.11 kernels)
+        if (cqe->user_data == (uint64_t) -1) {
+            continue;
+        }
         auto *req = static_cast<IoUringRequest *>(io_uring_cqe_get_data(cqe));
         if (!req) {
             continue;

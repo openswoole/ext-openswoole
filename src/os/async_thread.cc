@@ -346,6 +346,9 @@ int AsyncThreads::callback(Reactor *reactor, Event *event) {
     AsyncEvent *events[SW_AIO_EVENT_NUM];
     ssize_t n = event->socket->read(events, sizeof(AsyncEvent *) * SW_AIO_EVENT_NUM);
     if (n < 0) {
+        if (errno == EAGAIN || errno == EWOULDBLOCK) {
+            return SW_OK;
+        }
         swoole_sys_warning("read() aio events failed");
         return SW_ERR;
     }
