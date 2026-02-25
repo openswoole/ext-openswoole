@@ -26,6 +26,9 @@
 
 #include "swoole_coroutine_socket.h"
 #include "swoole_coroutine_system.h"
+#ifdef HAVE_IO_URING
+#include "swoole_io_uring.h"
+#endif
 
 using swoole::AsyncEvent;
 using swoole::Coroutine;
@@ -183,6 +186,14 @@ int swoole_coroutine_open(const char *pathname, int flags, mode_t mode) {
         return open(pathname, flags, mode);
     }
 
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        int ret = engine->open(pathname, flags, mode);
+        if (ret != -2) return ret;
+    }
+#endif
+
     int ret = -1;
     swoole::coroutine::async([&]() { ret = open(pathname, flags, mode); });
     return ret;
@@ -217,6 +228,14 @@ ssize_t swoole_coroutine_read(int sockfd, void *buf, size_t count) {
         return socket->read(buf, count);
     }
 
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        ssize_t ret = engine->read(sockfd, buf, count);
+        if (ret != -2) return ret;
+    }
+#endif
+
     ssize_t ret = -1;
     swoole::coroutine::async([&]() { ret = read(sockfd, buf, count); });
     return ret;
@@ -231,6 +250,14 @@ ssize_t swoole_coroutine_write(int sockfd, const void *buf, size_t count) {
     if (socket) {
         return socket->write(buf, count);
     }
+
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        ssize_t ret = engine->write(sockfd, buf, count);
+        if (ret != -2) return ret;
+    }
+#endif
 
     ssize_t ret = -1;
     swoole::coroutine::async([&]() { ret = write(sockfd, buf, count); });
@@ -252,6 +279,14 @@ int swoole_coroutine_fstat(int fd, struct stat *statbuf) {
         return fstat(fd, statbuf);
     }
 
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        int ret = engine->fstat(fd, statbuf);
+        if (ret != -2) return ret;
+    }
+#endif
+
     int retval = -1;
     swoole::coroutine::async([&]() { retval = fstat(fd, statbuf); });
     return retval;
@@ -271,6 +306,14 @@ int swoole_coroutine_unlink(const char *pathname) {
     if (sw_unlikely(is_no_coro())) {
         return unlink(pathname);
     }
+
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        int ret = engine->unlink(pathname);
+        if (ret != -2) return ret;
+    }
+#endif
 
     int retval = -1;
     swoole::coroutine::async([&]() { retval = unlink(pathname); });
@@ -292,6 +335,14 @@ int swoole_coroutine_mkdir(const char *pathname, mode_t mode) {
         return mkdir(pathname, mode);
     }
 
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        int ret = engine->mkdir(pathname, mode);
+        if (ret != -2) return ret;
+    }
+#endif
+
     int retval = -1;
     swoole::coroutine::async([&]() { retval = mkdir(pathname, mode); });
     return retval;
@@ -302,6 +353,14 @@ int swoole_coroutine_rmdir(const char *pathname) {
         return rmdir(pathname);
     }
 
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        int ret = engine->rmdir(pathname);
+        if (ret != -2) return ret;
+    }
+#endif
+
     int retval = -1;
     swoole::coroutine::async([&]() { retval = rmdir(pathname); });
     return retval;
@@ -311,6 +370,14 @@ int swoole_coroutine_rename(const char *oldpath, const char *newpath) {
     if (sw_unlikely(is_no_coro())) {
         return rename(oldpath, newpath);
     }
+
+#ifdef HAVE_IO_URING
+    auto *engine = swoole::get_or_create_io_uring_engine();
+    if (engine) {
+        int ret = engine->rename(oldpath, newpath);
+        if (ret != -2) return ret;
+    }
+#endif
 
     int retval = -1;
     swoole::coroutine::async([&]() { retval = rename(oldpath, newpath); });

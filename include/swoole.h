@@ -190,6 +190,7 @@ struct Socket;
 struct Address;
 }  // namespace network
 class AsyncThreads;
+class IoUringEngine;
 namespace async {
 class ThreadPool;
 }
@@ -382,6 +383,7 @@ enum swFdType {
     SW_FD_SIGNAL,
     SW_FD_DNS_RESOLVER,
     SW_FD_CARES,
+    SW_FD_IO_URING,
     /**
      * SW_FD_USER or SW_FD_USER+n: for custom event
      */
@@ -610,6 +612,7 @@ struct ThreadGlobal {
     Reactor *reactor;
     Timer *timer;
     AsyncThreads *async_threads;
+    IoUringEngine *io_uring_engine;
     uint32_t signal_listener_num;
     uint32_t co_signal_listener_num;
     int error;

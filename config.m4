@@ -678,6 +678,7 @@ if test "$PHP_SWOOLE" != "no"; then
         src/os/async_thread.cc \
         src/os/base.cc \
         src/os/file.cc \
+        src/os/io_uring_engine.cc \
         src/os/msg_queue.cc \
         src/os/pipe.cc \
         src/os/process_pool.cc \

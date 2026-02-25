@@ -18,6 +18,9 @@
 #include "swoole_coroutine_socket.h"
 #include "swoole_lru_cache.h"
 #include "swoole_signal.h"
+#ifdef HAVE_IO_URING
+#include "swoole_io_uring.h"
+#endif
 
 namespace swoole {
 namespace coroutine {
@@ -616,6 +619,10 @@ void System::init_reactor(Reactor *reactor) {
     reactor->set_handler(SW_FD_CORO_EVENT | SW_EVENT_ERROR, event_waiter_error_callback);
 
     reactor->set_handler(SW_FD_AIO | SW_EVENT_READ, AsyncThreads::callback);
+
+#ifdef HAVE_IO_URING
+    reactor->set_handler(SW_FD_IO_URING | SW_EVENT_READ, IoUringEngine::on_event);
+#endif
 }
 
 static void async_task_completed(AsyncEvent *event) {
