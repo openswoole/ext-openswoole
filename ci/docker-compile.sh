@@ -20,15 +20,20 @@ cd "${__DIR__}" && cd ../ && \
 ./clear.sh > /dev/null && \
 phpize --clean > /dev/null && \
 phpize > /dev/null 2>&1 && \
-./configure \
---enable-openssl \
+CONFIGURE_OPTS="--enable-openssl \
 --enable-http2 \
 --enable-sockets \
 --enable-mysqlnd \
 --enable-hook-curl \
 --enable-cares \
---with-postgres \
-> /dev/null && \
+--with-postgres"
+
+if pkg-config --exists liburing 2>/dev/null; then
+    CONFIGURE_OPTS="$CONFIGURE_OPTS --enable-io-uring"
+    echo "📦 liburing detected, enabling io_uring"
+fi
+
+./configure $CONFIGURE_OPTS > /dev/null && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
 make install > /dev/null 2>&1 && echo "" && \
