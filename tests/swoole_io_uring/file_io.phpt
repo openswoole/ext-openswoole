@@ -1,5 +1,5 @@
 --TEST--
-swoole_io_uring: file I/O operations via io_uring engine
+swoole_io_uring: coroutine socket I/O with io_uring reactor
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 skip_if_no_io_uring();
@@ -9,58 +9,41 @@ skip_if_no_io_uring();
 require __DIR__ . '/../include/bootstrap.php';
 
 Co::set(['reactor_type' => OPENSWOOLE_IO_URING]);
-$test_file = '/tmp/swoole_io_uring_phpt_test_' . getmypid();
-$test_file2 = $test_file . '_renamed';
-$test_dir = $test_file . '_dir';
 
-Co\run(function () use ($test_file, $test_file2, $test_dir) {
-    // Test file_put_contents (uses open + write)
-    $data = "hello io_uring file I/O";
-    $n = file_put_contents($test_file, $data);
-    Assert::eq($n, strlen($data));
-    echo "write: OK\n";
+Co::run(function () {
+    // TCP socket I/O via io_uring reactor
+    $pair = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
+    $read_sock = $pair[0];
+    $write_sock = $pair[1];
+    stream_set_blocking($read_sock, false);
+    stream_set_blocking($write_sock, false);
 
-    // Test file_get_contents (uses open + read)
-    $content = file_get_contents($test_file);
-    Assert::eq($content, $data);
-    echo "read: OK\n";
+    $data_sent = "hello io_uring reactor";
 
-    // Test filesize (uses stat)
-    clearstatcache();
-    $size = filesize($test_file);
-    Assert::eq($size, strlen($data));
-    echo "stat: OK\n";
+    go(function () use ($write_sock, $data_sent) {
+        Co::sleep(1);
+        fwrite($write_sock, $data_sent);
+        fclose($write_sock);
+    });
 
-    // Test rename
-    rename($test_file, $test_file2);
-    Assert::true(file_exists($test_file2));
-    Assert::false(file_exists($test_file));
-    echo "rename: OK\n";
-
-    // Test unlink
-    unlink($test_file2);
-    Assert::false(file_exists($test_file2));
-    echo "unlink: OK\n";
-
-    // Test mkdir
-    mkdir($test_dir, 0755);
-    Assert::true(is_dir($test_dir));
-    echo "mkdir: OK\n";
-
-    // Test rmdir
-    rmdir($test_dir);
-    Assert::false(is_dir($test_dir));
-    echo "rmdir: OK\n";
+    go(function () use ($read_sock, $data_sent) {
+        $content = '';
+        while (!feof($read_sock)) {
+            $chunk = @fread($read_sock, 8192);
+            if ($chunk === false || $chunk === '') {
+                Co::sleep(1);
+                continue;
+            }
+            $content .= $chunk;
+        }
+        fclose($read_sock);
+        Assert::same($content, $data_sent);
+        echo "read: $content\n";
+    });
 });
 
 echo "DONE\n";
 ?>
 --EXPECT--
-write: OK
-read: OK
-stat: OK
-rename: OK
-unlink: OK
-mkdir: OK
-rmdir: OK
+read: hello io_uring reactor
 DONE

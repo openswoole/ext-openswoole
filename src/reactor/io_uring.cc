@@ -306,7 +306,11 @@ int ReactorIoUring::wait(struct timeval *timeo) {
             // CQE result < 0 is an error; result > 0 is the poll mask
             int revents;
             if (completion->res < 0) {
-                // Treat negative results as error events
+                // Skip cancelled polls (from set() or del())
+                if (completion->res == -ECANCELED) {
+                    continue;
+                }
+                // Treat other negative results as error events
                 revents = POLLERR;
             } else {
                 revents = completion->res;
@@ -353,10 +357,24 @@ int ReactorIoUring::wait(struct timeval *timeo) {
             if (!socket->removed && (socket->events & SW_EVENT_ONCE)) {
                 reactor_->_del(socket);
             }
-            // Re-arm single-shot polls (not needed for multishot)
-            else if (!use_multishot_ && !socket->removed) {
-                submit_poll_add(socket, socket->events);
-                need_submit = true;
+            // Re-arm poll if needed
+            else if (!socket->removed) {
+                bool needs_rearm;
+                if (use_multishot_) {
+#ifdef IORING_CQE_F_MORE
+                    // Kernel deactivated multishot poll when this flag is absent
+                    needs_rearm = !(completion->flags & IORING_CQE_F_MORE);
+#else
+                    needs_rearm = false;
+#endif
+                } else {
+                    // Single-shot polls always need re-arm
+                    needs_rearm = true;
+                }
+                if (needs_rearm) {
+                    submit_poll_add(socket, socket->events);
+                    need_submit = true;
+                }
             }
         }
 

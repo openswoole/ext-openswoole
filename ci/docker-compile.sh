@@ -9,7 +9,7 @@ fi
 
 #-----------install build dependencies------------
 apt-get update > /dev/null 2>&1 && apt-get install -y gdb > /dev/null 2>&1 || true
-apt-get install -y liburing-dev > /dev/null 2>&1 && HAVE_LIBURING=1 || HAVE_LIBURING=0
+apt-get install -y liburing-dev 2>&1 || true
 ulimit -c unlimited
 echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern 2>/dev/null || true
 
@@ -29,14 +29,12 @@ CONFIGURE_OPTS="--enable-openssl \
 --enable-cares \
 --with-postgres"
 
-if [ "$HAVE_LIBURING" = "1" ]; then
-    CONFIGURE_OPTS="$CONFIGURE_OPTS --enable-io-uring"
-    echo "📦 liburing-dev installed, enabling io_uring"
+if ./configure $CONFIGURE_OPTS --enable-io-uring > /tmp/configure_iouring.log 2>&1; then
+    echo "📦 io_uring enabled"
 else
-    echo "⚠️ liburing-dev not available, skipping io_uring"
-fi
-
-./configure $CONFIGURE_OPTS > /dev/null && \
+    echo "⚠️ io_uring not available, building without it"
+    ./configure $CONFIGURE_OPTS > /dev/null
+fi && \
 make -j8 > /dev/null | tee /tmp/compile.log && \
 (test "`cat /tmp/compile.log`"x = ""x || exit 255) && \
 make install > /dev/null 2>&1 && echo "" && \

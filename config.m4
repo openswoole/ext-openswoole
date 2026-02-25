@@ -365,7 +365,9 @@ if test "$PHP_SWOOLE" != "no"; then
     AC_CHECK_LIB(cares, ares_gethostbyname, AC_DEFINE(HAVE_CARES, 1, [have c-ares]))
 
     if test "$PHP_IO_URING" = "yes"; then
-        AC_CHECK_HEADERS([liburing.h], [], [AC_MSG_ERROR([liburing.h not found. Install liburing-dev.])])
+        AC_CHECK_FILE([/usr/include/liburing.h], [],
+            [AC_CHECK_FILE([/usr/local/include/liburing.h], [],
+                [AC_MSG_ERROR([liburing.h not found. Install liburing-dev.])])])
         AC_CHECK_LIB(uring, io_uring_queue_init, [
             AC_DEFINE(HAVE_IO_URING, 1, [have io_uring])
             PHP_ADD_LIBRARY(uring, 1, OPENSWOOLE_SHARED_LIBADD)

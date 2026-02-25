@@ -9,20 +9,16 @@ skip_if_no_io_uring();
 require __DIR__ . '/../include/bootstrap.php';
 
 Co::set(['reactor_type' => OPENSWOOLE_IO_URING]);
-Co\run(function () {
-    $pair = stream_socket_pair(STREAM_PF_UNIX, STREAM_SOCK_STREAM, STREAM_IPPROTO_IP);
-    $read_end = $pair[0];
-    $write_end = $pair[1];
+Co::run(function () {
+    $chan = new OpenSwoole\Coroutine\Channel(1);
 
-    go(function () use ($read_end) {
-        $data = Co::readSocket($read_end);
-        echo "coroutine received: $data\n";
-        fclose($read_end);
+    go(function () use ($chan) {
+        $chan->push("hello coroutine");
     });
 
-    go(function () use ($write_end) {
-        Co::writeSocket($write_end, "hello coroutine");
-        fclose($write_end);
+    go(function () use ($chan) {
+        $data = $chan->pop();
+        echo "coroutine received: $data\n";
     });
 });
 

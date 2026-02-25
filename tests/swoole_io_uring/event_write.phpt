@@ -1,5 +1,5 @@
 --TEST--
-swoole_io_uring: event write with io_uring backend
+swoole_io_uring: swoole_event_write with io_uring backend
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 skip_if_no_io_uring();
@@ -16,6 +16,7 @@ $write_end = $pair[1];
 stream_set_blocking($read_end, false);
 stream_set_blocking($write_end, false);
 
+// Monitor read end for incoming data
 swoole_event_add($read_end, function ($fp) {
     $data = fread($fp, 8192);
     echo "received: $data\n";
@@ -23,12 +24,16 @@ swoole_event_add($read_end, function ($fp) {
     fclose($fp);
 });
 
-swoole_event_write($write_end, "hello from event_write");
-echo "Finish\n";
+// Monitor write end; when writable, use swoole_event_write to send data
+swoole_event_add($write_end, null, function ($fp) {
+    swoole_event_write($fp, "hello from event_write");
+    swoole_event_del($fp);
+    fclose($fp);
+}, SWOOLE_EVENT_WRITE);
+
 \OpenSwoole\Event::wait();
 echo "DONE\n";
 ?>
 --EXPECT--
-Finish
 received: hello from event_write
 DONE

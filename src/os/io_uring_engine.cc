@@ -22,6 +22,7 @@
 #include "swoole_coroutine.h"
 
 #include <sys/eventfd.h>
+#include <sys/sysmacros.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -44,6 +45,11 @@ IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{},
         swoole_warning("io_uring_queue_init_params() failed: %s", strerror(-ret));
         throw swoole::Exception(SW_ERROR_SYSTEM_CALL_FAIL);
     }
+
+    // Probe capabilities and run smoke test BEFORE registering the eventfd.
+    // This avoids stale eventfd notifications and leftover CQEs from
+    // io_uring_wait_cqe_timeout's internal timeout SQE.
+    detect_capabilities();
 
     event_fd_ = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (event_fd_ < 0) {
@@ -75,8 +81,6 @@ IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{},
         swoole_warning("swoole_event_add() failed for io_uring eventfd");
         throw swoole::Exception(SW_ERROR_SYSTEM_CALL_FAIL);
     }
-
-    detect_capabilities();
 
     sw_reactor()->set_exit_condition(
         Reactor::EXIT_CONDITION_IO_URING_TASK, [](Reactor *reactor, size_t &event_num) -> bool {
@@ -139,6 +143,44 @@ void IoUringEngine::detect_capabilities() {
     caps_.renameat = io_uring_opcode_supported(probe, IORING_OP_RENAMEAT);
 #endif
 
+    // Verify ring can do actual file I/O with an openat smoke test on /dev/null
+    if (caps_.openat) {
+        struct io_uring_sqe *sqe = io_uring_get_sqe(&ring_);
+        if (sqe) {
+            io_uring_prep_openat(sqe, AT_FDCWD, "/dev/null", O_RDONLY, 0);
+            io_uring_sqe_set_data(sqe, nullptr);
+            io_uring_submit(&ring_);
+            struct io_uring_cqe *cqe;
+            struct __kernel_timespec ts = {.tv_sec = 1, .tv_nsec = 0};
+            int ret = io_uring_wait_cqe_timeout(&ring_, &cqe, &ts);
+            if (ret < 0 || cqe->res < 0) {
+                swoole_warning("io_uring file I/O disabled: openat smoke test failed (ret=%d, res=%d). "
+                               "File operations will use the thread pool. "
+                               "If running in Docker, enable io_uring with: "
+                               "--security-opt seccomp=unconfined or a custom seccomp profile allowing io_uring",
+                               ret, ret < 0 ? 0 : cqe->res);
+                if (ret >= 0) {
+                    io_uring_cqe_seen(&ring_, cqe);
+                }
+                memset(&caps_, 0, sizeof(caps_));
+                io_uring_free_probe(probe);
+                return;
+            }
+            // Close the fd we opened for the smoke test
+            if (cqe->res >= 0) {
+                ::close(cqe->res);
+            }
+            io_uring_cqe_seen(&ring_, cqe);
+
+            // Drain any leftover CQEs from io_uring_wait_cqe_timeout's
+            // internal timeout SQE to keep the ring clean
+            struct io_uring_cqe *drain_cqe;
+            while (io_uring_peek_cqe(&ring_, &drain_cqe) == 0) {
+                io_uring_cqe_seen(&ring_, drain_cqe);
+            }
+        }
+    }
+
     io_uring_free_probe(probe);
 }
 
@@ -155,7 +197,7 @@ int IoUringEngine::submit_and_yield(IoUringRequest *req) {
     Coroutine *co = Coroutine::get_current();
     req->coroutine = co;
 
-    if (!co->yield_ex()) {
+    if (!co->yield_ex(30.0)) {
         // Timeout or cancellation — mark request as abandoned so process_completions() cleans it up
         req->abandoned = true;
         pending_count_--;
@@ -306,7 +348,7 @@ int IoUringEngine::fstat(int fd, struct stat *statbuf) {
     Coroutine *co = Coroutine::get_current();
     req->coroutine = co;
 
-    if (!co->yield_ex()) {
+    if (!co->yield_ex(30.0)) {
         req->abandoned = true;
         pending_count_--;
         errno = co->is_timedout() ? ETIMEDOUT : ECANCELED;
