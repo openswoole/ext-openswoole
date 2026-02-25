@@ -7,8 +7,9 @@ if [ ! -f "/.dockerenv" ]; then
     exit
 fi
 
-#-----------install gdb for coredump backtraces------------
-apt-get update > /dev/null 2>&1 && apt-get install -y gdb liburing-dev > /dev/null 2>&1 || true
+#-----------install build dependencies------------
+apt-get update > /dev/null 2>&1 && apt-get install -y gdb > /dev/null 2>&1 || true
+apt-get install -y liburing-dev > /dev/null 2>&1 && HAVE_LIBURING=1 || HAVE_LIBURING=0
 ulimit -c unlimited
 echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern 2>/dev/null || true
 
@@ -28,9 +29,11 @@ CONFIGURE_OPTS="--enable-openssl \
 --enable-cares \
 --with-postgres"
 
-if [ -f /usr/include/liburing.h ] || [ -f /usr/local/include/liburing.h ]; then
+if [ "$HAVE_LIBURING" = "1" ]; then
     CONFIGURE_OPTS="$CONFIGURE_OPTS --enable-io-uring"
-    echo "📦 liburing detected, enabling io_uring"
+    echo "📦 liburing-dev installed, enabling io_uring"
+else
+    echo "⚠️ liburing-dev not available, skipping io_uring"
 fi
 
 ./configure $CONFIGURE_OPTS > /dev/null && \
