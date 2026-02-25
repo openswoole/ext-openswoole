@@ -8,6 +8,7 @@ skip_if_no_io_uring();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+Co::set(['reactor_type' => OPENSWOOLE_IO_URING]);
 swoole_event_defer(function () {
     echo "defer 1\n";
     swoole_event_defer(function () {

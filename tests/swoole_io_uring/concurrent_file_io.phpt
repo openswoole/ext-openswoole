@@ -8,6 +8,7 @@ skip_if_no_io_uring();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+Co::set(['reactor_type' => OPENSWOOLE_IO_URING]);
 $prefix = '/tmp/swoole_io_uring_concurrent_' . getmypid();
 
 Co\run(function () use ($prefix) {

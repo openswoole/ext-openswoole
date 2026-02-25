@@ -8,6 +8,7 @@ skip_if_no_io_uring();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+Co::set(['reactor_type' => OPENSWOOLE_IO_URING]);
 $test_file = '/tmp/swoole_io_uring_phpt_test_' . getmypid();
 $test_file2 = $test_file . '_renamed';
 $test_dir = $test_file . '_dir';

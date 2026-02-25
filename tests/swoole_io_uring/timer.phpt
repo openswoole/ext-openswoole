@@ -8,6 +8,7 @@ skip_if_no_io_uring();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+Co::set(['reactor_type' => OPENSWOOLE_IO_URING]);
 $count = 0;
 $id = swoole_timer_tick(10, function () use (&$count, &$id) {
     $count++;
