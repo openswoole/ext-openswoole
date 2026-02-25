@@ -64,9 +64,7 @@ void ReactorImpl::after_removal_failure(network::Socket *_socket) {
 
 Reactor::Reactor(int max_event, Type _type) {
     if (_type == TYPE_AUTO) {
-#ifdef HAVE_IO_URING
-        type_ = TYPE_IO_URING;
-#elif defined(HAVE_EPOLL)
+#ifdef HAVE_EPOLL
         type_ = TYPE_EPOLL;
 #elif defined(HAVE_KQUEUE)
         type_ = TYPE_KQUEUE;

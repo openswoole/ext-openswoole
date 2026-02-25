@@ -654,6 +654,7 @@ struct Global {
     uint32_t max_sockets;
     uint32_t max_concurrency;
     bool enable_server_token;
+    int reactor_type;
     //-----------------------[Memory]--------------------------
     MemoryPool *memory_pool;
     Allocator std_allocator;

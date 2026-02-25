@@ -15,6 +15,7 @@
 */
 #include "php_swoole_cxx.h"
 #include "php_swoole_process.h"
+#include "swoole_reactor.h"
 
 #if (HAVE_PCRE || HAVE_BUNDLED_PCRE) && !defined(COMPILE_DL_PCRE)
 #include "ext/pcre/php_pcre.h"
@@ -248,6 +249,35 @@ void php_swoole_set_global_option(HashTable *vht) {
     }
     if (php_swoole_array_get_value(vht, "enable_server_token", ztmp) && zval_is_true(ztmp)) {
         SwooleG.enable_server_token = zval_is_true(ztmp);
+    }
+    if (php_swoole_array_get_value(vht, "reactor_type", ztmp)) {
+        int reactor_type = (int) zval_get_long(ztmp);
+        switch (reactor_type) {
+        case swoole::Reactor::TYPE_AUTO:
+            break;
+#ifdef HAVE_IO_URING
+        case swoole::Reactor::TYPE_IO_URING:
+            break;
+#endif
+#ifdef HAVE_EPOLL
+        case swoole::Reactor::TYPE_EPOLL:
+            break;
+#endif
+#ifdef HAVE_KQUEUE
+        case swoole::Reactor::TYPE_KQUEUE:
+            break;
+#endif
+#ifdef HAVE_POLL
+        case swoole::Reactor::TYPE_POLL:
+            break;
+#endif
+        case swoole::Reactor::TYPE_SELECT:
+            break;
+        default:
+            php_swoole_error(E_WARNING, "unsupported reactor_type %d", reactor_type);
+            return;
+        }
+        SwooleG.reactor_type = reactor_type;
     }
 }
 
@@ -647,6 +677,8 @@ PHP_MINIT_FUNCTION(openswoole) {
     zend_declare_class_constant_string(
         openswoole_constants_ce, ZEND_STRL("OPTION_ENABLE_SERVER_TOKEN"), "enable_server_token");
     zend_declare_class_constant_string(
+        openswoole_constants_ce, ZEND_STRL("OPTION_REACTOR_TYPE"), "reactor_type");
+    zend_declare_class_constant_string(
         openswoole_constants_ce, ZEND_STRL("OPTION_AIO_CORE_WORKER_NUM"), "aio_core_worker_num");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("OPTION_AIO_WORKER_NUM"), "aio_worker_num");
     zend_declare_class_constant_string(
@@ -919,6 +951,14 @@ PHP_MINIT_FUNCTION(openswoole) {
     SW_REGISTER_LONG_CONSTANT("SWOOLE_SYNC", SW_FLAG_SYNC);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_ASYNC", SW_FLAG_ASYNC);
     SW_REGISTER_LONG_CONSTANT("SWOOLE_KEEP", SW_FLAG_KEEP);
+
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_EPOLL", swoole::Reactor::TYPE_EPOLL);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_KQUEUE", swoole::Reactor::TYPE_KQUEUE);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_POLL", swoole::Reactor::TYPE_POLL);
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_SELECT", swoole::Reactor::TYPE_SELECT);
+#ifdef HAVE_IO_URING
+    SW_REGISTER_LONG_CONSTANT("OPENSWOOLE_IO_URING", swoole::Reactor::TYPE_IO_URING);
+#endif
 
 #ifdef SW_USE_OPENSSL
     SW_REGISTER_LONG_CONSTANT("SWOOLE_SSL", SW_SOCK_SSL);

@@ -40,7 +40,7 @@ int swoole_event_init(int flags) {
         swoole_init();
     }
 
-    Reactor *reactor = new Reactor(SW_REACTOR_MAXEVENTS);
+    Reactor *reactor = new Reactor(SW_REACTOR_MAXEVENTS, static_cast<Reactor::Type>(SwooleG.reactor_type));
     if (!reactor->ready()) {
         return SW_ERR;
     }
