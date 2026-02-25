@@ -8,7 +8,7 @@ if [ ! -f "/.dockerenv" ]; then
 fi
 
 #-----------install gdb for coredump backtraces------------
-apt-get update > /dev/null 2>&1 && apt-get install -y gdb > /dev/null 2>&1 || true
+apt-get update > /dev/null 2>&1 && apt-get install -y gdb liburing-dev > /dev/null 2>&1 || true
 ulimit -c unlimited
 echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern 2>/dev/null || true
 
