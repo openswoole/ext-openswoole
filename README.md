@@ -99,6 +99,37 @@ xdebug.client_port=9003
 
 > **Note:** Fiber context mode requires PHP 8.3 or later. There is a minor performance overhead compared to the default ASM context, so it is recommended to use this mode only during development and debugging.
 
+## Reactor Settings
+
+OpenSwoole uses an event-driven reactor for non-blocking I/O. The reactor type can be configured globally via `Co::set()`:
+
+```php
+Co::set(['reactor_type' => OPENSWOOLE_IO_URING]);
+```
+
+### Available Reactor Types
+
+| Constant | Platform | Description |
+|----------|----------|-------------|
+| `OPENSWOOLE_SELECT` | All | `select()` system call, portable but limited scalability |
+| `OPENSWOOLE_POLL` | Linux, macOS | `poll()` system call, no fd limit like select |
+| `OPENSWOOLE_EPOLL` | Linux | `epoll`, high performance for large numbers of connections |
+| `OPENSWOOLE_KQUEUE` | macOS, BSD | `kqueue`, high performance on BSD-based systems |
+| `OPENSWOOLE_IO_URING` | Linux 5.1+ | `io_uring`, highest performance with async I/O support |
+
+By default, OpenSwoole automatically selects the best available reactor for your platform (`epoll` on Linux, `kqueue` on macOS).
+
+### Server Reactor Threads
+
+For `OpenSwoole\Server`, the number of reactor threads can be configured:
+
+```php
+$server = new OpenSwoole\Server('0.0.0.0', 9501);
+$server->set([
+    'reactor_num' => 4, // defaults to number of CPU cores
+]);
+```
+
 ## Frameworks & Components
 
 > PR are welcome if your framework is using openswoole
