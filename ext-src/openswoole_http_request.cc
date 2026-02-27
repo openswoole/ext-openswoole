@@ -49,13 +49,12 @@ using openswoole::ListenPort;
 using openswoole::microtime;
 using openswoole::Server;
 
-static int http_request_on_path(openswoole_http_parser *parser, const char *at, size_t length);
-static int http_request_on_query_string(openswoole_http_parser *parser, const char *at, size_t length);
-static int http_request_on_body(openswoole_http_parser *parser, const char *at, size_t length);
-static int http_request_on_header_field(openswoole_http_parser *parser, const char *at, size_t length);
-static int http_request_on_header_value(openswoole_http_parser *parser, const char *at, size_t length);
-static int http_request_on_headers_complete(openswoole_http_parser *parser);
-static int http_request_message_complete(openswoole_http_parser *parser);
+static int http_request_on_url(llhttp_t *parser, const char *at, size_t length);
+static int http_request_on_body(llhttp_t *parser, const char *at, size_t length);
+static int http_request_on_header_field(llhttp_t *parser, const char *at, size_t length);
+static int http_request_on_header_value(llhttp_t *parser, const char *at, size_t length);
+static int http_request_on_headers_complete(llhttp_t *parser);
+static int http_request_message_complete(llhttp_t *parser);
 
 static int multipart_body_on_header_field(multipart_parser *p, const char *at, size_t length);
 static int multipart_body_on_header_value(multipart_parser *p, const char *at, size_t length);
@@ -63,10 +62,36 @@ static int multipart_body_on_data(multipart_parser *p, const char *at, size_t le
 static int multipart_body_on_header_complete(multipart_parser *p);
 static int multipart_body_on_data_end(multipart_parser *p);
 
-static int http_request_on_path(openswoole_http_parser *parser, const char *at, size_t length) {
+static int http_request_on_url(llhttp_t *parser, const char *at, size_t length) {
     HttpContext *ctx = (HttpContext *) parser->data;
-    ctx->request.path = estrndup(at, length);
-    ctx->request.path_len = length;
+
+    // Find query string separator
+    const char *query = (const char *) memchr(at, '?', length);
+    size_t path_len = query ? (size_t)(query - at) : length;
+
+    // Set path
+    ctx->request.path = estrndup(at, path_len);
+    ctx->request.path_len = path_len;
+
+    // Parse query string if present
+    if (query) {
+        query++;  // skip '?'
+        size_t query_len = length - path_len - 1;
+        // Strip fragment (#) if present
+        const char *fragment = (const char *) memchr(query, '#', query_len);
+        if (fragment) {
+            query_len = fragment - query;
+        }
+
+        if (query_len > 0) {
+            add_assoc_stringl_ex(ctx->request.zserver, ZEND_STRL("query_string"), (char *) query, query_len);
+            sapi_module.treat_data(
+                PARSE_STRING,
+                estrndup(query, query_len),  // it will be freed by treat_data
+                openswoole_http_init_and_read_property(
+                    openswoole_http_request_ce, ctx->request.zobject, &ctx->request.zget, ZEND_STRL("get")));
+        }
+    }
     return 0;
 }
 
@@ -97,23 +122,23 @@ static inline char *http_trim_double_quote(char *ptr, int *len) {
     return tmp;
 }
 
-static osw_inline const char *http_get_method_name(enum openswoole_http_method method) {
-    return openswoole_http_method_str(method);
+static osw_inline const char *http_get_method_name(uint8_t method) {
+    return llhttp_method_name((llhttp_method_t) method);
 }
 
 // clang-format off
-static const openswoole_http_parser_settings http_parser_settings =
+static const llhttp_settings_t http_parser_settings =
 {
-    nullptr,
-    http_request_on_path,
-    http_request_on_query_string,
-    nullptr,
-    nullptr,
-    http_request_on_header_field,
-    http_request_on_header_value,
-    http_request_on_headers_complete,
-    http_request_on_body,
-    http_request_message_complete
+    nullptr,                          // on_message_begin
+    http_request_on_url,             // on_url
+    nullptr,                          // on_status
+    http_request_on_header_field,    // on_header_field
+    http_request_on_header_value,    // on_header_value
+    http_request_on_headers_complete,// on_headers_complete
+    http_request_on_body,            // on_body
+    http_request_message_complete,   // on_message_complete
+    nullptr,                          // on_chunk_header
+    nullptr,                          // on_chunk_complete
 };
 
 static const multipart_parser_settings mt_parser_settings =
@@ -128,8 +153,20 @@ static const multipart_parser_settings mt_parser_settings =
 };
 // clang-format on
 
+const llhttp_settings_t *openswoole_http_server_get_parser_settings() {
+    return &http_parser_settings;
+}
+
 size_t HttpContext::parse(const char *data, size_t length) {
-    return openswoole_http_parser_execute(&parser, &http_parser_settings, data, length);
+    llhttp_errno_t err = llhttp_execute(&parser, data, length);
+    if (err == HPE_OK) {
+        return length;
+    }
+    const char *error_pos = llhttp_get_error_pos(&parser);
+    if (error_pos >= data && error_pos <= data + length) {
+        return error_pos - data;
+    }
+    return 0;
 }
 
 zend_class_entry *openswoole_http_request_ce;
@@ -239,18 +276,7 @@ void php_openswoole_http_request_minit(int module_number) {
     zend_declare_property_null(openswoole_http_request_ce, ZEND_STRL("tmpfiles"), ZEND_ACC_PUBLIC);
 }
 
-static int http_request_on_query_string(openswoole_http_parser *parser, const char *at, size_t length) {
-    HttpContext *ctx = (HttpContext *) parser->data;
-    add_assoc_stringl_ex(ctx->request.zserver, ZEND_STRL("query_string"), (char *) at, length);
-    // parse url params
-    sapi_module.treat_data(PARSE_STRING,
-                           estrndup(at, length),  // it will be freed by treat_data
-                           openswoole_http_init_and_read_property(
-                               openswoole_http_request_ce, ctx->request.zobject, &ctx->request.zget, ZEND_STRL("get")));
-    return 0;
-}
-
-static int http_request_on_header_field(openswoole_http_parser *parser, const char *at, size_t length) {
+static int http_request_on_header_field(llhttp_t *parser, const char *at, size_t length) {
     HttpContext *ctx = (HttpContext *) parser->data;
     ctx->current_header_name = (char *) at;
     ctx->current_header_name_len = length;
@@ -376,7 +402,7 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
     }
 }
 
-static int http_request_on_header_value(openswoole_http_parser *parser, const char *at, size_t length) {
+static int http_request_on_header_value(llhttp_t *parser, const char *at, size_t length) {
     size_t offset = 0;
     HttpContext *ctx = (HttpContext *) parser->data;
     zval *zheader = ctx->request.zheader;
@@ -408,8 +434,8 @@ static int http_request_on_header_value(openswoole_http_parser *parser, const ch
         if (port->open_websocket_protocol) {
             conn->websocket_status = openswoole::websocket::STATUS_CONNECTION;
         }
-    } else if ((parser->method == PHP_HTTP_POST || parser->method == PHP_HTTP_PUT ||
-                parser->method == PHP_HTTP_DELETE || parser->method == PHP_HTTP_PATCH) &&
+    } else if ((parser->method == HTTP_POST || parser->method == HTTP_PUT ||
+                parser->method == HTTP_DELETE || parser->method == HTTP_PATCH) &&
                OSW_STREQ(header_name, header_len, "content-type")) {
         if (OSW_STRCASECT(at, length, "application/x-www-form-urlencoded")) {
             ctx->request.post_form_urlencoded = 1;
@@ -433,8 +459,6 @@ static int http_request_on_header_value(openswoole_http_parser *parser, const ch
             }
             if (boundary_len <= 0) {
                 openswoole_warning("invalid multipart/form-data body fd:%ld", ctx->fd);
-                /* make it same with protocol error */
-                ctx->parser.state = s_dead;
                 return -1;
             }
             // trim '"'
@@ -462,7 +486,7 @@ _add_header:
     return 0;
 }
 
-static int http_request_on_headers_complete(openswoole_http_parser *parser) {
+static int http_request_on_headers_complete(llhttp_t *parser) {
     HttpContext *ctx = (HttpContext *) parser->data;
     const char *vpath = ctx->request.path, *end = vpath + ctx->request.path_len, *p = end;
     zval *zserver = ctx->request.zserver;
@@ -481,9 +505,9 @@ static int http_request_on_headers_complete(openswoole_http_parser *parser) {
         }
     }
 
-    ctx->keepalive = openswoole_http_should_keep_alive(parser);
+    ctx->keepalive = llhttp_should_keep_alive(parser);
 
-    add_assoc_string(zserver, "request_method", http_get_method_name(parser->method));
+    add_assoc_string(zserver, "request_method", (char *) llhttp_method_name((llhttp_method_t) parser->method));
     add_assoc_stringl_ex(zserver, ZEND_STRL("request_uri"), ctx->request.path, ctx->request.path_len);
     // path_info should be decoded
     zend_string *zstr_path = zend_string_init(ctx->request.path, ctx->request.path_len, 0);
@@ -758,7 +782,7 @@ static int multipart_body_on_data_end(multipart_parser *p) {
     return 0;
 }
 
-static int http_request_on_body(openswoole_http_parser *parser, const char *at, size_t length) {
+static int http_request_on_body(llhttp_t *parser, const char *at, size_t length) {
     if (length == 0) {
         return 0;
     }
@@ -802,7 +826,7 @@ static int http_request_on_body(openswoole_http_parser *parser, const char *at, 
     return 0;
 }
 
-static int http_request_message_complete(openswoole_http_parser *parser) {
+static int http_request_message_complete(llhttp_t *parser) {
     HttpContext *ctx = (HttpContext *) parser->data;
     size_t content_length = ctx->request.chunked_body ? ctx->request.chunked_body->length : ctx->request.body_length;
 
@@ -822,7 +846,7 @@ static int http_request_message_complete(openswoole_http_parser *parser) {
 
     openswoole_trace_log(OSW_TRACE_HTTP, "request body length=%ld", content_length);
 
-    return 1; /* return from execute */
+    return 0;
 }
 
 #ifdef OSW_HAVE_COMPRESSION
@@ -962,9 +986,9 @@ static PHP_METHOD(openswoole_http_request, create) {
         OSW_HASHTABLE_FOREACH_END();
     }
 
-    openswoole_http_parser *parser = &ctx->parser;
+    llhttp_t *parser = &ctx->parser;
+    llhttp_init(parser, HTTP_REQUEST, openswoole_http_server_get_parser_settings());
     parser->data = ctx;
-    openswoole_http_parser_init(parser, PHP_HTTP_REQUEST);
 
     openswoole_http_init_and_read_property(
         openswoole_http_request_ce, zrequest_object, &ctx->request.zserver, ZEND_STRL("server"));

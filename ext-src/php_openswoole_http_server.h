@@ -29,6 +29,7 @@
 #include "openswoole_http2.h"
 #endif
 
+const llhttp_settings_t *openswoole_http_server_get_parser_settings();
 int openswoole_websocket_onMessage(openswoole::Server *serv, openswoole::RecvData *req);
 int openswoole_websocket_onHandshake(openswoole::Server *serv, openswoole::ListenPort *port, openswoole::http::Context *ctx);
 void openswoole_websocket_onOpen(openswoole::http::Context *ctx);

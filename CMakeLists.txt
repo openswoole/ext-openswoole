@@ -159,7 +159,9 @@ set(ext_src_list  ${ext_cxx_files}
         thirdparty/php/sockets/conversions.cc
         thirdparty/php/sockets/sockaddr_conv.cc
         thirdparty/php/standard/proc_open.cc
-        thirdparty/openswoole_http_parser.c
+        thirdparty/llhttp/api.c
+        thirdparty/llhttp/http.c
+        thirdparty/llhttp/llhttp.c
         thirdparty/multipart_parser.c
         thirdparty/nghttp2/nghttp2_hd.c
         thirdparty/nghttp2/nghttp2_rcbuf.c

@@ -51,83 +51,19 @@ require __DIR__ . '/../include/bootstrap.php';
  *                    | "{" | "}" | SP | HT
  */
 
+// Only valid RFC 7230 token characters (tchar) are allowed by llhttp:
+// tchar = "!" / "#" / "$" / "%" / "&" / "'" / "*" / "+" / "-" / "." /
+//         "^" / "_" / "`" / "|" / "~" / DIGIT / ALPHA
 static $normal_chars = [
     '!',
-    '"',
     '$',
     '%',
     '&',
     '\'',
-
-    // not allowed as a start in http parser
-    'x(',
-    'x)',
-
     '*',
     '+',
-
-    // not allowed as a start in http parser
-    'x,',
-
     '-',
     '.',
-    '/',
-
-    // not support numeric header name in swoole
-    // '0',
-    // '1',
-    // '2',
-    // '3',
-    // '4',
-    // '5',
-    // '6',
-    // '7',
-    // '8',
-    // '9',
-
-    // will be split and not allowed as a start in http parser
-    // ':',
-
-    // not allowed as a start in http parser
-    'x;',
-    'x<',
-    'x=',
-    'x>',
-    'x@',
-
-    // case insensitive
-    // 'A',
-    // 'B',
-    // 'C',
-    // 'D',
-    // 'E',
-    // 'F',
-    // 'G',
-    // 'H',
-    // 'I',
-    // 'J',
-    // 'K',
-    // 'L',
-    // 'M',
-    // 'N',
-    // 'O',
-    // 'P',
-    // 'Q',
-    // 'R',
-    // 'S',
-    // 'T',
-    // 'U',
-    // 'V',
-    // 'W',
-    // 'X',
-    // 'Y',
-    // 'Z',
-
-    // not allowed as a start in http parser
-    'x[',
-    'x\\',
-    'x]',
-
     '^',
     '_',
     '`',
@@ -159,11 +95,7 @@ static $normal_chars = [
     'y',
     'z',
 
-    // not allowed as a start in http parser
-    'x{',
-
     '|',
-    '}',
     '~',
 ];
 

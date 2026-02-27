@@ -729,7 +729,9 @@ if test "$PHP_OPENSWOOLE" != "no"; then
         thirdparty/php/standard/proc_open.cc"
 
     openswoole_source_file="$openswoole_source_file \
-        thirdparty/openswoole_http_parser.c \
+        thirdparty/llhttp/api.c \
+        thirdparty/llhttp/http.c \
+        thirdparty/llhttp/llhttp.c \
         thirdparty/multipart_parser.c"
 
     openswoole_source_file="$openswoole_source_file \
@@ -863,7 +865,7 @@ if test "$PHP_OPENSWOOLE" != "no"; then
         AC_MSG_RESULT([disabled])
     fi
 
-    PHP_INSTALL_HEADERS([ext/openswoole], [ext-src/*.h config.h php_openswoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h])
+    PHP_INSTALL_HEADERS([ext/openswoole], [ext-src/*.h config.h php_openswoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h thirdparty/llhttp/*.h])
 
     PHP_REQUIRE_CXX()
 
@@ -886,6 +888,7 @@ if test "$PHP_OPENSWOOLE" != "no"; then
     PHP_ADD_BUILD_DIR($ext_builddir/src/protocol)
     PHP_ADD_BUILD_DIR($ext_builddir/src/coroutine)
     PHP_ADD_BUILD_DIR($ext_builddir/src/wrapper)
+    PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/llhttp)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asmv1)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asm)

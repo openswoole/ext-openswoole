@@ -91,12 +91,13 @@ int php_openswoole_http_server_onReceive(Server *serv, RecvData *req) {
     args[0] = *ctx->request.zobject;
     args[1] = *ctx->response.zobject;
 
-    openswoole_http_parser *parser = &ctx->parser;
+    llhttp_t *parser = &ctx->parser;
+    llhttp_init(parser, HTTP_REQUEST, openswoole_http_server_get_parser_settings());
     parser->data = ctx;
-    openswoole_http_parser_init(parser, PHP_HTTP_REQUEST);
 
     size_t parsed_n = ctx->parse(Z_STRVAL_P(zdata), Z_STRLEN_P(zdata));
-    if (ctx->parser.state == s_dead) {
+    llhttp_errno_t parse_err = llhttp_get_errno(&ctx->parser);
+    if (parse_err != HPE_OK && parse_err != HPE_PAUSED_UPGRADE) {
 #ifdef OSW_HTTP_BAD_REQUEST_PACKET
         ctx->send(ctx, OSW_STRL(OSW_HTTP_BAD_REQUEST_PACKET));
 #endif

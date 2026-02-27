@@ -435,7 +435,7 @@ static void http_build_header(HttpContext *ctx, String *response, size_t body_le
         }
     }
     // Content-Length
-    else if (body_length > 0 || ctx->parser.method != PHP_HTTP_HEAD) {
+    else if (body_length > 0 || ctx->parser.method != HTTP_HEAD) {
 #ifdef OSW_HAVE_COMPRESSION
         if (ctx->accept_compression) {
             body_length = openswoole_zlib_buffer->length;
@@ -1304,8 +1304,8 @@ static PHP_METHOD(openswoole_http_response, create) {
             ctx->init(serv);
         } else if (sock) {
             ctx->init(sock);
+            llhttp_init(&ctx->parser, HTTP_REQUEST, openswoole_http_server_get_parser_settings());
             ctx->parser.data = ctx;
-            openswoole_http_parser_init(&ctx->parser, PHP_HTTP_REQUEST);
         } else {
             assert(0);
             RETURN_FALSE;
