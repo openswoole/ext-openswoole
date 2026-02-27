@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_channel.h"
+#include "openswoole_channel.h"
 
 using namespace std;
 using namespace swoole;

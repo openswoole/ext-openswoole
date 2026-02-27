@@ -13,7 +13,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_pipe.h"
+#include "openswoole_pipe.h"
 
 #ifdef HAVE_IO_URING
 

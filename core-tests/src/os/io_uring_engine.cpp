@@ -16,8 +16,8 @@
 
 #ifdef HAVE_IO_URING
 
-#include "swoole_io_uring.h"
-#include "swoole_coroutine.h"
+#include "openswoole_io_uring.h"
+#include "openswoole_coroutine.h"
 
 using namespace swoole;
 

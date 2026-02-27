@@ -18,9 +18,9 @@
 
 #include "httplib_client.h"
 #include "llhttp.h"
-#include "swoole_server.h"
-#include "swoole_file.h"
-#include "swoole_http.h"
+#include "openswoole_server.h"
+#include "openswoole_file.h"
+#include "openswoole_http.h"
 
 using namespace swoole;
 using namespace std;

@@ -16,9 +16,9 @@
 
 #include "test_coroutine.h"
 
-#include "swoole_socket.h"
+#include "openswoole_socket.h"
 
-#include "swoole_util.h"
+#include "openswoole_util.h"
 
 using namespace swoole;
 using swoole::coroutine::Socket;

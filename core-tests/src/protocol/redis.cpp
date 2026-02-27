@@ -17,7 +17,7 @@
 #include "test_core.h"
 #include "test_coroutine.h"
 #include "redis_client.h"
-#include "swoole_redis.h"
+#include "openswoole_redis.h"
 
 using namespace swoole;
 using namespace std;

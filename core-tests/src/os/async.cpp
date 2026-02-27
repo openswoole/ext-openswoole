@@ -16,8 +16,8 @@
 
 #include "test_core.h"
 
-#include "swoole_socket.h"
-#include "swoole_async.h"
+#include "openswoole_socket.h"
+#include "openswoole_async.h"
 
 #include <atomic>
 

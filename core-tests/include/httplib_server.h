@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "swoole_coroutine_system.h"
-#include "swoole_coroutine_socket.h"
+#include "openswoole_coroutine_system.h"
+#include "openswoole_coroutine_socket.h"
 #include "httplib_client.h"
 
 using swoole::Coroutine;

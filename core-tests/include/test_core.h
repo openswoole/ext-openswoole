@@ -1,7 +1,7 @@
 #pragma once
 
-#include "swoole_api.h"
-#include "swoole_client.h"
+#include "openswoole_api.h"
+#include "openswoole_client.h"
 
 #include <gtest/gtest.h>
 

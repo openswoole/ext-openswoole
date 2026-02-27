@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_mime_type.h"
+#include "openswoole_mime_type.h"
 
 using namespace swoole;
 

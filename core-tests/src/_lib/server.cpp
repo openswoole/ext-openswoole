@@ -16,7 +16,7 @@
 
 #include "test_core.h"
 #include "test_server.h"
-#include "swoole_memory.h"
+#include "openswoole_memory.h"
 
 using namespace swoole::test;
 using swoole::network::Address;

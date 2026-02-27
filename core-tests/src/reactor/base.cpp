@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_pipe.h"
+#include "openswoole_pipe.h"
 
 using namespace swoole;
 

@@ -1,10 +1,10 @@
-#include "swoole.h"
-#include "swoole_api.h"
-#include "swoole_client.h"
-#include "swoole_server.h"
-#include "swoole_coroutine.h"
-#include "swoole_coroutine_socket.h"
-#include "swoole_coroutine_system.h"
+#include "openswoole.h"
+#include "openswoole_api.h"
+#include "openswoole_client.h"
+#include "openswoole_server.h"
+#include "openswoole_coroutine.h"
+#include "openswoole_coroutine_socket.h"
+#include "openswoole_coroutine_system.h"
 
 #include <iostream>
 

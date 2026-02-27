@@ -15,8 +15,8 @@
 */
 
 #include "test_coroutine.h"
-#include "swoole_file.h"
-#include "swoole_util.h"
+#include "openswoole_file.h"
+#include "openswoole_util.h"
 
 using swoole::Coroutine;
 using swoole::String;

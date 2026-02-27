@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_util.h"
+#include "openswoole_util.h"
 
 using swoole::Timer;
 using swoole::TimerNode;

@@ -2,11 +2,11 @@
 
 #include "test_core.h"
 
-#include "swoole_coroutine.h"
-#include "swoole_coroutine_channel.h"
-#include "swoole_coroutine_system.h"
-#include "swoole_coroutine_socket.h"
-#include "swoole_coroutine_c_api.h"
+#include "openswoole_coroutine.h"
+#include "openswoole_coroutine_channel.h"
+#include "openswoole_coroutine_system.h"
+#include "openswoole_coroutine_socket.h"
+#include "openswoole_coroutine_c_api.h"
 
 namespace swoole { namespace test {
 

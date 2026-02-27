@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_server.h"
+#include "openswoole_server.h"
 
 using namespace std;
 using namespace swoole;

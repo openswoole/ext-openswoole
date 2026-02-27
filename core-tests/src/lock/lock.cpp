@@ -15,8 +15,8 @@
 */
 
 #include "test_core.h"
-#include "swoole_lock.h"
-#include "swoole_util.h"
+#include "openswoole_lock.h"
+#include "openswoole_util.h"
 
 #include <thread>
 

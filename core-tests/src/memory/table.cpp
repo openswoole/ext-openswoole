@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_table.h"
+#include "openswoole_table.h"
 
 using namespace swoole;
 
