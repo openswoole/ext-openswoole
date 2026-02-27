@@ -43,16 +43,16 @@ static void event_defer_callback(void *data);
 static void event_end_callback(void *data);
 
 OSW_EXTERN_C_BEGIN
-static PHP_FUNCTION(openswoole_event_add);
-static PHP_FUNCTION(openswoole_event_set);
-static PHP_FUNCTION(openswoole_event_del);
-static PHP_FUNCTION(openswoole_event_write);
-static PHP_FUNCTION(openswoole_event_wait);
-static PHP_FUNCTION(openswoole_event_exit);
-static PHP_FUNCTION(openswoole_event_defer);
-static PHP_FUNCTION(openswoole_event_cycle);
-static PHP_FUNCTION(openswoole_event_dispatch);
-static PHP_FUNCTION(openswoole_event_isset);
+PHP_FUNCTION(openswoole_event_add);
+PHP_FUNCTION(openswoole_event_set);
+PHP_FUNCTION(openswoole_event_del);
+PHP_FUNCTION(openswoole_event_write);
+PHP_FUNCTION(openswoole_event_wait);
+PHP_FUNCTION(openswoole_event_exit);
+PHP_FUNCTION(openswoole_event_defer);
+PHP_FUNCTION(openswoole_event_cycle);
+PHP_FUNCTION(openswoole_event_dispatch);
+PHP_FUNCTION(openswoole_event_isset);
 OSW_EXTERN_C_END
 
 // clang-format off
@@ -76,28 +76,6 @@ static const zend_function_entry openswoole_event_methods[] =
 void php_openswoole_event_minit(int module_number) {
     OSW_INIT_CLASS_ENTRY(openswoole_event, "OpenSwoole\\Event", "openswoole_event", nullptr, openswoole_event_methods);
     OSW_SET_CLASS_CREATE(openswoole_event, osw_zend_create_object_deny);
-
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "add", CG(function_table), "openswoole_event_add");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "del", CG(function_table), "openswoole_event_del");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "set", CG(function_table), "openswoole_event_set");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "isset", CG(function_table), "openswoole_event_isset");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "dispatch", CG(function_table), "openswoole_event_dispatch");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "defer", CG(function_table), "openswoole_event_defer");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "cycle", CG(function_table), "openswoole_event_cycle");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "write", CG(function_table), "openswoole_event_write");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "wait", CG(function_table), "openswoole_event_wait");
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "exit", CG(function_table), "openswoole_event_exit");
-    /* Backward-compat: swoole_event_* function aliases */
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_add", CG(function_table), "swoole_event_add");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_del", CG(function_table), "swoole_event_del");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_set", CG(function_table), "swoole_event_set");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_isset", CG(function_table), "swoole_event_isset");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_dispatch", CG(function_table), "swoole_event_dispatch");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_defer", CG(function_table), "swoole_event_defer");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_cycle", CG(function_table), "swoole_event_cycle");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_write", CG(function_table), "swoole_event_write");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_wait", CG(function_table), "swoole_event_wait");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_event_exit", CG(function_table), "swoole_event_exit");
 }
 
 static void event_object_free(void *data) {
@@ -375,7 +353,7 @@ static Socket *event_get_socket(int socket_fd) {
     return i->second;
 }
 
-static PHP_FUNCTION(openswoole_event_add) {
+PHP_FUNCTION(openswoole_event_add) {
     zval *zfd;
     zend_fcall_info fci_read = empty_fcall_info;
     zend_fcall_info_cache fci_cache_read = empty_fcall_info_cache;
@@ -450,7 +428,7 @@ static PHP_FUNCTION(openswoole_event_add) {
     RETURN_LONG(socket_fd);
 }
 
-static PHP_FUNCTION(openswoole_event_write) {
+PHP_FUNCTION(openswoole_event_write) {
     zval *zfd;
     char *data;
     size_t len;
@@ -484,7 +462,7 @@ static PHP_FUNCTION(openswoole_event_write) {
     }
 }
 
-static PHP_FUNCTION(openswoole_event_set) {
+PHP_FUNCTION(openswoole_event_set) {
     if (!osw_reactor()) {
         php_openswoole_fatal_error(E_WARNING, "reactor is not ready, cannot call openswoole_event_set");
         RETURN_FALSE;
@@ -551,7 +529,7 @@ static PHP_FUNCTION(openswoole_event_set) {
     RETURN_TRUE;
 }
 
-static PHP_FUNCTION(openswoole_event_del) {
+PHP_FUNCTION(openswoole_event_del) {
     zval *zfd;
 
     if (!osw_reactor()) {
@@ -581,7 +559,7 @@ static PHP_FUNCTION(openswoole_event_del) {
     RETURN_BOOL(retval == OSW_OK);
 }
 
-static PHP_FUNCTION(openswoole_event_defer) {
+PHP_FUNCTION(openswoole_event_defer) {
     zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) ecalloc(1, sizeof(zend_fcall_info_cache));
 
@@ -597,7 +575,7 @@ static PHP_FUNCTION(openswoole_event_defer) {
     RETURN_TRUE;
 }
 
-static PHP_FUNCTION(openswoole_event_cycle) {
+PHP_FUNCTION(openswoole_event_cycle) {
     if (!osw_reactor()) {
         php_openswoole_fatal_error(E_WARNING, "reactor is not ready, cannot call %s", ZSTR_VAL(openswoole_event_ce->name));
         RETURN_FALSE;
@@ -650,18 +628,18 @@ static PHP_FUNCTION(openswoole_event_cycle) {
     RETURN_TRUE;
 }
 
-static PHP_FUNCTION(openswoole_event_exit) {
+PHP_FUNCTION(openswoole_event_exit) {
     php_openswoole_event_exit();
 }
 
-static PHP_FUNCTION(openswoole_event_wait) {
+PHP_FUNCTION(openswoole_event_wait) {
     if (!osw_reactor()) {
         return;
     }
     php_openswoole_event_wait();
 }
 
-static PHP_FUNCTION(openswoole_event_dispatch) {
+PHP_FUNCTION(openswoole_event_dispatch) {
     if (!osw_reactor()) {
         RETURN_FALSE;
     }
@@ -681,7 +659,7 @@ static PHP_FUNCTION(openswoole_event_dispatch) {
     RETURN_TRUE;
 }
 
-static PHP_FUNCTION(openswoole_event_isset) {
+PHP_FUNCTION(openswoole_event_isset) {
     if (!osw_reactor()) {
         RETURN_FALSE;
     }

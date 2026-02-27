@@ -374,6 +374,11 @@ static PHP_METHOD(openswoole_connection_iterator, __destruct);
  */
 static PHP_METHOD(openswoole_server_task, finish);
 static PHP_METHOD(openswoole_server_task, pack);
+/* Timer/Event functions (defined in openswoole_timer.cc / openswoole_event.cc) */
+PHP_FUNCTION(openswoole_timer_after);
+PHP_FUNCTION(openswoole_timer_tick);
+PHP_FUNCTION(openswoole_timer_clear);
+PHP_FUNCTION(openswoole_event_defer);
 OSW_EXTERN_C_END
 
 // clang-format off
@@ -424,6 +429,10 @@ static zend_function_entry openswoole_server_methods[] = {
     PHP_ME(openswoole_server, getSocket, arginfo_class_OpenSwoole_Server_getSocket, ZEND_ACC_PUBLIC)
 #endif
     PHP_ME(openswoole_server, bind, arginfo_class_OpenSwoole_Server_bind, ZEND_ACC_PUBLIC)
+    ZEND_FENTRY(after, ZEND_FN(openswoole_timer_after), arginfo_class_OpenSwoole_Server_after, ZEND_ACC_PUBLIC)
+    ZEND_FENTRY(tick, ZEND_FN(openswoole_timer_tick), arginfo_class_OpenSwoole_Server_tick, ZEND_ACC_PUBLIC)
+    ZEND_FENTRY(clearTimer, ZEND_FN(openswoole_timer_clear), arginfo_class_OpenSwoole_Server_clearTimer, ZEND_ACC_PUBLIC)
+    ZEND_FENTRY(defer, ZEND_FN(openswoole_event_defer), arginfo_class_OpenSwoole_Server_defer, ZEND_ACC_PUBLIC)
     {nullptr, nullptr, nullptr}
 };
 
@@ -459,12 +468,6 @@ void php_openswoole_server_minit(int module_number) {
     OSW_SET_CLASS_CLONEABLE(openswoole_server, osw_zend_class_clone_deny);
     OSW_SET_CLASS_UNSET_PROPERTY_HANDLER(openswoole_server, osw_zend_class_unset_property_deny);
     OSW_SET_CLASS_CUSTOM_OBJECT(openswoole_server, server_create_object, server_free_object, ServerObject, std);
-
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "after", &openswoole_server_ce->function_table, "after");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "tick", &openswoole_server_ce->function_table, "tick");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "clear", &openswoole_server_ce->function_table, "clearTimer");
-
-    OSW_FUNCTION_ALIAS(&openswoole_event_ce->function_table, "defer", &openswoole_server_ce->function_table, "defer");
 
     // ---------------------------------------Task-------------------------------------
     OSW_INIT_CLASS_ENTRY(

@@ -32,14 +32,14 @@ static zend_object_handlers openswoole_timer_handlers;
 static zend_class_entry *openswoole_timer_iterator_ce;
 
 OSW_EXTERN_C_BEGIN
-static PHP_FUNCTION(openswoole_timer_after);
-static PHP_FUNCTION(openswoole_timer_tick);
-static PHP_FUNCTION(openswoole_timer_exists);
-static PHP_FUNCTION(openswoole_timer_info);
-static PHP_FUNCTION(openswoole_timer_stats);
-static PHP_FUNCTION(openswoole_timer_list);
-static PHP_FUNCTION(openswoole_timer_clear);
-static PHP_FUNCTION(openswoole_timer_clear_all);
+PHP_FUNCTION(openswoole_timer_after);
+PHP_FUNCTION(openswoole_timer_tick);
+PHP_FUNCTION(openswoole_timer_exists);
+PHP_FUNCTION(openswoole_timer_info);
+PHP_FUNCTION(openswoole_timer_stats);
+PHP_FUNCTION(openswoole_timer_list);
+PHP_FUNCTION(openswoole_timer_clear);
+PHP_FUNCTION(openswoole_timer_clear_all);
 OSW_EXTERN_C_END
 
 // clang-format off
@@ -67,24 +67,6 @@ void php_openswoole_timer_minit(int module_number) {
                              nullptr,
                              nullptr,
                              spl_ce_ArrayIterator);
-
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "after", CG(function_table), "openswoole_timer_after");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "tick", CG(function_table), "openswoole_timer_tick");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "exists", CG(function_table), "openswoole_timer_exists");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "info", CG(function_table), "openswoole_timer_info");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "stats", CG(function_table), "openswoole_timer_stats");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "list", CG(function_table), "openswoole_timer_list");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "clear", CG(function_table), "openswoole_timer_clear");
-    OSW_FUNCTION_ALIAS(&openswoole_timer_ce->function_table, "clearAll", CG(function_table), "openswoole_timer_clear_all");
-    /* Backward-compat: swoole_timer_* function aliases */
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_after", CG(function_table), "swoole_timer_after");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_tick", CG(function_table), "swoole_timer_tick");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_exists", CG(function_table), "swoole_timer_exists");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_info", CG(function_table), "swoole_timer_info");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_stats", CG(function_table), "swoole_timer_stats");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_list", CG(function_table), "swoole_timer_list");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_clear", CG(function_table), "swoole_timer_clear");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_timer_clear_all", CG(function_table), "swoole_timer_clear_all");
 
     zend_declare_class_constant_long(openswoole_timer_ce, ZEND_STRL("TIMER_MIN_MS"), OSW_TIMER_MIN_MS);
     zend_declare_class_constant_double(openswoole_timer_ce, ZEND_STRL("TIMER_MIN_SEC"), OSW_TIMER_MIN_SEC);
@@ -194,15 +176,15 @@ static void timer_add(INTERNAL_FUNCTION_PARAMETERS, bool persistent) {
     RETURN_LONG(tnode->id);
 }
 
-static PHP_FUNCTION(openswoole_timer_after) {
+PHP_FUNCTION(openswoole_timer_after) {
     timer_add(INTERNAL_FUNCTION_PARAM_PASSTHRU, false);
 }
 
-static PHP_FUNCTION(openswoole_timer_tick) {
+PHP_FUNCTION(openswoole_timer_tick) {
     timer_add(INTERNAL_FUNCTION_PARAM_PASSTHRU, true);
 }
 
-static PHP_FUNCTION(openswoole_timer_exists) {
+PHP_FUNCTION(openswoole_timer_exists) {
     if (UNEXPECTED(!OpenSwooleTG.timer)) {
         RETURN_FALSE;
     } else {
@@ -218,7 +200,7 @@ static PHP_FUNCTION(openswoole_timer_exists) {
     }
 }
 
-static PHP_FUNCTION(openswoole_timer_info) {
+PHP_FUNCTION(openswoole_timer_info) {
     if (UNEXPECTED(!OpenSwooleTG.timer)) {
         RETURN_FALSE;
     } else {
@@ -241,7 +223,7 @@ static PHP_FUNCTION(openswoole_timer_info) {
     }
 }
 
-static PHP_FUNCTION(openswoole_timer_stats) {
+PHP_FUNCTION(openswoole_timer_stats) {
     array_init(return_value);
     if (OpenSwooleTG.timer) {
         add_assoc_bool(return_value, "initialized", 1);
@@ -254,7 +236,7 @@ static PHP_FUNCTION(openswoole_timer_stats) {
     }
 }
 
-static PHP_FUNCTION(openswoole_timer_list) {
+PHP_FUNCTION(openswoole_timer_list) {
     zval zlist;
     array_init(&zlist);
     if (EXPECTED(OpenSwooleTG.timer)) {
@@ -271,7 +253,7 @@ static PHP_FUNCTION(openswoole_timer_list) {
     zval_ptr_dtor(&zlist);
 }
 
-static PHP_FUNCTION(openswoole_timer_clear) {
+PHP_FUNCTION(openswoole_timer_clear) {
     if (UNEXPECTED(!OpenSwooleTG.timer)) {
         RETURN_FALSE;
     } else {
@@ -289,6 +271,6 @@ static PHP_FUNCTION(openswoole_timer_clear) {
     }
 }
 
-static PHP_FUNCTION(openswoole_timer_clear_all) {
+PHP_FUNCTION(openswoole_timer_clear_all) {
     RETURN_BOOL(php_openswoole_timer_clear_all());
 }

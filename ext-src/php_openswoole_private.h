@@ -719,37 +719,6 @@ static osw_inline void osw_register_swoole_snake_compat_alias(const char *snake_
         }                                                                                                              \
     } while (0)
 
-#define OSW_FUNCTION_ALIAS(origin_function_table, origin, alias_function_table, alias)                                  \
-    osw_zend_register_function_alias(origin_function_table, ZEND_STRL(origin), alias_function_table, ZEND_STRL(alias))
-
-static osw_inline int osw_zend_register_function_alias(zend_array *origin_function_table,
-                                                     const char *origin,
-                                                     size_t origin_length,
-                                                     zend_array *alias_function_table,
-                                                     const char *alias,
-                                                     size_t alias_length) {
-    zend_string *lowercase_origin = zend_string_alloc(origin_length, 0);
-    zend_str_tolower_copy(ZSTR_VAL(lowercase_origin), origin, origin_length);
-    zend_function *origin_function = (zend_function *) zend_hash_find_ptr(origin_function_table, lowercase_origin);
-    zend_string_release(lowercase_origin);
-    if (UNEXPECTED(!origin_function)) {
-        return FAILURE;
-    }
-    OSW_ASSERT(origin_function->common.type == ZEND_INTERNAL_FUNCTION);
-    char *_alias = (char *) emalloc(alias_length + 1);
-    ((char *) memcpy(_alias, alias, alias_length))[alias_length] = '\0';
-    zend_function_entry zfe[] = {{_alias,
-                                  origin_function->internal_function.handler,
-                                  ((zend_internal_arg_info *) origin_function->common.arg_info) - 1,
-                                  origin_function->common.num_args,
-                                  0},
-                                 PHP_FE_END};
-    int ret =
-        zend_register_functions(origin_function->common.scope, zfe, alias_function_table, origin_function->common.type);
-    efree(_alias);
-    return ret;
-}
-
 static osw_inline int osw_zend_register_class_alias(const char *name, size_t name_len, zend_class_entry *ce) {
     zend_string *_name;
     if (name[0] == '\\') {

@@ -24,6 +24,8 @@
 
 #include "openswoole_server.h"
 #include "openswoole_util.h"
+#include "openswoole_timer_arginfo.h"
+#include "openswoole_event_arginfo.h"
 
 #ifdef OSW_HAVE_ZLIB
 #include <zlib.h>
@@ -48,6 +50,26 @@ static openswoole::CallbackManager rshutdown_callbacks;
 
 OSW_EXTERN_C_BEGIN
 static PHP_FUNCTION(openswoole_internal_call_user_shutdown_begin);
+/* Timer functions (defined in openswoole_timer.cc) */
+PHP_FUNCTION(openswoole_timer_after);
+PHP_FUNCTION(openswoole_timer_tick);
+PHP_FUNCTION(openswoole_timer_exists);
+PHP_FUNCTION(openswoole_timer_info);
+PHP_FUNCTION(openswoole_timer_stats);
+PHP_FUNCTION(openswoole_timer_list);
+PHP_FUNCTION(openswoole_timer_clear);
+PHP_FUNCTION(openswoole_timer_clear_all);
+/* Event functions (defined in openswoole_event.cc) */
+PHP_FUNCTION(openswoole_event_add);
+PHP_FUNCTION(openswoole_event_del);
+PHP_FUNCTION(openswoole_event_set);
+PHP_FUNCTION(openswoole_event_isset);
+PHP_FUNCTION(openswoole_event_dispatch);
+PHP_FUNCTION(openswoole_event_defer);
+PHP_FUNCTION(openswoole_event_cycle);
+PHP_FUNCTION(openswoole_event_write);
+PHP_FUNCTION(openswoole_event_wait);
+PHP_FUNCTION(openswoole_event_exit);
 OSW_EXTERN_C_END
 
 // clang-format off
@@ -82,6 +104,52 @@ const zend_function_entry openswoole_functions[] = {
     PHP_FE(openswoole_coroutine_socketpair, arginfo_openswoole_coroutine_socketpair)
     PHP_FE(openswoole_test_kernel_coroutine, arginfo_openswoole_test_kernel_coroutine)
     PHP_FE(openswoole_internal_call_user_shutdown_begin, arginfo_openswoole_void)
+    /*------openswoole_timer------*/
+    PHP_FE(openswoole_timer_after, arginfo_class_OpenSwoole_Timer_after)
+    PHP_FE(openswoole_timer_tick, arginfo_class_OpenSwoole_Timer_tick)
+    PHP_FE(openswoole_timer_exists, arginfo_class_OpenSwoole_Timer_exists)
+    PHP_FE(openswoole_timer_info, arginfo_class_OpenSwoole_Timer_info)
+    PHP_FE(openswoole_timer_stats, arginfo_class_OpenSwoole_Timer_stats)
+    PHP_FE(openswoole_timer_list, arginfo_class_OpenSwoole_Timer_list)
+    PHP_FE(openswoole_timer_clear, arginfo_class_OpenSwoole_Timer_clear)
+    PHP_FE(openswoole_timer_clear_all, arginfo_class_OpenSwoole_Timer_clearAll)
+    /*------openswoole_event------*/
+    PHP_FE(openswoole_event_add, arginfo_class_OpenSwoole_Event_add)
+    PHP_FE(openswoole_event_del, arginfo_class_OpenSwoole_Event_del)
+    PHP_FE(openswoole_event_set, arginfo_class_OpenSwoole_Event_set)
+    PHP_FE(openswoole_event_isset, arginfo_class_OpenSwoole_Event_isset)
+    PHP_FE(openswoole_event_dispatch, arginfo_class_OpenSwoole_Event_dispatch)
+    PHP_FE(openswoole_event_defer, arginfo_class_OpenSwoole_Event_defer)
+    PHP_FE(openswoole_event_cycle, arginfo_class_OpenSwoole_Event_cycle)
+    PHP_FE(openswoole_event_write, arginfo_class_OpenSwoole_Event_write)
+    PHP_FE(openswoole_event_wait, arginfo_class_OpenSwoole_Event_wait)
+    PHP_FE(openswoole_event_exit, arginfo_class_OpenSwoole_Event_exit)
+    /*------coroutine aliases------*/
+    PHP_FALIAS(go, openswoole_coroutine_create, arginfo_openswoole_coroutine_create)
+    PHP_FALIAS(defer, openswoole_coroutine_defer, arginfo_openswoole_coroutine_defer)
+    /*------backward-compat: swoole_coroutine_* aliases------*/
+    PHP_FALIAS(swoole_coroutine_create, openswoole_coroutine_create, arginfo_openswoole_coroutine_create)
+    PHP_FALIAS(swoole_coroutine_defer, openswoole_coroutine_defer, arginfo_openswoole_coroutine_defer)
+    /*------backward-compat: swoole_timer_* aliases------*/
+    PHP_FALIAS(swoole_timer_after, openswoole_timer_after, arginfo_class_OpenSwoole_Timer_after)
+    PHP_FALIAS(swoole_timer_tick, openswoole_timer_tick, arginfo_class_OpenSwoole_Timer_tick)
+    PHP_FALIAS(swoole_timer_exists, openswoole_timer_exists, arginfo_class_OpenSwoole_Timer_exists)
+    PHP_FALIAS(swoole_timer_info, openswoole_timer_info, arginfo_class_OpenSwoole_Timer_info)
+    PHP_FALIAS(swoole_timer_stats, openswoole_timer_stats, arginfo_class_OpenSwoole_Timer_stats)
+    PHP_FALIAS(swoole_timer_list, openswoole_timer_list, arginfo_class_OpenSwoole_Timer_list)
+    PHP_FALIAS(swoole_timer_clear, openswoole_timer_clear, arginfo_class_OpenSwoole_Timer_clear)
+    PHP_FALIAS(swoole_timer_clear_all, openswoole_timer_clear_all, arginfo_class_OpenSwoole_Timer_clearAll)
+    /*------backward-compat: swoole_event_* aliases------*/
+    PHP_FALIAS(swoole_event_add, openswoole_event_add, arginfo_class_OpenSwoole_Event_add)
+    PHP_FALIAS(swoole_event_del, openswoole_event_del, arginfo_class_OpenSwoole_Event_del)
+    PHP_FALIAS(swoole_event_set, openswoole_event_set, arginfo_class_OpenSwoole_Event_set)
+    PHP_FALIAS(swoole_event_isset, openswoole_event_isset, arginfo_class_OpenSwoole_Event_isset)
+    PHP_FALIAS(swoole_event_dispatch, openswoole_event_dispatch, arginfo_class_OpenSwoole_Event_dispatch)
+    PHP_FALIAS(swoole_event_defer, openswoole_event_defer, arginfo_class_OpenSwoole_Event_defer)
+    PHP_FALIAS(swoole_event_cycle, openswoole_event_cycle, arginfo_class_OpenSwoole_Event_cycle)
+    PHP_FALIAS(swoole_event_write, openswoole_event_write, arginfo_class_OpenSwoole_Event_write)
+    PHP_FALIAS(swoole_event_wait, openswoole_event_wait, arginfo_class_OpenSwoole_Event_wait)
+    PHP_FALIAS(swoole_event_exit, openswoole_event_exit, arginfo_class_OpenSwoole_Event_exit)
     PHP_FE_END /* Must be the last line in openswoole_functions[] */
 };
 
@@ -619,12 +687,6 @@ PHP_MINIT_FUNCTION(openswoole) {
     zend_declare_class_constant_long(openswoole_constants_ce, ZEND_STRL("IOV_MAX"), IOV_MAX);
 
     // clang-format on
-
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_coroutine_create", CG(function_table), "go");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_coroutine_defer", CG(function_table), "defer");
-    /* Backward-compat: swoole_coroutine_* function aliases */
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_coroutine_create", CG(function_table), "swoole_coroutine_create");
-    OSW_FUNCTION_ALIAS(CG(function_table), "openswoole_coroutine_defer", CG(function_table), "swoole_coroutine_defer");
 
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("EVENT_START"), "start");
     zend_declare_class_constant_string(openswoole_constants_ce, ZEND_STRL("EVENT_SHUTDOWN"), "shutdown");
