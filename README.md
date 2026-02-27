@@ -22,9 +22,9 @@ Documentation for OpenSwoole can be found on the [OpenSwoole website](https://op
 
 > OpenSwoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
 
-### 1. Install or upgrade Open Swoole from multiple distribution channels
+### 1. Install or upgrade OpenSwoole from multiple distribution channels
 
-Please check [Open Swoole Installation Guide](https://openswoole.com/docs/get-started/installation) about how to install Open Swoole on Ubuntu/CentOS/Windows WSL from Docker, PECL or Binary releases channels.
+Please check [OpenSwoole Installation Guide](https://openswoole.com/docs/get-started/installation) about how to install OpenSwoole on Ubuntu/CentOS/Windows WSL from Docker, PECL or Binary releases channels.
 
 ### 2. Compile from source
 
@@ -58,9 +58,9 @@ You can find how to fix [Common Installation Errors](https://openswoole.com/docs
 + `--enable-hook-curl`
 + `--with-postgres[=DIR]`
 
-#### Enable Open Swoole extension
+#### Enable OpenSwoole extension
 
-After compiling and installing the openswoole extension, you have to add a new line `extension=openswoole.so` at the end of `php.ini` or create a ini file at `conf.d` folder to enable Open Swoole. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
+After compiling and installing the openswoole extension, you have to add a new line `extension=openswoole.so` at the end of `php.ini` or create a ini file at `conf.d` folder to enable OpenSwoole. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
 
 ## Fiber Context and Xdebug Support
 
@@ -105,7 +105,7 @@ xdebug.client_port=9003
  
  - [**Laravel Octane**](https://laravel.com/docs/9.x/octane) Laravel Octane supercharges your application's performance by serving your application using high-powered application servers.
  - [**PHP Runtime**](https://github.com/php-runtime) make it easy to run any kind of PHP Application (Symfony, Laravel, PSR7, Native) with all kinds of Runtimes like OpenSwoole, Bref, Google Cloud Functions, Roadrunner and React PHP with minimal configuration.
- - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on Open Swoole.
+ - [**Mezzio Swoole**](https://docs.mezzio.dev/mezzio-swoole/) allows you to run Mezzio and [PSR-15](https://www.php-fig.org/psr/psr-15/) applications on OpenSwoole.
 
 ## For Contributors
 
@@ -118,7 +118,7 @@ This project exists thanks to all the historical [[Contributors](https://github.
 
 ## Security issues
 
-Security issues should be reported privately, via email, to the Open Swoole develop team [hello@openswoole.com](mailto:hello@openswoole.com). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
+Security issues should be reported privately, via email, to the OpenSwoole develop team [hello@openswoole.com](mailto:hello@openswoole.com). You should receive a response within 24 hours. If for some reason you do not, please follow up via email to ensure we received your original message.
 
 ## License
 

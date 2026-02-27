@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -14,9 +14,9 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_file.h"
+#include "openswoole_file.h"
 
-int swoole_tmpfile(char *filename) {
+int openswoole_tmpfile(char *filename) {
 #if defined(HAVE_MKOSTEMP) && defined(HAVE_EPOLL)
     int tmp_fd = mkostemp(filename, O_WRONLY | O_CREAT);
 #else
@@ -24,14 +24,14 @@ int swoole_tmpfile(char *filename) {
 #endif
 
     if (tmp_fd < 0) {
-        swoole_sys_warning("mkstemp(%s) failed", filename);
-        return SW_ERR;
+        openswoole_sys_warning("mkstemp(%s) failed", filename);
+        return OSW_ERR;
     } else {
         return tmp_fd;
     }
 }
 
-namespace swoole {
+namespace openswoole {
 
 ssize_t file_get_size(FILE *fp) {
     fflush(fp);
@@ -41,7 +41,7 @@ ssize_t file_get_size(FILE *fp) {
 ssize_t file_get_size(const std::string &filename) {
     File file(filename, File::READ);
     if (!file.ready()) {
-        swoole_set_last_error(errno);
+        openswoole_set_last_error(errno);
         return -1;
     }
     return file.get_size();
@@ -50,11 +50,11 @@ ssize_t file_get_size(const std::string &filename) {
 ssize_t file_get_size(int fd) {
     FileStatus file_stat;
     if (fstat(fd, &file_stat) < 0) {
-        swoole_set_last_error(errno);
+        openswoole_set_last_error(errno);
         return -1;
     }
     if (!S_ISREG(file_stat.st_mode)) {
-        swoole_set_last_error(EISDIR);
+        openswoole_set_last_error(EISDIR);
         return -1;
     }
     return file_stat.st_size;
@@ -63,7 +63,7 @@ ssize_t file_get_size(int fd) {
 std::shared_ptr<String> file_get_contents(const std::string &filename) {
     File fp(filename, O_RDONLY);
     if (!fp.ready()) {
-        swoole_sys_warning("open(%s) failed", filename.c_str());
+        openswoole_sys_warning("open(%s) failed", filename.c_str());
         return nullptr;
     }
 
@@ -71,10 +71,10 @@ std::shared_ptr<String> file_get_contents(const std::string &filename) {
     if (filesize < 0) {
         return nullptr;
     } else if (filesize == 0) {
-        swoole_error_log(SW_LOG_TRACE, SW_ERROR_FILE_EMPTY, "file[%s] is empty", filename.c_str());
+        openswoole_error_log(OSW_LOG_TRACE, OSW_ERROR_FILE_EMPTY, "file[%s] is empty", filename.c_str());
         return nullptr;
-    } else if (filesize > SW_MAX_FILE_CONTENT) {
-        swoole_error_log(SW_LOG_WARNING, SW_ERROR_FILE_TOO_LARGE, "file[%s] is too large", filename.c_str());
+    } else if (filesize > OSW_MAX_FILE_CONTENT) {
+        openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_FILE_TOO_LARGE, "file[%s] is too large", filename.c_str());
         return nullptr;
     }
 
@@ -86,9 +86,9 @@ std::shared_ptr<String> file_get_contents(const std::string &filename) {
 }
 
 File make_tmpfile() {
-    char *tmpfile = sw_tg_buffer()->str;
-    size_t l = swoole_strlcpy(tmpfile, SwooleG.task_tmpfile.c_str(), SW_TASK_TMP_PATH_SIZE);
-    int tmp_fd = swoole_tmpfile(tmpfile);
+    char *tmpfile = osw_tg_buffer()->str;
+    size_t l = openswoole_strlcpy(tmpfile, OpenSwooleG.task_tmpfile.c_str(), OSW_TASK_TMP_PATH_SIZE);
+    int tmp_fd = openswoole_tmpfile(tmpfile);
     if (tmp_fd < 0) {
         return File(-1);
     } else {
@@ -98,16 +98,16 @@ File make_tmpfile() {
 
 bool file_put_contents(const std::string &filename, const char *content, size_t length) {
     if (length <= 0) {
-        swoole_error_log(SW_LOG_TRACE, SW_ERROR_FILE_EMPTY, "content is empty");
+        openswoole_error_log(OSW_LOG_TRACE, OSW_ERROR_FILE_EMPTY, "content is empty");
         return false;
     }
-    if (length > SW_MAX_FILE_CONTENT) {
-        swoole_error_log(SW_LOG_WARNING, SW_ERROR_FILE_TOO_LARGE, "content is too large");
+    if (length > OSW_MAX_FILE_CONTENT) {
+        openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_FILE_TOO_LARGE, "content is too large");
         return false;
     }
     File file(filename, O_WRONLY | O_TRUNC | O_CREAT, 0666);
     if (!file.ready()) {
-        swoole_sys_warning("open(%s) failed", filename.c_str());
+        openswoole_sys_warning("open(%s) failed", filename.c_str());
         return false;
     }
     return file.write_all(content, length);
@@ -130,7 +130,7 @@ size_t File::write_all(const void *data, size_t len) {
             if (errno == EINTR) {
                 continue;
             } else if (!(errno == EAGAIN || errno == EWOULDBLOCK)) {
-                swoole_sys_warning("pwrite(%d, %p, %lu, %lu) failed", fd_, data, len - written_bytes, written_bytes);
+                openswoole_sys_warning("pwrite(%d, %p, %lu, %lu) failed", fd_, data, len - written_bytes, written_bytes);
             }
             break;
         }
@@ -150,7 +150,7 @@ size_t File::read_all(void *buf, size_t len) {
             if (errno == EINTR) {
                 continue;
             } else if (!(errno == EAGAIN || errno == EWOULDBLOCK)) {
-                swoole_sys_warning("pread(%d, %p, %lu, %lu) failed", fd_, buf, len - read_bytes, read_bytes);
+                openswoole_sys_warning("pread(%d, %p, %lu, %lu) failed", fd_, buf, len - read_bytes, read_bytes);
             }
             break;
         }
@@ -160,7 +160,7 @@ size_t File::read_all(void *buf, size_t len) {
 
 std::shared_ptr<String> File::read_content() {
     ssize_t n = 0;
-    std::shared_ptr<String> data = std::make_shared<String>(SW_BUFFER_SIZE_STD);
+    std::shared_ptr<String> data = std::make_shared<String>(OSW_BUFFER_SIZE_STD);
     while (1) {
         n = read(data->str + data->length, data->size - data->length);
         if (n <= 0) {
@@ -174,4 +174,4 @@ std::shared_ptr<String> File::read_content() {
     return data;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

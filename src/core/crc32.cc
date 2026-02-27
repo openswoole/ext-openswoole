@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,8 +14,8 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_hash.h"
+#include "openswoole.h"
+#include "openswoole_hash.h"
 
 static const int CRC32_TABLE_SIZE = 256;
 static uint32_t crc32_table[CRC32_TABLE_SIZE];
@@ -36,8 +36,8 @@ static void generate_table(uint32_t (&table)[CRC32_TABLE_SIZE]) {
     }
 }
 
-uint32_t swoole_crc32(const char *data, uint32_t size) {
-    if (sw_unlikely(!generated)) {
+uint32_t openswoole_crc32(const char *data, uint32_t size) {
+    if (osw_unlikely(!generated)) {
         generate_table(crc32_table);
     }
 

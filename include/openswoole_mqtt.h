@@ -1,0 +1,63 @@
+/*
+ +----------------------------------------------------------------------+
+ | OpenSwoole                                                          |
+ +----------------------------------------------------------------------+
+ | Copyright (c) 2012-2015 The Swoole Group                             |
+ +----------------------------------------------------------------------+
+ | This source file is subject to version 2.0 of the Apache license,    |
+ | that is bundled with this package in the file LICENSE, and is        |
+ | available through the world-wide-web at the following url:           |
+ | http://www.apache.org/licenses/LICENSE-2.0.html                      |
+ | If you did not receive a copy of the Apache2.0 license and are unable|
+ | to obtain it through the world-wide-web, please send a note to       |
+ | hello@swoole.co.uk so we can mail you a copy immediately.            |
+ +----------------------------------------------------------------------+
+ | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
+ +----------------------------------------------------------------------+
+ */
+#pragma once
+
+#include "openswoole.h"
+#include "openswoole_protocol.h"
+
+#define OSW_MQTT_MIN_LENGTH_SIZE 1
+#define OSW_MQTT_MAX_LENGTH_SIZE 4
+#define OSW_MQTT_MAX_PAYLOAD_SIZE 268435455
+
+#define OSW_MQTT_SETRETAIN(HDR, R) (HDR | (R))
+#define OSW_MQTT_SETQOS(HDR, Q) (HDR | ((Q) << 1))
+#define OSW_MQTT_SETDUP(HDR, D) (HDR | ((D) << 3))
+
+namespace openswoole {
+namespace mqtt {
+
+enum Opcode {
+    OSW_MQTT_CONNECT = 0x10,
+    OSW_MQTT_CONNACK = 0x20,
+    OSW_MQTT_PUBLISH = 0x30,
+    OSW_MQTT_PUBACK = 0x40,
+    OSW_MQTT_PUBREC = 0x50,
+    OSW_MQTT_PUBREL = 0x60,
+    OSW_MQTT_PUBCOMP = 0x70,
+    OSW_MQTT_SUBSCRIBE = 0x80,
+    OSW_MQTT_SUBACK = 0x90,
+    OSW_MQTT_UNSUBSCRIBE = 0xA0,
+    OSW_MQTT_UNSUBACK = 0xB0,
+    OSW_MQTT_PINGREQ = 0xC0,
+    OSW_MQTT_PINGRESP = 0xD0,
+    OSW_MQTT_DISCONNECT = 0xE0,
+};
+
+struct Packet {
+    uint8_t type : 4;
+    uint8_t dup : 1;
+    uint8_t qos : 2;
+    uint8_t retain : 1;
+    uint32_t length;
+    char protocol_name[8];
+};
+
+ssize_t get_package_length(swProtocol *protocol, swSocket *conn, const char *data, uint32_t size);
+void set_protocol(swProtocol *protocol);
+}  // namespace mqtt
+}  // namespace openswoole

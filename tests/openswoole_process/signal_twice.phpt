@@ -1,0 +1,48 @@
+--TEST--
+openswoole_process: signal
+--SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+use OpenSwoole\Process;
+
+
+const N = 2;
+
+$pm = new SwooleTest\ProcessManager;
+
+$pm->parentFunc = function ($pid) use ($pm) {
+    $n = N;
+    while($n--) {
+        Process::kill($pid, SIGUSR1);
+        $pm->wait();
+    }
+    $pm->kill();
+};
+
+$pm->childFunc = function () use ($pm) {
+    $n = N;
+    while($n--) {
+        co::run(static function () use($n, $pm){
+            $running = true;
+            Process::signal(SIGUSR1, function() use(&$running, $n) {
+                $running = false;
+                echo 'sigusr1 one-'.$n.PHP_EOL;
+            });
+            $pm->wakeup();
+            go(static function () use(&$running) {
+                while ($running) {
+                    co::usleep(100000);
+                }
+            });
+        });
+    }
+    $pm->wakeup();
+};
+$pm->childFirst();
+$pm->run();
+?>
+--EXPECT--
+sigusr1 one-1
+sigusr1 one-0

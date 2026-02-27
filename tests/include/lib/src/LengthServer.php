@@ -1,9 +1,9 @@
 <?php
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
- | Copyright (c) 2017-now Open Swoole Group                             |
+ | Copyright (c) 2017-now OpenSwoole Group                             |
  | Copyright (c) 2012-2017 The Swoole Group                             |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
@@ -20,7 +20,7 @@
 
 namespace SwooleTest;
 
-use Swoole;
+use OpenSwoole\Coroutine\Server;
 use \RandStr;
 
 abstract class LengthServer
@@ -37,7 +37,7 @@ abstract class LengthServer
     static public $random_bytes = true;
 
     /**
-     * @var Swoole\Coroutine\Server
+     * @var \OpenSwoole\Coroutine\Server
      */
     protected $serv;
 
@@ -65,7 +65,7 @@ abstract class LengthServer
      */
     function __construct(int $port, bool $ssl = false)
     {
-        $serv = new  Swoole\Coroutine\Server('127.0.0.1', $port, $ssl);
+        $serv = new Server('127.0.0.1', $port, $ssl);
         $this->serv = $serv;
         $this->setting = [
             'open_length_check' => true,

@@ -64,7 +64,7 @@ if [ "${CI_BRANCH}" = "valgrind" ]; then
     dir="base"
     options="${options} -m"
 else
-    dir="swoole_*"
+    dir="openswoole_*"
 fi
 echo "${dir}" > tests.list
 for i in 1 2 3 4 5

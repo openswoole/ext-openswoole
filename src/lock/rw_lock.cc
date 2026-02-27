@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,12 +14,12 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_lock.h"
+#include "openswoole.h"
+#include "openswoole_lock.h"
 
 #ifdef HAVE_RWLOCK
 
-namespace swoole {
+namespace openswoole {
 
 struct RWLockImpl {
     pthread_rwlock_t _lock;
@@ -28,7 +28,7 @@ struct RWLockImpl {
 
 RWLock::RWLock(int use_in_process) : Lock() {
     if (use_in_process) {
-        impl = (RWLockImpl *) sw_mem_pool()->alloc(sizeof(*impl));
+        impl = (RWLockImpl *) osw_mem_pool()->alloc(sizeof(*impl));
         if (impl == nullptr) {
             throw std::bad_alloc();
         }
@@ -71,12 +71,12 @@ int RWLock::trylock() {
 RWLock::~RWLock() {
     pthread_rwlock_destroy(&impl->_lock);
     if (shared_) {
-        sw_mem_pool()->free(impl);
+        osw_mem_pool()->free(impl);
     } else {
         delete impl;
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole
 
 #endif

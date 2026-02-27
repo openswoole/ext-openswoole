@@ -3,7 +3,7 @@ ARG ALPINE_VERSION
 
 FROM php:${PHP_VERSION}-cli-alpine${ALPINE_VERSION}
 
-LABEL maintainer="Open Swoole Group <hello@openswoole.com>" version="1.0" license="MIT"
+LABEL maintainer="OpenSwoole Group <hello@openswoole.com>" version="1.0" license="MIT"
 
 ARG PHP_VERSION
 

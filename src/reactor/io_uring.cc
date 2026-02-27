@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -12,15 +12,15 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole.h"
-#include "swoole_socket.h"
-#include "swoole_reactor.h"
+#include "openswoole.h"
+#include "openswoole_socket.h"
+#include "openswoole_reactor.h"
 
 #ifdef HAVE_IO_URING
 #include <liburing.h>
 #include <poll.h>
 
-namespace swoole {
+namespace openswoole {
 
 using network::Socket;
 
@@ -72,15 +72,15 @@ class ReactorIoUring : public ReactorImpl {
     int del(Socket *socket) override;
     int wait(struct timeval *) override;
 
-    static inline unsigned get_poll_mask(int sw_events) {
+    static inline unsigned get_poll_mask(int osw_events) {
         unsigned mask = 0;
-        if (Reactor::isset_read_event(sw_events)) {
+        if (Reactor::isset_read_event(osw_events)) {
             mask |= POLLIN;
         }
-        if (Reactor::isset_write_event(sw_events)) {
+        if (Reactor::isset_write_event(osw_events)) {
             mask |= POLLOUT;
         }
-        if (Reactor::isset_error_event(sw_events)) {
+        if (Reactor::isset_error_event(osw_events)) {
             mask |= POLLRDHUP | POLLHUP | POLLERR;
         }
         return mask;
@@ -100,7 +100,7 @@ ReactorIoUring::ReactorIoUring(Reactor *_reactor, int max_events) : ReactorImpl(
     memset(&params, 0, sizeof(params));
 
     if (io_uring_queue_init_params(max_events, &ring_, &params) < 0) {
-        swoole_sys_warning("io_uring_queue_init_params failed");
+        openswoole_sys_warning("io_uring_queue_init_params failed");
         return;
     }
     ring_initialized_ = true;
@@ -137,8 +137,8 @@ ReactorIoUring::~ReactorIoUring() {
 int ReactorIoUring::submit_poll_add(Socket *socket, int events) {
     struct io_uring_sqe *sqe = io_uring_get_sqe(&ring_);
     if (!sqe) {
-        swoole_sys_warning("io_uring_get_sqe failed (SQ full), fd=%d", socket->fd);
-        return SW_ERR;
+        openswoole_sys_warning("io_uring_get_sqe failed (SQ full), fd=%d", socket->fd);
+        return OSW_ERR;
     }
 
     unsigned poll_mask = get_poll_mask(events);
@@ -151,87 +151,87 @@ int ReactorIoUring::submit_poll_add(Socket *socket, int events) {
     }
 #endif
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ReactorIoUring::submit_poll_remove(Socket *socket) {
     struct io_uring_sqe *sqe = io_uring_get_sqe(&ring_);
     if (!sqe) {
-        swoole_sys_warning("io_uring_get_sqe failed (SQ full) for cancel, fd=%d", socket->fd);
-        return SW_ERR;
+        openswoole_sys_warning("io_uring_get_sqe failed (SQ full) for cancel, fd=%d", socket->fd);
+        return OSW_ERR;
     }
 
     io_uring_prep_poll_remove(sqe, encode_user_data(socket, IO_URING_OP_POLL));
     io_uring_sqe_set_data64(sqe, encode_user_data(socket, IO_URING_OP_CANCEL));
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ReactorIoUring::add(Socket *socket, int events) {
     if (submit_poll_add(socket, events) < 0) {
-        swoole_sys_warning(
+        openswoole_sys_warning(
             "failed to add events[fd=%d#%d, type=%d, events=%d]", socket->fd, reactor_->id, socket->fd_type, events);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     int ret = io_uring_submit(&ring_);
     if (ret < 0) {
-        swoole_sys_warning(
+        openswoole_sys_warning(
             "io_uring_submit failed to add events[fd=%d#%d, type=%d, events=%d]",
             socket->fd, reactor_->id, socket->fd_type, events);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     reactor_->_add(socket, events);
-    swoole_trace_log(
-        SW_TRACE_EVENT, "add events[fd=%d#%d, type=%d, events=%d]", socket->fd, reactor_->id, socket->fd_type, events);
+    openswoole_trace_log(
+        OSW_TRACE_EVENT, "add events[fd=%d#%d, type=%d, events=%d]", socket->fd, reactor_->id, socket->fd_type, events);
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ReactorIoUring::del(Socket *_socket) {
     if (_socket->removed) {
-        swoole_error_log(SW_LOG_WARNING,
-                         SW_ERROR_EVENT_SOCKET_REMOVED,
+        openswoole_error_log(OSW_LOG_WARNING,
+                         OSW_ERROR_EVENT_SOCKET_REMOVED,
                          "failed to delete events[%d], it has already been removed",
                          _socket->fd);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     submit_poll_remove(_socket);
     int ret = io_uring_submit(&ring_);
     if (ret < 0) {
         after_removal_failure(_socket);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
-    swoole_trace_log(SW_TRACE_REACTOR, "remove event[reactor_id=%d|fd=%d]", reactor_->id, _socket->fd);
+    openswoole_trace_log(OSW_TRACE_REACTOR, "remove event[reactor_id=%d|fd=%d]", reactor_->id, _socket->fd);
     reactor_->_del(_socket);
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ReactorIoUring::set(Socket *socket, int events) {
     // Remove old poll registration and add new one in same batch
     submit_poll_remove(socket);
     if (submit_poll_add(socket, events) < 0) {
-        swoole_sys_warning(
+        openswoole_sys_warning(
             "failed to set events[fd=%d#%d, type=%d, events=%d]", socket->fd, reactor_->id, socket->fd_type, events);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     int ret = io_uring_submit(&ring_);
     if (ret < 0) {
-        swoole_sys_warning(
+        openswoole_sys_warning(
             "io_uring_submit failed to set events[fd=%d#%d, type=%d, events=%d]",
             socket->fd, reactor_->id, socket->fd_type, events);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
-    swoole_trace_log(SW_TRACE_EVENT, "set event[reactor_id=%d, fd=%d, events=%d]", reactor_->id, socket->fd, events);
+    openswoole_trace_log(OSW_TRACE_EVENT, "set event[reactor_id=%d, fd=%d, events=%d]", reactor_->id, socket->fd, events);
     reactor_->_set(socket, events);
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ReactorIoUring::wait(struct timeval *timeo) {
@@ -274,19 +274,19 @@ int ReactorIoUring::wait(struct timeval *timeo) {
             if (ret == -ETIME || ret == -EINTR) {
                 if (ret == -ETIME) {
                     reactor_->execute_end_callbacks(true);
-                    SW_REACTOR_CONTINUE;
+                    OSW_REACTOR_CONTINUE;
                 }
                 // EINTR: retry
                 goto _continue;
             }
-            swoole_warning("[Reactor#%d] io_uring_wait_cqe failed, ret=%d", reactor_id, ret);
-            return SW_ERR;
+            openswoole_warning("[Reactor#%d] io_uring_wait_cqe failed, ret=%d", reactor_id, ret);
+            return OSW_ERR;
         }
 
         n = io_uring_peek_batch_cqe(&ring_, cqes_, max_event_num);
         if (n == 0) {
             reactor_->execute_end_callbacks(true);
-            SW_REACTOR_CONTINUE;
+            OSW_REACTOR_CONTINUE;
         }
 
         need_submit = false;
@@ -336,18 +336,18 @@ int ReactorIoUring::wait(struct timeval *timeo) {
 
             // read
             if ((revents & POLLIN) && !socket->removed) {
-                handler = reactor_->get_handler(SW_EVENT_READ, event.type);
+                handler = reactor_->get_handler(OSW_EVENT_READ, event.type);
                 ret = handler(reactor_, &event);
                 if (ret < 0) {
-                    swoole_sys_warning("POLLIN handle failed. fd=%d", event.fd);
+                    openswoole_sys_warning("POLLIN handle failed. fd=%d", event.fd);
                 }
             }
             // write
             if ((revents & POLLOUT) && !socket->removed) {
-                handler = reactor_->get_handler(SW_EVENT_WRITE, event.type);
+                handler = reactor_->get_handler(OSW_EVENT_WRITE, event.type);
                 ret = handler(reactor_, &event);
                 if (ret < 0) {
-                    swoole_sys_warning("POLLOUT handle failed. fd=%d", event.fd);
+                    openswoole_sys_warning("POLLOUT handle failed. fd=%d", event.fd);
                 }
             }
             // error
@@ -358,12 +358,12 @@ int ReactorIoUring::wait(struct timeval *timeo) {
                 handler = reactor_->get_error_handler(event.type);
                 ret = handler(reactor_, &event);
                 if (ret < 0) {
-                    swoole_sys_warning("POLLERR handle failed. fd=%d", event.fd);
+                    openswoole_sys_warning("POLLERR handle failed. fd=%d", event.fd);
                 }
             }
 
         _next:
-            if (!socket->removed && (socket->events & SW_EVENT_ONCE)) {
+            if (!socket->removed && (socket->events & OSW_EVENT_ONCE)) {
                 reactor_->_del(socket);
             }
             // Re-arm poll if needed
@@ -396,10 +396,10 @@ int ReactorIoUring::wait(struct timeval *timeo) {
 
     _continue:
         reactor_->execute_end_callbacks(false);
-        SW_REACTOR_CONTINUE;
+        OSW_REACTOR_CONTINUE;
     }
     return 0;
 }
 
-}  // namespace swoole
+}  // namespace openswoole
 #endif

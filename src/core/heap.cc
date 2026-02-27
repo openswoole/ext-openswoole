@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -14,17 +14,17 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole.h"
-#include "swoole_heap.h"
+#include "openswoole.h"
+#include "openswoole_heap.h"
 
 #define left(i) ((i) << 1)
 #define right(i) (((i) << 1) + 1)
 #define parent(i) ((i) >> 1)
 
-namespace swoole {
+namespace openswoole {
 
 Heap::Heap(size_t _n, Heap::Type _type) {
-    if (!(nodes = (HeapNode **) sw_malloc((_n + 1) * sizeof(void *)))) {
+    if (!(nodes = (HeapNode **) osw_malloc((_n + 1) * sizeof(void *)))) {
         throw std::bad_alloc();
     }
     num = 1;
@@ -33,7 +33,7 @@ Heap::Heap(size_t _n, Heap::Type _type) {
 }
 
 Heap::~Heap() {
-    sw_free(nodes);
+    osw_free(nodes);
 }
 
 int Heap::compare(uint64_t a, uint64_t b) {
@@ -91,7 +91,7 @@ HeapNode *Heap::push(uint64_t priority, void *data) {
 
     if (num >= size) {
         newsize = size * 2;
-        if (!(tmp = (HeapNode **) sw_realloc(nodes, sizeof(HeapNode *) * newsize))) {
+        if (!(tmp = (HeapNode **) osw_realloc(nodes, sizeof(HeapNode *) * newsize))) {
             return nullptr;
         }
         nodes = tmp;
@@ -162,4 +162,4 @@ void Heap::print() {
         printf("#%u\tpriority=%ld, data=%p\n", i, (long) nodes[i]->priority, nodes[i]->data);
     }
 }
-}  // namespace swoole
+}  // namespace openswoole

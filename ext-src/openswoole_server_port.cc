@@ -1,0 +1,937 @@
+/*
+  +----------------------------------------------------------------------+
+  | OpenSwoole                                                          |
+  +----------------------------------------------------------------------+
+  | This source file is subject to version 2.0 of the Apache license,    |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.apache.org/licenses/LICENSE-2.0.html                      |
+  | If you did not receive a copy of the Apache2.0 license and are unable|
+  | to obtain it through the world-wide-web, please send a note to       |
+  | hello@swoole.co.uk so we can mail you a copy immediately.            |
+  +----------------------------------------------------------------------+
+  | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
+  +----------------------------------------------------------------------+
+ */
+
+#include "php_openswoole_server.h"
+
+#include "openswoole_server_port_arginfo.h"
+
+using namespace openswoole;
+
+struct ServerPortEvent {
+    enum php_openswoole_server_port_callback_type type;
+    std::string name;
+    ServerPortEvent(enum php_openswoole_server_port_callback_type type, std::string &&name) : type(type), name(name) {}
+};
+
+// clang-format off
+static std::unordered_map<std::string, ServerPortEvent> server_port_event_map({
+    { "connect",     ServerPortEvent(OSW_SERVER_CB_onConnect,     "Connect") },
+    { "receive",     ServerPortEvent(OSW_SERVER_CB_onReceive,     "Receive") },
+    { "close",       ServerPortEvent(OSW_SERVER_CB_onClose,       "Close") },
+    { "packet",      ServerPortEvent(OSW_SERVER_CB_onPacket,      "Packet") },
+    { "bufferfull",  ServerPortEvent(OSW_SERVER_CB_onBufferFull,  "BufferFull") },
+    { "bufferempty", ServerPortEvent(OSW_SERVER_CB_onBufferEmpty, "BufferEmpty") },
+    { "request",     ServerPortEvent(OSW_SERVER_CB_onRequest,     "Request") },
+    { "handshake",   ServerPortEvent(OSW_SERVER_CB_onHandShake,   "Handshake") },
+    { "open",        ServerPortEvent(OSW_SERVER_CB_onOpen,        "Open") },
+    { "message",     ServerPortEvent(OSW_SERVER_CB_onMessage,     "Message") },
+    { "disconnect",  ServerPortEvent(OSW_SERVER_CB_onDisconnect,  "Disconnect") },
+});
+
+static std::unordered_map<std::string, bool> server_options_map({
+
+    // global
+    { "debug_mode", true },
+    { "trace_flags", true },
+    { "log_file", true },
+    { "log_level", true },
+    { "log_date_format", true },
+    { "log_date_with_microseconds", true },
+    { "log_rotation", true },
+    { "display_errors", true },
+    { "dns_server", true },
+    { "socket_dns_timeout", true },
+    { "socket_connect_timeout", true },
+    { "socket_write_timeout", true },
+    { "socket_send_timeout", true },
+    { "socket_read_timeout", true },
+    { "socket_recv_timeout", true },
+    { "socket_buffer_size", true },
+    { "socket_timeout", true },
+
+    // server
+    { "chroot", true },
+    { "user", true },
+    { "group", true },
+    { "daemonize", true },
+    { "pid_file", true },
+    { "reactor_num", true },
+    { "single_thread", true },
+    { "worker_num", true },
+    { "max_wait_time", true },
+    { "max_queued_bytes", true },
+    { "enable_coroutine", true },
+    { "max_coro_num", true },
+    { "max_coroutine", true },
+    { "hook_flags", true },
+    { "send_timeout", true },
+    { "dispatch_mode", true },
+    { "send_yield", true },
+    { "dispatch_func", true },
+    { "discard_timeout_request", true },
+    { "enable_unsafe_event", true },
+    { "enable_delay_receive", true },
+    { "enable_reuse_port", true },
+    { "task_use_object", true },
+    { "task_object", true },
+    { "event_object", true },
+    { "task_enable_coroutine", true },
+    { "task_worker_num", true },
+    { "task_ipc_mode", true },
+    { "task_tmpdir", true },
+    { "task_max_request", true },
+    { "task_max_request_grace", true },
+    { "max_connection", true },
+    { "max_conn", true },
+    { "start_session_id", true },
+    { "heartbeat_check_interval", true },
+    { "heartbeat_idle_time", true },
+    { "max_request", true },
+    { "max_request_grace", true },
+    { "max_request_execution_time", true },
+    { "reload_async", true },
+    { "open_cpu_affinity", true },
+    { "cpu_affinity_ignore", true },
+    { "http_parse_cookie", true },
+    { "http_parse_post", true },
+    { "http_parse_files", true },
+    { "http_compression", true },
+    { "http_compression_level", true },
+    { "compression_min_length", true },
+    { "http_gzip_level", true },
+    { "websocket_compression", true },
+    { "upload_tmp_dir", true },
+    { "enable_static_handler", true },
+    { "document_root", true },
+    { "http_autoindex", true },
+    { "http_index_files", true },
+    { "static_handler_locations", true },
+    { "input_buffer_size", true },
+    { "buffer_input_size", true },
+    { "output_buffer_size", true },
+    { "buffer_output_size", true },
+    { "message_queue_key", true },
+    { "http2_header_table_size", true },
+    { "http2_initial_window_size", true },
+    { "http2_max_concurrent_streams", true },
+    { "http2_max_frame_size", true },
+    { "http2_max_header_list_size", true },
+    { "enable_server_token", true },
+
+    // port
+    { "ssl_cert_file", true },
+    { "ssl_key_file", true },
+    { "backlog", true },
+    { "socket_buffer_size", true },
+    { "kernel_socket_recv_buffer_size", true },
+    { "kernel_socket_send_buffer_size", true },
+    { "buffer_high_watermark", true },
+    { "buffer_low_watermark", true },
+    { "open_tcp_nodelay", true },
+    { "tcp_defer_accept", true },
+    { "open_tcp_keepalive", true },
+    { "open_eof_check", true },
+    { "open_eof_split", true },
+    { "package_eof", true },
+    { "open_http_protocol", true },
+    { "open_websocket_protocol", true },
+    { "websocket_subprotocol", true },
+    { "open_websocket_close_frame", true },
+    { "open_websocket_ping_frame", true },
+    { "open_websocket_pong_frame", true },
+    { "open_http2_protocol", true },
+    { "open_mqtt_protocol", true },
+    { "open_redis_protocol", true },
+    { "max_idle_time", true },
+    { "tcp_keepidle", true },
+    { "tcp_keepinterval", true },
+    { "tcp_keepcount", true },
+    { "tcp_user_timeout", true },
+    { "tcp_fastopen", true },
+    { "open_length_check", true },
+    { "package_length_type", true },
+    { "package_length_offset", true },
+    { "package_body_offset", true },
+    { "package_body_start", true },
+    { "package_length_func", true },
+    { "package_max_length", true },
+    { "ssl_compress", true },
+    { "ssl_protocols", true },
+    { "ssl_verify_peer", true },
+    { "ssl_allow_self_signed", true },
+    { "ssl_client_cert_file", true },
+    { "ssl_verify_depth", true },
+    { "ssl_prefer_server_ciphers", true },
+    { "ssl_ciphers", true },
+    { "ssl_ecdh_curve", true },
+    { "ssl_dhparam", true },
+    { "ssl_sni_certs", true }
+});
+// clang-format on
+
+zend_class_entry *openswoole_server_port_ce;
+static zend_object_handlers openswoole_server_port_handlers;
+
+struct ServerPortObject {
+    ListenPort *port;
+    ServerPortProperty property;
+    zend_object std;
+};
+
+static osw_inline ServerPortObject *php_openswoole_server_port_fetch_object(zend_object *obj) {
+    return (ServerPortObject *) ((char *) obj - openswoole_server_port_handlers.offset);
+}
+
+static osw_inline ListenPort *php_openswoole_server_port_get_ptr(zval *zobject) {
+    return php_openswoole_server_port_fetch_object(Z_OBJ_P(zobject))->port;
+}
+
+ListenPort *php_openswoole_server_port_get_and_check_ptr(zval *zobject) {
+    ListenPort *port = php_openswoole_server_port_get_ptr(zobject);
+    if (UNEXPECTED(!port)) {
+        php_openswoole_fatal_error(E_ERROR, "Invalid instance of %s", OSW_Z_OBJCE_NAME_VAL_P(zobject));
+    }
+    return port;
+}
+
+void php_openswoole_server_port_set_ptr(zval *zobject, ListenPort *port) {
+    php_openswoole_server_port_fetch_object(Z_OBJ_P(zobject))->port = port;
+}
+
+ServerPortProperty *php_openswoole_server_port_get_property(zval *zobject) {
+    return &php_openswoole_server_port_fetch_object(Z_OBJ_P(zobject))->property;
+}
+
+static ServerPortProperty *php_openswoole_server_port_get_and_check_property(zval *zobject) {
+    ServerPortProperty *property = php_openswoole_server_port_get_property(zobject);
+    if (UNEXPECTED(!property->serv)) {
+        php_openswoole_fatal_error(E_ERROR, "Invalid instance of %s", OSW_Z_OBJCE_NAME_VAL_P(zobject));
+    }
+    return property;
+}
+
+// Dereference from server object
+void php_openswoole_server_port_deref(zend_object *object) {
+    ServerPortObject *server_port = php_openswoole_server_port_fetch_object(object);
+    ServerPortProperty *property = &server_port->property;
+    if (property->serv) {
+        for (int j = 0; j < PHP_OPENSWOOLE_SERVER_PORT_CALLBACK_NUM; j++) {
+            if (property->caches[j]) {
+                efree(property->caches[j]);
+                property->caches[j] = nullptr;
+            }
+        }
+        property->serv = nullptr;
+    }
+
+    ListenPort *port = server_port->port;
+    if (port) {
+        if (port->protocol.private_data) {
+            osw_zend_fci_cache_discard((zend_fcall_info_cache *) port->protocol.private_data);
+            efree(port->protocol.private_data);
+            port->protocol.private_data = nullptr;
+        }
+        server_port->port = nullptr;
+    }
+}
+
+static void php_openswoole_server_port_free_object(zend_object *object) {
+    php_openswoole_server_port_deref(object);
+    zend_object_std_dtor(object);
+}
+
+static zend_object *php_openswoole_server_port_create_object(zend_class_entry *ce) {
+    ServerPortObject *server_port = (ServerPortObject *) zend_object_alloc(sizeof(ServerPortObject), ce);
+    zend_object_std_init(&server_port->std, ce);
+    object_properties_init(&server_port->std, ce);
+    server_port->std.handlers = &openswoole_server_port_handlers;
+    return &server_port->std;
+}
+
+OSW_EXTERN_C_BEGIN
+static PHP_METHOD(openswoole_server_port, __construct);
+static PHP_METHOD(openswoole_server_port, __destruct);
+static PHP_METHOD(openswoole_server_port, on);
+static PHP_METHOD(openswoole_server_port, handle);
+static PHP_METHOD(openswoole_server_port, setHandler);
+static PHP_METHOD(openswoole_server_port, set);
+static PHP_METHOD(openswoole_server_port, getCallback);
+
+#ifdef OPENSWOOLE_SOCKETS_SUPPORT
+static PHP_METHOD(openswoole_server_port, getSocket);
+#endif
+OSW_EXTERN_C_END
+
+// clang-format off
+
+const zend_function_entry openswoole_server_port_methods[] =
+{
+    PHP_ME(openswoole_server_port, __construct,     arginfo_class_OpenSwoole_Server_Port___construct,                    ZEND_ACC_PRIVATE)
+    PHP_ME(openswoole_server_port, __destruct,      arginfo_class_OpenSwoole_Server_Port___destruct,                    ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_server_port, set,             arginfo_class_OpenSwoole_Server_Port_set,         ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_server_port, on,              arginfo_class_OpenSwoole_Server_Port_on,          ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_server_port, handle,          arginfo_class_OpenSwoole_Server_Port_handle,          ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_server_port, setHandler,      arginfo_class_OpenSwoole_Server_Port_setHandler,          ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_server_port, getCallback,     arginfo_class_OpenSwoole_Server_Port_getCallback, ZEND_ACC_PUBLIC)
+#ifdef OPENSWOOLE_SOCKETS_SUPPORT
+    PHP_ME(openswoole_server_port, getSocket,       arginfo_class_OpenSwoole_Server_Port_getSocket, ZEND_ACC_PUBLIC)
+#endif
+    PHP_FE_END
+};
+// clang-format on
+
+void php_openswoole_server_port_minit(int module_number) {
+    OSW_INIT_CLASS_ENTRY(
+        openswoole_server_port, "OpenSwoole\\Server\\Port", "openswoole_server_port", nullptr, openswoole_server_port_methods);
+    OSW_SET_CLASS_NOT_SERIALIZABLE(openswoole_server_port);
+    OSW_SET_CLASS_CLONEABLE(openswoole_server_port, osw_zend_class_clone_deny);
+    OSW_SET_CLASS_UNSET_PROPERTY_HANDLER(openswoole_server_port, osw_zend_class_unset_property_deny);
+    OSW_SET_CLASS_CUSTOM_OBJECT(openswoole_server_port,
+                               php_openswoole_server_port_create_object,
+                               php_openswoole_server_port_free_object,
+                               ServerPortObject,
+                               std);
+
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onConnect"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onReceive"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onClose"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onPacket"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onBufferFull"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onBufferEmpty"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onRequest"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onHandShake"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onOpen"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onMessage"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onDisconnect"), ZEND_ACC_PRIVATE);
+
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("host"), ZEND_ACC_PUBLIC);
+    zend_declare_property_long(openswoole_server_port_ce, ZEND_STRL("port"), 0, ZEND_ACC_PUBLIC);
+    zend_declare_property_long(openswoole_server_port_ce, ZEND_STRL("type"), 0, ZEND_ACC_PUBLIC);
+    zend_declare_property_long(openswoole_server_port_ce, ZEND_STRL("sock"), -1, ZEND_ACC_PUBLIC);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("setting"), ZEND_ACC_PUBLIC);
+
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("connections"), ZEND_ACC_PUBLIC);
+}
+
+/**
+ * [Master-Process]
+ */
+static ssize_t php_openswoole_server_length_func(Protocol *protocol,
+                                             network::Socket *conn,
+                                             const char *data,
+                                             uint32_t length) {
+    Server *serv = (Server *) protocol->private_data_2;
+    serv->lock();
+
+    zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) protocol->private_data;
+    zval zdata;
+    zval retval;
+    ssize_t ret = -1;
+
+    // TODO: reduce memory copy
+    ZVAL_STRINGL(&zdata, data, length);
+    if (UNEXPECTED(osw_zend_call_function_ex(nullptr, fci_cache, 1, &zdata, &retval) != SUCCESS)) {
+        php_openswoole_fatal_error(E_WARNING, "length function handler error");
+    } else {
+        ret = zval_get_long(&retval);
+        zval_ptr_dtor(&retval);
+    }
+    zval_ptr_dtor(&zdata);
+
+    serv->unlock();
+
+    /* the exception should only be thrown after unlocked */
+    if (UNEXPECTED(EG(exception))) {
+        zend_exception_error(EG(exception), E_ERROR);
+    }
+
+    return ret;
+}
+
+static PHP_METHOD(openswoole_server_port, __construct) {
+    php_openswoole_fatal_error(E_ERROR, "please use the Swoole\\Server->listen method");
+    return;
+}
+
+static PHP_METHOD(openswoole_server_port, __destruct) {}
+
+#ifdef OSW_USE_OPENSSL
+static bool php_openswoole_server_set_ssl_option(zend_array *vht, SSLContext *ctx) {
+    zval *ztmp;
+    if (php_openswoole_array_get_value(vht, "ssl_cert_file", ztmp)) {
+        zend::String str_v(ztmp);
+        if (access(str_v.val(), R_OK) < 0) {
+            php_openswoole_fatal_error(E_ERROR, "ssl cert file[%s] not found", str_v.val());
+            return false;
+        }
+        ctx->cert_file = str_v.to_std_string();
+    }
+    if (php_openswoole_array_get_value(vht, "ssl_key_file", ztmp)) {
+        zend::String str_v(ztmp);
+        if (access(str_v.val(), R_OK) < 0) {
+            php_openswoole_fatal_error(E_ERROR, "ssl key file[%s] not found", str_v.val());
+            return false;
+        }
+        ctx->key_file = str_v.to_std_string();
+    }
+    return true;
+}
+#endif
+
+static PHP_METHOD(openswoole_server_port, set) {
+    zval *zset = nullptr;
+    HashTable *vht;
+    zval *ztmp;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(zset)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    vht = Z_ARRVAL_P(zset);
+
+    ListenPort *port = php_openswoole_server_port_get_and_check_ptr(ZEND_THIS);
+    ServerPortProperty *property = php_openswoole_server_port_get_and_check_property(ZEND_THIS);
+
+    if (port == nullptr || property == nullptr) {
+        php_openswoole_fatal_error(E_ERROR, "please use the openswoole_server->listen method");
+        return;
+    }
+
+    // backlog
+    if (php_openswoole_array_get_value(vht, "backlog", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->backlog = OSW_MAX(0, OSW_MIN(v, UINT16_MAX));
+    }
+    if (php_openswoole_array_get_value(vht, "socket_buffer_size", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->socket_buffer_size = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+        if (port->socket_buffer_size <= 0) {
+            port->socket_buffer_size = INT_MAX;
+        }
+    }
+    /**
+     * !!! Don't set this option, for tests only.
+     */
+    if (php_openswoole_array_get_value(vht, "kernel_socket_recv_buffer_size", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->kernel_socket_recv_buffer_size = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+        if (port->kernel_socket_recv_buffer_size <= 0) {
+            port->kernel_socket_recv_buffer_size = INT_MAX;
+        }
+    }
+    /**
+     * !!! Don't set this option, for tests only.
+     */
+    if (php_openswoole_array_get_value(vht, "kernel_socket_send_buffer_size", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->kernel_socket_send_buffer_size = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+        if (port->kernel_socket_send_buffer_size <= 0) {
+            port->kernel_socket_send_buffer_size = INT_MAX;
+        }
+    }
+    // heartbeat idle time
+    if (php_openswoole_array_get_value(vht, "heartbeat_idle_time", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->heartbeat_idle_time = OSW_MAX(0, OSW_MIN(v, UINT16_MAX));
+    }
+    if (php_openswoole_array_get_value(vht, "buffer_high_watermark", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->buffer_high_watermark = OSW_MAX(0, OSW_MIN(v, UINT32_MAX));
+    }
+    if (php_openswoole_array_get_value(vht, "buffer_low_watermark", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->buffer_low_watermark = OSW_MAX(0, OSW_MIN(v, UINT32_MAX));
+    }
+    // server: tcp_nodelay
+    if (php_openswoole_array_get_value(vht, "open_tcp_nodelay", ztmp)) {
+        port->open_tcp_nodelay = zval_is_true(ztmp);
+    } else {
+        port->open_tcp_nodelay = 1;
+    }
+    // tcp_defer_accept
+    if (php_openswoole_array_get_value(vht, "tcp_defer_accept", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->tcp_defer_accept = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+    }
+    // tcp_keepalive
+    if (php_openswoole_array_get_value(vht, "open_tcp_keepalive", ztmp)) {
+        port->open_tcp_keepalive = zval_is_true(ztmp);
+    }
+    // buffer: eof check
+    if (php_openswoole_array_get_value(vht, "open_eof_check", ztmp)) {
+        port->open_eof_check = zval_is_true(ztmp);
+    }
+    // buffer: split package with eof
+    if (php_openswoole_array_get_value(vht, "open_eof_split", ztmp)) {
+        port->protocol.split_by_eof = zval_is_true(ztmp);
+        if (port->protocol.split_by_eof) {
+            port->open_eof_check = 1;
+        }
+    }
+    // package eof
+    if (php_openswoole_array_get_value(vht, "package_eof", ztmp)) {
+        zend::String str_v(ztmp);
+        port->protocol.package_eof_len = str_v.len();
+        if (port->protocol.package_eof_len == 0) {
+            php_openswoole_fatal_error(E_ERROR, "package_eof cannot be an empty string");
+            RETURN_FALSE;
+        } else if (port->protocol.package_eof_len > OSW_DATA_EOF_MAXLEN) {
+            php_openswoole_fatal_error(E_ERROR, "package_eof max length is %d", OSW_DATA_EOF_MAXLEN);
+            RETURN_FALSE;
+        }
+        memcpy(port->protocol.package_eof, str_v.val(), str_v.len());
+    }
+    // http_protocol
+    if (php_openswoole_array_get_value(vht, "open_http_protocol", ztmp)) {
+        port->open_http_protocol = zval_is_true(ztmp);
+    }
+    // websocket protocol
+    if (php_openswoole_array_get_value(vht, "open_websocket_protocol", ztmp)) {
+        port->open_websocket_protocol = zval_is_true(ztmp);
+        if (port->open_websocket_protocol) {
+            port->open_http_protocol = 1;
+        }
+    }
+    if (php_openswoole_array_get_value(vht, "websocket_subprotocol", ztmp)) {
+        port->websocket_subprotocol = zend::String(ztmp).to_std_string();
+    }
+    if (php_openswoole_array_get_value(vht, "open_websocket_close_frame", ztmp)) {
+        port->open_websocket_close_frame = zval_is_true(ztmp);
+    }
+    if (php_openswoole_array_get_value(vht, "open_websocket_ping_frame", ztmp)) {
+        port->open_websocket_ping_frame = zval_is_true(ztmp);
+    }
+    if (php_openswoole_array_get_value(vht, "open_websocket_pong_frame", ztmp)) {
+        port->open_websocket_pong_frame = zval_is_true(ztmp);
+    }
+#ifdef OSW_USE_HTTP2
+    // http2 protocol
+    if (php_openswoole_array_get_value(vht, "open_http2_protocol", ztmp)) {
+        port->open_http2_protocol = zval_is_true(ztmp);
+        if (port->open_http2_protocol) {
+            port->open_http_protocol = 1;
+        }
+    }
+#endif
+    // buffer: mqtt protocol
+    if (php_openswoole_array_get_value(vht, "open_mqtt_protocol", ztmp)) {
+        port->open_mqtt_protocol = zval_is_true(ztmp);
+    }
+    // redis protocol
+    if (php_openswoole_array_get_value(vht, "open_redis_protocol", ztmp)) {
+        port->open_redis_protocol = zval_get_long(ztmp);
+    }
+    if (php_openswoole_array_get_value(vht, "max_idle_time", ztmp)) {
+        port->max_idle_time = zval_get_double(ztmp);
+    }
+    // tcp_keepidle
+    if (php_openswoole_array_get_value(vht, "tcp_keepidle", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->tcp_keepidle = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+    }
+    // tcp_keepinterval
+    if (php_openswoole_array_get_value(vht, "tcp_keepinterval", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->tcp_keepinterval = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+    }
+    // tcp_keepcount
+    if (php_openswoole_array_get_value(vht, "tcp_keepcount", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->tcp_keepcount = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+    }
+    // tcp_user_timeout
+    if (php_openswoole_array_get_value(vht, "tcp_user_timeout", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->tcp_user_timeout = OSW_MAX(INT_MIN, OSW_MIN(v, INT_MAX));
+    }
+    // tcp_fastopen
+    if (php_openswoole_array_get_value(vht, "tcp_fastopen", ztmp)) {
+        port->tcp_fastopen = zval_is_true(ztmp);
+    }
+    // open length check
+    if (php_openswoole_array_get_value(vht, "open_length_check", ztmp)) {
+        port->open_length_check = zval_is_true(ztmp);
+    }
+    // package length size
+    if (php_openswoole_array_get_value(vht, "package_length_type", ztmp)) {
+        zend::String str_v(ztmp);
+        port->protocol.package_length_type = str_v.val()[0];
+        port->protocol.package_length_size = openswoole_type_size(port->protocol.package_length_type);
+        if (port->protocol.package_length_size == 0) {
+            php_openswoole_fatal_error(E_ERROR, "unknown package_length_type, see pack(). Link: http://php.net/pack");
+            RETURN_FALSE;
+        }
+    }
+    // package length offset
+    if (php_openswoole_array_get_value(vht, "package_length_offset", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->protocol.package_length_offset = OSW_MAX(0, OSW_MIN(v, UINT16_MAX));
+        if (port->protocol.package_length_offset > OSW_IPC_BUFFER_SIZE) {
+            php_openswoole_fatal_error(E_ERROR, "'package_length_offset' value is too large");
+        }
+    }
+    // package body start
+    if (php_openswoole_array_get_value(vht, "package_body_offset", ztmp) ||
+        php_openswoole_array_get_value(vht, "package_body_start", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->protocol.package_body_offset = OSW_MAX(0, OSW_MIN(v, UINT16_MAX));
+        if (port->protocol.package_body_offset > OSW_IPC_BUFFER_SIZE) {
+            php_openswoole_fatal_error(E_ERROR, "'package_body_offset' value is too large");
+        }
+    }
+    // length function
+    if (php_openswoole_array_get_value(vht, "package_length_func", ztmp)) {
+        while (1) {
+            if (Z_TYPE_P(ztmp) == IS_STRING) {
+                Protocol::LengthFunc func = Protocol::get_function(std::string(Z_STRVAL_P(ztmp), Z_STRLEN_P(ztmp)));
+                if (func != nullptr) {
+                    port->protocol.get_package_length = func;
+                    break;
+                }
+            }
+#ifdef ZTS
+            Server *serv = property->serv;
+            if (serv->is_process_mode() && !serv->single_thread) {
+                php_openswoole_fatal_error(E_ERROR, "option [package_length_func] does not support with ZTS");
+            }
+#endif
+            char *func_name;
+            zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) ecalloc(1, sizeof(zend_fcall_info_cache));
+            if (!osw_zend_is_callable_ex(ztmp, nullptr, 0, &func_name, nullptr, fci_cache, nullptr)) {
+                php_openswoole_fatal_error(E_ERROR, "function '%s' is not callable", func_name);
+                return;
+            }
+            efree(func_name);
+            port->protocol.get_package_length = php_openswoole_server_length_func;
+            if (port->protocol.private_data) {
+                osw_zend_fci_cache_discard((zend_fcall_info_cache *) port->protocol.private_data);
+                efree(port->protocol.private_data);
+            }
+            osw_zend_fci_cache_persist(fci_cache);
+            port->protocol.private_data = fci_cache;
+            break;
+        }
+
+        port->protocol.package_length_size = 0;
+        port->protocol.package_length_type = '\0';
+        port->protocol.package_length_offset = OSW_IPC_BUFFER_SIZE;
+    }
+    /**
+     * package max length
+     */
+    if (php_openswoole_array_get_value(vht, "package_max_length", ztmp)) {
+        zend_long v = zval_get_long(ztmp);
+        port->protocol.package_max_length = OSW_MAX(0, OSW_MIN(v, UINT32_MAX));
+    }
+
+#ifdef OSW_USE_OPENSSL
+    if (port->ssl) {
+        if (!php_openswoole_server_set_ssl_option(vht, port->ssl_context)) {
+            RETURN_FALSE;
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_compress", ztmp)) {
+            port->ssl_context->disable_compress = !zval_is_true(ztmp);
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_protocols", ztmp)) {
+            zend_long v = zval_get_long(ztmp);
+            port->ssl_context->protocols = v;
+#ifdef OSW_SUPPORT_DTLS
+            if (port->is_dtls() && !port->is_dgram()) {
+                port->ssl_context->protocols ^= OSW_SSL_DTLS;
+            }
+#endif
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_verify_peer", ztmp)) {
+            port->ssl_context->verify_peer = zval_is_true(ztmp);
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_allow_self_signed", ztmp)) {
+            port->ssl_context->allow_self_signed = zval_is_true(ztmp);
+        }
+        // verify client cert
+        if (php_openswoole_array_get_value(vht, "ssl_client_cert_file", ztmp)) {
+            zend::String str_v(ztmp);
+            if (access(str_v.val(), R_OK) < 0) {
+                php_openswoole_fatal_error(E_ERROR, "ssl_client_cert_file[%s] not found", str_v.val());
+                return;
+            }
+            port->ssl_context->client_cert_file = str_v.to_std_string();
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_verify_depth", ztmp)) {
+            zend_long v = zval_get_long(ztmp);
+            port->ssl_context->verify_depth = OSW_MAX(0, OSW_MIN(v, UINT8_MAX));
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_prefer_server_ciphers", ztmp)) {
+            port->ssl_context->prefer_server_ciphers = zval_is_true(ztmp);
+        }
+        //    if ((v = zend_hash_str_find(vht, ZEND_STRL("ssl_session_tickets"))))
+        //    {
+        //        port->ssl_context->session_tickets = zval_is_true(v);
+        //    }
+        //    if ((v = zend_hash_str_find(vht, ZEND_STRL("ssl_stapling"))))
+        //    {
+        //        port->ssl_context->stapling = zval_is_true(v);
+        //    }
+        //    if ((v = zend_hash_str_find(vht, ZEND_STRL("ssl_stapling_verify"))))
+        //    {
+        //        port->ssl_context->stapling_verify = zval_is_true(v);
+        //    }
+        if (php_openswoole_array_get_value(vht, "ssl_ciphers", ztmp)) {
+            port->ssl_context->ciphers = zend::String(ztmp).to_std_string();
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_ecdh_curve", ztmp)) {
+            port->ssl_context->ecdh_curve = zend::String(ztmp).to_std_string();
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_dhparam", ztmp)) {
+            port->ssl_context->dhparam = zend::String(ztmp).to_std_string();
+        }
+        if (php_openswoole_array_get_value(vht, "ssl_sni_certs", ztmp)) {
+            if (Z_TYPE_P(ztmp) != IS_ARRAY) {
+                php_openswoole_fatal_error(E_WARNING, "ssl_sni_certs requires an array mapping host names to cert paths");
+                RETURN_FALSE;
+            }
+
+            zval *current;
+            zend_string *key;
+            zend_ulong key_index;
+
+            ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(ztmp), key_index, key, current) {
+                (void) key_index;
+                if (!key) {
+                    php_openswoole_fatal_error(E_WARNING, "ssl_sni_certs array requires string host name keys");
+                    RETURN_FALSE;
+                }
+                if (Z_TYPE_P(current) != IS_ARRAY) {
+                    php_openswoole_fatal_error(E_WARNING, "invalid SNI_cert setting");
+                    RETURN_FALSE;
+                }
+                SSLContext *context = new SSLContext();
+                *context = *port->ssl_context;
+                if (!php_openswoole_server_set_ssl_option(Z_ARRVAL_P(current), context)) {
+                    delete context;
+                    RETURN_FALSE;
+                }
+                if (!port->ssl_add_sni_cert(std::string(key->val, key->len), context)) {
+                    php_openswoole_fatal_error(E_ERROR, "ssl_add_sni_cert() failed");
+                    delete context;
+                    RETURN_FALSE;
+                }
+            }
+            ZEND_HASH_FOREACH_END();
+        }
+
+        if (!port->ssl_context->cert_file.empty() || port->sni_contexts.empty()) {
+            if (!port->ssl_init()) {
+                php_openswoole_fatal_error(E_ERROR, "ssl_init() failed");
+                RETURN_FALSE;
+            }
+        }
+        //    if ((v = zend_hash_str_find(vht, ZEND_STRL("ssl_session_cache"))))
+        //    {
+        //        port->ssl_context->session_cache = zend::string_dup(v);
+        //    }
+    }
+#endif
+
+    // verify options key
+    zend_ulong idx;
+    zend_string *key;
+    zval *val;
+    (void) idx;
+    (void) val;
+    ZEND_HASH_FOREACH_KEY_VAL(vht, idx, key, val) {
+        if (!server_options_map.count(ZSTR_VAL(key))) {
+            php_openswoole_fatal_error(E_ERROR, "Invalid server option: %s", ZSTR_VAL(key));
+        }
+    }
+    ZEND_HASH_FOREACH_END();
+
+    zval *zsetting = osw_zend_read_and_convert_property_array(openswoole_server_port_ce, ZEND_THIS, ZEND_STRL("setting"), 0);
+    php_array_merge(Z_ARRVAL_P(zsetting), Z_ARRVAL_P(zset));
+    property->zsetting = zsetting;
+}
+
+static bool is_core_loaded() {
+    zend_string *class_name =
+        zend_string_init("\\OpenSwoole\\Core\\Helper", sizeof("\\OpenSwoole\\Core\\Helper") - 1, 0);
+    if (zend_lookup_class(class_name) == NULL) {
+        efree(class_name);
+        return false;
+    }
+    efree(class_name);
+    return true;
+}
+
+static PHP_METHOD(openswoole_server_port, handle) {
+    zval *cb;
+
+    ServerPortProperty *property = php_openswoole_server_port_get_and_check_property(ZEND_THIS);
+    Server *serv = property->serv;
+    if (serv->is_started()) {
+        php_openswoole_fatal_error(E_WARNING, "can't register event callback function after server started");
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "z", &cb) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    char *func_name = nullptr;
+    zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+    if (!osw_zend_is_callable_ex(cb, nullptr, 0, &func_name, nullptr, fci_cache, nullptr)) {
+        php_openswoole_fatal_error(E_ERROR, "function '%s' is not callable", func_name);
+        return;
+    }
+    efree(func_name);
+
+    if (!is_core_loaded()) {
+        php_openswoole_fatal_error(E_ERROR,
+                               "$server->handle API is avaiable in openswoole/core: composer require openswoole/core");
+    }
+
+    zval *zserv = (zval *) serv->private_data_2;
+    zval args[2];
+    args[0] = *zserv;
+    args[1] = *cb;
+    zend::function::call("\\OpenSwoole\\Core\\Helper::handle", 2, args);
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&args[1]);
+
+    RETURN_TRUE;
+}
+
+static PHP_METHOD(openswoole_server_port, setHandler) {
+    Server *serv = php_openswoole_server_get_and_check_server(ZEND_THIS);
+    if (serv->is_started()) {
+        php_openswoole_fatal_error(E_WARNING, "server is running, unable to register event callback function");
+        RETURN_FALSE;
+    }
+
+    zval *handler;
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(handler)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (!is_core_loaded()) {
+        php_openswoole_fatal_error(
+            E_ERROR, "server->setHandler API is avaiable in openswoole/core: composer require openswoole/core");
+    }
+
+    zval *zserv = (zval *) serv->private_data_2;
+    zval args[2];
+    args[0] = *zserv;
+    args[1] = *handler;
+    zend::function::call("\\OpenSwoole\\Core\\Helper::setHandler", 2, args);
+}
+
+static PHP_METHOD(openswoole_server_port, on) {
+    char *name = nullptr;
+    size_t len;
+    zval *cb;
+
+    ServerPortProperty *property = php_openswoole_server_port_get_and_check_property(ZEND_THIS);
+    Server *serv = property->serv;
+    if (serv->is_started()) {
+        php_openswoole_fatal_error(E_WARNING, "can't register event callback function after server started");
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "sz", &name, &len, &cb) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    char *func_name = nullptr;
+    zend_fcall_info_cache *fci_cache = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+    if (!osw_zend_is_callable_ex(cb, nullptr, 0, &func_name, nullptr, fci_cache, nullptr)) {
+        php_openswoole_fatal_error(E_ERROR, "function '%s' is not callable", func_name);
+        return;
+    }
+    efree(func_name);
+
+    bool found = false;
+    for (auto i = server_port_event_map.begin(); i != server_port_event_map.end(); i++) {
+        if (!openswoole_strcaseeq(name, len, i->first.c_str(), i->first.length())) {
+            continue;
+        }
+
+        found = true;
+        int index = i->second.type;
+        std::string property_name = std::string("on") + i->second.name;
+        zend_update_property(
+            openswoole_server_port_ce, OSW_Z8_OBJ_P(ZEND_THIS), property_name.c_str(), property_name.length(), cb);
+        property->callbacks[index] =
+            osw_zend_read_property(openswoole_server_port_ce, ZEND_THIS, property_name.c_str(), property_name.length(), 0);
+        osw_copy_to_stack(property->callbacks[index], property->_callbacks[index]);
+        if (property->caches[index]) {
+            efree(property->caches[index]);
+        }
+        property->caches[index] = fci_cache;
+
+        if (index == OSW_SERVER_CB_onConnect && !serv->onConnect) {
+            serv->onConnect = php_openswoole_server_onConnect;
+        } else if (index == OSW_SERVER_CB_onPacket && !serv->onPacket) {
+            serv->onPacket = php_openswoole_server_onPacket;
+        } else if (index == OSW_SERVER_CB_onClose && !serv->onClose) {
+            serv->onClose = php_openswoole_server_onClose;
+        } else if (index == OSW_SERVER_CB_onBufferFull && !serv->onBufferFull) {
+            serv->onBufferFull = php_openswoole_server_onBufferFull;
+        } else if (index == OSW_SERVER_CB_onBufferEmpty && !serv->onBufferEmpty) {
+            serv->onBufferEmpty = php_openswoole_server_onBufferEmpty;
+        }
+        break;
+    }
+
+    if (!found) {
+        php_openswoole_error(E_WARNING, "unknown event types[%s]", name);
+        efree(fci_cache);
+        RETURN_FALSE;
+    }
+    RETURN_TRUE;
+}
+
+static PHP_METHOD(openswoole_server_port, getCallback) {
+    zval *name;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ZVAL(name)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    zend::String _event_name_ori(name);
+    zend::String _event_name_tolower(zend_string_tolower(_event_name_ori.get()), false);
+    auto i = server_port_event_map.find(_event_name_tolower.to_std_string());
+    if (i != server_port_event_map.end()) {
+        std::string property_name = "on" + i->second.name;
+        zval rv,
+            *property = zend_read_property(
+                openswoole_server_port_ce, OSW_Z8_OBJ_P(ZEND_THIS), property_name.c_str(), property_name.length(), 1, &rv);
+        if (!ZVAL_IS_NULL(property)) {
+            RETURN_ZVAL(property, 1, 0);
+        }
+    }
+    RETURN_NULL();
+}
+
+#ifdef OPENSWOOLE_SOCKETS_SUPPORT
+static PHP_METHOD(openswoole_server_port, getSocket) {
+    ListenPort *port = php_openswoole_server_port_get_and_check_ptr(ZEND_THIS);
+    php_socket *socket_object = php_openswoole_convert_to_socket(port->get_fd());
+    if (!socket_object) {
+        RETURN_FALSE;
+    }
+    OSW_ZVAL_SOCKET(return_value, socket_object);
+    zval *zsocket = osw_zval_dup(return_value);
+    Z_TRY_ADDREF_P(zsocket);
+}
+#endif

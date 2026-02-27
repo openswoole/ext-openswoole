@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -14,17 +14,17 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole.h"
-#include "swoole_string.h"
-#include "swoole_socket.h"
-#include "swoole_ssl.h"
-#include "swoole_util.h"
+#include "openswoole.h"
+#include "openswoole_string.h"
+#include "openswoole_socket.h"
+#include "openswoole_ssl.h"
+#include "openswoole_util.h"
 
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
 
-using swoole::SSLContext;
-using swoole::network::Address;
-using swoole::network::Socket;
+using openswoole::SSLContext;
+using openswoole::network::Address;
+using openswoole::network::Socket;
 
 #if OPENSSL_VERSION_NUMBER < 0x10000000L
 #error "require openssl version 1.0 or later"
@@ -36,17 +36,17 @@ static int ssl_connection_index = 0;
 static int ssl_port_index = 0;
 static pthread_mutex_t *lock_array;
 
-static int swoole_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store);
+static int openswoole_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store);
 #ifndef OPENSSL_NO_RSA
-static RSA *swoole_ssl_rsa_key_callback(SSL *ssl, int is_export, int key_length);
+static RSA *openswoole_ssl_rsa_key_callback(SSL *ssl, int is_export, int key_length);
 #endif
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
-static int swoole_ssl_set_default_dhparam(SSL_CTX *ssl_context);
+static int openswoole_ssl_set_default_dhparam(SSL_CTX *ssl_context);
 #endif
 
-#ifdef SW_SUPPORT_DTLS
-static int swoole_ssl_generate_cookie(SSL *ssl, uchar *cookie, uint *cookie_len);
-static int swoole_ssl_verify_cookie(SSL *ssl, const uchar *cookie, uint cookie_len);
+#ifdef OSW_SUPPORT_DTLS
+static int openswoole_ssl_generate_cookie(SSL *ssl, uchar *cookie, uint *cookie_len);
+static int openswoole_ssl_verify_cookie(SSL *ssl, const uchar *cookie, uint cookie_len);
 #endif
 
 #ifdef __GNUC__
@@ -55,15 +55,15 @@ static int swoole_ssl_verify_cookie(SSL *ssl, const uchar *cookie, uint cookie_l
 #define MAYBE_UNUSED
 #endif
 
-std::string swoole_ssl_get_version_message() {
-    std::string message = swoole::std_string::format("OPENSSL_VERSION: %s\n", OPENSSL_VERSION_TEXT);
+std::string openswoole_ssl_get_version_message() {
+    std::string message = openswoole::std_string::format("OPENSSL_VERSION: %s\n", OPENSSL_VERSION_TEXT);
 
     return message;
 }
 
-static void MAYBE_UNUSED swoole_ssl_lock_callback(int mode, int type, const char *file, int line);
+static void MAYBE_UNUSED openswoole_ssl_lock_callback(int mode, int type, const char *file, int line);
 
-void swoole_ssl_init(void) {
+void openswoole_ssl_init(void) {
     if (openssl_init) {
         return;
     }
@@ -79,33 +79,33 @@ void swoole_ssl_init(void) {
 
     ssl_connection_index = SSL_get_ex_new_index(0, nullptr, nullptr, nullptr, nullptr);
     if (ssl_connection_index < 0) {
-        swoole_error("SSL_get_ex_new_index() failed");
+        openswoole_error("SSL_get_ex_new_index() failed");
         return;
     }
 
     ssl_port_index = SSL_get_ex_new_index(0, nullptr, nullptr, nullptr, nullptr);
     if (ssl_port_index < 0) {
-        swoole_error("SSL_get_ex_new_index() failed");
+        openswoole_error("SSL_get_ex_new_index() failed");
         return;
     }
 
     openssl_init = true;
 }
 
-int swoole_ssl_get_ex_connection_index() {
+int openswoole_ssl_get_ex_connection_index() {
     return ssl_connection_index;
 }
 
-int swoole_ssl_get_ex_port_index() {
+int openswoole_ssl_get_ex_port_index() {
     return ssl_port_index;
 }
 
-void swoole_ssl_destroy() {
+void openswoole_ssl_destroy() {
     if (!openssl_init) {
         return;
     }
 
-    SW_LOOP_N(CRYPTO_num_locks()) {
+    OSW_LOOP_N(CRYPTO_num_locks()) {
         pthread_mutex_destroy(&(lock_array[i]));
     }
 
@@ -121,7 +121,7 @@ void swoole_ssl_destroy() {
     openssl_thread_safety_init = false;
 }
 
-static void MAYBE_UNUSED swoole_ssl_lock_callback(int mode, int type, const char *file, int line) {
+static void MAYBE_UNUSED openswoole_ssl_lock_callback(int mode, int type, const char *file, int line) {
     if (mode & CRYPTO_LOCK) {
         pthread_mutex_lock(&(lock_array[type]));
     } else {
@@ -135,23 +135,23 @@ static int ssl_error_cb(const char *str, size_t len, void *buf) {
     return 0;
 }
 
-const char *swoole_ssl_get_error() {
-    ERR_print_errors_cb(ssl_error_cb, sw_tg_buffer()->str);
+const char *openswoole_ssl_get_error() {
+    ERR_print_errors_cb(ssl_error_cb, osw_tg_buffer()->str);
 
-    return sw_tg_buffer()->str;
+    return osw_tg_buffer()->str;
 }
 
 #if OPENSSL_VERSION_NUMBER >= OPENSSL_VERSION_1_0_0
-static void MAYBE_UNUSED swoole_ssl_id_callback(CRYPTO_THREADID *id) {
+static void MAYBE_UNUSED openswoole_ssl_id_callback(CRYPTO_THREADID *id) {
     CRYPTO_THREADID_set_numeric(id, (ulong_t) pthread_self());
 }
 #else
-static ulong_t swoole_ssl_id_callback(void) {
+static ulong_t openswoole_ssl_id_callback(void) {
     return (ulong_t) pthread_self();
 }
 #endif
 
-void swoole_ssl_init_thread_safety() {
+void openswoole_ssl_init_thread_safety() {
     if (!openssl_init) {
         return;
     }
@@ -161,34 +161,34 @@ void swoole_ssl_init_thread_safety() {
     }
 
     lock_array = (pthread_mutex_t *) OPENSSL_malloc(CRYPTO_num_locks() * sizeof(pthread_mutex_t));
-    SW_LOOP_N(CRYPTO_num_locks()) {
+    OSW_LOOP_N(CRYPTO_num_locks()) {
         pthread_mutex_init(&(lock_array[i]), nullptr);
     }
 
 #if OPENSSL_VERSION_NUMBER >= OPENSSL_VERSION_1_0_0
-    (void) CRYPTO_THREADID_set_callback(swoole_ssl_id_callback);
+    (void) CRYPTO_THREADID_set_callback(openswoole_ssl_id_callback);
 #else
-    CRYPTO_set_id_callback(swoole_ssl_id_callback);
+    CRYPTO_set_id_callback(openswoole_ssl_id_callback);
 #endif
 
-    CRYPTO_set_locking_callback(swoole_ssl_lock_callback);
+    CRYPTO_set_locking_callback(openswoole_ssl_lock_callback);
     openssl_thread_safety_init = true;
 }
 
-bool swoole_ssl_is_thread_safety() {
+bool openswoole_ssl_is_thread_safety() {
     return openssl_thread_safety_init;
 }
 
-static void swoole_ssl_info_callback(const SSL *ssl, int where, int ret) {
+static void openswoole_ssl_info_callback(const SSL *ssl, int where, int ret) {
     BIO *rbio, *wbio;
     swSocket *sock;
 
     if (where & SSL_CB_HANDSHAKE_START) {
         sock = (swSocket *) SSL_get_ex_data(ssl, ssl_connection_index);
 
-        if (sock->ssl_state == SW_SSL_STATE_READY) {
+        if (sock->ssl_state == OSW_SSL_STATE_READY) {
             sock->ssl_renegotiation = 1;
-            swoole_debug("SSL renegotiation");
+            openswoole_debug("SSL renegotiation");
         }
     }
 
@@ -211,14 +211,14 @@ static void swoole_ssl_info_callback(const SSL *ssl, int where, int ret) {
             wbio = SSL_get_wbio(ssl);
 
             if (rbio != wbio) {
-                (void) BIO_set_write_buffer_size(wbio, SW_SSL_BUFFER_SIZE);
+                (void) BIO_set_write_buffer_size(wbio, OSW_SSL_BUFFER_SIZE);
                 sock->ssl_handshake_buffer_set = 1;
             }
         }
     }
 }
 
-namespace swoole {
+namespace openswoole {
 
 #define OS_HTTP_V2_ALPN_PROTO "\x02h2"
 #define OS_HTTP_ALPN_PROTOS "\x08http/1.1\x08http/1.0"
@@ -260,12 +260,12 @@ static int ssl_passwd_callback(char *buf, int num, int verify, void *data) {
 
 bool SSLContext::create() {
     if (!openssl_init) {
-        swoole_ssl_init();
+        openswoole_ssl_init();
     }
 
     const SSL_METHOD *method;
-#ifdef SW_SUPPORT_DTLS
-    if (protocols & SW_SSL_DTLS) {
+#ifdef OSW_SUPPORT_DTLS
+    if (protocols & OSW_SSL_DTLS) {
         method = DTLS_method();
     } else
 #endif
@@ -273,12 +273,12 @@ bool SSLContext::create() {
         method = SSLv23_method();
     }
     if (protocols == 0) {
-        protocols = SW_SSL_ALL;
+        protocols = OSW_SSL_ALL;
     }
     context = SSL_CTX_new(method);
     if (context == nullptr) {
         int error = ERR_get_error();
-        swoole_warning("SSL_CTX_new() failed, Error: %s[%d]", ERR_reason_error_string(error), error);
+        openswoole_warning("SSL_CTX_new() failed, Error: %s[%d]", ERR_reason_error_string(error), error);
         return false;
     }
 
@@ -326,35 +326,35 @@ bool SSLContext::create() {
 #endif
 
 #ifdef SSL_OP_NO_SSLv2
-    if (!(protocols & SW_SSL_SSLv2)) {
+    if (!(protocols & OSW_SSL_SSLv2)) {
         SSL_CTX_set_options(context, SSL_OP_NO_SSLv2);
     }
 #endif
 #ifdef SSL_OP_NO_SSLv3
-    if (!(protocols & SW_SSL_SSLv3)) {
+    if (!(protocols & OSW_SSL_SSLv3)) {
         SSL_CTX_set_options(context, SSL_OP_NO_SSLv3);
     }
 #endif
 #ifdef SSL_OP_NO_TLSv1
-    if (!(protocols & SW_SSL_TLSv1)) {
+    if (!(protocols & OSW_SSL_TLSv1)) {
         SSL_CTX_set_options(context, SSL_OP_NO_TLSv1);
     }
 #endif
 #ifdef SSL_OP_NO_TLSv1_1
     SSL_CTX_clear_options(context, SSL_OP_NO_TLSv1_1);
-    if (!(protocols & SW_SSL_TLSv1_1)) {
+    if (!(protocols & OSW_SSL_TLSv1_1)) {
         SSL_CTX_set_options(context, SSL_OP_NO_TLSv1_1);
     }
 #endif
 #ifdef SSL_OP_NO_TLSv1_2
     SSL_CTX_clear_options(context, SSL_OP_NO_TLSv1_2);
-    if (!(protocols & SW_SSL_TLSv1_2) && !(protocols & SW_SSL_DTLS)) {
+    if (!(protocols & OSW_SSL_TLSv1_2) && !(protocols & OSW_SSL_DTLS)) {
         SSL_CTX_set_options(context, SSL_OP_NO_TLSv1_2);
     }
 #endif
 #ifdef SSL_OP_NO_TLSv1_3
     SSL_CTX_clear_options(context, SSL_OP_NO_TLSv1_3);
-    if (!(protocols & SW_SSL_TLSv1_3)) {
+    if (!(protocols & OSW_SSL_TLSv1_3)) {
         SSL_CTX_set_options(context, SSL_OP_NO_TLSv1_3);
     }
 #endif
@@ -374,7 +374,7 @@ bool SSLContext::create() {
 #endif
 
     SSL_CTX_set_read_ahead(context, 1);
-    SSL_CTX_set_info_callback(context, swoole_ssl_info_callback);
+    SSL_CTX_set_info_callback(context, openswoole_ssl_info_callback);
 
     if (!passphrase.empty()) {
         SSL_CTX_set_default_passwd_cb_userdata(context, this);
@@ -387,7 +387,7 @@ bool SSLContext::create() {
          */
         if (SSL_CTX_use_certificate_file(context, cert_file.c_str(), SSL_FILETYPE_PEM) <= 0) {
             int error = ERR_get_error();
-            swoole_warning("SSL_CTX_use_certificate_file(%s) failed, Error: %s[%d]",
+            openswoole_warning("SSL_CTX_use_certificate_file(%s) failed, Error: %s[%d]",
                            cert_file.c_str(),
                            ERR_reason_error_string(error),
                            error);
@@ -399,7 +399,7 @@ bool SSLContext::create() {
          */
         if (SSL_CTX_use_certificate_chain_file(context, cert_file.c_str()) <= 0) {
             int error = ERR_get_error();
-            swoole_warning("SSL_CTX_use_certificate_chain_file(%s) failed, Error: %s[%d]",
+            openswoole_warning("SSL_CTX_use_certificate_chain_file(%s) failed, Error: %s[%d]",
                            cert_file.c_str(),
                            ERR_reason_error_string(error),
                            error);
@@ -412,7 +412,7 @@ bool SSLContext::create() {
          */
         if (SSL_CTX_use_PrivateKey_file(context, key_file.c_str(), SSL_FILETYPE_PEM) <= 0) {
             int error = ERR_get_error();
-            swoole_warning("SSL_CTX_use_PrivateKey_file(%s) failed, Error: %s[%d]",
+            openswoole_warning("SSL_CTX_use_PrivateKey_file(%s) failed, Error: %s[%d]",
                            key_file.c_str(),
                            ERR_reason_error_string(error),
                            error);
@@ -422,15 +422,15 @@ bool SSLContext::create() {
          * verify private key
          */
         if (!SSL_CTX_check_private_key(context)) {
-            swoole_warning("Private key does not match the public certificate");
+            openswoole_warning("Private key does not match the public certificate");
             return false;
         }
     }
 
-#ifdef SW_SUPPORT_DTLS
-    if (protocols & SW_SSL_DTLS) {
-        SSL_CTX_set_cookie_generate_cb(context, swoole_ssl_generate_cookie);
-        SSL_CTX_set_cookie_verify_cb(context, swoole_ssl_verify_cookie);
+#ifdef OSW_SUPPORT_DTLS
+    if (protocols & OSW_SSL_DTLS) {
+        SSL_CTX_set_cookie_generate_cb(context, openswoole_ssl_generate_cookie);
+        SSL_CTX_set_cookie_verify_cb(context, openswoole_ssl_verify_cookie);
     }
 #endif
 
@@ -468,12 +468,12 @@ bool SSLContext::create() {
 #endif
 
     if (!client_cert_file.empty() && !set_client_certificate()) {
-        swoole_warning("set_client_certificate() error");
+        openswoole_warning("set_client_certificate() error");
         return false;
     }
 
     if (!set_ciphers()) {
-        swoole_warning("set_cipher() error");
+        openswoole_warning("set_cipher() error");
         return false;
     }
 
@@ -489,7 +489,7 @@ bool SSLContext::set_capath() {
         }
     } else {
         if (!SSL_CTX_set_default_verify_paths(context)) {
-            swoole_warning("Unable to set default verify locations and no CA settings specified");
+            openswoole_warning("Unable to set default verify locations and no CA settings specified");
             return false;
         }
     }
@@ -508,7 +508,7 @@ bool SSLContext::set_ciphers() {
 
     if (!ciphers.empty()) {
         if (SSL_CTX_set_cipher_list(context, ciphers.c_str()) == 0) {
-            swoole_warning("SSL_CTX_set_cipher_list(\"%s\") failed", ciphers.c_str());
+            openswoole_warning("SSL_CTX_set_cipher_list(\"%s\") failed", ciphers.c_str());
             return false;
         }
         if (prefer_server_ciphers) {
@@ -517,7 +517,7 @@ bool SSLContext::set_ciphers() {
     }
 
 #ifndef OPENSSL_NO_RSA
-    SSL_CTX_set_tmp_rsa_callback(context, swoole_ssl_rsa_key_callback);
+    SSL_CTX_set_tmp_rsa_callback(context, openswoole_ssl_rsa_key_callback);
 #endif
 
     if (!dhparam.empty() && !set_dhparam()) {
@@ -525,7 +525,7 @@ bool SSLContext::set_ciphers() {
     }
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
     else {
-        swoole_ssl_set_default_dhparam(context);
+        openswoole_ssl_set_default_dhparam(context);
     }
 #endif
     if (!ecdh_curve.empty() && !set_ecdh_curve()) {
@@ -540,18 +540,18 @@ bool SSLContext::set_client_certificate() {
     const char *cert_file = client_cert_file.c_str();
     int depth = verify_depth;
 
-    SSL_CTX_set_verify(context, SSL_VERIFY_PEER, swoole_ssl_verify_callback);
+    SSL_CTX_set_verify(context, SSL_VERIFY_PEER, openswoole_ssl_verify_callback);
     SSL_CTX_set_verify_depth(context, depth);
 
     if (SSL_CTX_load_verify_locations(context, cert_file, nullptr) == 0) {
-        swoole_warning("SSL_CTX_load_verify_locations(\"%s\") failed", cert_file);
+        openswoole_warning("SSL_CTX_load_verify_locations(\"%s\") failed", cert_file);
         return false;
     }
 
     ERR_clear_error();
     list = SSL_load_client_CA_file(cert_file);
     if (list == nullptr) {
-        swoole_warning("SSL_load_client_CA_file(\"%s\") failed", cert_file);
+        openswoole_warning("SSL_load_client_CA_file(\"%s\") failed", cert_file);
         return false;
     }
 
@@ -590,7 +590,7 @@ bool SSLContext::set_ecdh_curve() {
         return true;
     }
     if (SSL_CTX_set1_curves_list(context, ecdh_curve.c_str()) == 0) {
-        swoole_warning("SSL_CTX_set1_curves_list(\"%s\") failed", ecdh_curve.c_str());
+        openswoole_warning("SSL_CTX_set1_curves_list(\"%s\") failed", ecdh_curve.c_str());
         return false;
     }
 #else
@@ -603,13 +603,13 @@ bool SSLContext::set_ecdh_curve() {
      */
     int nid = OBJ_sn2nid(ecdh_curve.c_str());
     if (nid == 0) {
-        swoole_warning("Unknown curve name \"%s\"", ecdh_curve.c_str());
+        openswoole_warning("Unknown curve name \"%s\"", ecdh_curve.c_str());
         return false;
     }
 
     ecdh = EC_KEY_new_by_curve_name(nid);
     if (ecdh == nullptr) {
-        swoole_warning("Unable to create curve \"%s\"", ecdh_curve.c_str());
+        openswoole_warning("Unable to create curve \"%s\"", ecdh_curve.c_str());
         return false;
     }
 
@@ -631,13 +631,13 @@ bool SSLContext::set_dhparam() {
 
     bio = BIO_new_file(file, "r");
     if (bio == nullptr) {
-        swoole_warning("BIO_new_file(%s) failed", file);
+        openswoole_warning("BIO_new_file(%s) failed", file);
         return false;
     }
 
     dh = PEM_read_bio_DHparams(bio, nullptr, nullptr, nullptr);
     if (dh == nullptr) {
-        swoole_warning("PEM_read_bio_DHparams(%s) failed", file);
+        openswoole_warning("PEM_read_bio_DHparams(%s) failed", file);
         BIO_free(bio);
         return false;
     }
@@ -654,9 +654,9 @@ SSLContext::~SSLContext() {
     SSL_CTX_free(context);
 }
 
-}  // namespace swoole
+}  // namespace openswoole
 
-static int swoole_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store) {
+static int openswoole_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store) {
 #if 0
     char *subject, *issuer;
     int err, depth;
@@ -672,7 +672,7 @@ static int swoole_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store) {
 
     iname = X509_get_issuer_name(cert);
     issuer = iname ? X509_NAME_oneline(iname, nullptr, 0) : "(none)";
-    swoole_warning("verify:%d, error:%d, depth:%d, subject:\"%s\", issuer:\"%s\"", ok, err, depth, subject, issuer);
+    openswoole_warning("verify:%d, error:%d, depth:%d, subject:\"%s\", issuer:\"%s\"", ok, err, depth, subject, issuer);
 
     if (sname)
     {
@@ -687,7 +687,7 @@ static int swoole_ssl_verify_callback(int ok, X509_STORE_CTX *x509_store) {
     return 1;
 }
 
-#ifdef SW_SUPPORT_DTLS
+#ifdef OSW_SUPPORT_DTLS
 
 #define COOKIE_SECRET_LENGTH (32)
 
@@ -701,7 +701,7 @@ static void calculate_cookie(SSL *ssl, uchar *cookie_secret, uint cookie_length)
     }
 }
 
-static int swoole_ssl_generate_cookie(SSL *ssl, uchar *cookie, uint *cookie_len) {
+static int openswoole_ssl_generate_cookie(SSL *ssl, uchar *cookie, uint *cookie_len) {
     uchar *buffer, result[EVP_MAX_MD_SIZE];
     uint length = 0, result_len;
     Address sa{};
@@ -729,7 +729,7 @@ static int swoole_ssl_generate_cookie(SSL *ssl, uchar *cookie, uint *cookie_len)
     buffer = (uchar *) OPENSSL_malloc(length);
 
     if (buffer == nullptr) {
-        swoole_sys_warning("out of memory");
+        openswoole_sys_warning("out of memory");
         return 0;
     }
 
@@ -756,18 +756,18 @@ static int swoole_ssl_generate_cookie(SSL *ssl, uchar *cookie, uint *cookie_len)
     return 1;
 }
 
-static int swoole_ssl_verify_cookie(SSL *ssl, const uchar *cookie, uint cookie_len) {
+static int openswoole_ssl_verify_cookie(SSL *ssl, const uchar *cookie, uint cookie_len) {
     uint result_len = 0;
     uchar result[COOKIE_SECRET_LENGTH];
 
-    swoole_ssl_generate_cookie(ssl, result, &result_len);
+    openswoole_ssl_generate_cookie(ssl, result, &result_len);
 
     return cookie_len == result_len && memcmp(result, cookie, result_len) == 0;
 }
 #endif
 
 #ifndef OPENSSL_NO_RSA
-static RSA *swoole_ssl_rsa_key_callback(SSL *ssl, int is_export, int key_length) {
+static RSA *openswoole_ssl_rsa_key_callback(SSL *ssl, int is_export, int key_length) {
     static RSA *rsa_tmp = nullptr;
     if (rsa_tmp) {
         return rsa_tmp;
@@ -775,7 +775,7 @@ static RSA *swoole_ssl_rsa_key_callback(SSL *ssl, int is_export, int key_length)
 
     BIGNUM *bn = BN_new();
     if (bn == nullptr) {
-        swoole_warning("allocation error generating RSA key");
+        openswoole_warning("allocation error generating RSA key");
         return nullptr;
     }
 
@@ -792,7 +792,7 @@ static RSA *swoole_ssl_rsa_key_callback(SSL *ssl, int is_export, int key_length)
 #endif
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
-static int swoole_ssl_set_default_dhparam(SSL_CTX *ssl_context) {
+static int openswoole_ssl_set_default_dhparam(SSL_CTX *ssl_context) {
     DH *dh;
     static unsigned char dh1024_p[] = {
         0xBB, 0xBC, 0x2D, 0xCA, 0xD8, 0x46, 0x74, 0x90, 0x7C, 0x43, 0xFC, 0xF5, 0x80, 0xE9, 0xCF, 0xDB,
@@ -807,8 +807,8 @@ static int swoole_ssl_set_default_dhparam(SSL_CTX *ssl_context) {
     static unsigned char dh1024_g[] = {0x02};
     dh = DH_new();
     if (dh == nullptr) {
-        swoole_warning("DH_new() failed");
-        return SW_ERR;
+        openswoole_warning("DH_new() failed");
+        return OSW_ERR;
     }
 
     dh->p = BN_bin2bn(dh1024_p, sizeof(dh1024_p), nullptr);
@@ -819,7 +819,7 @@ static int swoole_ssl_set_default_dhparam(SSL_CTX *ssl_context) {
     }
     SSL_CTX_set_tmp_dh(ssl_context, dh);
     DH_free(dh);
-    return SW_OK;
+    return OSW_OK;
 }
 #endif
 

@@ -1,5 +1,5 @@
 <?php
-function swoole_test_curl_multi($options = []) {
+function openswoole_test_curl_multi($options = []) {
     $ch1 = curl_init();
     $ch2 = curl_init();
 

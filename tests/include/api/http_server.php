@@ -4,13 +4,13 @@
  */
 global $pm;
 
-$http = new swoole_http_server("127.0.0.1", $pm->getFreePort(), SWOOLE_BASE);
+$http = new openswoole_http_server("127.0.0.1", $pm->getFreePort(), SWOOLE_BASE);
 $http->set(array(
     'log_file' => '/dev/null',
     "http_parse_post" => 1,
     "upload_tmp_dir" => "/tmp",
 ));
-$http->on("WorkerStart", function (\swoole_server $serv)
+$http->on("WorkerStart", function (\openswoole_server $serv)
 {
     /**
      * @var $pm ProcessManager
@@ -21,7 +21,7 @@ $http->on("WorkerStart", function (\swoole_server $serv)
         $pm->wakeup();
     }
 });
-$http->on('request', function ($request, swoole_http_response $response) use ($pm)
+$http->on('request', function ($request, openswoole_http_response $response) use ($pm)
 {
     $route = $request->server['request_uri'];
     if ($route == '/info')
@@ -67,7 +67,7 @@ $http->on('request', function ($request, swoole_http_response $response) use ($p
     }
     else
     {
-        $cli = new swoole_http_client('127.0.0.1', $pm->getFreePort());
+        $cli = new openswoole_http_client('127.0.0.1', $pm->getFreePort());
         $cli->set(array(
             'timeout' => 0.3,
         ));

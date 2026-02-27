@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -12,21 +12,21 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_io_uring.h"
+#include "openswoole_io_uring.h"
 
 #ifdef HAVE_IO_URING
 
-#include "swoole_api.h"
-#include "swoole_socket.h"
-#include "swoole_reactor.h"
-#include "swoole_coroutine.h"
+#include "openswoole_api.h"
+#include "openswoole_socket.h"
+#include "openswoole_reactor.h"
+#include "openswoole_coroutine.h"
 
 #include <sys/eventfd.h>
 #include <sys/sysmacros.h>
 #include <fcntl.h>
 #include <unistd.h>
 
-namespace swoole {
+namespace openswoole {
 
 using network::Socket;
 
@@ -34,16 +34,16 @@ static constexpr int IO_URING_UNSUPPORTED = -2;
 static constexpr unsigned int IO_URING_ENTRIES = 256;
 
 IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{}, pending_count_(0) {
-    if (!SwooleTG.reactor) {
-        swoole_warning("no event loop, cannot initialize io_uring engine");
-        throw swoole::Exception(SW_ERROR_WRONG_OPERATION);
+    if (!OpenSwooleTG.reactor) {
+        openswoole_warning("no event loop, cannot initialize io_uring engine");
+        throw openswoole::Exception(OSW_ERROR_WRONG_OPERATION);
     }
 
     struct io_uring_params params = {};
     int ret = io_uring_queue_init_params(IO_URING_ENTRIES, &ring_, &params);
     if (ret < 0) {
-        swoole_warning("io_uring_queue_init_params() failed: %s", strerror(-ret));
-        throw swoole::Exception(SW_ERROR_SYSTEM_CALL_FAIL);
+        openswoole_warning("io_uring_queue_init_params() failed: %s", strerror(-ret));
+        throw openswoole::Exception(OSW_ERROR_SYSTEM_CALL_FAIL);
     }
 
     // Probe capabilities and run smoke test BEFORE registering the eventfd.
@@ -54,60 +54,60 @@ IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{},
     event_fd_ = eventfd(0, EFD_NONBLOCK | EFD_CLOEXEC);
     if (event_fd_ < 0) {
         io_uring_queue_exit(&ring_);
-        swoole_warning("eventfd() failed: %s", strerror(errno));
-        throw swoole::Exception(SW_ERROR_SYSTEM_CALL_FAIL);
+        openswoole_warning("eventfd() failed: %s", strerror(errno));
+        throw openswoole::Exception(OSW_ERROR_SYSTEM_CALL_FAIL);
     }
 
     ret = io_uring_register_eventfd(&ring_, event_fd_);
     if (ret < 0) {
         ::close(event_fd_);
         io_uring_queue_exit(&ring_);
-        swoole_warning("io_uring_register_eventfd() failed: %s", strerror(-ret));
-        throw swoole::Exception(SW_ERROR_SYSTEM_CALL_FAIL);
+        openswoole_warning("io_uring_register_eventfd() failed: %s", strerror(-ret));
+        throw openswoole::Exception(OSW_ERROR_SYSTEM_CALL_FAIL);
     }
 
-    event_socket_ = make_socket(event_fd_, (FdType) SW_FD_IO_URING);
+    event_socket_ = make_socket(event_fd_, (FdType) OSW_FD_IO_URING);
     if (!event_socket_) {
         ::close(event_fd_);
         io_uring_queue_exit(&ring_);
-        swoole_warning("make_socket() failed for io_uring eventfd");
-        throw swoole::Exception(SW_ERROR_SYSTEM_CALL_FAIL);
+        openswoole_warning("make_socket() failed for io_uring eventfd");
+        throw openswoole::Exception(OSW_ERROR_SYSTEM_CALL_FAIL);
     }
 
-    if (swoole_event_add(event_socket_, SW_EVENT_READ) < 0) {
+    if (openswoole_event_add(event_socket_, OSW_EVENT_READ) < 0) {
         event_socket_->free();
         ::close(event_fd_);
         io_uring_queue_exit(&ring_);
-        swoole_warning("swoole_event_add() failed for io_uring eventfd");
-        throw swoole::Exception(SW_ERROR_SYSTEM_CALL_FAIL);
+        openswoole_warning("openswoole_event_add() failed for io_uring eventfd");
+        throw openswoole::Exception(OSW_ERROR_SYSTEM_CALL_FAIL);
     }
 
-    sw_reactor()->set_exit_condition(
+    osw_reactor()->set_exit_condition(
         Reactor::EXIT_CONDITION_IO_URING_TASK, [](Reactor *reactor, size_t &event_num) -> bool {
-            if (SwooleTG.io_uring_engine && SwooleTG.io_uring_engine->get_pending_count() == 0) {
+            if (OpenSwooleTG.io_uring_engine && OpenSwooleTG.io_uring_engine->get_pending_count() == 0) {
                 event_num--;
             }
             return true;
         });
 
-    sw_reactor()->add_destroy_callback([](void *data) {
-        if (!SwooleTG.io_uring_engine) {
+    osw_reactor()->add_destroy_callback([](void *data) {
+        if (!OpenSwooleTG.io_uring_engine) {
             return;
         }
-        delete SwooleTG.io_uring_engine;
-        SwooleTG.io_uring_engine = nullptr;
+        delete OpenSwooleTG.io_uring_engine;
+        OpenSwooleTG.io_uring_engine = nullptr;
     });
 
-    sw_reactor()->set_end_callback(Reactor::PRIORITY_IO_URING, [](Reactor *reactor) {
-        if (SwooleTG.io_uring_engine) {
-            SwooleTG.io_uring_engine->process_completions();
+    osw_reactor()->set_end_callback(Reactor::PRIORITY_IO_URING, [](Reactor *reactor) {
+        if (OpenSwooleTG.io_uring_engine) {
+            OpenSwooleTG.io_uring_engine->process_completions();
             // When there are pending io_uring file I/O operations, cap the reactor
             // timeout to 1ms so the CQ is polled frequently. This makes eventfd a
             // wake-up optimisation rather than the sole delivery mechanism — if an
             // eventfd notification is lost in the window between draining and
             // re-arming the single-shot POLL_ADD, the short timeout ensures
             // completions are still picked up promptly.
-            if (SwooleTG.io_uring_engine->get_pending_count() > 0) {
+            if (OpenSwooleTG.io_uring_engine->get_pending_count() > 0) {
                 if (reactor->timeout_msec < 0 || reactor->timeout_msec > 1) {
                     reactor->timeout_msec = 1;
                 }
@@ -115,9 +115,9 @@ IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{},
         }
     });
 
-    SwooleTG.io_uring_engine = this;
+    OpenSwooleTG.io_uring_engine = this;
 
-    swoole_trace_log(SW_TRACE_AIO,
+    openswoole_trace_log(OSW_TRACE_AIO,
                      "io_uring file I/O engine initialized (openat=%d, read=%d, write=%d, statx=%d, "
                      "unlinkat=%d, mkdirat=%d, renameat=%d, fsync=%d)",
                      caps_.openat, caps_.read, caps_.write, caps_.statx,
@@ -126,7 +126,7 @@ IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{},
 
 IoUringEngine::~IoUringEngine() {
     if (event_socket_) {
-        swoole_event_del(event_socket_);
+        openswoole_event_del(event_socket_);
         event_socket_->free();
         event_socket_ = nullptr;
     }
@@ -140,7 +140,7 @@ IoUringEngine::~IoUringEngine() {
 void IoUringEngine::detect_capabilities() {
     struct io_uring_probe *probe = io_uring_get_probe_ring(&ring_);
     if (!probe) {
-        swoole_trace_log(SW_TRACE_AIO, "io_uring_get_probe_ring() returned NULL, no capabilities detected");
+        openswoole_trace_log(OSW_TRACE_AIO, "io_uring_get_probe_ring() returned NULL, no capabilities detected");
         return;
     }
 
@@ -171,7 +171,7 @@ void IoUringEngine::detect_capabilities() {
             struct __kernel_timespec ts = {.tv_sec = 1, .tv_nsec = 0};
             int ret = io_uring_wait_cqe_timeout(&ring_, &cqe, &ts);
             if (ret < 0 || cqe->res < 0) {
-                swoole_warning("io_uring file I/O disabled: openat smoke test failed (ret=%d, res=%d). "
+                openswoole_warning("io_uring file I/O disabled: openat smoke test failed (ret=%d, res=%d). "
                                "File operations will use the thread pool. "
                                "If running in Docker, enable io_uring with: "
                                "--security-opt seccomp=unconfined or a custom seccomp profile allowing io_uring",
@@ -272,9 +272,9 @@ void IoUringEngine::process_completions() {
 }
 
 int IoUringEngine::on_event(Reactor *reactor, Event *event) {
-    auto *engine = SwooleTG.io_uring_engine;
+    auto *engine = OpenSwooleTG.io_uring_engine;
     if (!engine) {
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     uint64_t val;
@@ -283,7 +283,7 @@ int IoUringEngine::on_event(Reactor *reactor, Event *event) {
     }
 
     engine->process_completions();
-    return SW_OK;
+    return OSW_OK;
 }
 
 int IoUringEngine::open(const char *pathname, int flags, mode_t mode) {
@@ -515,22 +515,22 @@ int IoUringEngine::rename(const char *oldpath, const char *newpath) {
 }
 
 IoUringEngine *get_or_create_io_uring_engine() {
-    if (SwooleTG.io_uring_engine) {
-        return SwooleTG.io_uring_engine;
+    if (OpenSwooleTG.io_uring_engine) {
+        return OpenSwooleTG.io_uring_engine;
     }
 
-    if (!SwooleTG.reactor) {
+    if (!OpenSwooleTG.reactor) {
         return nullptr;
     }
 
     try {
         return new IoUringEngine();
     } catch (...) {
-        swoole_warning("failed to create io_uring file I/O engine, falling back to thread pool");
+        openswoole_warning("failed to create io_uring file I/O engine, falling back to thread pool");
         return nullptr;
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole
 
 #endif

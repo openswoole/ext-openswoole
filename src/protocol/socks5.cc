@@ -1,8 +1,8 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
- | Copyright (c) 2017-now Open Swoole Group                             |
+ | Copyright (c) 2017-now OpenSwoole Group                             |
  | Copyright (c) 2012-2017 The Swoole Group                             |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
@@ -17,9 +17,9 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_proxy.h"
+#include "openswoole_proxy.h"
 
-namespace swoole {
+namespace openswoole {
 const char *Socks5Proxy::strerror(int code) {
     switch (code) {
     case 0x01:
@@ -42,4 +42,4 @@ const char *Socks5Proxy::strerror(int code) {
         return "Unknown error";
     }
 }
-}  // namespace swoole
+}  // namespace openswoole

@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,10 +14,10 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_memory.h"
+#include "openswoole.h"
+#include "openswoole_memory.h"
 
-namespace swoole {
+namespace openswoole {
 
 struct RingBufferImpl {
     void *memory;
@@ -27,7 +27,7 @@ struct RingBufferImpl {
     uint32_t alloc_offset;
     uint32_t collect_offset;
     uint32_t alloc_count;
-    sw_atomic_t free_count;
+    osw_atomic_t free_count;
 
     void collect();
 };
@@ -39,7 +39,7 @@ struct RingBufferItem {
     char data[0];
 };
 
-#ifdef SW_RINGBUFFER_DEBUG
+#ifdef OSW_RINGBUFFER_DEBUG
 static void swRingBuffer_print(swRingBuffer *object, char *prefix);
 
 static void swRingBuffer_print(swRingBuffer *object, char *prefix) {
@@ -55,21 +55,21 @@ static void swRingBuffer_print(swRingBuffer *object, char *prefix) {
 #endif
 
 RingBuffer::RingBuffer(uint32_t size, bool shared) {
-    size = SW_MEM_ALIGNED_SIZE(size);
-    void *mem = (shared == 1) ? sw_shm_malloc(size) : sw_malloc(size);
+    size = OSW_MEM_ALIGNED_SIZE(size);
+    void *mem = (shared == 1) ? osw_shm_malloc(size) : osw_malloc(size);
     if (mem == nullptr) {
         throw std::bad_alloc();
     }
 
     impl = (RingBufferImpl *) mem;
     mem = (char *) mem + sizeof(*impl);
-    sw_memset_zero(impl, sizeof(*impl));
+    osw_memset_zero(impl, sizeof(*impl));
 
     impl->size = size - sizeof(impl);
     impl->shared = shared;
     impl->memory = mem;
 
-    swoole_debug("memory: ptr=%p", mem);
+    openswoole_debug("memory: ptr=%p", mem);
 }
 
 void RingBufferImpl::collect() {
@@ -82,7 +82,7 @@ void RingBufferImpl::collect() {
                 collect_offset = 0;
                 status = 0;
             }
-            sw_atomic_fetch_sub(&free_count, 1);
+            osw_atomic_fetch_sub(&free_count, 1);
         } else {
             break;
         }
@@ -95,7 +95,7 @@ void *RingBuffer::alloc(uint32_t size) {
     RingBufferItem *item;
     uint32_t capacity;
 
-    size = SW_MEM_ALIGNED_SIZE(size);
+    size = OSW_MEM_ALIGNED_SIZE(size);
     uint32_t alloc_size = size + sizeof(RingBufferItem);
 
     if (impl->free_count > 0) {
@@ -109,8 +109,8 @@ void *RingBuffer::alloc(uint32_t size) {
                 item = (RingBufferItem *) ((char *) impl->memory + impl->alloc_offset);
                 item->lock = 0;
                 item->length = skip_n - sizeof(RingBufferItem);
-                sw_atomic_t *free_count = &impl->free_count;
-                sw_atomic_fetch_add(free_count, 1);
+                osw_atomic_t *free_count = &impl->free_count;
+                osw_atomic_fetch_add(free_count, 1);
             }
             impl->alloc_offset = 0;
             impl->status = 1;
@@ -134,7 +134,7 @@ void *RingBuffer::alloc(uint32_t size) {
     impl->alloc_offset += alloc_size;
     impl->alloc_count++;
 
-    swoole_debug("alloc: ptr=%p", (void *) (item->data - (char *) impl->memory));
+    openswoole_debug("alloc: ptr=%p", (void *) (item->data - (char *) impl->memory));
 
     return item->data;
 }
@@ -147,23 +147,23 @@ void RingBuffer::free(void *ptr) {
     assert(item->lock == 1);
 
     if (item->lock != 1) {
-        swoole_debug("invalid free: index=%d, ptr=%p", item->index, (void *) (item->data - (char *) impl->memory));
+        openswoole_debug("invalid free: index=%d, ptr=%p", item->index, (void *) (item->data - (char *) impl->memory));
     } else {
         item->lock = 0;
     }
 
-    swoole_debug("free: ptr=%p", (void *) (item->data - (char *) impl->memory));
+    openswoole_debug("free: ptr=%p", (void *) (item->data - (char *) impl->memory));
 
-    sw_atomic_t *free_count = &impl->free_count;
-    sw_atomic_fetch_add(free_count, 1);
+    osw_atomic_t *free_count = &impl->free_count;
+    osw_atomic_fetch_add(free_count, 1);
 }
 
 RingBuffer::~RingBuffer() {
     if (impl->shared) {
-        sw_shm_free(impl);
+        osw_shm_free(impl);
     } else {
-        sw_free(impl);
+        osw_free(impl);
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole

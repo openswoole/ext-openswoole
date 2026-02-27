@@ -1,0 +1,16 @@
+--TEST--
+openswoole_client_sync: connect 1 - 1
+--SKIPIF--
+<?php require  __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+ini_set('openswoole.display_errors', 'off');
+
+$cli = new \openswoole_client(SWOOLE_SOCK_TCP, OPENSWOOLE_SOCK_SYNC);
+$r = $cli->connect("11.11.11.11", 80, 0.5);
+Assert::false($r);
+Assert::eq($cli->errCode, SOCKET_ETIMEDOUT);
+?>
+--EXPECT--

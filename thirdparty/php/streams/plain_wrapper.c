@@ -37,7 +37,7 @@
 
 #include "thirdparty/php/streams/php_streams_int.h"
 
-#include "swoole_file_hook.h"
+#include "openswoole_file_hook.h"
 
 #if !defined(WINDOWS) && !defined(NETWARE)
 extern int php_get_uid_by_name(const char *name, uid_t *uid);
@@ -164,7 +164,7 @@ typedef struct {
 
 #define PHP_STDIOP_GET_FD(anfd, data) anfd = (data)->file ? fileno((data)->file) : (data)->fd
 
-static php_stream_ops sw_php_stream_stdio_ops = {
+static php_stream_ops osw_php_stream_stdio_ops = {
     sw_php_stdiop_write,
     sw_php_stdiop_read,
     sw_php_stdiop_close,
@@ -199,7 +199,7 @@ static php_stream *_sw_php_stream_fopen_from_fd_int(int fd, const char *mode, co
     self->is_process_pipe = 0;
     self->temp_name = NULL;
     self->fd = fd;
-    return php_stream_alloc_rel(&sw_php_stream_stdio_ops, self, persistent_id, mode);
+    return php_stream_alloc_rel(&osw_php_stream_stdio_ops, self, persistent_id, mode);
 }
 
 static php_stream_size_t sw_php_stdiop_write(php_stream *stream, const char *buf, size_t count) {
@@ -279,7 +279,7 @@ static int sw_php_stdiop_close(php_stream *stream, int close_handle) {
             }
         } else if (data->fd != -1) {
             if ((data->lock_flag & LOCK_EX) || (data->lock_flag & LOCK_SH)) {
-                swoole_coroutine_flock_ex(stream->orig_path, data->fd, LOCK_UN);
+                openswoole_coroutine_flock_ex(stream->orig_path, data->fd, LOCK_UN);
             }
             ret = close(data->fd);
             data->fd = -1;
@@ -478,7 +478,7 @@ static int sw_php_stdiop_set_option(php_stream *stream, int option, int value, v
             return 0;
         }
 
-        if (!swoole_coroutine_flock_ex(stream->orig_path, fd, value)) {
+        if (!openswoole_coroutine_flock_ex(stream->orig_path, fd, value)) {
             data->lock_flag = value;
             return 0;
         } else {
@@ -892,7 +892,7 @@ static php_stream *stream_opener(php_stream_wrapper *wrapper,
         if (stream == NULL) {
             return NULL;
         }
-        stream->ops = php_swoole_get_ori_php_stream_stdio_ops();
+        stream->ops = php_openswoole_get_ori_php_stream_stdio_ops();
         return stream;
     }
 
@@ -1314,7 +1314,7 @@ static php_stream_wrapper_ops wrapper_ops = {stream_opener,
                                              php_plain_files_rmdir,
                                              php_plain_files_metadata};
 
-PHPAPI php_stream_wrapper sw_php_plain_files_wrapper = {&wrapper_ops, NULL, 0};
+PHPAPI php_stream_wrapper osw_php_plain_files_wrapper = {&wrapper_ops, NULL, 0};
 
 /*
  * Local variables:

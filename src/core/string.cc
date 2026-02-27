@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -14,19 +14,19 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_string.h"
-#include "swoole_base64.h"
+#include "openswoole_string.h"
+#include "openswoole_base64.h"
 
 #include <memory>
 
-namespace swoole {
+namespace openswoole {
 
 char *String::pop(size_t init_size) {
     assert(length >= (size_t) offset);
 
     char *val = str;
     size_t _length = length - offset;
-    size_t alloc_size = SW_MEM_ALIGNED_SIZE(_length == 0 ? init_size : SW_MAX(_length, init_size));
+    size_t alloc_size = OSW_MEM_ALIGNED_SIZE(_length == 0 ? init_size : OSW_MAX(_length, init_size));
 
     char *new_val = (char *) allocator->malloc(alloc_size);
     if (new_val == nullptr) {
@@ -49,7 +49,7 @@ char *String::pop(size_t init_size) {
  */
 void String::reduce(off_t _offset) {
     assert(_offset >= 0 && (size_t) _offset <= length);
-    if (sw_unlikely(_offset == 0)) {
+    if (osw_unlikely(_offset == 0)) {
         return;
     }
     length -= _offset;
@@ -66,29 +66,29 @@ void String::print() {
 
 int String::append(int value) {
     char buf[16];
-    int s_len = swoole_itoa(buf, value);
+    int s_len = openswoole_itoa(buf, value);
 
     size_t new_size = length + s_len;
     if (new_size > size) {
         if (!reserve(new_size)) {
-            return SW_ERR;
+            return OSW_ERR;
         }
     }
 
     memcpy(str + length, buf, s_len);
     length += s_len;
-    return SW_OK;
+    return OSW_OK;
 }
 
 int String::append(const char *append_str, size_t _length) {
     size_t new_size = length + _length;
     if (new_size > size and !reserve(new_size)) {
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     memcpy(str + length, append_str, _length);
     length += _length;
-    return SW_OK;
+    return OSW_OK;
 }
 
 int String::append_random_bytes(size_t _length, bool base64) {
@@ -101,14 +101,14 @@ int String::append_random_bytes(size_t _length, bool base64) {
     }
 
     if (new_size > size) {
-        if (!reserve(swoole_size_align(new_size * 2, SwooleG.pagesize))) {
-            return SW_ERR;
+        if (!reserve(openswoole_size_align(new_size * 2, OpenSwooleG.pagesize))) {
+            return OSW_ERR;
         }
     }
 
-    size_t n = swoole_random_bytes(str + length, _length);
+    size_t n = openswoole_random_bytes(str + length, _length);
     if (n != _length) {
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     if (base64) {
@@ -119,7 +119,7 @@ int String::append_random_bytes(size_t _length, bool base64) {
 
     length += n;
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 bool String::reserve(size_t new_size) {
@@ -128,7 +128,7 @@ bool String::reserve(size_t new_size) {
         return true;
     }
 
-    new_size = SW_MEM_ALIGNED_SIZE(new_size);
+    new_size = OSW_MEM_ALIGNED_SIZE(new_size);
     char *new_str = (char *) allocator->realloc(str, new_size);
     if (new_str == nullptr) {
         throw std::bad_alloc();
@@ -167,27 +167,27 @@ bool String::repeat(const char *data, size_t len, size_t n) {
  * 3. greater than zero, 0 to retval has eof in the target string, and the position of retval is eof
  */
 ssize_t String::split(const char *delimiter, size_t delimiter_length, const StringExplodeHandler &handler) {
-#ifdef SW_LOG_TRACE_OPEN
+#ifdef OSW_LOG_TRACE_OPEN
     static int count;
     count++;
 #endif
     const char *start_addr = str + offset;
-    const char *delimiter_addr = swoole_strnstr(start_addr, length - offset, delimiter, delimiter_length);
+    const char *delimiter_addr = openswoole_strnstr(start_addr, length - offset, delimiter, delimiter_length);
     off_t _offset = offset;
     size_t ret;
 
-    swoole_trace_log(
-        SW_TRACE_EOF_PROTOCOL, "#[0] count=%d, length=%ld, size=%ld, offset=%ld", count, length, size, offset);
+    openswoole_trace_log(
+        OSW_TRACE_EOF_PROTOCOL, "#[0] count=%d, length=%ld, size=%ld, offset=%ld", count, length, size, offset);
 
     while (delimiter_addr) {
         size_t _length = delimiter_addr - start_addr + delimiter_length;
-        swoole_trace_log(SW_TRACE_EOF_PROTOCOL, "#[4] count=%d, length=%lu", count, _length + offset);
+        openswoole_trace_log(OSW_TRACE_EOF_PROTOCOL, "#[4] count=%d, length=%lu", count, _length + offset);
         if (handler((char *) start_addr - _offset, _length + _offset) == false) {
             return -1;
         }
         offset += _length;
         start_addr = str + offset;
-        delimiter_addr = swoole_strnstr(start_addr, length - offset, delimiter, delimiter_length);
+        delimiter_addr = openswoole_strnstr(start_addr, length - offset, delimiter, delimiter_length);
         _offset = 0;
     }
 
@@ -204,12 +204,12 @@ ssize_t String::split(const char *delimiter, size_t delimiter_length, const Stri
 
     ret = start_addr - str - _offset;
     if (ret > 0 && ret < length) {
-        swoole_trace_log(SW_TRACE_EOF_PROTOCOL, "#[5] count=%d, remaining_length=%zu", count, length - offset);
+        openswoole_trace_log(OSW_TRACE_EOF_PROTOCOL, "#[5] count=%d, remaining_length=%zu", count, length - offset);
     } else if (ret >= length) {
-        swoole_trace_log(SW_TRACE_EOF_PROTOCOL, "#[3] length=%ld, size=%ld, offset=%ld", length, size, offset);
+        openswoole_trace_log(OSW_TRACE_EOF_PROTOCOL, "#[3] length=%ld, size=%ld, offset=%ld", length, size, offset);
     }
 
     return ret;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

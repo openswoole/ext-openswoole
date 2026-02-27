@@ -54,7 +54,7 @@
 #include "net.h"
 #include "sds.h"
 
-#include "swoole_socket_hook.h"
+#include "openswoole_socket_hook.h"
 
 /* Defined in hiredis.c */
 void __redisSetError(redisContext *c, int type, const char *str);
@@ -344,11 +344,11 @@ int redisContextSetTimeout(redisContext *c, const struct timeval tv) {
 #else
     double timeout = tv.tv_sec ;
     timeout += (double) tv.tv_usec / 1000 / 1000;
-    if (swoole_coroutine_socket_set_timeout(c->fd, SO_RCVTIMEO, timeout) == -1) {
+    if (openswoole_coroutine_socket_set_timeout(c->fd, SO_RCVTIMEO, timeout) == -1) {
         __redisSetErrorFromErrno(c,REDIS_ERR_IO,"setsockopt(SO_RCVTIMEO)");
         return REDIS_ERR;
     }
-    if (swoole_coroutine_socket_set_timeout(c->fd, SO_SNDTIMEO, timeout) == -1) {
+    if (openswoole_coroutine_socket_set_timeout(c->fd, SO_SNDTIMEO, timeout) == -1) {
         __redisSetErrorFromErrno(c,REDIS_ERR_IO,"setsockopt(SO_RCVTIMEO)");
         return REDIS_ERR;
     }
@@ -511,7 +511,7 @@ addrretry:
         if (c->connect_timeout) {
             double timeout = c->connect_timeout->tv_sec ;
             timeout += (double) c->connect_timeout->tv_usec / 1000 / 1000;
-            swoole_coroutine_socket_set_connect_timeout(c->fd, timeout);
+            openswoole_coroutine_socket_set_connect_timeout(c->fd, timeout);
         }
 
         if (connect(s,p->ai_addr,p->ai_addrlen) == -1) {

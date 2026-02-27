@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -14,13 +14,13 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_static_handler.h"
+#include "openswoole_static_handler.h"
 
 #include <string>
 #include <dirent.h>
 #include <algorithm>
 
-namespace swoole {
+namespace openswoole {
 
 namespace http_server {
 bool StaticHandler::is_modified(const std::string &date_if_modified_since) {
@@ -35,14 +35,14 @@ bool StaticHandler::is_modified(const std::string &date_if_modified_since) {
 
     const char *date_format = nullptr;
 
-    if (strptime(date_tmp, SW_HTTP_RFC1123_DATE_GMT, &tm3) != nullptr) {
-        date_format = SW_HTTP_RFC1123_DATE_GMT;
-    } else if (strptime(date_tmp, SW_HTTP_RFC1123_DATE_UTC, &tm3) != nullptr) {
-        date_format = SW_HTTP_RFC1123_DATE_UTC;
-    } else if (strptime(date_tmp, SW_HTTP_RFC850_DATE, &tm3) != nullptr) {
-        date_format = SW_HTTP_RFC850_DATE;
-    } else if (strptime(date_tmp, SW_HTTP_ASCTIME_DATE, &tm3) != nullptr) {
-        date_format = SW_HTTP_ASCTIME_DATE;
+    if (strptime(date_tmp, OSW_HTTP_RFC1123_DATE_GMT, &tm3) != nullptr) {
+        date_format = OSW_HTTP_RFC1123_DATE_GMT;
+    } else if (strptime(date_tmp, OSW_HTTP_RFC1123_DATE_UTC, &tm3) != nullptr) {
+        date_format = OSW_HTTP_RFC1123_DATE_UTC;
+    } else if (strptime(date_tmp, OSW_HTTP_RFC850_DATE, &tm3) != nullptr) {
+        date_format = OSW_HTTP_RFC850_DATE;
+    } else if (strptime(date_tmp, OSW_HTTP_ASCTIME_DATE, &tm3) != nullptr) {
+        date_format = OSW_HTTP_ASCTIME_DATE;
     }
     return date_format && mktime(&tm3) - (int) serv->timezone_ >= get_file_mtime();
 }
@@ -84,7 +84,7 @@ bool StaticHandler::hit() {
 
     if (serv->locations->size() > 0) {
         for (auto i = serv->locations->begin(); i != serv->locations->end(); i++) {
-            if (swoole_strcasect(url, url_length, i->c_str(), i->size())) {
+            if (openswoole_strcasect(url, url_length, i->c_str(), i->size())) {
                 last = true;
             }
         }
@@ -108,14 +108,14 @@ bool StaticHandler::hit() {
     l_filename = http_server::url_decode(task.filename, p - task.filename);
     task.filename[l_filename] = '\0';
 
-    if (swoole_strnpos(url, n, SW_STRL("..")) == -1) {
+    if (openswoole_strnpos(url, n, OSW_STRL("..")) == -1) {
         goto _detect_mime_type;
     }
 
     char real_path[PATH_MAX];
     if (!realpath(task.filename, real_path)) {
         if (last) {
-            status_code = SW_HTTP_NOT_FOUND;
+            status_code = OSW_HTTP_NOT_FOUND;
             return true;
         } else {
             return false;
@@ -126,7 +126,7 @@ bool StaticHandler::hit() {
         return false;
     }
 
-    if (swoole_streq(real_path, strlen(real_path), document_root.c_str(), document_root.length()) != 0) {
+    if (openswoole_streq(real_path, strlen(real_path), document_root.c_str(), document_root.length()) != 0) {
         return false;
     }
 
@@ -136,7 +136,7 @@ _detect_mime_type:
 check_stat:
     if (lstat(task.filename, &file_stat) < 0) {
         if (last) {
-            status_code = SW_HTTP_NOT_FOUND;
+            status_code = OSW_HTTP_NOT_FOUND;
             return true;
         } else {
             return false;
@@ -150,7 +150,7 @@ check_stat:
             return false;
         }
         buf[byte] = 0;
-        swoole_strlcpy(task.filename, buf, sizeof(task.filename));
+        openswoole_strlcpy(task.filename, buf, sizeof(task.filename));
         goto check_stat;
     }
 
@@ -162,7 +162,7 @@ check_stat:
         return true;
     }
 
-    if (!swoole::mime_type::exists(task.filename)) {
+    if (!openswoole::mime_type::exists(task.filename)) {
         return false;
     }
 
@@ -182,7 +182,7 @@ size_t StaticHandler::get_index_page(std::set<std::string> &files, char *buffer,
         dir_path.append("/");
     }
 
-    ret = sw_snprintf(p,
+    ret = osw_snprintf(p,
                       size - ret,
                       "<html>\n"
                       "<head>\n"
@@ -199,12 +199,12 @@ size_t StaticHandler::get_index_page(std::set<std::string> &files, char *buffer,
         if (*iter == "." || (dir_path == "/" && *iter == "..")) {
             continue;
         }
-        ret = sw_snprintf(
+        ret = osw_snprintf(
             p, size - ret, "\t\t<li><a href=%s%s>%s</a></li>\n", dir_path.c_str(), (*iter).c_str(), (*iter).c_str());
         p += ret;
     }
 
-    ret = sw_snprintf(p,
+    ret = osw_snprintf(p,
                       size - ret,
                       "\t</ul>\n"
                       "<hr><i>Powered by OpenSwoole</i></body>\n"
@@ -271,4 +271,4 @@ void Server::add_static_handler_index_files(const std::string &file) {
         http_index_files->push_back(file);
     }
 }
-}  // namespace swoole
+}  // namespace openswoole

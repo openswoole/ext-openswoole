@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | Copyright (c) 2012-2015 The Swoole Group                             |
  +----------------------------------------------------------------------+
@@ -16,9 +16,9 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_mime_type.h"
+#include "openswoole_mime_type.h"
 
-namespace swoole {
+namespace openswoole {
 namespace mime_type {
 
 static std::unordered_map<std::string, std::string> map_(
@@ -433,4 +433,4 @@ bool exists(const std::string &filename) {
 }
 
 }  // namespace mime_type
-}  // namespace swoole
+}  // namespace openswoole

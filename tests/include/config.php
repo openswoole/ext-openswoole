@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Open Swoole
+ * This file is part of OpenSwoole
  *
  * @link     https://openswoole.com
  * @contact  hello@openswoole.com
@@ -15,8 +15,8 @@ define('IS_IN_TRAVIS', !!getenv('TRAVIS') || file_exists('/.travisenv'));
 define('IS_PHPTESTSING', !!getenv('PHPT'));
 define('USE_VALGRIND', getenv('USE_ZEND_ALLOC') === '0');
 define('HAS_SSL', defined("SWOOLE_SSL"));
-define('HAS_ASYNC_REDIS', class_exists("swoole_redis", false));
-define('HAS_HTTP2', class_exists("swoole_http2_request", false));
+define('HAS_ASYNC_REDIS', class_exists("openswoole_redis", false));
+define('HAS_HTTP2', class_exists("openswoole_http2_request", false));
 define('DEV_NULL', '/dev/null');
 
 /** ============== Files ============== */

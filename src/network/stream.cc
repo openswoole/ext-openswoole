@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -14,14 +14,14 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole.h"
-#include "swoole_api.h"
-#include "swoole_string.h"
-#include "swoole_socket.h"
-#include "swoole_protocol.h"
-#include "swoole_client.h"
+#include "openswoole.h"
+#include "openswoole_api.h"
+#include "openswoole_string.h"
+#include "openswoole_socket.h"
+#include "openswoole_protocol.h"
+#include "openswoole_client.h"
 
-namespace swoole {
+namespace openswoole {
 namespace network {
 
 static void Stream_onConnect(Client *cli) {
@@ -40,13 +40,13 @@ static void Stream_onConnect(Client *cli) {
 
 static void Stream_onError(Client *cli) {
     Stream *stream = (Stream *) cli->object;
-    stream->errCode = swoole_get_last_error();
+    stream->errCode = openswoole_get_last_error();
 
-    swoole_error_log(SW_LOG_WARNING,
-                     SW_ERROR_SERVER_CONNECT_FAIL,
+    openswoole_error_log(OSW_LOG_WARNING,
+                     OSW_ERROR_SERVER_CONNECT_FAIL,
                      " connect() failed (%d: %s) while connecting to worker process",
                      stream->errCode,
-                     swoole_strerror(stream->errCode));
+                     openswoole_strerror(stream->errCode));
 
     if (!stream->response) {
         return;
@@ -66,7 +66,7 @@ static void Stream_onReceive(Client *cli, const char *data, uint32_t length) {
 }
 
 static void Stream_onClose(Client *cli) {
-    swoole_event_defer(
+    openswoole_event_defer(
         [](void *data) {
             Client *cli = (Client *) data;
             delete (Stream *) cli->object;
@@ -89,7 +89,7 @@ Stream::Stream(const char *dst_host, int dst_port, SocketType type) : client(typ
     set_protocol(&client.protocol);
 
     if (client.connect(&client, dst_host, dst_port, -1, 0) < 0) {
-        swoole_sys_warning("failed to connect to [%s:%d]", dst_host, dst_port);
+        openswoole_sys_warning("failed to connect to [%s:%d]", dst_host, dst_port);
         return;
     }
     connected = true;
@@ -118,27 +118,27 @@ void Stream::set_max_length(uint32_t max_length) {
 
 int Stream::send(const char *data, size_t length) {
     if (buffer == nullptr) {
-        buffer = new String(swoole_size_align(length + 4, SwooleG.pagesize));
+        buffer = new String(openswoole_size_align(length + 4, OpenSwooleG.pagesize));
         buffer->length = 4;
     }
     if (buffer->append(data, length) < 0) {
-        return SW_ERR;
+        return OSW_ERR;
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 ssize_t Stream::recv_blocking(Socket *sock, void *__buf, size_t __len) {
     int tmp = 0;
     ssize_t ret = sock->recv_blocking(&tmp, sizeof(tmp), MSG_WAITALL);
     if (ret <= 0) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     int length = (int) ntohl(tmp);
     if (length <= 0 || length > (int) __len) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     return sock->recv_blocking(__buf, length, MSG_WAITALL);
 }
 
 }  // namespace network
-}  // namespace swoole
+}  // namespace openswoole

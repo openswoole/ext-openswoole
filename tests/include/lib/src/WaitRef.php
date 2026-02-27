@@ -1,9 +1,9 @@
 <?php
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
- | Copyright (c) 2017-now Open Swoole Group                            |
+ | Copyright (c) 2017-now OpenSwoole Group                            |
  | Copyright (c) 2012-2017 The Swoole Group                             |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
@@ -20,7 +20,7 @@
 
 namespace SwooleTest;
 
-use Swoole;
+use OpenSwoole\Coroutine;
 
 class WaitRef
 {
@@ -28,7 +28,7 @@ class WaitRef
 
     public function __destruct()
     {
-        Swoole\Coroutine::resume($this->cid);
+        Coroutine::resume($this->cid);
     }
 
     static function create()
@@ -38,8 +38,8 @@ class WaitRef
 
     static function wait(WaitRef &$wr)
     {
-        $wr->cid = Swoole\Coroutine::getCid();
+        $wr->cid = Coroutine::getCid();
         $wr = null;
-        Swoole\Coroutine::yield();
+        Coroutine::yield();
     }
 }

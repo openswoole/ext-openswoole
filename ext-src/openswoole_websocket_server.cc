@@ -1,0 +1,944 @@
+/*
+  +----------------------------------------------------------------------+
+  | OpenSwoole                                                          |
+  +----------------------------------------------------------------------+
+  | This source file is subject to version 2.0 of the Apache license,    |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.apache.org/licenses/LICENSE-2.0.html                      |
+  | If you did not receive a copy of the Apache2.0 license and are unable|
+  | to obtain it through the world-wide-web, please send a note to       |
+  | hello@swoole.co.uk so we can mail you a copy immediately.            |
+  +----------------------------------------------------------------------+
+  | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
+  +----------------------------------------------------------------------+
+*/
+
+#include "php_openswoole_http_server.h"
+
+OSW_EXTERN_C_BEGIN
+#include "ext/standard/sha1.h"
+OSW_EXTERN_C_END
+
+#include "openswoole_base64.h"
+
+#include "openswoole_websocket_server_arginfo.h"
+
+using openswoole::Connection;
+using openswoole::ListenPort;
+using openswoole::RecvData;
+using openswoole::Server;
+using openswoole::SessionId;
+using openswoole::String;
+using openswoole::coroutine::Socket;
+
+using HttpContext = openswoole::http::Context;
+
+namespace WebSocket = openswoole::websocket;
+
+zend_class_entry *openswoole_websocket_server_ce;
+static zend_object_handlers openswoole_websocket_server_handlers;
+
+zend_class_entry *openswoole_websocket_frame_ce;
+static zend_object_handlers openswoole_websocket_frame_handlers;
+
+static zend_class_entry *openswoole_websocket_closeframe_ce;
+static zend_object_handlers openswoole_websocket_closeframe_handlers;
+
+OSW_EXTERN_C_BEGIN
+static PHP_METHOD(openswoole_websocket_server, push);
+static PHP_METHOD(openswoole_websocket_server, isEstablished);
+static PHP_METHOD(openswoole_websocket_server, pack);
+static PHP_METHOD(openswoole_websocket_server, unpack);
+static PHP_METHOD(openswoole_websocket_server, disconnect);
+
+static PHP_METHOD(openswoole_websocket_frame, __toString);
+OSW_EXTERN_C_END
+
+// clang-format off
+const zend_function_entry openswoole_websocket_server_methods[] =
+{
+    PHP_ME(openswoole_websocket_server, push,              arginfo_class_OpenSwoole_WebSocket_Server_push,          ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_websocket_server, disconnect,        arginfo_class_OpenSwoole_WebSocket_Server_disconnect,    ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_websocket_server, isEstablished,     arginfo_class_OpenSwoole_WebSocket_Server_isEstablished, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_websocket_server, pack,              arginfo_class_OpenSwoole_WebSocket_Server_pack,          ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(openswoole_websocket_server, unpack,            arginfo_class_OpenSwoole_WebSocket_Server_unpack,        ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_FE_END
+};
+
+const zend_function_entry openswoole_websocket_frame_methods[] =
+{
+    PHP_ME(openswoole_websocket_frame, __toString,      arginfo_class_OpenSwoole_WebSocket_Frame___toString,    ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_websocket_server, pack,           arginfo_class_OpenSwoole_WebSocket_Frame_pack,   ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_ME(openswoole_websocket_server, unpack,         arginfo_class_OpenSwoole_WebSocket_Frame_unpack, ZEND_ACC_PUBLIC | ZEND_ACC_STATIC)
+    PHP_FE_END
+};
+// clang-format on
+
+#ifdef OSW_HAVE_ZLIB
+static bool websocket_message_compress(String *buffer, const char *data, size_t length, int level);
+static bool websocket_message_uncompress(String *buffer, const char *in, size_t in_len);
+#endif
+
+static void php_openswoole_websocket_construct_frame(zval *zframe, zend_long opcode, zval *zpayload, uint8_t flags) {
+    if (opcode == WebSocket::OPCODE_CLOSE) {
+        const char *payload = Z_STRVAL_P(zpayload);
+        size_t payload_length = Z_STRLEN_P(zpayload);
+        object_init_ex(zframe, openswoole_websocket_closeframe_ce);
+        if (payload_length >= OSW_WEBSOCKET_CLOSE_CODE_LEN) {
+            // WebSocket Close code
+            zend_update_property_long(openswoole_websocket_closeframe_ce,
+                                      OSW_Z8_OBJ_P(zframe),
+                                      ZEND_STRL("code"),
+                                      (payload[0] << 8) ^ (payload[1] & 0xFF));
+            if (payload_length > OSW_WEBSOCKET_CLOSE_CODE_LEN) {
+                // WebSocket Close reason message
+                zend_update_property_stringl(openswoole_websocket_closeframe_ce,
+                                             OSW_Z8_OBJ_P(zframe),
+                                             ZEND_STRL("reason"),
+                                             payload + OSW_WEBSOCKET_CLOSE_CODE_LEN,
+                                             payload_length - OSW_WEBSOCKET_CLOSE_CODE_LEN);
+            }
+        }
+    } else {
+        object_init_ex(zframe, openswoole_websocket_frame_ce);
+        zend_update_property(openswoole_websocket_frame_ce, OSW_Z8_OBJ_P(zframe), ZEND_STRL("data"), zpayload);
+    }
+    zend_update_property_long(openswoole_websocket_frame_ce, OSW_Z8_OBJ_P(zframe), ZEND_STRL("opcode"), opcode);
+    zend_update_property_long(openswoole_websocket_frame_ce, OSW_Z8_OBJ_P(zframe), ZEND_STRL("flags"), flags);
+    /* BC */
+    zend_update_property_bool(
+        openswoole_websocket_frame_ce, OSW_Z8_OBJ_P(zframe), ZEND_STRL("finish"), flags & WebSocket::FLAG_FIN);
+}
+
+void php_openswoole_websocket_frame_unpack_ex(String *data, zval *zframe, uchar uncompress) {
+    WebSocket::Frame frame;
+    zval zpayload;
+    uint8_t flags;
+
+    if (data->length < sizeof(frame.header)) {
+        openswoole_set_last_error(OSW_ERROR_PROTOCOL_ERROR);
+        ZVAL_FALSE(zframe);
+        return;
+    }
+
+    WebSocket::decode(&frame, data);
+    flags = WebSocket::get_flags(&frame);
+#ifdef OSW_HAVE_ZLIB
+    if (uncompress && frame.header.RSV1) {
+        openswoole_zlib_buffer->clear();
+        if (!websocket_message_uncompress(openswoole_zlib_buffer, frame.payload, frame.payload_length)) {
+            openswoole_set_last_error(OSW_ERROR_PROTOCOL_ERROR);
+            ZVAL_FALSE(zframe);
+            return;
+        }
+        frame.payload = openswoole_zlib_buffer->str;
+        frame.payload_length = openswoole_zlib_buffer->length;
+        flags ^= (WebSocket::FLAG_RSV1 | WebSocket::FLAG_COMPRESS);
+    }
+#endif
+    /* TODO: optimize memory copy */
+    ZVAL_STRINGL(&zpayload, frame.payload, frame.payload_length);
+    php_openswoole_websocket_construct_frame(zframe, frame.header.OPCODE, &zpayload, flags);
+    zval_ptr_dtor(&zpayload);
+}
+
+void php_openswoole_websocket_frame_unpack(String *data, zval *zframe) {
+    return php_openswoole_websocket_frame_unpack_ex(data, zframe, 0);
+}
+
+static osw_inline int php_openswoole_websocket_frame_pack_ex(String *buffer,
+                                                        zval *zdata,
+                                                        zend_long opcode,
+                                                        zend_long code,
+                                                        uint8_t flags,
+                                                        zend_bool mask,
+                                                        zend_bool allow_compress) {
+    char *data = nullptr;
+    size_t length = 0;
+
+    if (osw_unlikely(opcode > OSW_WEBSOCKET_OPCODE_MAX)) {
+        php_openswoole_fatal_error(E_WARNING, "the maximum value of opcode is %d", OSW_WEBSOCKET_OPCODE_MAX);
+        return OSW_ERR;
+    }
+
+    zend::String str_zdata;
+    if (zdata && !ZVAL_IS_NULL(zdata)) {
+        str_zdata = zdata;
+        data = str_zdata.val();
+        length = str_zdata.len();
+    }
+
+    if (mask) {
+        flags |= WebSocket::FLAG_MASK;
+    }
+
+#ifdef OSW_HAVE_ZLIB
+    if (flags & WebSocket::FLAG_COMPRESS) {
+        if (!allow_compress) {
+            flags ^= WebSocket::FLAG_COMPRESS;
+        } else if (length > 0) {
+            openswoole_zlib_buffer->clear();
+            if (websocket_message_compress(openswoole_zlib_buffer, data, length, Z_DEFAULT_COMPRESSION)) {
+                data = openswoole_zlib_buffer->str;
+                length = openswoole_zlib_buffer->length;
+                flags |= WebSocket::FLAG_RSV1;
+            }
+        }
+    }
+#endif
+
+    switch (opcode) {
+    case WebSocket::OPCODE_CLOSE:
+        return WebSocket::pack_close_frame(buffer, code, data, length, flags);
+    default:
+        WebSocket::encode(buffer, data, length, opcode, flags);
+    }
+    return OSW_OK;
+}
+
+int php_openswoole_websocket_frame_pack_ex(
+    String *buffer, zval *zdata, zend_long opcode, uint8_t flags, zend_bool mask, zend_bool allow_compress) {
+    return php_openswoole_websocket_frame_pack_ex(
+        buffer, zdata, opcode, WebSocket::CLOSE_NORMAL, flags, mask, allow_compress);
+}
+
+int php_openswoole_websocket_frame_object_pack_ex(String *buffer, zval *zdata, zend_bool mask, zend_bool allow_compress) {
+    zval *zframe = zdata;
+    zend_long opcode = WebSocket::OPCODE_TEXT;
+    zend_long code = WebSocket::CLOSE_NORMAL;
+    zend_long flags = WebSocket::FLAG_FIN;
+    zval *ztmp = nullptr;
+
+    zdata = nullptr;
+    if ((ztmp = osw_zend_read_property_ex(openswoole_websocket_frame_ce, zframe, OSW_ZSTR_KNOWN(OSW_ZEND_STR_OPCODE), 0))) {
+        opcode = zval_get_long(ztmp);
+    }
+    if (opcode == WebSocket::OPCODE_CLOSE) {
+        if ((ztmp = osw_zend_read_property_not_null_ex(
+                 openswoole_websocket_frame_ce, zframe, OSW_ZSTR_KNOWN(OSW_ZEND_STR_CODE), 1))) {
+            code = zval_get_long(ztmp);
+        }
+        if ((ztmp = osw_zend_read_property_not_null_ex(
+                 openswoole_websocket_frame_ce, zframe, OSW_ZSTR_KNOWN(OSW_ZEND_STR_REASON), 1))) {
+            zdata = ztmp;
+        }
+    }
+    if (!zdata &&
+        (ztmp = osw_zend_read_property_ex(openswoole_websocket_frame_ce, zframe, OSW_ZSTR_KNOWN(OSW_ZEND_STR_DATA), 0))) {
+        zdata = ztmp;
+    }
+    if ((ztmp = osw_zend_read_property_ex(openswoole_websocket_frame_ce, zframe, OSW_ZSTR_KNOWN(OSW_ZEND_STR_FLAGS), 0))) {
+        flags = zval_get_long(ztmp) & WebSocket::FLAGS_ALL;
+    }
+    if ((ztmp = osw_zend_read_property_not_null_ex(
+             openswoole_websocket_frame_ce, zframe, OSW_ZSTR_KNOWN(OSW_ZEND_STR_FINISH), 0))) {
+        if (zval_is_true(ztmp)) {
+            flags |= WebSocket::FLAG_FIN;
+        } else {
+            flags &= ~WebSocket::FLAG_FIN;
+        }
+    }
+
+    return php_openswoole_websocket_frame_pack_ex(
+        buffer, zdata, opcode, code, flags & WebSocket::FLAGS_ALL, mask, allow_compress);
+}
+
+void openswoole_websocket_onOpen(Server *serv, HttpContext *ctx) {
+    Connection *conn = serv->get_connection_by_session_id(ctx->fd);
+    if (!conn) {
+        openswoole_error_log(OSW_LOG_NOTICE, OSW_ERROR_SESSION_CLOSED, "session[%ld] is closed", ctx->fd);
+        return;
+    }
+    zend_fcall_info_cache *fci_cache = php_openswoole_server_get_fci_cache(serv, conn->server_fd, OSW_SERVER_CB_onOpen);
+    if (fci_cache) {
+        zval args[2];
+        args[0] = *((zval *) serv->private_data_2);
+        args[1] = *ctx->request.zobject;
+        if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, serv->is_enable_coroutine()))) {
+            php_openswoole_error(E_WARNING, "%s->onOpen handler error", ZSTR_VAL(openswoole_websocket_server_ce->name));
+            serv->close(ctx->fd, false);
+        }
+    }
+}
+
+/**
+ * default onRequest callback
+ */
+void openswoole_websocket_onRequest(HttpContext *ctx) {
+    const char *bad_request = "HTTP/1.1 400 Bad Request\r\n"
+                              "Connection: close\r\n"
+                              "Content-Type: text/html; charset=UTF-8\r\n"
+                              "Cache-Control: must-revalidate,no-cache,no-store\r\n"
+                              "Content-Length: 55\r\n\r\n"
+                              "<html><body><h2>HTTP 400 Bad Request</h2></body></html>";
+
+    ctx->send(ctx, (char *) bad_request, strlen(bad_request));
+    ctx->end_ = 1;
+    ctx->close(ctx);
+}
+
+void php_openswoole_sha1(const char *str, int _len, unsigned char *digest) {
+    PHP_SHA1_CTX context;
+    PHP_SHA1Init(&context);
+    PHP_SHA1Update(&context, (unsigned char *) str, _len);
+    PHP_SHA1Final(digest, &context);
+}
+
+bool openswoole_websocket_handshake(HttpContext *ctx) {
+    char sec_buf[128];
+    zval *header = ctx->request.zheader;
+    HashTable *ht = Z_ARRVAL_P(header);
+    zval *pData;
+    zval retval;
+
+    if (!(pData = zend_hash_str_find(ht, ZEND_STRL("sec-websocket-key")))) {
+    _bad_request:
+        ctx->response.status = OSW_HTTP_BAD_REQUEST;
+        ctx->end(nullptr, &retval);
+        return false;
+    }
+
+    zend::String str_pData(pData);
+
+    if (str_pData.len() != BASE64_ENCODE_OUT_SIZE(OSW_WEBSOCKET_SEC_KEY_LEN)) {
+        goto _bad_request;
+    }
+
+    char sha1_str[20];
+    // sec_websocket_accept
+    memcpy(sec_buf, str_pData.val(), str_pData.len());
+    memcpy(sec_buf + str_pData.len(), OSW_WEBSOCKET_GUID, sizeof(OSW_WEBSOCKET_GUID) - 1);
+    // sha1 sec_websocket_accept
+    php_openswoole_sha1(sec_buf, str_pData.len() + sizeof(OSW_WEBSOCKET_GUID) - 1, (unsigned char *) sha1_str);
+    // base64 encode
+    int sec_len = openswoole::base64_encode((unsigned char *) sha1_str, sizeof(sha1_str), sec_buf);
+
+    ctx->set_header(ZEND_STRL("Upgrade"), ZEND_STRL("websocket"), false);
+    ctx->set_header(ZEND_STRL("Connection"), ZEND_STRL("Upgrade"), false);
+    ctx->set_header(ZEND_STRL("Sec-WebSocket-Accept"), sec_buf, sec_len, false);
+    ctx->set_header(ZEND_STRL("Sec-WebSocket-Version"), ZEND_STRL(OSW_WEBSOCKET_VERSION), false);
+
+#ifdef OSW_HAVE_ZLIB
+    bool enable_websocket_compression = true;
+    bool websocket_compression = false;
+#endif
+    Server *serv = nullptr;
+    Connection *conn = nullptr;
+
+    if (!ctx->co_socket) {
+        serv = (Server *) ctx->private_data;
+        conn = serv->get_connection_by_session_id(ctx->fd);
+        if (!conn) {
+            openswoole_error_log(OSW_LOG_NOTICE, OSW_ERROR_SESSION_CLOSED, "session[%ld] is closed", ctx->fd);
+            return false;
+        }
+#ifdef OSW_HAVE_ZLIB
+        enable_websocket_compression = serv->websocket_compression;
+#endif
+    }
+#ifdef OSW_HAVE_ZLIB
+    else {
+        enable_websocket_compression = ctx->websocket_compression;
+    }
+#endif
+
+#ifdef OSW_HAVE_ZLIB
+    if (enable_websocket_compression && (pData = zend_hash_str_find(ht, ZEND_STRL("sec-websocket-extensions"))) &&
+        Z_TYPE_P(pData) == IS_STRING) {
+        std::string value(Z_STRVAL_P(pData), Z_STRLEN_P(pData));
+        if (value.substr(0, value.find_first_of(';')) == "permessage-deflate") {
+            websocket_compression = true;
+            ctx->set_header(ZEND_STRL("Sec-Websocket-Extensions"), ZEND_STRL(OSW_WEBSOCKET_EXTENSION_DEFLATE), false);
+        }
+    }
+#endif
+
+    if (conn) {
+        conn->websocket_status = WebSocket::STATUS_ACTIVE;
+        ListenPort *port = serv->get_port_by_server_fd(conn->server_fd);
+        if (port && !port->websocket_subprotocol.empty()) {
+            ctx->set_header(ZEND_STRL("Sec-WebSocket-Protocol"),
+                            port->websocket_subprotocol.c_str(),
+                            port->websocket_subprotocol.length(),
+                            false);
+        }
+#ifdef OSW_HAVE_ZLIB
+        ctx->websocket_compression = conn->websocket_compression = websocket_compression;
+#endif
+    } else {
+        Socket *sock = (Socket *) ctx->private_data;
+        sock->open_length_check = 1;
+        sock->protocol.package_length_size = OSW_WEBSOCKET_HEADER_LEN;
+        sock->protocol.package_length_offset = 0;
+        sock->protocol.package_body_offset = 0;
+        sock->protocol.get_package_length = WebSocket::get_package_length;
+#ifdef OSW_HAVE_ZLIB
+        ctx->websocket_compression = websocket_compression;
+#endif
+    }
+
+    ctx->response.status = OSW_HTTP_SWITCHING_PROTOCOLS;
+    ctx->upgrade = 1;
+
+    ctx->end(nullptr, &retval);
+    return Z_TYPE(retval) == IS_TRUE;
+}
+
+#ifdef OSW_HAVE_ZLIB
+static bool websocket_message_uncompress(String *buffer, const char *in, size_t in_len) {
+    z_stream zstream;
+    int status;
+    bool ret = false;
+
+    memset(&zstream, 0, sizeof(zstream));
+    zstream.zalloc = php_zlib_alloc;
+    zstream.zfree = php_zlib_free;
+    // gzip_stream.total_out = 0;
+    status = inflateInit2(&zstream, OSW_ZLIB_ENCODING_RAW);
+    if (status != Z_OK) {
+        openswoole_warning("inflateInit2() failed by %s", zError(status));
+        return false;
+    }
+
+    zstream.next_in = (Bytef *) in;
+    zstream.avail_in = in_len;
+    zstream.total_in = 0;
+
+    while (1) {
+        zstream.avail_out = buffer->size - buffer->length;
+        zstream.next_out = (Bytef *) (buffer->str + buffer->length);
+        status = inflate(&zstream, Z_SYNC_FLUSH);
+        if (status >= 0) {
+            buffer->length = zstream.total_out;
+        }
+        if (status == Z_STREAM_END || (status == Z_OK && zstream.avail_in == 0)) {
+            ret = true;
+            break;
+        }
+        if (status != Z_OK) {
+            break;
+        }
+        if (buffer->length + (OSW_BUFFER_SIZE_STD / 2) >= buffer->size) {
+            if (!buffer->extend()) {
+                status = Z_MEM_ERROR;
+                break;
+            }
+        }
+    }
+    inflateEnd(&zstream);
+
+    if (!ret) {
+        openswoole_warning("inflate() failed, Error: %s[%d]", zError(status), status);
+        return false;
+    }
+    return true;
+}
+
+static bool websocket_message_compress(String *buffer, const char *data, size_t length, int level) {
+    // ==== ZLIB ====
+    if (level == Z_NO_COMPRESSION) {
+        level = Z_DEFAULT_COMPRESSION;
+    } else if (level > Z_BEST_COMPRESSION) {
+        level = Z_BEST_COMPRESSION;
+    }
+
+    z_stream zstream = {};
+    int status;
+
+    zstream.zalloc = php_zlib_alloc;
+    zstream.zfree = php_zlib_free;
+
+    status = deflateInit2(&zstream, level, Z_DEFLATED, OSW_ZLIB_ENCODING_RAW, MAX_MEM_LEVEL, Z_DEFAULT_STRATEGY);
+    if (status != Z_OK) {
+        openswoole_warning("deflateInit2() failed, Error: [%d]", status);
+        return false;
+    }
+
+    zstream.next_in = (Bytef *) data;
+    zstream.avail_in = length;
+    zstream.next_out = (Bytef *) buffer->str;
+
+    size_t max_length = deflateBound(&zstream, length);
+    if (max_length > buffer->size) {
+        if (!buffer->extend(max_length)) {
+            return false;
+        }
+    }
+
+    size_t bytes_written = 0;
+    uchar in_sync_flush;
+    int result;
+
+    do {
+        size_t write_remaining;
+
+        if (zstream.avail_out == 0) {
+            size_t write_position;
+
+            zstream.avail_out = max_length;
+            write_position = buffer->length;
+            buffer->length = max_length;
+            zstream.next_out = (Bytef *) buffer->str + write_position;
+
+            /* Use a fixed value for buffer increments */
+            max_length = 4096;
+        }
+
+        write_remaining = buffer->length - bytes_written;
+        in_sync_flush = zstream.avail_in == 0;
+        result = deflate(&zstream, in_sync_flush ? Z_SYNC_FLUSH : Z_NO_FLUSH);
+        bytes_written += write_remaining - zstream.avail_out;
+    } while (result == Z_OK);
+
+    deflateEnd(&zstream);
+
+    if (result != Z_BUF_ERROR || bytes_written < 4) {
+        openswoole_warning("Failed to compress outgoing frame");
+        return false;
+    }
+
+    if (status != Z_OK) {
+        openswoole_warning("deflate() failed, Error: [%d]", status);
+        return false;
+    }
+
+    buffer->length = bytes_written - 4;
+
+    return true;
+}
+#endif
+
+int openswoole_websocket_onMessage(Server *serv, RecvData *req) {
+    SessionId fd = req->info.fd;
+    uchar flags = 0;
+    zend_long opcode = 0;
+    auto port = serv->get_port_by_session_id(fd);
+    if (!port) {
+        return OSW_ERR;
+    }
+
+    zval zdata;
+    char frame_header[2];
+    memcpy(frame_header, &req->info.ext_flags, sizeof(frame_header));
+
+    php_openswoole_get_recv_data(serv, &zdata, req);
+
+    // frame info has already decoded in websocket::dispatch_frame
+    flags = frame_header[0];
+    opcode = frame_header[1];
+
+    if ((opcode == WebSocket::OPCODE_CLOSE && !port->open_websocket_close_frame) ||
+        (opcode == WebSocket::OPCODE_PING && !port->open_websocket_ping_frame) ||
+        (opcode == WebSocket::OPCODE_PONG && !port->open_websocket_pong_frame)) {
+        if (opcode == WebSocket::OPCODE_PING) {
+            String send_frame = {};
+            char buf[OSW_WEBSOCKET_HEADER_LEN + OSW_WEBSOCKET_CLOSE_CODE_LEN + OSW_WEBSOCKET_CLOSE_REASON_MAX_LEN];
+            send_frame.str = buf;
+            send_frame.size = sizeof(buf);
+            WebSocket::encode(&send_frame, req->data, req->info.len, WebSocket::OPCODE_PONG, WebSocket::FLAG_FIN);
+            serv->send(fd, send_frame.str, send_frame.length);
+        }
+        zval_ptr_dtor(&zdata);
+        return OSW_OK;
+    }
+
+#ifdef OSW_HAVE_ZLIB
+    /**
+     * RFC 7692
+     */
+    if (serv->websocket_compression && (flags & WebSocket::FLAG_RSV1)) {
+        openswoole_zlib_buffer->clear();
+        if (!websocket_message_uncompress(openswoole_zlib_buffer, Z_STRVAL(zdata), Z_STRLEN(zdata))) {
+            zval_ptr_dtor(&zdata);
+            return OSW_OK;
+        }
+        zval_ptr_dtor(&zdata);
+        ZVAL_STRINGL(&zdata, openswoole_zlib_buffer->str, openswoole_zlib_buffer->length);
+        flags ^= (WebSocket::FLAG_RSV1 | WebSocket::FLAG_COMPRESS);
+    }
+#endif
+
+    zend_fcall_info_cache *fci_cache =
+        php_openswoole_server_get_fci_cache(serv, req->info.server_fd, OSW_SERVER_CB_onMessage);
+    zval args[2];
+
+    args[0] = *(zval *) serv->private_data_2;
+    php_openswoole_websocket_construct_frame(&args[1], opcode, &zdata, flags);
+    zend_update_property_long(openswoole_websocket_frame_ce, OSW_Z8_OBJ_P(&args[1]), ZEND_STRL("fd"), fd);
+
+    if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, serv->is_enable_coroutine()))) {
+        php_openswoole_error(E_WARNING, "%s->onMessage handler error", ZSTR_VAL(openswoole_websocket_server_ce->name));
+        serv->close(fd, false);
+    }
+
+    zval_ptr_dtor(&zdata);
+    zval_ptr_dtor(&args[1]);
+
+    return OSW_OK;
+}
+
+int openswoole_websocket_onHandshake(Server *serv, ListenPort *port, HttpContext *ctx) {
+    SessionId fd = ctx->fd;
+    bool success = openswoole_websocket_handshake(ctx);
+    if (success) {
+        openswoole_websocket_onOpen(serv, ctx);
+    } else {
+        serv->close(fd, true);
+    }
+    return OSW_OK;
+}
+
+void php_openswoole_websocket_server_minit(int module_number) {
+    OSW_INIT_CLASS_ENTRY_EX(openswoole_websocket_server,
+                           "OpenSwoole\\WebSocket\\Server",
+                           "openswoole_websocket_server",
+                           nullptr,
+                           openswoole_websocket_server_methods,
+                           openswoole_http_server);
+    OSW_SET_CLASS_NOT_SERIALIZABLE(openswoole_websocket_server);
+    OSW_SET_CLASS_CLONEABLE(openswoole_websocket_server, osw_zend_class_clone_deny);
+    OSW_SET_CLASS_UNSET_PROPERTY_HANDLER(openswoole_websocket_server, osw_zend_class_unset_property_deny);
+
+    OSW_INIT_CLASS_ENTRY(openswoole_websocket_frame,
+                        "OpenSwoole\\WebSocket\\Frame",
+                        "openswoole_websocket_frame",
+                        nullptr,
+                        openswoole_websocket_frame_methods);
+    zend_declare_property_long(openswoole_websocket_frame_ce, ZEND_STRL("fd"), 0, ZEND_ACC_PUBLIC);
+    zend_declare_property_string(openswoole_websocket_frame_ce, ZEND_STRL("data"), "", ZEND_ACC_PUBLIC);
+    zend_declare_property_long(openswoole_websocket_frame_ce, ZEND_STRL("opcode"), WebSocket::OPCODE_TEXT, ZEND_ACC_PUBLIC);
+    zend_declare_property_long(openswoole_websocket_frame_ce, ZEND_STRL("flags"), WebSocket::FLAG_FIN, ZEND_ACC_PUBLIC);
+    zend_declare_property_null(openswoole_websocket_frame_ce, ZEND_STRL("finish"), ZEND_ACC_PUBLIC);
+
+    OSW_INIT_CLASS_ENTRY_EX(openswoole_websocket_closeframe,
+                           "OpenSwoole\\WebSocket\\CloseFrame",
+                           "openswoole_websocket_closeframe",
+                           nullptr,
+                           nullptr,
+                           openswoole_websocket_frame);
+    zend_declare_property_long(
+        openswoole_websocket_closeframe_ce, ZEND_STRL("opcode"), WebSocket::OPCODE_CLOSE, ZEND_ACC_PUBLIC);
+    zend_declare_property_long(
+        openswoole_websocket_closeframe_ce, ZEND_STRL("code"), WebSocket::CLOSE_NORMAL, ZEND_ACC_PUBLIC);
+    zend_declare_property_string(openswoole_websocket_closeframe_ce, ZEND_STRL("reason"), "", ZEND_ACC_PUBLIC);
+
+    // status
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_CONNECTION"), WebSocket::STATUS_CONNECTION);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_HANDSHAKE"), WebSocket::STATUS_HANDSHAKE);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_ACTIVE"), WebSocket::STATUS_ACTIVE);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_STATUS_CLOSING"), WebSocket::STATUS_CLOSING);
+    // all opcodes
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_CONTINUATION"), WebSocket::OPCODE_CONTINUATION);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_TEXT"), WebSocket::OPCODE_TEXT);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_BINARY"), WebSocket::OPCODE_BINARY);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_CLOSE"), WebSocket::OPCODE_CLOSE);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_PING"), WebSocket::OPCODE_PING);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_OPCODE_PONG"), WebSocket::OPCODE_PONG);
+    // flags
+    zend_declare_class_constant_long(openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_FIN"), WebSocket::FLAG_FIN);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_RSV1"), WebSocket::FLAG_RSV1);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_RSV2"), WebSocket::FLAG_RSV2);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_RSV3"), WebSocket::FLAG_RSV3);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_MASK"), WebSocket::FLAG_MASK);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_FLAG_COMPRESS"), WebSocket::FLAG_COMPRESS);
+    // close error
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_NORMAL"), WebSocket::CLOSE_NORMAL);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_GOING_AWAY"), WebSocket::CLOSE_GOING_AWAY);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_PROTOCOL_ERROR"), WebSocket::CLOSE_PROTOCOL_ERROR);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_DATA_ERROR"), WebSocket::CLOSE_DATA_ERROR);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_STATUS_ERROR"), WebSocket::CLOSE_STATUS_ERROR);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_ABNORMAL"), WebSocket::CLOSE_ABNORMAL);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_MESSAGE_ERROR"), WebSocket::CLOSE_MESSAGE_ERROR);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_POLICY_ERROR"), WebSocket::CLOSE_POLICY_ERROR);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_MESSAGE_TOO_BIG"), WebSocket::CLOSE_MESSAGE_TOO_BIG);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_EXTENSION_MISSING"), WebSocket::CLOSE_EXTENSION_MISSING);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_SERVER_ERROR"), WebSocket::CLOSE_SERVER_ERROR);
+    zend_declare_class_constant_long(
+        openswoole_websocket_server_ce, ZEND_STRL("WEBSOCKET_CLOSE_TLS"), WebSocket::CLOSE_TLS);
+
+    // backward compatibility
+
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_STATUS_CONNECTION", WebSocket::STATUS_CONNECTION);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_STATUS_HANDSHAKE", WebSocket::STATUS_HANDSHAKE);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_STATUS_ACTIVE", WebSocket::STATUS_ACTIVE);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_STATUS_CLOSING", WebSocket::STATUS_CLOSING);
+
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_OPCODE_CONTINUATION", WebSocket::OPCODE_CONTINUATION);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_OPCODE_TEXT", WebSocket::OPCODE_TEXT);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_OPCODE_BINARY", WebSocket::OPCODE_BINARY);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_OPCODE_CLOSE", WebSocket::OPCODE_CLOSE);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_OPCODE_PING", WebSocket::OPCODE_PING);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_OPCODE_PONG", WebSocket::OPCODE_PONG);
+
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_FLAG_FIN", WebSocket::FLAG_FIN);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_FLAG_RSV1", WebSocket::FLAG_RSV1);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_FLAG_RSV2", WebSocket::FLAG_RSV2);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_FLAG_RSV3", WebSocket::FLAG_RSV3);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_FLAG_MASK", WebSocket::FLAG_MASK);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_FLAG_COMPRESS", WebSocket::FLAG_COMPRESS);
+
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_NORMAL", WebSocket::CLOSE_NORMAL);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_GOING_AWAY", WebSocket::CLOSE_GOING_AWAY);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_PROTOCOL_ERROR", WebSocket::CLOSE_PROTOCOL_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_DATA_ERROR", WebSocket::CLOSE_DATA_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_STATUS_ERROR", WebSocket::CLOSE_STATUS_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_ABNORMAL", WebSocket::CLOSE_ABNORMAL);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_MESSAGE_ERROR", WebSocket::CLOSE_MESSAGE_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_POLICY_ERROR", WebSocket::CLOSE_POLICY_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_MESSAGE_TOO_BIG", WebSocket::CLOSE_MESSAGE_TOO_BIG);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_EXTENSION_MISSING", WebSocket::CLOSE_EXTENSION_MISSING);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_SERVER_ERROR", WebSocket::CLOSE_SERVER_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_WEBSOCKET_CLOSE_TLS", WebSocket::CLOSE_TLS);
+
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_CONNECTION", WebSocket::STATUS_CONNECTION);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_HANDSHAKE", WebSocket::STATUS_HANDSHAKE);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_FRAME", WebSocket::STATUS_ACTIVE);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_ACTIVE", WebSocket::STATUS_ACTIVE);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_STATUS_CLOSING", WebSocket::STATUS_CLOSING);
+
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_CONTINUATION", WebSocket::OPCODE_CONTINUATION);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_TEXT", WebSocket::OPCODE_TEXT);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_BINARY", WebSocket::OPCODE_BINARY);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_CLOSE", WebSocket::OPCODE_CLOSE);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_PING", WebSocket::OPCODE_PING);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_OPCODE_PONG", WebSocket::OPCODE_PONG);
+
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_NORMAL", WebSocket::CLOSE_NORMAL);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_GOING_AWAY", WebSocket::CLOSE_GOING_AWAY);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_PROTOCOL_ERROR", WebSocket::CLOSE_PROTOCOL_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_DATA_ERROR", WebSocket::CLOSE_DATA_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_STATUS_ERROR", WebSocket::CLOSE_STATUS_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_ABNORMAL", WebSocket::CLOSE_ABNORMAL);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_MESSAGE_ERROR", WebSocket::CLOSE_MESSAGE_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_POLICY_ERROR", WebSocket::CLOSE_POLICY_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_MESSAGE_TOO_BIG", WebSocket::CLOSE_MESSAGE_TOO_BIG);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_EXTENSION_MISSING", WebSocket::CLOSE_EXTENSION_MISSING);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_SERVER_ERROR", WebSocket::CLOSE_SERVER_ERROR);
+    OSW_REGISTER_LONG_CONSTANT("WEBSOCKET_CLOSE_TLS", WebSocket::CLOSE_TLS);
+}
+
+static osw_inline bool openswoole_websocket_server_push(Server *serv, SessionId fd, String *buffer) {
+    if (osw_unlikely(fd <= 0)) {
+        php_openswoole_fatal_error(E_WARNING, "fd[%ld] is invalid", fd);
+        return false;
+    }
+
+    Connection *conn = serv->get_connection_by_session_id(fd);
+    if (!conn || conn->websocket_status < WebSocket::STATUS_HANDSHAKE) {
+        openswoole_set_last_error(OSW_ERROR_WEBSOCKET_UNCONNECTED);
+        php_openswoole_fatal_error(
+            E_WARNING, "the connected client of connection[%ld] is not a websocket client or closed", fd);
+        return false;
+    }
+
+    bool ret = serv->send(fd, buffer->str, buffer->length);
+    if (!ret && openswoole_get_last_error() == OSW_ERROR_OUTPUT_SEND_YIELD) {
+        zval _return_value;
+        zval *return_value = &_return_value;
+        zval _yield_data;
+        ZVAL_STRINGL(&_yield_data, buffer->str, buffer->length);
+        ZVAL_FALSE(return_value);
+        php_openswoole_server_send_yield(serv, fd, &_yield_data, return_value);
+        ret = Z_BVAL_P(return_value);
+    }
+    return ret;
+}
+
+static osw_inline bool openswoole_websocket_server_close(Server *serv, SessionId fd, String *buffer, bool real_close) {
+    bool ret = openswoole_websocket_server_push(serv, fd, buffer);
+    if (!ret || !real_close) {
+        return ret;
+    }
+    Connection *conn = serv->get_connection_by_session_id(fd);
+    if (conn) {
+        // Change status immediately to avoid double close
+        conn->websocket_status = WebSocket::STATUS_CLOSING;
+        // Server close connection immediately
+        return serv->close(fd, false);
+    } else {
+        return false;
+    }
+}
+
+static PHP_METHOD(openswoole_websocket_server, disconnect) {
+    Server *serv = php_openswoole_server_get_and_check_server(ZEND_THIS);
+    if (osw_unlikely(!serv->is_started())) {
+        php_openswoole_fatal_error(E_WARNING, "server is not running");
+        RETURN_FALSE;
+    }
+
+    zend_long fd = 0;
+    zend_long code = WebSocket::CLOSE_NORMAL;
+    char *data = nullptr;
+    size_t length = 0;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|ls", &fd, &code, &data, &length) == FAILURE) {
+        RETURN_FALSE;
+    }
+    openswoole_http_buffer->clear();
+    if (WebSocket::pack_close_frame(openswoole_http_buffer, code, data, length, 0) < 0) {
+        RETURN_FALSE;
+    }
+    RETURN_BOOL(openswoole_websocket_server_close(serv, fd, openswoole_http_buffer, 1));
+}
+
+static PHP_METHOD(openswoole_websocket_server, push) {
+    Server *serv = php_openswoole_server_get_and_check_server(ZEND_THIS);
+    if (osw_unlikely(!serv->is_started())) {
+        php_openswoole_fatal_error(E_WARNING, "server is not running");
+        RETURN_FALSE;
+    }
+
+    zend_long fd = 0;
+    zval *zdata = nullptr;
+    zend_long opcode = WebSocket::OPCODE_TEXT;
+    zval *zflags = nullptr;
+    zend_long flags = WebSocket::FLAG_FIN;
+#ifdef OSW_HAVE_ZLIB
+    zend_bool allow_compress = 0;
+#endif
+
+    ZEND_PARSE_PARAMETERS_START(2, 4)
+    Z_PARAM_LONG(fd)
+    Z_PARAM_ZVAL(zdata)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(opcode)
+    Z_PARAM_ZVAL_EX(zflags, 1, 0)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (zflags != nullptr) {
+        flags = zval_get_long(zflags);
+    }
+
+#ifdef OSW_HAVE_ZLIB
+    Connection *conn = serv->get_connection_verify(fd);
+    if (!conn) {
+        openswoole_set_last_error(OSW_ERROR_SESSION_NOT_EXIST);
+        php_openswoole_fatal_error(E_WARNING, "session#%ld does not exist", fd);
+        RETURN_FALSE;
+    }
+    allow_compress = conn->websocket_compression;
+#endif
+
+    openswoole_http_buffer->clear();
+    if (php_openswoole_websocket_frame_is_object(zdata)) {
+        if (php_openswoole_websocket_frame_object_pack(openswoole_http_buffer, zdata, 0, allow_compress) < 0) {
+            openswoole_set_last_error(OSW_ERROR_WEBSOCKET_PACK_FAILED);
+            RETURN_FALSE;
+        }
+    } else {
+        if (php_openswoole_websocket_frame_pack(
+                openswoole_http_buffer, zdata, opcode, flags & WebSocket::FLAGS_ALL, 0, allow_compress) < 0) {
+            openswoole_set_last_error(OSW_ERROR_WEBSOCKET_PACK_FAILED);
+            RETURN_FALSE;
+        }
+    }
+
+    switch (opcode) {
+    case WebSocket::OPCODE_CLOSE:
+        RETURN_BOOL(openswoole_websocket_server_close(serv, fd, openswoole_http_buffer, flags & WebSocket::FLAG_FIN));
+        break;
+    default:
+        RETURN_BOOL(openswoole_websocket_server_push(serv, fd, openswoole_http_buffer));
+    }
+}
+
+static PHP_METHOD(openswoole_websocket_server, pack) {
+    String *buffer = osw_tg_buffer();
+    zval *zdata;
+    zend_long opcode = WebSocket::OPCODE_TEXT;
+    zval *zflags = nullptr;
+    zend_long flags = WebSocket::FLAG_FIN;
+
+    ZEND_PARSE_PARAMETERS_START(1, 3)
+    Z_PARAM_ZVAL(zdata)
+    Z_PARAM_OPTIONAL
+    Z_PARAM_LONG(opcode)
+    Z_PARAM_ZVAL_EX(zflags, 1, 0)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (zflags != nullptr) {
+        flags = zval_get_long(zflags);
+    }
+
+    buffer->clear();
+    if (php_openswoole_websocket_frame_is_object(zdata)) {
+        if (php_openswoole_websocket_frame_object_pack(buffer, zdata, 0, 1) < 0) {
+            RETURN_EMPTY_STRING();
+        }
+    } else {
+        if (php_openswoole_websocket_frame_pack(buffer, zdata, opcode, flags & WebSocket::FLAGS_ALL, 0, 1) < 0) {
+            RETURN_EMPTY_STRING();
+        }
+    }
+    RETURN_STRINGL(buffer->str, buffer->length);
+}
+
+static PHP_METHOD(openswoole_websocket_frame, __toString) {
+    String *buffer = osw_tg_buffer();
+    buffer->clear();
+
+    if (php_openswoole_websocket_frame_object_pack(buffer, ZEND_THIS, 0, 1) < 0) {
+        RETURN_EMPTY_STRING();
+    }
+    RETURN_STRINGL(buffer->str, buffer->length);
+}
+
+static PHP_METHOD(openswoole_websocket_server, unpack) {
+    String buffer = {};
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &buffer.str, &buffer.length) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    php_openswoole_websocket_frame_unpack(&buffer, return_value);
+}
+
+static PHP_METHOD(openswoole_websocket_server, isEstablished) {
+    Server *serv = php_openswoole_server_get_and_check_server(ZEND_THIS);
+    if (osw_unlikely(!serv->is_started())) {
+        php_openswoole_fatal_error(E_WARNING, "server is not running");
+        RETURN_FALSE;
+    }
+
+    zend_long session_id;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l", &session_id) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    Connection *conn = serv->get_connection_verify(session_id);
+    // not isEstablished
+    if (!conn || conn->closed || conn->websocket_status < WebSocket::STATUS_ACTIVE) {
+        RETURN_FALSE;
+    } else {
+        RETURN_TRUE;
+    }
+}

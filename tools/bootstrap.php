@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Open Swoole
+ * This file is part of OpenSwoole
  *
  * @link     https://openswoole.com
  * @contact  hello@openswoole.com

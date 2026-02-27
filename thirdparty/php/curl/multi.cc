@@ -14,15 +14,15 @@
    +----------------------------------------------------------------------+
 */
 
-#include "php_swoole_cxx.h"
+#include "php_openswoole_cxx.h"
 
-#ifdef SW_USE_CURL
-#include "php_swoole_curl.h"
+#ifdef OSW_USE_CURL
+#include "php_openswoole_curl.h"
 
-using swoole::curl::Multi;
-using swoole::curl::Selector;
+using openswoole::curl::Multi;
+using openswoole::curl::Selector;
 
-SW_EXTERN_C_BEGIN
+OSW_EXTERN_C_BEGIN
 #include "curl_interface.h"
 #include "curl_arginfo.h"
 
@@ -34,17 +34,17 @@ SW_EXTERN_C_BEGIN
 
 #define SAVE_CURLM_ERROR(__handle, __err) (__handle)->err.no = (int) __err;
 
-void swoole_curlm_set_is_co(php_curlm *mh, bool value) {
+void openswoole_curlm_set_is_co(php_curlm *mh, bool value) {
     zend_update_property_bool(nullptr, &mh->std, ZEND_STRL("is_co"), value);
 }
 
-bool swoole_curlm_is_co(php_curlm *mh) {
+bool openswoole_curlm_is_co(php_curlm *mh) {
     zval rv;
-    zval *zv = zend_read_property_ex(nullptr, &mh->std, SW_ZSTR_KNOWN(SW_ZEND_STR_CURL_IS_CO), 1, &rv);
+    zval *zv = zend_read_property_ex(nullptr, &mh->std, OSW_ZSTR_KNOWN(OSW_ZEND_STR_CURL_IS_CO), 1, &rv);
     return zval_is_true(zv);
 }
 
-zend_class_entry *swoole_coroutine_curl_multi_handle_ce;
+zend_class_entry *openswoole_coroutine_curl_multi_handle_ce;
 
 static inline php_curlm *curl_multi_from_obj(zend_object *obj) {
     return (php_curlm *) ((char *) (obj) -XtOffsetOf(php_curlm, std));
@@ -53,27 +53,27 @@ static inline php_curlm *curl_multi_from_obj(zend_object *obj) {
 
 static void _php_curl_multi_free(php_curlm *mh);
 
-SW_EXTERN_C_END
+OSW_EXTERN_C_END
 
 /* {{{ Returns a new cURL multi handle */
-PHP_FUNCTION(swoole_native_curl_multi_init) {
+PHP_FUNCTION(openswoole_native_curl_multi_init) {
     php_curlm *mh;
 
 #ifdef ZEND_PARSE_PARAMETERS_NONE
     ZEND_PARSE_PARAMETERS_NONE();
 #endif
 
-    object_init_ex(return_value, swoole_coroutine_curl_multi_handle_ce);
+    object_init_ex(return_value, openswoole_coroutine_curl_multi_handle_ce);
     mh = Z_CURL_MULTI_P(return_value);
     mh->multi = new Multi();
     mh->multi->set_selector(new Selector());
-    swoole_curlm_set_is_co(mh, true);
-    zend_llist_init(&mh->easyh, sizeof(zval), swoole_curl_multi_cleanup_list, 0);
+    openswoole_curlm_set_is_co(mh, true);
+    zend_llist_init(&mh->easyh, sizeof(zval), openswoole_curl_multi_cleanup_list, 0);
 }
 /* }}} */
 
 /* {{{ Add a normal cURL handle to a cURL multi handle */
-PHP_FUNCTION(swoole_native_curl_multi_add_handle) {
+PHP_FUNCTION(openswoole_native_curl_multi_add_handle) {
     zval *z_mh;
     zval *z_ch;
     php_curlm *mh;
@@ -81,16 +81,16 @@ PHP_FUNCTION(swoole_native_curl_multi_add_handle) {
     CURLMcode error = CURLM_OK;
 
     ZEND_PARSE_PARAMETERS_START(2, 2)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
-    Z_PARAM_OBJECT_OF_CLASS(z_ch, swoole_coroutine_curl_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_ch, openswoole_coroutine_curl_handle_ce)
     ZEND_PARSE_PARAMETERS_END();
 
     mh = Z_CURL_MULTI_P(z_mh);
     ch = Z_CURL_P(z_ch);
 
-    swoole_curl_verify_handlers(ch, 1);
+    openswoole_curl_verify_handlers(ch, 1);
 
-    swoole_curl_cleanup_handle(ch);
+    openswoole_curl_cleanup_handle(ch);
 
     Z_ADDREF_P(z_ch);
     zend_llist_add_element(&mh->easyh, z_ch);
@@ -102,7 +102,7 @@ PHP_FUNCTION(swoole_native_curl_multi_add_handle) {
 }
 /* }}} */
 
-void swoole_curl_multi_cleanup_list(void *data) /* {{{ */
+void openswoole_curl_multi_cleanup_list(void *data) /* {{{ */
 {
     zval *z_ch = (zval *) data;
 
@@ -126,7 +126,7 @@ static zval *_php_curl_multi_find_easy_handle(php_curlm *mh, CURL *easy) /* {{{ 
 
     for (pz_ch_temp = (zval *) zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch_temp;
         pz_ch_temp = (zval *) zend_llist_get_next_ex(&mh->easyh, &pos)) {
-        tmp_ch = swoole_curl_get_handle(pz_ch_temp, false, false);
+        tmp_ch = openswoole_curl_get_handle(pz_ch_temp, false, false);
         if (tmp_ch && tmp_ch->cp == easy) {
             return pz_ch_temp;
         }
@@ -137,7 +137,7 @@ static zval *_php_curl_multi_find_easy_handle(php_curlm *mh, CURL *easy) /* {{{ 
 /* }}} */
 
 /* {{{ Remove a multi handle from a set of cURL handles */
-PHP_FUNCTION(swoole_native_curl_multi_remove_handle) {
+PHP_FUNCTION(openswoole_native_curl_multi_remove_handle) {
     zval *z_mh;
     zval *z_ch;
     php_curlm *mh;
@@ -145,8 +145,8 @@ PHP_FUNCTION(swoole_native_curl_multi_remove_handle) {
     CURLMcode error = CURLM_OK;
 
     ZEND_PARSE_PARAMETERS_START(2, 2)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
-    Z_PARAM_OBJECT_OF_CLASS(z_ch, swoole_coroutine_curl_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_ch, openswoole_coroutine_curl_handle_ce)
     ZEND_PARSE_PARAMETERS_END();
 
     mh = Z_CURL_MULTI_P(z_mh);
@@ -161,13 +161,13 @@ PHP_FUNCTION(swoole_native_curl_multi_remove_handle) {
 /* }}} */
 
 /* {{{ Get all the sockets associated with the cURL extension, which can then be "selected" */
-PHP_FUNCTION(swoole_native_curl_multi_select) {
+PHP_FUNCTION(openswoole_native_curl_multi_select) {
     zval *z_mh;
     php_curlm *mh;
     double timeout = 1.0;
 
     ZEND_PARSE_PARAMETERS_START(1, 2)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
     Z_PARAM_OPTIONAL
     Z_PARAM_DOUBLE(timeout)
     ZEND_PARSE_PARAMETERS_END();
@@ -178,7 +178,7 @@ PHP_FUNCTION(swoole_native_curl_multi_select) {
 /* }}} */
 
 /* {{{ Run the sub-connections of the current cURL handle */
-PHP_FUNCTION(swoole_native_curl_multi_exec) {
+PHP_FUNCTION(openswoole_native_curl_multi_exec) {
     zval *z_mh;
     zval *z_still_running;
     php_curlm *mh;
@@ -186,7 +186,7 @@ PHP_FUNCTION(swoole_native_curl_multi_exec) {
     CURLMcode error = CURLM_OK;
 
     ZEND_PARSE_PARAMETERS_START(2, 2)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
     Z_PARAM_ZVAL(z_still_running)
     ZEND_PARSE_PARAMETERS_END();
 
@@ -200,7 +200,7 @@ PHP_FUNCTION(swoole_native_curl_multi_exec) {
         for (pz_ch = (zval *) zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
              pz_ch = (zval *) zend_llist_get_next_ex(&mh->easyh, &pos)) {
             ch = Z_CURL_P(pz_ch);
-            swoole_curl_verify_handlers(ch, 1);
+            openswoole_curl_verify_handlers(ch, 1);
         }
     }
 
@@ -214,12 +214,12 @@ PHP_FUNCTION(swoole_native_curl_multi_exec) {
 /* }}} */
 
 /* {{{ Return the content of a cURL handle if CURLOPT_RETURNTRANSFER is set */
-PHP_FUNCTION(swoole_native_curl_multi_getcontent) {
+PHP_FUNCTION(openswoole_native_curl_multi_getcontent) {
     zval *z_ch;
     php_curl *ch;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_OBJECT_OF_CLASS(z_ch, swoole_coroutine_curl_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_ch, openswoole_coroutine_curl_handle_ce)
     ZEND_PARSE_PARAMETERS_END();
 
     ch = Z_CURL_P(z_ch);
@@ -237,7 +237,7 @@ PHP_FUNCTION(swoole_native_curl_multi_getcontent) {
 /* }}} */
 
 /* {{{ Get information about the current transfers */
-PHP_FUNCTION(swoole_native_curl_multi_info_read) {
+PHP_FUNCTION(openswoole_native_curl_multi_info_read) {
     zval *z_mh;
     php_curlm *mh;
     CURLMsg *tmp_msg;
@@ -246,7 +246,7 @@ PHP_FUNCTION(swoole_native_curl_multi_info_read) {
     php_curl *ch;
 
     ZEND_PARSE_PARAMETERS_START(1, 2)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
     Z_PARAM_OPTIONAL
     Z_PARAM_ZVAL(zmsgs_in_queue)
     ZEND_PARSE_PARAMETERS_END();
@@ -271,7 +271,7 @@ PHP_FUNCTION(swoole_native_curl_multi_info_read) {
         zval *pz_ch = _php_curl_multi_find_easy_handle(mh, tmp_msg->easy_handle);
         if (pz_ch != NULL) {
             /* we must save result to be able to read error message */
-            ch = swoole_curl_get_handle(pz_ch, false, false);
+            ch = openswoole_curl_get_handle(pz_ch, false, false);
             if (ch) {
                 SAVE_CURL_ERROR(ch, tmp_msg->data.result);
             }
@@ -283,7 +283,7 @@ PHP_FUNCTION(swoole_native_curl_multi_info_read) {
 /* }}} */
 
 /* {{{ Close a set of cURL handles */
-PHP_FUNCTION(swoole_native_curl_multi_close) {
+PHP_FUNCTION(openswoole_native_curl_multi_close) {
     php_curlm *mh;
     zval *z_mh;
 
@@ -291,12 +291,12 @@ PHP_FUNCTION(swoole_native_curl_multi_close) {
     zval *pz_ch;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
     ZEND_PARSE_PARAMETERS_END();
 
     mh = Z_CURL_MULTI_P(z_mh);
 
-    bool is_co = swoole_curlm_is_co(mh);
+    bool is_co = openswoole_curlm_is_co(mh);
 
     for (pz_ch = (zval *) zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
          pz_ch = (zval *) zend_llist_get_next_ex(&mh->easyh, &pos)) {
@@ -304,7 +304,7 @@ PHP_FUNCTION(swoole_native_curl_multi_close) {
         if (!ch) {
             continue;
         }
-        swoole_curl_verify_handlers(ch, 1);
+        openswoole_curl_verify_handlers(ch, 1);
         if (mh->multi && is_co) {
             mh->multi->remove_handle(ch->cp);
         } else {
@@ -316,12 +316,12 @@ PHP_FUNCTION(swoole_native_curl_multi_close) {
 /* }}} */
 
 /* {{{ Return an integer containing the last multi curl error number */
-PHP_FUNCTION(swoole_native_curl_multi_errno) {
+PHP_FUNCTION(openswoole_native_curl_multi_errno) {
     zval *z_mh;
     php_curlm *mh;
 
     ZEND_PARSE_PARAMETERS_START(1, 1)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
     ZEND_PARSE_PARAMETERS_END();
 
     mh = Z_CURL_MULTI_P(z_mh);
@@ -331,7 +331,7 @@ PHP_FUNCTION(swoole_native_curl_multi_errno) {
 /* }}} */
 
 /* {{{ return string describing error code */
-PHP_FUNCTION(swoole_native_curl_multi_strerror) {
+PHP_FUNCTION(openswoole_native_curl_multi_strerror) {
     zend_long code;
     const char *str;
 
@@ -380,9 +380,9 @@ static int _php_server_push_callback(
 #endif
     parent = Z_CURL_P(pz_parent_ch);
 
-    ch = swoole_curl_init_handle_into_zval(&pz_ch);
+    ch = openswoole_curl_init_handle_into_zval(&pz_ch);
     ch->cp = easy;
-    swoole_setup_easy_copy_handlers(ch, parent);
+    openswoole_setup_easy_copy_handlers(ch, parent);
 
     array_init(&headers);
     for (size_t i = 0; i < num_headers; i++) {
@@ -524,13 +524,13 @@ static int _php_curl_multi_setopt(php_curlm *mh, zend_long option, zval *zvalue,
 /* }}} */
 
 /* {{{ Set an option for the curl multi handle */
-PHP_FUNCTION(swoole_native_curl_multi_setopt) {
+PHP_FUNCTION(openswoole_native_curl_multi_setopt) {
     zval *z_mh, *zvalue;
     zend_long options;
     php_curlm *mh;
 
     ZEND_PARSE_PARAMETERS_START(3, 3)
-    Z_PARAM_OBJECT_OF_CLASS(z_mh, swoole_coroutine_curl_multi_handle_ce)
+    Z_PARAM_OBJECT_OF_CLASS(z_mh, openswoole_coroutine_curl_multi_handle_ce)
 
     Z_PARAM_LONG(options)
     Z_PARAM_ZVAL(zvalue)
@@ -547,24 +547,24 @@ PHP_FUNCTION(swoole_native_curl_multi_setopt) {
 /* }}} */
 
 /* CurlMultiHandle class */
-static zend_object_handlers swoole_coroutine_curl_multi_handle_handlers;
+static zend_object_handlers openswoole_coroutine_curl_multi_handle_handlers;
 
-static zend_object *swoole_curl_multi_create_object(zend_class_entry *class_type) {
+static zend_object *openswoole_curl_multi_create_object(zend_class_entry *class_type) {
     php_curlm *intern = (php_curlm *) zend_object_alloc(sizeof(php_curlm), class_type);
 
     zend_object_std_init(&intern->std, class_type);
     object_properties_init(&intern->std, class_type);
-    intern->std.handlers = &swoole_coroutine_curl_multi_handle_handlers;
+    intern->std.handlers = &openswoole_coroutine_curl_multi_handle_handlers;
 
     return &intern->std;
 }
 
-static zend_function *swoole_curl_multi_get_constructor(zend_object *object) {
+static zend_function *openswoole_curl_multi_get_constructor(zend_object *object) {
     zend_throw_error(NULL, "Cannot directly construct CurlMultiHandle, use curl_multi_init() instead");
     return NULL;
 }
 
-static void swoole_curl_multi_free_obj(zend_object *object) {
+static void openswoole_curl_multi_free_obj(zend_object *object) {
     php_curlm *mh = (php_curlm *) curl_multi_from_obj(object);
     if (!mh->multi) {
         /* Can happen if constructor throws. */
@@ -576,7 +576,7 @@ static void swoole_curl_multi_free_obj(zend_object *object) {
     zend_object_std_dtor(&mh->std);
 }
 
-static HashTable *swoole_curl_multi_get_gc(zend_object *object, zval **table, int *n) {
+static HashTable *openswoole_curl_multi_get_gc(zend_object *object, zval **table, int *n) {
     php_curlm *curl_multi = curl_multi_from_obj(object);
 
     zend_get_gc_buffer *gc_buffer = zend_get_gc_buffer_create();
@@ -602,18 +602,18 @@ static HashTable *swoole_curl_multi_get_gc(zend_object *object, zval **table, in
 }
 
 void curl_multi_register_class(const zend_function_entry *method_entries) {
-    swoole_coroutine_curl_multi_handle_ce = curl_multi_ce;
-    swoole_coroutine_curl_multi_handle_ce->create_object = swoole_curl_multi_create_object;
+    openswoole_coroutine_curl_multi_handle_ce = curl_multi_ce;
+    openswoole_coroutine_curl_multi_handle_ce->create_object = openswoole_curl_multi_create_object;
 
-    memcpy(&swoole_coroutine_curl_multi_handle_handlers, &std_object_handlers, sizeof(zend_object_handlers));
-    swoole_coroutine_curl_multi_handle_handlers.offset = XtOffsetOf(php_curlm, std);
-    swoole_coroutine_curl_multi_handle_handlers.free_obj = swoole_curl_multi_free_obj;
-    swoole_coroutine_curl_multi_handle_handlers.get_gc = swoole_curl_multi_get_gc;
-    swoole_coroutine_curl_multi_handle_handlers.get_constructor = swoole_curl_multi_get_constructor;
-    swoole_coroutine_curl_multi_handle_handlers.clone_obj = NULL;
-    swoole_coroutine_curl_multi_handle_handlers.cast_object = swoole_curl_cast_object;
-    swoole_coroutine_curl_multi_handle_handlers.compare = zend_objects_not_comparable;
-    zend_declare_property_bool(swoole_coroutine_curl_multi_handle_ce, ZEND_STRL("is_co"), 0, ZEND_ACC_PUBLIC);
+    memcpy(&openswoole_coroutine_curl_multi_handle_handlers, &std_object_handlers, sizeof(zend_object_handlers));
+    openswoole_coroutine_curl_multi_handle_handlers.offset = XtOffsetOf(php_curlm, std);
+    openswoole_coroutine_curl_multi_handle_handlers.free_obj = openswoole_curl_multi_free_obj;
+    openswoole_coroutine_curl_multi_handle_handlers.get_gc = openswoole_curl_multi_get_gc;
+    openswoole_coroutine_curl_multi_handle_handlers.get_constructor = openswoole_curl_multi_get_constructor;
+    openswoole_coroutine_curl_multi_handle_handlers.clone_obj = NULL;
+    openswoole_coroutine_curl_multi_handle_handlers.cast_object = openswoole_curl_cast_object;
+    openswoole_coroutine_curl_multi_handle_handlers.compare = zend_objects_not_comparable;
+    zend_declare_property_bool(openswoole_coroutine_curl_multi_handle_ce, ZEND_STRL("is_co"), 0, ZEND_ACC_PUBLIC);
 }
 
 
@@ -623,13 +623,13 @@ zend_llist_position pos;
 php_curl *ch;
 zval    *pz_ch;
 
-bool is_co = swoole_curlm_is_co(mh);
+bool is_co = openswoole_curlm_is_co(mh);
 
 for (pz_ch = (zval *)zend_llist_get_first_ex(&mh->easyh, &pos); pz_ch;
     pz_ch = (zval *)zend_llist_get_next_ex(&mh->easyh, &pos)) {
     if (!(OBJ_FLAGS(Z_OBJ_P(pz_ch)) & IS_OBJ_FREE_CALLED)) {
         ch = Z_CURL_P(pz_ch);
-        swoole_curl_verify_handlers(ch, 0);
+        openswoole_curl_verify_handlers(ch, 0);
         if (mh->multi && is_co) {
             mh->multi->remove_handle(ch->cp);
         }

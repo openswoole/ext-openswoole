@@ -17,12 +17,12 @@
  */
 
 #include "thirdparty/php/standard/proc_open.h"
-#include "swoole_coroutine_c_api.h"
+#include "openswoole_coroutine_c_api.h"
 
 using namespace std;
-using swoole::Coroutine;
-using swoole::PHPCoroutine;
-using swoole::coroutine::Socket;
+using openswoole::Coroutine;
+using openswoole::PHPCoroutine;
+using openswoole::coroutine::Socket;
 
 #if HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -140,7 +140,7 @@ static void proc_co_rsrc_dtor(zend_resource *rsrc) {
 
     if (proc->running) {
         if (::waitpid(proc->child, &wstatus, WNOHANG) == 0) {
-            swoole_coroutine_waitpid(proc->child, &wstatus, 0);
+            openswoole_coroutine_waitpid(proc->child, &wstatus, 0);
         }
     }
     if (proc->wstatus) {
@@ -153,13 +153,13 @@ static void proc_co_rsrc_dtor(zend_resource *rsrc) {
     efree(proc);
 }
 
-void swoole_proc_open_init(int module_number) {
+void openswoole_proc_open_init(int module_number) {
     le_proc_open = zend_register_list_destructors_ex(proc_co_rsrc_dtor, NULL, le_proc_name, module_number);
 }
 
 /* {{{ proto bool proc_terminate(resource process [, int signal])
    kill a process opened by proc_open */
-PHP_FUNCTION(swoole_proc_terminate) {
+PHP_FUNCTION(openswoole_proc_terminate) {
     zval *zproc;
     proc_co_t *proc;
     zend_long sig_no = SIGTERM;
@@ -178,7 +178,7 @@ PHP_FUNCTION(swoole_proc_terminate) {
 }
 /* }}} */
 
-PHP_FUNCTION(swoole_proc_close) {
+PHP_FUNCTION(openswoole_proc_close) {
     zval *zproc;
     proc_co_t *proc;
     int wstatus;
@@ -196,7 +196,7 @@ PHP_FUNCTION(swoole_proc_close) {
     RETURN_LONG(wstatus);
 }
 
-PHP_FUNCTION(swoole_proc_get_status) {
+PHP_FUNCTION(openswoole_proc_get_status) {
     zval *zproc;
     proc_co_t *proc;
     int wstatus;
@@ -218,7 +218,7 @@ PHP_FUNCTION(swoole_proc_get_status) {
     add_assoc_long(return_value, "pid", (zend_long) proc->child);
 
     errno = 0;
-    wait_pid = swoole_coroutine_waitpid(proc->child, &wstatus, WNOHANG | WUNTRACED);
+    wait_pid = openswoole_coroutine_waitpid(proc->child, &wstatus, WNOHANG | WUNTRACED);
 
     if (wait_pid == proc->child) {
         if (WIFEXITED(wstatus)) {
@@ -280,7 +280,7 @@ static zend_string *get_valid_arg_string(zval *zv, int elem_num) {
 
 /* {{{ proto resource proc_open(string|array command, array descriptorspec, array &pipes [, string cwd [, array env [,
    array other_options]]]) Run a process with more control over it's file descriptors */
-PHP_FUNCTION(swoole_proc_open) {
+PHP_FUNCTION(openswoole_proc_open) {
     zval *command_zv;
     char *command = NULL, *cwd = NULL;
     size_t cwd_len = 0;
@@ -353,9 +353,9 @@ PHP_FUNCTION(swoole_proc_open) {
         command = pestrdup(Z_STRVAL_P(command_zv), is_persistent);
     }
 
-    php_swoole_check_reactor();
-    if (php_swoole_signal_isset_handler(SIGCHLD)) {
-        php_swoole_error(E_WARNING, "The signal [SIGCHLD] is registered, cannot execute swoole_proc_open");
+    php_openswoole_check_reactor();
+    if (php_openswoole_signal_isset_handler(SIGCHLD)) {
+        php_openswoole_error(E_WARNING, "The signal [SIGCHLD] is registered, cannot execute openswoole_proc_open");
         RETURN_FALSE;
     }
 
@@ -381,7 +381,7 @@ PHP_FUNCTION(swoole_proc_open) {
         zval *ztype;
 
         if (str_index) {
-            php_swoole_fatal_error(E_WARNING, "descriptor spec must be an integer indexed array");
+            php_openswoole_fatal_error(E_WARNING, "descriptor spec must be an integer indexed array");
             goto exit_fail;
         }
 
@@ -400,7 +400,7 @@ PHP_FUNCTION(swoole_proc_open) {
 
             descriptors[ndesc].childend = dup(fd);
             if (descriptors[ndesc].childend < 0) {
-                php_swoole_fatal_error(E_WARNING,
+                php_openswoole_fatal_error(E_WARNING,
                                        "unable to dup File-Handle for descriptor " ZEND_ULONG_FMT " - %s",
                                        nindex,
                                        strerror(errno));
@@ -410,13 +410,13 @@ PHP_FUNCTION(swoole_proc_open) {
             descriptors[ndesc].mode = DESC_FILE;
 
         } else if (Z_TYPE_P(descitem) != IS_ARRAY) {
-            php_swoole_fatal_error(E_WARNING, "Descriptor item must be either an array or a File-Handle");
+            php_openswoole_fatal_error(E_WARNING, "Descriptor item must be either an array or a File-Handle");
             goto exit_fail;
         } else {
             if ((ztype = zend_hash_index_find(Z_ARRVAL_P(descitem), 0)) != NULL) {
                 convert_to_string_ex(ztype);
             } else {
-                php_swoole_fatal_error(E_WARNING, "Missing handle qualifier in array");
+                php_openswoole_fatal_error(E_WARNING, "Missing handle qualifier in array");
                 goto exit_fail;
             }
 
@@ -427,14 +427,14 @@ PHP_FUNCTION(swoole_proc_open) {
                 if ((zmode = zend_hash_index_find(Z_ARRVAL_P(descitem), 1)) != NULL) {
                     convert_to_string_ex(zmode);
                 } else {
-                    php_swoole_fatal_error(E_WARNING, "Missing mode parameter for 'pipe'");
+                    php_openswoole_fatal_error(E_WARNING, "Missing mode parameter for 'pipe'");
                     goto exit_fail;
                 }
 
                 descriptors[ndesc].mode = DESC_PIPE;
 
                 if (0 != socketpair(AF_UNIX, SOCK_STREAM, 0, newpipe)) {
-                    php_swoole_fatal_error(E_WARNING, "unable to create pipe %s", strerror(errno));
+                    php_openswoole_fatal_error(E_WARNING, "unable to create pipe %s", strerror(errno));
                     goto exit_fail;
                 }
 
@@ -464,7 +464,7 @@ PHP_FUNCTION(swoole_proc_open) {
                     convert_to_string_ex(zfile);
 #endif
                 } else {
-                    php_swoole_fatal_error(E_WARNING, "Missing file name parameter for 'file'");
+                    php_openswoole_fatal_error(E_WARNING, "Missing file name parameter for 'file'");
                     goto exit_fail;
                 }
 
@@ -477,7 +477,7 @@ PHP_FUNCTION(swoole_proc_open) {
                     convert_to_string_ex(zmode);
 #endif
                 } else {
-                    php_swoole_fatal_error(E_WARNING, "Missing mode parameter for 'file'");
+                    php_openswoole_fatal_error(E_WARNING, "Missing mode parameter for 'file'");
                     goto exit_fail;
                 }
 
@@ -582,10 +582,10 @@ PHP_FUNCTION(swoole_proc_open) {
 #endif
                 descriptors[ndesc].mode = DESC_FILE;
             } else if (strcmp(Z_STRVAL_P(ztype), "pty") == 0) {
-                php_swoole_fatal_error(E_WARNING, "pty pseudo terminal not supported on this system");
+                php_openswoole_fatal_error(E_WARNING, "pty pseudo terminal not supported on this system");
                 goto exit_fail;
             } else {
-                php_swoole_fatal_error(E_WARNING, "%s is not a valid descriptor spec/mode", Z_STRVAL_P(ztype));
+                php_openswoole_fatal_error(E_WARNING, "%s is not a valid descriptor spec/mode", Z_STRVAL_P(ztype));
                 goto exit_fail;
             }
         }
@@ -594,7 +594,7 @@ PHP_FUNCTION(swoole_proc_open) {
     ZEND_HASH_FOREACH_END();
 
     /* the unix way */
-    child = swoole_fork(SW_FORK_EXEC);
+    child = openswoole_fork(OSW_FORK_EXEC);
 
     if (child == 0) {
         /* this is the child process */
@@ -646,7 +646,7 @@ PHP_FUNCTION(swoole_proc_open) {
             }
         }
 
-        php_swoole_fatal_error(E_WARNING, "fork failed - %s", strerror(errno));
+        php_openswoole_fatal_error(E_WARNING, "fork failed - %s", strerror(errno));
 
         goto exit_fail;
     }
@@ -682,7 +682,7 @@ PHP_FUNCTION(swoole_proc_open) {
 
         switch (descriptors[i].mode & ~DESC_PARENT_MODE_WRITE) {
         case DESC_PIPE:
-            stream = php_swoole_create_stream_from_socket(descriptors[i].parentend, AF_UNIX, SOCK_STREAM, 0 STREAMS_CC);
+            stream = php_openswoole_create_stream_from_socket(descriptors[i].parentend, AF_UNIX, SOCK_STREAM, 0 STREAMS_CC);
             /* mark the descriptor close-on-exec, so that it won't be inherited by potential other children */
             fcntl(descriptors[i].parentend, F_SETFD, FD_CLOEXEC);
             if (stream) {

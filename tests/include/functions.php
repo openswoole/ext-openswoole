@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Open Swoole
+ * This file is part of OpenSwoole
  *
  * @link     https://openswoole.com
  * @contact  hello@openswoole.com
@@ -33,7 +33,7 @@ function top(int $pid)
     do {
         $top = @shell_exec("top -b -n 1 -p {$pid}");
         if (empty($top)) {
-            trigger_error("top {$pid} failed: " . swoole_strerror(swoole_errno()), E_USER_WARNING);
+            trigger_error("top {$pid} failed: " . openswoole_strerror(openswoole_errno()), E_USER_WARNING);
             return false;
         } else {
             break;
@@ -70,8 +70,8 @@ function is_musl_libc(): bool
 
 function get_one_free_port(): int
 {
-    $hookFlags = Swoole\Runtime::getHookFlags();
-    Swoole\Runtime::enableCoroutine(false);
+    $hookFlags = OpenSwoole\Runtime::getHookFlags();
+    OpenSwoole\Runtime::enableCoroutine(false);
     $server = @stream_socket_server('tcp://127.0.0.1:0');
     if (!$server) {
         $port = -1;
@@ -84,14 +84,14 @@ function get_one_free_port(): int
             $port = (parse_url($name)['port'] ?? -1) ?: -1;
         }
     }
-    Swoole\Runtime::enableCoroutine($hookFlags);
+    OpenSwoole\Runtime::enableCoroutine($hookFlags);
     return $port;
 }
 
 function get_one_free_port_ipv6(): int
 {
-    $hookFlags = Swoole\Runtime::getHookFlags();
-    Swoole\Runtime::enableCoroutine(false);
+    $hookFlags = OpenSwoole\Runtime::getHookFlags();
+    OpenSwoole\Runtime::enableCoroutine(false);
     $server = @stream_socket_server('tcp://[::1]:0');
     if (!$server) {
         $port = -1;
@@ -105,11 +105,11 @@ function get_one_free_port_ipv6(): int
         }
     }
 
-    Swoole\Runtime::enableCoroutine($hookFlags);
+    OpenSwoole\Runtime::enableCoroutine($hookFlags);
     return $port;
 }
 
-function set_socket_coro_buffer_size(Swoole\Coroutine\Socket $cosocket, int $size)
+function set_socket_coro_buffer_size(OpenSwoole\Coroutine\Socket $cosocket, int $size)
 {
     $cosocket->setOption(SOL_SOCKET, SO_SNDBUF, $size);
     $cosocket->setOption(SOL_SOCKET, SO_RCVBUF, $size);
@@ -421,11 +421,11 @@ function kill_self_and_descendant($pid)
  */
 function killself_in_syncmode($lifetime = 1000, $sig = SIGKILL)
 {
-    $proc = new OpenSwoole\Process(function (Swoole\Process $proc) use ($lifetime, $sig) {
+    $proc = new OpenSwoole\Process(function (OpenSwoole\Process $proc) use ($lifetime, $sig) {
         $pid = $proc->pop();
         $proc->freeQueue();
         usleep($lifetime * 1000);
-        Swoole\Process::kill($pid, $sig);
+        OpenSwoole\Process::kill($pid, $sig);
         $proc->exit();
     }, true);
     $proc->useQueue();
@@ -442,7 +442,7 @@ function killself_in_syncmode($lifetime = 1000, $sig = SIGKILL)
  */
 function suicide($lifetime, $sig = SIGKILL, ?callable $cb = null)
 {
-    return swoole_timer_after($lifetime, function () use ($lifetime, $sig, $cb) {
+    return openswoole_timer_after($lifetime, function () use ($lifetime, $sig, $cb) {
         if ($cb) {
             $cb();
         }
@@ -615,12 +615,12 @@ function start_server($file, $host, $port, $redirect_file = "/dev/null", $ext1 =
     return function () use ($handle, $redirect_file) {
         // @unlink($redirect_file);
         proc_terminate($handle, SIGTERM);
-        swoole_event_exit();
+        openswoole_event_exit();
         exit;
     };
 }
 
-function swoole_fork_exec(callable $fn, bool $redirect_stdin_and_stdout = false, int $pipe_type = SOCK_DGRAM, bool $enable_coroutine = false)
+function openswoole_fork_exec(callable $fn, bool $redirect_stdin_and_stdout = false, int $pipe_type = SOCK_DGRAM, bool $enable_coroutine = false)
 {
     $process = new OpenSwoole\Process(...func_get_args());
     if (!$process->start()) {
@@ -776,7 +776,7 @@ function curl_type_assert($ch, $resource_type, $class_type)
     }
 }
 
-function swoole_get_variance($avg, $array, $is_swatch = false)
+function openswoole_get_variance($avg, $array, $is_swatch = false)
 {
     $count = count($array);
     if ($count == 1 && $is_swatch == true) {
@@ -795,7 +795,7 @@ function swoole_get_variance($avg, $array, $is_swatch = false)
     }
 }
 
-function swoole_get_average($array)
+function openswoole_get_average($array)
 {
     return array_sum($array) / count($array);
 }

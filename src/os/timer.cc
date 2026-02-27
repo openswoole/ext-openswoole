@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,19 +14,19 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_timer.h"
-#include "swoole_signal.h"
+#include "openswoole_timer.h"
+#include "openswoole_signal.h"
 
 #include <signal.h>
 
-namespace swoole {
+namespace openswoole {
 
 static int SystemTimer_set(Timer *timer, long next_msec);
 
 bool Timer::init_system_timer() {
     set = SystemTimer_set;
     close = [](Timer *timer) { SystemTimer_set(timer, -1); };
-    swoole_signal_set(SIGALRM, [](int sig) { SwooleG.signal_alarm = true; });
+    openswoole_signal_set(SIGALRM, [](int sig) { OpenSwooleG.signal_alarm = true; });
     return true;
 }
 
@@ -37,8 +37,8 @@ static int SystemTimer_set(Timer *timer, long next_msec) {
     struct itimerval timer_set;
     struct timeval now;
     if (gettimeofday(&now, nullptr) < 0) {
-        swoole_sys_warning("gettimeofday() failed");
-        return SW_ERR;
+        openswoole_sys_warning("gettimeofday() failed");
+        return OSW_ERR;
     }
 
     if (next_msec > 0) {
@@ -58,10 +58,10 @@ static int SystemTimer_set(Timer *timer, long next_msec) {
     }
 
     if (setitimer(ITIMER_REAL, &timer_set, nullptr) < 0) {
-        swoole_sys_warning("setitimer() failed");
-        return SW_ERR;
+        openswoole_sys_warning("setitimer() failed");
+        return OSW_ERR;
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

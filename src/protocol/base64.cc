@@ -1,8 +1,8 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
- | Copyright (c) 2017-now Open Swoole Group                             |
+ | Copyright (c) 2017-now OpenSwoole Group                             |
  | Copyright (c) 2012-2017 The Swoole Group                             |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
@@ -17,9 +17,9 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_base64.h"
+#include "openswoole_base64.h"
 
-namespace swoole {
+namespace openswoole {
 
 // clang-format off
 
@@ -132,4 +132,4 @@ size_t base64_decode(const char *in, size_t inlen, char *out) {
     return j;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

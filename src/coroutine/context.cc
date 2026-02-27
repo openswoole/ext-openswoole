@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,24 +14,24 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_coroutine_context.h"
+#include "openswoole_coroutine_context.h"
 
-#ifdef SW_CONTEXT_PROTECT_STACK_PAGE
+#ifdef OSW_CONTEXT_PROTECT_STACK_PAGE
 #include <sys/mman.h>
 #if !defined(MAP_ANONYMOUS) && defined(MAP_ANON)
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 #endif
 
-#ifndef SW_USE_THREAD_CONTEXT
+#ifndef OSW_USE_THREAD_CONTEXT
 
-#include "swoole_coroutine.h"
+#include "openswoole_coroutine.h"
 
-#define MAGIC_STRING "swoole_coroutine#5652a7fb2b38be"
+#define MAGIC_STRING "openswoole_coroutine#5652a7fb2b38be"
 #define START_OFFSET (64 * 1024)
 
 /* Member access macros: PHP build uses union (native_.), core-tests use direct members */
-#ifdef ENABLE_PHP_SWOOLE
+#ifdef ENABLE_PHP_OPENSWOOLE
 #define CTX_STACK native_.stack
 #define CTX_CTX native_.ctx
 #define CTX_SWAP_CTX native_.swap_ctx
@@ -41,7 +41,7 @@
 #define CTX_SWAP_CTX swap_ctx
 #endif
 
-namespace swoole {
+namespace openswoole {
 namespace coroutine {
 
 /* ---- Dispatch: constructor, destructor, swap_in, swap_out ---- */
@@ -49,7 +49,7 @@ namespace coroutine {
 Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
     : fn_(fn), stack_size_(stack_size), private_data_(private_data) {
     end_ = false;
-#ifdef ENABLE_PHP_SWOOLE
+#ifdef ENABLE_PHP_OPENSWOOLE
     if (Coroutine::use_fiber_context) {
         fiber_init(stack_size);
     } else {
@@ -61,7 +61,7 @@ Context::Context(size_t stack_size, const CoroutineFunc &fn, void *private_data)
 }
 
 Context::~Context() {
-#ifdef ENABLE_PHP_SWOOLE
+#ifdef ENABLE_PHP_OPENSWOOLE
     if (Coroutine::use_fiber_context) {
         fiber_destroy();
     } else {
@@ -73,7 +73,7 @@ Context::~Context() {
 }
 
 bool Context::swap_in() {
-#ifdef ENABLE_PHP_SWOOLE
+#ifdef ENABLE_PHP_OPENSWOOLE
     if (Coroutine::use_fiber_context) {
         return fiber_swap_in();
     }
@@ -82,7 +82,7 @@ bool Context::swap_in() {
 }
 
 bool Context::swap_out() {
-#ifdef ENABLE_PHP_SWOOLE
+#ifdef ENABLE_PHP_OPENSWOOLE
     if (Coroutine::use_fiber_context) {
         return fiber_swap_out();
     }
@@ -93,7 +93,7 @@ bool Context::swap_out() {
 /* ---- Native backend (ASM/ucontext) ---- */
 
 void Context::native_init(size_t stack_size) {
-#ifdef SW_CONTEXT_PROTECT_STACK_PAGE
+#ifdef OSW_CONTEXT_PROTECT_STACK_PAGE
     int mapflags = MAP_PRIVATE | MAP_ANONYMOUS;
 #ifdef __OpenBSD__
     // no-op for Linux and NetBSD, not to enable on FreeBSD as the semantic differs.
@@ -102,13 +102,13 @@ void Context::native_init(size_t stack_size) {
 #endif
     CTX_STACK = (char *) ::mmap(0, stack_size_, PROT_READ | PROT_WRITE, mapflags, -1, 0);
 #else
-    CTX_STACK = (char *) sw_malloc(stack_size_);
+    CTX_STACK = (char *) osw_malloc(stack_size_);
 #endif
     if (!CTX_STACK) {
-        swoole_fatal_error(SW_ERROR_MALLOC_FAIL, "failed to malloc stack memory.");
+        openswoole_fatal_error(OSW_ERROR_MALLOC_FAIL, "failed to malloc stack memory.");
         exit(254);
     }
-    swoole_trace_log(SW_TRACE_COROUTINE, "alloc stack: size=%u, ptr=%p", stack_size_, CTX_STACK);
+    openswoole_trace_log(OSW_TRACE_COROUTINE, "alloc stack: size=%u, ptr=%p", stack_size_, CTX_STACK);
 
     void *sp = (void *) ((char *) CTX_STACK + stack_size_);
 #ifdef USE_VALGRIND
@@ -117,8 +117,8 @@ void Context::native_init(size_t stack_size) {
 
 #if USE_UCONTEXT
     if (-1 == getcontext(&CTX_CTX)) {
-        swoole_throw_error(SW_ERROR_CO_GETCONTEXT_FAILED);
-        sw_free(CTX_STACK);
+        openswoole_throw_error(OSW_ERROR_CO_GETCONTEXT_FAILED);
+        osw_free(CTX_STACK);
         return;
     }
     CTX_CTX.uc_stack.ss_sp = CTX_STACK;
@@ -129,44 +129,44 @@ void Context::native_init(size_t stack_size) {
 
 #if USE_BOOST_V2
     CTX_CTX = make_fcontext(sp, stack_size_, context_func_v2);
-    swoole_trace_log(SW_TRACE_COROUTINE, "========v2");
+    openswoole_trace_log(OSW_TRACE_COROUTINE, "========v2");
 #else
     CTX_CTX = make_fcontext_v1(sp, stack_size_, (void (*)(intptr_t)) & context_func);
-    swoole_trace_log(SW_TRACE_COROUTINE, "========v1");
+    openswoole_trace_log(OSW_TRACE_COROUTINE, "========v1");
 #endif
     CTX_SWAP_CTX = nullptr;
 #endif
 
-#ifdef SW_CONTEXT_DETECT_STACK_USAGE
+#ifdef OSW_CONTEXT_DETECT_STACK_USAGE
     size_t offset = START_OFFSET;
     while (offset <= stack_size) {
-        memcpy((char *) sp - offset + (sizeof(MAGIC_STRING) - 1), SW_STRL(MAGIC_STRING));
+        memcpy((char *) sp - offset + (sizeof(MAGIC_STRING) - 1), OSW_STRL(MAGIC_STRING));
         offset *= 2;
     }
 #endif
 
-#ifdef SW_CONTEXT_PROTECT_STACK_PAGE
-    mprotect(CTX_STACK, SwooleG.pagesize, PROT_NONE);
+#ifdef OSW_CONTEXT_PROTECT_STACK_PAGE
+    mprotect(CTX_STACK, OpenSwooleG.pagesize, PROT_NONE);
 #endif
 }
 
 void Context::native_destroy() {
     if (CTX_STACK) {
-        swoole_trace_log(SW_TRACE_COROUTINE, "free stack: ptr=%p", CTX_STACK);
+        openswoole_trace_log(OSW_TRACE_COROUTINE, "free stack: ptr=%p", CTX_STACK);
 #ifdef USE_VALGRIND
         VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
 #endif
 
-#ifdef SW_CONTEXT_PROTECT_STACK_PAGE
+#ifdef OSW_CONTEXT_PROTECT_STACK_PAGE
         ::munmap(CTX_STACK, stack_size_);
 #else
-        sw_free(CTX_STACK);
+        osw_free(CTX_STACK);
 #endif
         CTX_STACK = nullptr;
     }
 }
 
-#ifdef SW_CONTEXT_DETECT_STACK_USAGE
+#ifdef OSW_CONTEXT_DETECT_STACK_USAGE
 ssize_t Context::get_stack_usage() {
     size_t offset = START_OFFSET;
     size_t retval = START_OFFSET;
@@ -174,7 +174,7 @@ ssize_t Context::get_stack_usage() {
     void *sp = (void *) ((char *) CTX_STACK + stack_size_);
 
     while (offset < stack_size_) {
-        if (memcmp((char *) sp - offset + (sizeof(MAGIC_STRING) - 1), SW_STRL(MAGIC_STRING)) != 0) {
+        if (memcmp((char *) sp - offset + (sizeof(MAGIC_STRING) - 1), OSW_STRL(MAGIC_STRING)) != 0) {
             retval = offset * 2;
         }
         offset *= 2;
@@ -235,5 +235,5 @@ void Context::context_func(void *arg) {
 #endif
 
 }  // namespace coroutine
-}  // namespace swoole
+}  // namespace openswoole
 #endif

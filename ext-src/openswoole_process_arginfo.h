@@ -1,0 +1,114 @@
+/* This is a generated file, edit the .stub.php file instead.
+ * Stub hash: 39a0ea2d7bdf53fb3c0daa4fa39c364fafb5098d */
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_OpenSwoole_Process___construct, 0, 0, 1)
+	ZEND_ARG_TYPE_INFO(0, callback, IS_CALLABLE, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, redirectStdIO, _IS_BOOL, 0, "false")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, pipeType, IS_LONG, 0, "SOCK_DGRAM")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, enableCoroutine, _IS_BOOL, 0, "false")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_INFO_EX(arginfo_class_OpenSwoole_Process___destruct, 0, 0, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_useQueue, 0, 0, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, key, IS_LONG, 0, "0")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, mode, IS_LONG, 0, "2")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, capacity, IS_LONG, 0, "-1")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_OpenSwoole_Process_statQueue, 0, 0, MAY_BE_BOOL|MAY_BE_ARRAY)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_freeQueue, 0, 0, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_kill, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, pid, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, sigNo, IS_LONG, 0, "SIGTERM")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_signal, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, sigNo, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, callback, IS_CALLABLE, 1, "null")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_alarm, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, intervalUsec, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, type, IS_LONG, 0, "ITIMER_REAL")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_OpenSwoole_Process_start, 0, 0, MAY_BE_BOOL|MAY_BE_LONG)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_OpenSwoole_Process_read, 0, 0, MAY_BE_BOOL|MAY_BE_STRING)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, bufferSize, IS_LONG, 0, "8192")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_OpenSwoole_Process_write, 0, 1, MAY_BE_BOOL|MAY_BE_LONG)
+	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_OBJ_TYPE_MASK_EX(arginfo_class_OpenSwoole_Process_exportSocket, 0, 0, OpenSwoole\\Coroutine\\Socket, MAY_BE_FALSE)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_push, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, data, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_OpenSwoole_Process_pop, 0, 0, MAY_BE_BOOL|MAY_BE_STRING)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, maxSize, IS_LONG, 0, "8192")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_exec, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, execFile, IS_STRING, 0)
+	ZEND_ARG_TYPE_INFO(0, args, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_daemon, 0, 0, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, noChdir, _IS_BOOL, 0, "true")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, noClose, _IS_BOOL, 0, "true")
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, pipes, IS_ARRAY, 1, "null")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_setAffinity, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, cpuSet, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_exit, 0, 0, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, status, IS_LONG, 0, "0")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_close, 0, 0, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, reason, IS_LONG, 0, "0")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_set, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, settings, IS_ARRAY, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_setTimeout, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, timeout, IS_DOUBLE, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_setBlocking, 0, 1, IS_VOID, 0)
+	ZEND_ARG_TYPE_INFO(0, blocking, _IS_BOOL, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_setPriority, 0, 2, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, which, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, priority, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_getPriority, 0, 1, IS_LONG, 0)
+	ZEND_ARG_TYPE_INFO(0, which, IS_LONG, 0)
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_MASK_EX(arginfo_class_OpenSwoole_Process_wait, 0, 0, MAY_BE_BOOL|MAY_BE_ARRAY)
+	ZEND_ARG_TYPE_INFO_WITH_DEFAULT_VALUE(0, blocking, _IS_BOOL, 0, "true")
+ZEND_END_ARG_INFO()
+
+ZEND_BEGIN_ARG_WITH_RETURN_TYPE_INFO_EX(arginfo_class_OpenSwoole_Process_name, 0, 1, _IS_BOOL, 0)
+	ZEND_ARG_TYPE_INFO(0, processName, IS_STRING, 0)
+ZEND_END_ARG_INFO()
+

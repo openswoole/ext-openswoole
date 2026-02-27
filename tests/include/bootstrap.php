@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is part of Open Swoole
+ * This file is part of OpenSwoole
  *
  * @link     https://openswoole.com
  * @contact  hello@openswoole.com
@@ -42,7 +42,7 @@ class_alias(SwooleTest\ServerManager::class, ServerManager::class);
 class_alias(SwooleTest\RandStr::class, RandStr::class);
 class_alias(SwooleTest\TcpStat::class, TcpStat::class);
 
-function swoole_array_default_value(array $array, $key, $default_value = null)
+function openswoole_array_default_value(array $array, $key, $default_value = null)
 {
     return array_key_exists($key, $array) ? $array[$key] : $default_value;
 }

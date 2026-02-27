@@ -1,0 +1,54 @@
+--TEST--
+openswoole_process: exception
+--SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+abstract class AbstractProcess
+{
+    public abstract function run();
+
+    public abstract function onException(Throwable $e);
+
+    public function start()
+    {
+        $process = new OpenSwoole\Process(function (OpenSwoole\Process $process) {
+            openswoole_event_add($process->pipe, function (OpenSwoole\Process $process) { });
+            try {
+                $this->run();
+            } catch (Throwable $e) {
+                $this->onException($e);
+            }
+        }, true);
+        $process->start();
+        echo $process->read();
+    }
+}
+
+class Process6 extends AbstractProcess
+{
+    public function run()
+    {
+        AAAA();
+    }
+
+    public function onException(Throwable $e)
+    {
+        throw $e;
+    }
+}
+
+(new Process6())->start();
+
+?>
+--EXPECTF--
+Fatal error: Uncaught Error: Call to undefined function AAAA() in %s:%d
+Stack trace:
+#0 %s(%d): Process6->run()
+#1 [internal function]: AbstractProcess->{closure%S}(Object(OpenSwoole\Process))
+#2 %s(%d): OpenSwoole\Process->start()
+#3 %s(%d): AbstractProcess->start()
+#4 {main}
+  thrown in %s on line %d

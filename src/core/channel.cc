@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,15 +14,15 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_memory.h"
-#include "swoole_channel.h"
-#include "swoole_lock.h"
-#include "swoole_pipe.h"
+#include "openswoole.h"
+#include "openswoole_memory.h"
+#include "openswoole_channel.h"
+#include "openswoole_lock.h"
+#include "openswoole_pipe.h"
 
-namespace swoole {
+namespace openswoole {
 
-#define SW_CHANNEL_MIN_MEM (1024 * 64)
+#define OSW_CHANNEL_MIN_MEM (1024 * 64)
 
 struct ChannelSlice {
     int length;
@@ -34,17 +34,17 @@ Channel *Channel::make(size_t size, size_t maxlen, int flags) {
     void *mem;
 
     // use shared memory
-    if (flags & SW_CHAN_SHM) {
+    if (flags & OSW_CHAN_SHM) {
         /**
          * overflow space
          */
-        mem = sw_shm_malloc(size + sizeof(Channel) + maxlen + sizeof(ChannelSlice));
+        mem = osw_shm_malloc(size + sizeof(Channel) + maxlen + sizeof(ChannelSlice));
     } else {
-        mem = sw_malloc(size + sizeof(Channel) + maxlen + sizeof(ChannelSlice));
+        mem = osw_malloc(size + sizeof(Channel) + maxlen + sizeof(ChannelSlice));
     }
 
     if (mem == nullptr) {
-        swoole_warning("alloc(%ld) failed", size);
+        openswoole_warning("alloc(%ld) failed", size);
         return nullptr;
     }
 
@@ -60,15 +60,15 @@ Channel *Channel::make(size_t size, size_t maxlen, int flags) {
     object->flags = flags;
 
     // use lock
-    if (flags & SW_CHAN_LOCK) {
+    if (flags & OSW_CHAN_LOCK) {
         // init lock
         object->lock = new Mutex(Mutex::PROCESS_SHARED);
     }
     // use notify
-    if (flags & SW_CHAN_NOTIFY) {
+    if (flags & OSW_CHAN_NOTIFY) {
         object->notify_pipe = new Pipe(true);
         if (!object->notify_pipe->ready()) {
-            swoole_warning("notify_fd init failed");
+            openswoole_warning("notify_fd init failed");
             delete object->notify_pipe;
             return nullptr;
         }
@@ -83,7 +83,7 @@ Channel *Channel::make(size_t size, size_t maxlen, int flags) {
 int Channel::in(const void *in_data, int data_length) {
     assert(data_length <= maxlen);
     if (full()) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     ChannelSlice *item;
     int msize = sizeof(item->length) + data_length;
@@ -91,7 +91,7 @@ int Channel::in(const void *in_data, int data_length) {
     if (tail < head) {
         // no enough memory space
         if ((head - tail) < msize) {
-            return SW_ERR;
+            return OSW_ERR;
         }
         item = (ChannelSlice *) ((char *) mem + tail);
         tail += msize;
@@ -107,7 +107,7 @@ int Channel::in(const void *in_data, int data_length) {
     bytes += data_length;
     item->length = data_length;
     memcpy(item->data, in_data, data_length);
-    return SW_OK;
+    return OSW_OK;
 }
 
 /**
@@ -115,7 +115,7 @@ int Channel::in(const void *in_data, int data_length) {
  */
 int Channel::out(void *out_buf, int buffer_length) {
     if (empty()) {
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     ChannelSlice *item = (ChannelSlice *) ((char *) mem + head);
@@ -136,7 +136,7 @@ int Channel::out(void *out_buf, int buffer_length) {
  */
 int Channel::peek(void *out, int buffer_length) {
     if (empty()) {
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     int length;
@@ -154,7 +154,7 @@ int Channel::peek(void *out, int buffer_length) {
  * wait notify
  */
 int Channel::wait() {
-    assert(flags & SW_CHAN_NOTIFY);
+    assert(flags & OSW_CHAN_NOTIFY);
     uint64_t value;
     return notify_pipe->read(&value, sizeof(value));
 }
@@ -163,7 +163,7 @@ int Channel::wait() {
  * new data coming, notify to customer
  */
 int Channel::notify() {
-    assert(flags & SW_CHAN_NOTIFY);
+    assert(flags & OSW_CHAN_NOTIFY);
     uint64_t value = 1;
     return notify_pipe->write(&value, sizeof(value));
 }
@@ -172,7 +172,7 @@ int Channel::notify() {
  * push data (lock)
  */
 int Channel::push(const void *in_data, int data_length) {
-    assert(flags & SW_CHAN_LOCK);
+    assert(flags & OSW_CHAN_LOCK);
     lock->lock();
     int ret = in(in_data, data_length);
     lock->unlock();
@@ -183,17 +183,17 @@ int Channel::push(const void *in_data, int data_length) {
  * free channel
  */
 void Channel::destroy() {
-    if (flags & SW_CHAN_LOCK) {
+    if (flags & OSW_CHAN_LOCK) {
         delete lock;
     }
-    if (flags & SW_CHAN_NOTIFY) {
+    if (flags & OSW_CHAN_NOTIFY) {
         notify_pipe->close();
         delete notify_pipe;
     }
-    if (flags & SW_CHAN_SHM) {
-        sw_shm_free(this);
+    if (flags & OSW_CHAN_SHM) {
+        osw_shm_free(this);
     } else {
-        sw_free(this);
+        osw_free(this);
     }
 }
 
@@ -201,7 +201,7 @@ void Channel::destroy() {
  * pop data (lock)
  */
 int Channel::pop(void *out_buf, int buffer_length) {
-    assert(flags & SW_CHAN_LOCK);
+    assert(flags & OSW_CHAN_LOCK);
     lock->lock();
     int n = out(out_buf, buffer_length);
     lock->unlock();
@@ -231,4 +231,4 @@ void Channel::print() {
            maxlen);
 }
 
-}  // namespace swoole
+}  // namespace openswoole

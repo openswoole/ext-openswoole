@@ -1,0 +1,621 @@
+/*
+  +----------------------------------------------------------------------+
+  | OpenSwoole                                                          |
+  +----------------------------------------------------------------------+
+  | This source file is subject to version 2.0 of the Apache license,    |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.apache.org/licenses/LICENSE-2.0.html                      |
+  | If you did not receive a copy of the Apache2.0 license and are unable|
+  | to obtain it through the world-wide-web, please send a note to       |
+  | hello@swoole.co.uk so we can mail you a copy immediately.            |
+  +----------------------------------------------------------------------+
+  | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
+  +----------------------------------------------------------------------+
+*/
+
+#include "php_openswoole_cxx.h"
+#include "php_openswoole_process.h"
+
+#include "openswoole_server.h"
+#include "openswoole_signal.h"
+
+#include "openswoole_process_pool_arginfo.h"
+
+using namespace openswoole;
+
+struct ProcessPoolProperty {
+    zend_fcall_info_cache *onStart;
+    zend_fcall_info_cache *onWorkerStart;
+    zend_fcall_info_cache *onWorkerStop;
+    zend_fcall_info_cache *onMessage;
+    bool enable_coroutine;
+};
+
+static zend_class_entry *openswoole_process_pool_ce;
+static zend_object_handlers openswoole_process_pool_handlers;
+static ProcessPool *current_pool;
+
+struct ProcessPoolObject {
+    ProcessPool *pool;
+    ProcessPoolProperty *pp;
+    zend_object std;
+};
+
+static void pool_signal_handler(int sig);
+
+static osw_inline ProcessPoolObject *php_openswoole_process_pool_fetch_object(zend_object *obj) {
+    return (ProcessPoolObject *) ((char *) obj - openswoole_process_pool_handlers.offset);
+}
+
+static osw_inline ProcessPool *php_openswoole_process_pool_get_pool(zval *zobject) {
+    return php_openswoole_process_pool_fetch_object(Z_OBJ_P(zobject))->pool;
+}
+
+static osw_inline ProcessPool *php_openswoole_process_pool_get_and_check_pool(zval *zobject) {
+    ProcessPool *pool = php_openswoole_process_pool_get_pool(zobject);
+    if (!pool) {
+        php_openswoole_fatal_error(E_ERROR, "you must call Process\\Pool constructor first");
+    }
+    return pool;
+}
+
+static osw_inline void php_openswoole_process_pool_set_pool(zval *zobject, ProcessPool *pool) {
+    php_openswoole_process_pool_fetch_object(Z_OBJ_P(zobject))->pool = pool;
+}
+
+static osw_inline ProcessPoolProperty *php_openswoole_process_pool_get_pp(zval *zobject) {
+    return php_openswoole_process_pool_fetch_object(Z_OBJ_P(zobject))->pp;
+}
+
+static osw_inline ProcessPoolProperty *php_openswoole_process_pool_get_and_check_pp(zval *zobject) {
+    ProcessPoolProperty *pp = php_openswoole_process_pool_get_pp(zobject);
+    if (!pp) {
+        php_openswoole_fatal_error(E_ERROR, "you must call Process\\Pool constructor first");
+    }
+    return pp;
+}
+
+static osw_inline void php_openswoole_process_pool_set_pp(zval *zobject, ProcessPoolProperty *pp) {
+    php_openswoole_process_pool_fetch_object(Z_OBJ_P(zobject))->pp = pp;
+}
+
+static void php_openswoole_process_pool_free_object(zend_object *object) {
+    ProcessPoolObject *process_pool = php_openswoole_process_pool_fetch_object(object);
+
+    ProcessPool *pool = process_pool->pool;
+    if (pool) {
+        efree(pool->ptr);
+        pool->destroy();
+        efree(pool);
+    }
+
+    ProcessPoolProperty *pp = process_pool->pp;
+    if (pp) {
+        if (pp->onWorkerStart) {
+            osw_zend_fci_cache_discard(pp->onWorkerStart);
+            efree(pp->onWorkerStart);
+        }
+        if (pp->onMessage) {
+            osw_zend_fci_cache_discard(pp->onMessage);
+            efree(pp->onMessage);
+        }
+        if (pp->onWorkerStop) {
+            osw_zend_fci_cache_discard(pp->onWorkerStop);
+            efree(pp->onWorkerStop);
+        }
+        if (pp->onStart) {
+            osw_zend_fci_cache_discard(pp->onStart);
+            efree(pp->onStart);
+        }
+        efree(pp);
+    }
+
+    zend_object_std_dtor(object);
+}
+
+static zend_object *php_openswoole_process_pool_create_object(zend_class_entry *ce) {
+    ProcessPoolObject *process_pool = (ProcessPoolObject *) zend_object_alloc(sizeof(ProcessPoolObject), ce);
+    zend_object_std_init(&process_pool->std, ce);
+    object_properties_init(&process_pool->std, ce);
+    process_pool->std.handlers = &openswoole_process_pool_handlers;
+    return &process_pool->std;
+}
+
+OSW_EXTERN_C_BEGIN
+static PHP_METHOD(openswoole_process_pool, __construct);
+static PHP_METHOD(openswoole_process_pool, __destruct);
+static PHP_METHOD(openswoole_process_pool, set);
+static PHP_METHOD(openswoole_process_pool, on);
+static PHP_METHOD(openswoole_process_pool, listen);
+static PHP_METHOD(openswoole_process_pool, write);
+static PHP_METHOD(openswoole_process_pool, detach);
+static PHP_METHOD(openswoole_process_pool, getProcess);
+static PHP_METHOD(openswoole_process_pool, start);
+static PHP_METHOD(openswoole_process_pool, stop);
+static PHP_METHOD(openswoole_process_pool, shutdown);
+OSW_EXTERN_C_END
+
+// clang-format off
+
+static const zend_function_entry openswoole_process_pool_methods[] =
+{
+    PHP_ME(openswoole_process_pool, __construct, arginfo_class_OpenSwoole_Process_Pool___construct, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, __destruct, arginfo_class_OpenSwoole_Process_Pool___destruct, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, set, arginfo_class_OpenSwoole_Process_Pool_set, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, on, arginfo_class_OpenSwoole_Process_Pool_on, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, getProcess, arginfo_class_OpenSwoole_Process_Pool_getProcess, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, listen, arginfo_class_OpenSwoole_Process_Pool_listen, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, write, arginfo_class_OpenSwoole_Process_Pool_write, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, detach, arginfo_class_OpenSwoole_Process_Pool_detach, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, start, arginfo_class_OpenSwoole_Process_Pool_start, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, stop, arginfo_class_OpenSwoole_Process_Pool_stop, ZEND_ACC_PUBLIC)
+    PHP_ME(openswoole_process_pool, shutdown, arginfo_class_OpenSwoole_Process_Pool_shutdown, ZEND_ACC_PUBLIC)
+    PHP_FE_END
+};
+// clang-format on
+
+void php_openswoole_process_pool_minit(int module_number) {
+    OSW_INIT_CLASS_ENTRY(
+        openswoole_process_pool, "OpenSwoole\\Process\\Pool", "openswoole_process_pool", nullptr, openswoole_process_pool_methods);
+    OSW_SET_CLASS_NOT_SERIALIZABLE(openswoole_process_pool);
+    OSW_SET_CLASS_CLONEABLE(openswoole_process_pool, osw_zend_class_clone_deny);
+    OSW_SET_CLASS_UNSET_PROPERTY_HANDLER(openswoole_process_pool, osw_zend_class_unset_property_deny);
+    OSW_SET_CLASS_CUSTOM_OBJECT(openswoole_process_pool,
+                               php_openswoole_process_pool_create_object,
+                               php_openswoole_process_pool_free_object,
+                               ProcessPoolObject,
+                               std);
+
+    zend_declare_property_long(openswoole_process_pool_ce, ZEND_STRL("master_pid"), -1, ZEND_ACC_PUBLIC);
+    zend_declare_property_null(openswoole_process_pool_ce, ZEND_STRL("workers"), ZEND_ACC_PUBLIC);
+
+    zend_declare_class_constant_long(openswoole_process_pool_ce, ZEND_STRL("IPC_NONE"), OSW_IPC_NONE);
+    zend_declare_class_constant_long(openswoole_process_pool_ce, ZEND_STRL("IPC_UNIXSOCK"), OSW_IPC_UNIXSOCK);
+    zend_declare_class_constant_long(openswoole_process_pool_ce, ZEND_STRL("IPC_SOCKET"), OSW_IPC_SOCKET);
+}
+
+static void pool_onWorkerStart(ProcessPool *pool, int worker_id) {
+    zval *zobject = (zval *) pool->ptr;
+    ProcessPoolProperty *pp = php_openswoole_process_pool_get_and_check_pp(zobject);
+
+    php_openswoole_process_clean();
+    OpenSwooleG.process_id = worker_id;
+    current_pool = pool;
+    // main function
+    if (!pp->onWorkerStart) {
+        return;
+    }
+    // eventloop create
+    if (pp->enable_coroutine && php_openswoole_reactor_init() < 0) {
+        return;
+    }
+    if (!pp->enable_coroutine && pp->onMessage) {
+        openswoole_signal_set(SIGTERM, pool_signal_handler);
+    }
+    zval args[2];
+    args[0] = *zobject;
+    ZVAL_LONG(&args[1], worker_id);
+    if (UNEXPECTED(!zend::function::call(pp->onWorkerStart, 2, args, nullptr, pp->enable_coroutine))) {
+        php_openswoole_error(E_WARNING, "%s->onWorkerStart handler error", OSW_Z_OBJCE_NAME_VAL_P(zobject));
+    }
+    // eventloop start
+    if (pp->enable_coroutine) {
+        php_openswoole_event_wait();
+    }
+}
+
+static void pool_onMessage(ProcessPool *pool, const char *data, uint32_t length) {
+    zval *zobject = (zval *) pool->ptr;
+    ProcessPoolProperty *pp = php_openswoole_process_pool_get_and_check_pp(zobject);
+    zval args[2];
+
+    args[0] = *zobject;
+    ZVAL_STRINGL(&args[1], data, length);
+
+    if (UNEXPECTED(!zend::function::call(pp->onMessage, 2, args, nullptr, false))) {
+        php_openswoole_error(E_WARNING, "%s->onMessage handler error", OSW_Z_OBJCE_NAME_VAL_P(zobject));
+    }
+
+    zval_ptr_dtor(&args[1]);
+}
+
+static void pool_onWorkerStop(ProcessPool *pool, int worker_id) {
+    zval *zobject = (zval *) pool->ptr;
+    ProcessPoolProperty *pp = php_openswoole_process_pool_get_and_check_pp(zobject);
+    zval args[2];
+
+    if (pp->onWorkerStop == nullptr) {
+        return;
+    }
+
+    args[0] = *zobject;
+    ZVAL_LONG(&args[1], worker_id);
+
+    if (UNEXPECTED(!zend::function::call(pp->onWorkerStop, 2, args, nullptr, false))) {
+        php_openswoole_error(E_WARNING, "%s->onWorkerStop handler error", OSW_Z_OBJCE_NAME_VAL_P(zobject));
+    }
+}
+
+static void pool_signal_handler(int sig) {
+    if (!current_pool) {
+        return;
+    }
+    switch (sig) {
+    case SIGTERM:
+        current_pool->running = false;
+        break;
+    case SIGUSR1:
+    case SIGUSR2:
+        current_pool->reloading = true;
+        current_pool->reload_init = false;
+        break;
+    case SIGIO:
+        current_pool->read_message = true;
+        break;
+    default:
+        break;
+    }
+}
+
+static PHP_METHOD(openswoole_process_pool, __construct) {
+    zval *zobject = ZEND_THIS;
+    zend_long worker_num;
+    zend_long ipc_type = OSW_IPC_NONE;
+    zend_long msgq_key = 0;
+    zend_bool enable_coroutine = 0;
+
+    // only cli env
+    if (!OPENSWOOLE_G(cli)) {
+        php_openswoole_fatal_error(E_ERROR, "%s can only be used in PHP CLI mode", OSW_Z_OBJCE_NAME_VAL_P(zobject));
+        RETURN_FALSE;
+    }
+
+    if (osw_server()) {
+        php_openswoole_fatal_error(E_ERROR, "%s cannot use in server process", OSW_Z_OBJCE_NAME_VAL_P(zobject));
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|llb", &worker_num, &ipc_type, &msgq_key, &enable_coroutine) ==
+        FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if (worker_num <= 0) {
+        zend_throw_exception_ex(openswoole_exception_ce, errno, "invalid worker_num");
+        RETURN_FALSE;
+    }
+
+    if (enable_coroutine && ipc_type > 0 && ipc_type != OSW_IPC_UNIXSOCK) {
+        ipc_type = OSW_IPC_UNIXSOCK;
+        php_openswoole_fatal_error(E_NOTICE,
+                               "%s object's ipc_type will be reset to OPENSWOOLE_IPC_UNIXSOCK after enable coroutine",
+                               OSW_Z_OBJCE_NAME_VAL_P(zobject));
+    }
+
+    ProcessPool *pool = (ProcessPool *) emalloc(sizeof(*pool));
+    *pool = {};
+    if (pool->create(worker_num, (key_t) msgq_key, (swIPCMode) ipc_type) < 0) {
+        zend_throw_exception_ex(openswoole_exception_ce, errno, "failed to create process pool");
+        efree(pool);
+        RETURN_FALSE;
+    }
+
+    pool->ptr = osw_zval_dup(zobject);
+
+    if (enable_coroutine) {
+        pool->main_loop = nullptr;
+    } else {
+        if (ipc_type > 0) {
+            pool->set_protocol(0, OSW_INPUT_BUFFER_SIZE);
+        }
+    }
+
+    ProcessPoolProperty *pp = (ProcessPoolProperty *) ecalloc(1, sizeof(ProcessPoolProperty));
+    pp->enable_coroutine = enable_coroutine;
+    php_openswoole_process_pool_set_pp(zobject, pp);
+    php_openswoole_process_pool_set_pool(zobject, pool);
+}
+
+static PHP_METHOD(openswoole_process_pool, set) {
+    zval *zset = nullptr;
+    HashTable *vht = nullptr;
+    zval *ztmp;
+
+    ZEND_PARSE_PARAMETERS_START(1, 1)
+    Z_PARAM_ARRAY(zset)
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    vht = Z_ARRVAL_P(zset);
+
+    ProcessPoolProperty *pp = php_openswoole_process_pool_get_and_check_pp(ZEND_THIS);
+
+    php_openswoole_set_global_option(vht);
+    php_openswoole_set_coroutine_option(vht);
+    php_openswoole_set_aio_option(vht);
+
+    if (php_openswoole_array_get_value(vht, "enable_coroutine", ztmp)) {
+        pp->enable_coroutine = zval_is_true(ztmp);
+    }
+
+    ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);
+    if (pp->enable_coroutine) {
+        pool->main_loop = nullptr;
+    }
+}
+
+static PHP_METHOD(openswoole_process_pool, on) {
+    char *name;
+    size_t l_name;
+
+    zend_fcall_info fci;
+    zend_fcall_info_cache fci_cache;
+
+    ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);
+
+    if (pool->started) {
+        php_openswoole_fatal_error(E_WARNING, "process pool is started. unable to register event callback function");
+        RETURN_FALSE;
+    }
+
+    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+    Z_PARAM_STRING(name, l_name)
+    Z_PARAM_FUNC(fci, fci_cache);
+    ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    ProcessPoolProperty *pp = php_openswoole_process_pool_get_and_check_pp(ZEND_THIS);
+
+    if (OSW_STRCASEEQ(name, l_name, "WorkerStart")) {
+        if (pp->onWorkerStart) {
+            osw_zend_fci_cache_discard(pp->onWorkerStart);
+            efree(pp->onWorkerStart);
+        } else {
+            pp->onWorkerStart = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+        }
+        *pp->onWorkerStart = fci_cache;
+        osw_zend_fci_cache_persist(pp->onWorkerStart);
+        RETURN_TRUE;
+    } else if (OSW_STRCASEEQ(name, l_name, "Message")) {
+        if (pp->enable_coroutine) {
+            php_openswoole_fatal_error(E_NOTICE, "cannot set onMessage event with enable_coroutine");
+            RETURN_FALSE;
+        }
+        if (pool->ipc_mode == OSW_IPC_NONE) {
+            php_openswoole_fatal_error(E_WARNING, "cannot set onMessage event with ipc_type=0");
+            RETURN_FALSE;
+        }
+        if (pp->onMessage) {
+            osw_zend_fci_cache_discard(pp->onMessage);
+            efree(pp->onMessage);
+        } else {
+            pp->onMessage = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+        }
+        *pp->onMessage = fci_cache;
+        osw_zend_fci_cache_persist(pp->onMessage);
+        RETURN_TRUE;
+    } else if (OSW_STRCASEEQ(name, l_name, "WorkerStop")) {
+        if (pp->onWorkerStop) {
+            osw_zend_fci_cache_discard(pp->onWorkerStop);
+            efree(pp->onWorkerStop);
+        } else {
+            pp->onWorkerStop = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+        }
+        *pp->onWorkerStop = fci_cache;
+        osw_zend_fci_cache_persist(pp->onWorkerStop);
+        RETURN_TRUE;
+    } else if (OSW_STRCASEEQ(name, l_name, "Start")) {
+        if (pp->onStart) {
+            osw_zend_fci_cache_discard(pp->onStart);
+            efree(pp->onStart);
+        } else {
+            pp->onStart = (zend_fcall_info_cache *) emalloc(sizeof(zend_fcall_info_cache));
+        }
+        *pp->onStart = fci_cache;
+        osw_zend_fci_cache_persist(pp->onStart);
+        RETURN_TRUE;
+    } else {
+        php_openswoole_error(E_WARNING, "unknown event type[%s]", name);
+        RETURN_FALSE;
+    }
+}
+
+static PHP_METHOD(openswoole_process_pool, listen) {
+    char *host;
+    size_t l_host;
+    zend_long port = 0;
+    zend_long backlog = 2048;
+
+    ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);
+
+    if (pool->started) {
+        php_openswoole_fatal_error(E_WARNING, "process pool is started. unable to listen");
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s|ll", &host, &l_host, &port, &backlog) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if (pool->ipc_mode != OSW_IPC_SOCKET) {
+        php_openswoole_fatal_error(E_WARNING, "unsupported ipc type[%d]", pool->ipc_mode);
+        RETURN_FALSE;
+    }
+
+    int ret;
+    // unix socket
+    if (OSW_STRCASECT(host, l_host, "unix:/")) {
+        ret = pool->listen(host + 5, backlog);
+    } else {
+        ret = pool->listen(host, port, backlog);
+    }
+    pool->stream_info_->socket->set_fd_option(0, 1);
+
+    OSW_CHECK_RETURN(ret);
+}
+
+static PHP_METHOD(openswoole_process_pool, write) {
+    char *data;
+    size_t length;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "s", &data, &length) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);
+    if (pool->ipc_mode != OSW_IPC_SOCKET) {
+        php_openswoole_fatal_error(E_WARNING, "unsupported ipc type[%d]", pool->ipc_mode);
+        RETURN_FALSE;
+    }
+    if (length == 0) {
+        RETURN_FALSE;
+    }
+    OSW_CHECK_RETURN(pool->response(data, length));
+}
+
+static PHP_METHOD(openswoole_process_pool, start) {
+    ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);
+    if (pool->started) {
+        php_openswoole_fatal_error(E_WARNING, "process pool is started. unable to execute openswoole_process_pool->start");
+        RETURN_FALSE;
+    }
+
+    openswoole_event_free();
+
+    ProcessPoolProperty *pp = php_openswoole_process_pool_get_and_check_pp(ZEND_THIS);
+
+    OpenSwooleG.use_signalfd = 0;
+
+    std::unordered_map<int, swSignalHandler> ori_handlers;
+
+    ori_handlers[SIGTERM] = openswoole_signal_set(SIGTERM, pool_signal_handler);
+    ori_handlers[SIGUSR1] = openswoole_signal_set(SIGUSR1, pool_signal_handler);
+    ori_handlers[SIGUSR2] = openswoole_signal_set(SIGUSR2, pool_signal_handler);
+    ori_handlers[SIGIO] = openswoole_signal_set(SIGIO, pool_signal_handler);
+
+    if (pool->ipc_mode == OSW_IPC_NONE || pp->enable_coroutine) {
+        if (pp->onWorkerStart == nullptr) {
+            php_openswoole_fatal_error(E_ERROR, "require onWorkerStart callback");
+            RETURN_FALSE;
+        }
+    } else {
+        if (pp->onMessage == nullptr) {
+            php_openswoole_fatal_error(E_ERROR, "require onMessage callback");
+            RETURN_FALSE;
+        }
+        pool->onMessage = pool_onMessage;
+    }
+
+    pool->onWorkerStart = pool_onWorkerStart;
+    pool->onWorkerStop = pool_onWorkerStop;
+
+    zend_update_property_long(openswoole_process_pool_ce, OSW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("master_pid"), getpid());
+
+    if (pool->start() < 0) {
+        RETURN_FALSE;
+    }
+
+    current_pool = pool;
+
+    if (pp->onStart) {
+        zval args[1];
+        args[0] = *ZEND_THIS;
+        if (UNEXPECTED(!zend::function::call(pp->onStart, 1, args, nullptr, 0))) {
+            php_openswoole_error(E_WARNING, "%s->onStart handler error", OSW_Z_OBJCE_NAME_VAL_P(ZEND_THIS));
+        }
+    }
+
+    pool->wait();
+    pool->shutdown();
+
+    current_pool = nullptr;
+
+    for (auto iter = ori_handlers.begin(); iter != ori_handlers.end(); iter++) {
+        openswoole_signal_set(iter->first, iter->second);
+    }
+}
+
+static PHP_METHOD(openswoole_process_pool, detach) {
+    if (current_pool == nullptr) {
+        RETURN_FALSE;
+    }
+    RETURN_BOOL(current_pool->detach());
+}
+
+static PHP_METHOD(openswoole_process_pool, getProcess) {
+    long worker_id = -1;
+
+    if (current_pool == nullptr) {
+        RETURN_FALSE;
+    }
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "|l", &worker_id) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    if (worker_id >= current_pool->worker_num) {
+        php_openswoole_error(E_WARNING, "invalid worker_id[%ld]", worker_id);
+        RETURN_FALSE;
+    } else if (worker_id < 0) {
+        worker_id = OpenSwooleG.process_id;
+    }
+
+    zval *zworkers =
+        osw_zend_read_and_convert_property_array(openswoole_process_pool_ce, ZEND_THIS, ZEND_STRL("workers"), 0);
+    zval *zprocess = zend_hash_index_find(Z_ARRVAL_P(zworkers), worker_id);
+    zval zobject;
+
+    if (zprocess == nullptr || ZVAL_IS_NULL(zprocess)) {
+        zprocess = &zobject;
+        /**
+         * Separation from shared memory
+         */
+        Worker *worker = (Worker *) emalloc(sizeof(Worker));
+        *worker = current_pool->workers[worker_id];
+
+        object_init_ex(zprocess, openswoole_process_ce);
+        zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("id"), OpenSwooleG.process_id);
+        zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("pid"), worker->pid);
+        if (current_pool->ipc_mode == OSW_IPC_UNIXSOCK) {
+            // current process
+            if (worker->id == OpenSwooleG.process_id) {
+                worker->pipe_current = worker->pipe_worker;
+            } else {
+                worker->pipe_current = worker->pipe_master;
+            }
+            /**
+             * Forbidden to close pipe in the php layer
+             */
+            worker->pipe_object = nullptr;
+            zend_update_property_long(
+                openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("pipe"), worker->pipe_current->fd);
+        }
+        php_openswoole_process_set_worker(zprocess, worker);
+        ProcessPoolProperty *pp = php_openswoole_process_pool_get_and_check_pp(ZEND_THIS);
+        zend::Process *proc = new zend::Process(zend::PIPE_TYPE_STREAM, pp->enable_coroutine);
+        worker->ptr2 = proc;
+        (void) add_index_zval(zworkers, worker_id, zprocess);
+    } else {
+        auto _worker = php_openswoole_process_get_worker(zprocess);
+        if (_worker->pid != current_pool->workers[worker_id].pid) {
+            _worker->pid = current_pool->workers[worker_id].pid;
+            zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("pid"), _worker->pid);
+        }
+    }
+
+    RETURN_ZVAL(zprocess, 1, 0);
+}
+
+static PHP_METHOD(openswoole_process_pool, stop) {
+    if (current_pool) {
+        current_pool->running = false;
+    }
+}
+
+static PHP_METHOD(openswoole_process_pool, shutdown) {
+    zval *retval =
+        osw_zend_read_property_ex(openswoole_process_pool_ce, ZEND_THIS, OSW_ZSTR_KNOWN(OSW_ZEND_STR_MASTER_PID), 0);
+    long pid = zval_get_long(retval);
+    RETURN_BOOL(openswoole_kill(pid, SIGTERM) == 0);
+}
+
+static PHP_METHOD(openswoole_process_pool, __destruct) {}

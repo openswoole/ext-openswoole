@@ -1,0 +1,85 @@
+--TEST--
+openswoole_server: send big packet [2]
+--SKIPIF--
+<?php
+require __DIR__ . '/../include/skipif.inc';
+?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+$pm = new SwooleTest\ProcessManager;
+
+$pm->parentFunc = function ($pid) use ($pm) {
+    $total = 0;
+    for ($i = 0; $i < MAX_CONCURRENCY_MID; $i++) {
+        go(function () use ($pm, $i, &$total) {
+            $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+            $cli->set([
+                'open_length_check' => true,
+                'package_max_length' => 4 * 1024 * 1024,
+                'package_length_type' => 'N',
+                'package_length_offset' => 0,
+                'package_body_offset' => 4,
+            ]);
+            if ($cli->connect('127.0.0.1', $pm->getFreePort(), 100) == false) {
+                echo "ERROR\n";
+                return;
+            }
+            $n = MAX_REQUESTS;
+            while ($n--) {
+                $data = $cli->recv();
+                Assert::assert($data);
+                $char = chr(ord('A') + $n % 10);
+                $info = unpack('Nlen', substr($data, 0, 4));
+
+//                echo "c=$i, n=$n, len={$info['len']}\n---------------------------------------------------------------------\n";
+                Assert::same($info['len'], strlen($data) - 4);
+                Assert::same(str_repeat($char, 1024), substr($data, rand(4, $info['len'] - 1024 - 4), 1024));
+                $total += strlen($data);
+            }
+        });
+    }
+    openswoole_event::wait();
+    echo $total." bytes\n";
+    $pm->kill();
+};
+
+$pm->childFunc = function () use ($pm) {
+    $serv = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
+    $serv->set(array(
+        "worker_num" => IS_IN_TRAVIS ? 2 : 4,
+        'log_level' => SWOOLE_LOG_ERROR,
+        'open_length_check' => true,
+        'package_max_length' => 4 * 1024 * 1024,
+        'package_length_type' => 'N',
+        'package_length_offset' => 0,
+        'package_body_offset' => 4,
+        'send_yield' => true,
+    ));
+    $serv->on("WorkerStart", function (OpenSwoole\Server $serv) use ($pm) {
+        $pm->wakeup();
+    });
+    $serv->on('connect', function (OpenSwoole\Server $serv, $fd, $rid) {
+//        echo "new client, fd=$fd\n";
+        $n = MAX_REQUESTS;
+        while ($n--) {
+            $len = rand(8192, 1024 * 1024);
+            $send_data = str_repeat(chr(ord('A') + $n % 10), $len);
+            $retval = $serv->send($fd, pack('N', $len) . $send_data);
+            if ($retval === false) {
+                echo "send error, code=".openswoole_last_error()."\n";
+            }
+        }
+    });
+    $serv->on('receive', function (OpenSwoole\Server $serv, $fd, $rid, $data) {
+
+    });
+    $serv->start();
+};
+
+$pm->childFirst();
+$pm->run();
+?>
+--EXPECTF--
+%d bytes

@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,17 +14,17 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_msg_queue.h"
+#include "openswoole.h"
+#include "openswoole_msg_queue.h"
 
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-namespace swoole {
+namespace openswoole {
 
 bool MsgQueue::destroy() {
     if (msgctl(msg_id_, IPC_RMID, 0) < 0) {
-        swoole_sys_warning("msgctl(%d, IPC_RMID) failed", msg_id_);
+        openswoole_sys_warning("msgctl(%d, IPC_RMID) failed", msg_id_);
         return false;
     }
     msg_id_ = -1;
@@ -49,7 +49,7 @@ MsgQueue::MsgQueue(key_t msg_key, bool blocking, int perms) {
     blocking_ = blocking;
     msg_id_ = msgget(msg_key, IPC_CREAT | perms);
     if (msg_id_ < 0) {
-        swoole_sys_warning("msgget() failed");
+        openswoole_sys_warning("msgget() failed");
     } else {
         set_blocking(blocking);
     }
@@ -65,9 +65,9 @@ MsgQueue::~MsgQueue() {
 ssize_t MsgQueue::pop(QueueNode *data, size_t mdata_size) {
     ssize_t ret = msgrcv(msg_id_, data, mdata_size, data->mtype, flags_);
     if (ret < 0) {
-        swoole_set_last_error(errno);
+        openswoole_set_last_error(errno);
         if (errno != ENOMSG && errno != EINTR) {
-            swoole_sys_warning("msgrcv(%d, %zu, %ld) failed", msg_id_, mdata_size, data->mtype);
+            openswoole_sys_warning("msgrcv(%d, %zu, %ld) failed", msg_id_, mdata_size, data->mtype);
         }
     }
     return ret;
@@ -82,9 +82,9 @@ bool MsgQueue::push(QueueNode *in, size_t mdata_length) {
             continue;
         }
         if (errno != EAGAIN) {
-            swoole_sys_warning("msgsnd(%d, %lu, %ld) failed", msg_id_, mdata_length, in->mtype);
+            openswoole_sys_warning("msgsnd(%d, %lu, %ld) failed", msg_id_, mdata_length, in->mtype);
         }
-        swoole_set_last_error(errno);
+        openswoole_set_last_error(errno);
         break;
     }
     return false;
@@ -112,9 +112,9 @@ bool MsgQueue::set_capacity(size_t queue_bytes) {
     }
     __stat.msg_qbytes = queue_bytes;
     if (msgctl(msg_id_, IPC_SET, &__stat)) {
-        swoole_sys_warning("msgctl(msqid=%d, IPC_SET, msg_qbytes=%lu) failed", msg_id_, queue_bytes);
+        openswoole_sys_warning("msgctl(msqid=%d, IPC_SET, msg_qbytes=%lu) failed", msg_id_, queue_bytes);
         return false;
     }
     return true;
 }
-}  // namespace swoole
+}  // namespace openswoole
