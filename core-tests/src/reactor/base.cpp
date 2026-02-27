@@ -74,7 +74,7 @@ TEST(reactor, wait) {
     ASSERT_TRUE(p.ready());
 
     ret = openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
     ASSERT_NE(SwooleTG.reactor, nullptr);
 
     openswoole_event_set_handler(OSW_FD_PIPE | OSW_EVENT_READ, [](Reactor *reactor, Event *ev) -> int {
@@ -85,17 +85,17 @@ TEST(reactor, wait) {
         EXPECT_STREQ("hello world", buffer);
         reactor->del(ev->socket);
 
-        return SW_OK;
+        return OSW_OK;
     });
 
     ret = openswoole_event_add(p.get_socket(false), OSW_EVENT_READ);
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
 
     ret = p.write((void *) OSW_STRS("hello world"));
     ASSERT_EQ(ret, sizeof("hello world"));
 
     ret = openswoole_event_wait();
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
     ASSERT_EQ(SwooleTG.reactor, nullptr);
 }
 
@@ -105,7 +105,7 @@ TEST(reactor, write) {
     ASSERT_TRUE(p.ready());
 
     ret = openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
     ASSERT_NE(SwooleTG.reactor, nullptr);
 
     openswoole_event_set_handler(OSW_FD_PIPE | OSW_EVENT_READ, [](Reactor *reactor, Event *ev) -> int {
@@ -116,17 +116,17 @@ TEST(reactor, write) {
         EXPECT_STREQ("hello world", buffer);
         reactor->del(ev->socket);
 
-        return SW_OK;
+        return OSW_OK;
     });
 
     ret = openswoole_event_add(p.get_socket(false), OSW_EVENT_READ);
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
 
     ret = openswoole_event_write(p.get_socket(true), (void *) OSW_STRS("hello world"));
     ASSERT_EQ(ret, sizeof("hello world"));
 
     ret = openswoole_event_wait();
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
     ASSERT_EQ(SwooleTG.reactor, nullptr);
 }
 
@@ -145,14 +145,14 @@ static void reactor_test_func(Reactor *reactor) {
         EXPECT_EQ(std::string(buf, n), std::string(pkt));
         reactor->del(event->socket);
 
-        return SW_OK;
+        return OSW_OK;
     });
     reactor->set_handler(OSW_FD_PIPE | OSW_EVENT_WRITE, [](Reactor *reactor, Event *event) -> int {
         size_t l = strlen(pkt);
         EXPECT_EQ(write(event->fd, pkt, l), l);
         reactor->del(event->socket);
 
-        return SW_OK;
+        return OSW_OK;
     });
     reactor->add(p.get_socket(false), OSW_EVENT_READ);
     reactor->add(p.get_socket(true), OSW_EVENT_WRITE);
@@ -177,15 +177,15 @@ TEST(reactor, add_or_update) {
     ASSERT_TRUE(p.ready());
 
     ret = openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
     ASSERT_NE(SwooleTG.reactor, nullptr);
 
     ret = openswoole_event_add_or_update(p.get_socket(false), OSW_EVENT_READ);
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
     ASSERT_TRUE(p.get_socket(false)->events & OSW_EVENT_READ);
 
     ret = openswoole_event_add_or_update(p.get_socket(false), OSW_EVENT_WRITE);
-    ASSERT_EQ(ret, SW_OK);
+    ASSERT_EQ(ret, OSW_OK);
     ASSERT_TRUE(p.get_socket(false)->events & OSW_EVENT_READ);
     ASSERT_TRUE(p.get_socket(false)->events & OSW_EVENT_WRITE);
 

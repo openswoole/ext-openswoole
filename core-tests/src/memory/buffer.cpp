@@ -61,7 +61,7 @@ TEST(buffer, append_iov) {
 
     size_t offset = 0;
 
-    SW_LOOP_N(iovcnt) {
+    OSW_LOOP_N(iovcnt) {
         ASSERT_EQ(memcmp(str.str + offset, v[i].iov_base, v[i].iov_len), 0);
         offset += v[i].iov_len;
     }

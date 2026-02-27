@@ -56,8 +56,8 @@ TEST(dns, bad_family) {
 }
 
 TEST(dns, cancel) {
-    // openswoole_set_trace_flags(SW_TRACE_CARES);
-    // openswoole_set_log_level(SW_LOG_TRACE);
+    // openswoole_set_trace_flags(OSW_TRACE_CARES);
+    // openswoole_set_log_level(OSW_LOG_TRACE);
     test::coroutine::run([](void *arg) {
         auto co = Coroutine::get_current_safe();
         Coroutine::create([co](void *) {

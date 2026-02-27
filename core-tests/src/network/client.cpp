@@ -22,7 +22,7 @@ TEST(client, tcp) {
             SERVER_THIS->send(req->info.fd, req->data, req->info.len);
         };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_TCP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_TCP);
         serv.on("onReceive", (void *) receive_fn);
         serv.start();
     });
@@ -31,7 +31,7 @@ TEST(client, tcp) {
 
     sleep(1);  // wait for the test server to start
 
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ASSERT_NE(cli.socket, nullptr);
     ret = cli.connect(&cli, TEST_HOST, TEST_PORT, -1, 0);
     ASSERT_EQ(ret, 0);
@@ -58,7 +58,7 @@ TEST(client, udp) {
             SERVER_THIS->sendto(packet->socket_addr, packet->data, packet->length, req->info.server_fd);
         };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_UDP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_UDP);
         serv.on("onPacket", (void *) packet_fn);
         serv.start();
     });
@@ -67,7 +67,7 @@ TEST(client, udp) {
 
     sleep(1);  // wait for the test server to start
 
-    Client cli(SW_SOCK_UDP, false);
+    Client cli(OSW_SOCK_UDP, false);
     ASSERT_NE(cli.socket, nullptr);
     ret = cli.connect(&cli, TEST_HOST, TEST_PORT, -1, 0);
     ASSERT_EQ(ret, 0);
@@ -93,7 +93,7 @@ TEST(client, async_tcp) {
             SERVER_THIS->send(req->info.fd, req->data, req->info.len);
         };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_TCP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_TCP);
 
         serv.set_private_data("pipe", &p);
 
@@ -117,7 +117,7 @@ TEST(client, async_tcp) {
 
     openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
-    AsyncClient ac(SW_SOCK_TCP);
+    AsyncClient ac(OSW_SOCK_TCP);
 
     ac.on_connect([](AsyncClient *ac) { ac->send(OSW_STRS(GREETER)); });
 
@@ -146,7 +146,7 @@ TEST(client, async_tcp) {
 
 TEST(client, connect_refuse) {
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, TEST_HOST, TEST_PORT + 10001, -1, 0);
     ASSERT_EQ(ret, -1);
     ASSERT_EQ(openswoole_get_last_error(), ECONNREFUSED);
@@ -154,7 +154,7 @@ TEST(client, connect_refuse) {
 
 TEST(client, connect_timeout) {
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "19.168.0.99", TEST_PORT + 10001, 0.2, 0);
     ASSERT_EQ(ret, -1);
     ASSERT_EQ(openswoole_get_last_error(), ETIMEDOUT);
@@ -163,7 +163,7 @@ TEST(client, connect_timeout) {
 TEST(client, shutdown_write) {
     signal(SIGPIPE, SIG_IGN);
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
     ASSERT_EQ(ret, 0);
     cli.shutdown(SHUT_WR);
@@ -175,7 +175,7 @@ TEST(client, shutdown_write) {
 TEST(client, shutdown_read) {
     signal(SIGPIPE, SIG_IGN);
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
     ASSERT_EQ(ret, 0);
 
@@ -191,7 +191,7 @@ TEST(client, shutdown_read) {
 TEST(client, shutdown_all) {
     signal(SIGPIPE, SIG_IGN);
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
     ASSERT_EQ(ret, 0);
 
@@ -206,7 +206,7 @@ TEST(client, shutdown_all) {
     ASSERT_EQ(retval, 0);
 }
 
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
 TEST(client, ssl_1) {
     int ret;
 
@@ -216,7 +216,7 @@ TEST(client, ssl_1) {
 
     openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
-    Client client(SW_SOCK_TCP, true);
+    Client client(OSW_SOCK_TCP, true);
     client.enable_ssl_encrypt();
     client.onConnect = [&connected](Client *cli) {
         connected = true;
@@ -257,7 +257,7 @@ TEST(client, http_proxy) {
 
     openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
-    Client client(SW_SOCK_TCP, true);
+    Client client(OSW_SOCK_TCP, true);
     client.enable_ssl_encrypt();
     client.set_http_proxy(TEST_HTTP_PROXY_HOST, TEST_HTTP_PROXY_PORT);
 

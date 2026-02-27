@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     init_root_path(argv[0]);
 
     if (getenv("DISPLAY_BACKTRACE") != nullptr) {
-        sw_logger()->display_backtrace();
+        osw_logger()->display_backtrace();
     }
 
     ::testing::InitGoogleTest(&argc, argv);

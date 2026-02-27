@@ -88,7 +88,7 @@ TEST(lock, shared) {
     const int sleep_us = 10000;
 
     int magic_num = openswoole_rand(100000, 9999999);
-    int *_num = (int *) sw_mem_pool()->alloc(sizeof(int));
+    int *_num = (int *) osw_mem_pool()->alloc(sizeof(int));
     *_num = 0;
 
     pid_t pid = fork();

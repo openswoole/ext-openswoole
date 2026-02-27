@@ -35,7 +35,7 @@ TEST(base, datahead_dump) {
 TEST(base, dec2hex) {
     auto result = openswoole_dec2hex(2684326179, 16);
     ASSERT_STREQ(result, "9fff9123");
-    sw_free(result);
+    osw_free(result);
 }
 
 TEST(base, hex2dec) {
@@ -125,12 +125,12 @@ TEST(base, eventdata_pack) {
     ASSERT_EQ(string(ed1.data, ed1.info.len), test_data);
 
     swEventData ed2{};
-    ASSERT_EQ(openswoole_random_bytes(sw_tg_buffer()->str, OSW_BUFFER_SIZE_BIG), OSW_BUFFER_SIZE_BIG);
-    ASSERT_TRUE(ed2.pack(sw_tg_buffer()->str, OSW_BUFFER_SIZE_BIG));
+    ASSERT_EQ(openswoole_random_bytes(osw_tg_buffer()->str, OSW_BUFFER_SIZE_BIG), OSW_BUFFER_SIZE_BIG);
+    ASSERT_TRUE(ed2.pack(osw_tg_buffer()->str, OSW_BUFFER_SIZE_BIG));
 
     String _buffer(OSW_BUFFER_SIZE_BIG);
     ASSERT_TRUE(ed2.unpack(&_buffer));
-    ASSERT_EQ(memcmp(sw_tg_buffer()->str, _buffer.str, OSW_BUFFER_SIZE_BIG), 0);
+    ASSERT_EQ(memcmp(osw_tg_buffer()->str, _buffer.str, OSW_BUFFER_SIZE_BIG), 0);
 }
 
 TEST(base, stack_defer_fn) {
@@ -150,7 +150,7 @@ TEST(base, stack_defer_fn) {
 TEST(base, string_format) {
     char *data = openswoole_string_format(128, "hello %d world, %s is best.", 2020, "swoole");
     ASSERT_STREQ(data, "hello 2020 world, swoole is best.");
-    sw_free(data);
+    osw_free(data);
 }
 
 TEST(base, dirname) {

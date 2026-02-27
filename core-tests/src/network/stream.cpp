@@ -23,10 +23,10 @@ using namespace openswoole::network;
 TEST(stream, send) {
     swServer serv(swoole::Server::MODE_BASE);
     serv.worker_num = 1;
-    int ori_log_level = sw_logger()->get_level();
-    sw_logger()->set_level(SW_LOG_ERROR);
+    int ori_log_level = osw_logger()->get_level();
+    osw_logger()->set_level(OSW_LOG_ERROR);
 
-    swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, TEST_PORT);
+    swListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, TEST_PORT);
     if (!port) {
         openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
@@ -41,7 +41,7 @@ TEST(stream, send) {
     char buf[65536];
     ASSERT_EQ(openswoole_random_bytes(buf, sizeof(buf)), sizeof(buf));
 
-    ASSERT_EQ(serv.create(), SW_OK);
+    ASSERT_EQ(serv.create(), OSW_OK);
 
     std::thread t1([&]() {
         openswoole_signal_block_all();
@@ -51,20 +51,20 @@ TEST(stream, send) {
         openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
         // bad request
-        auto stream0 = Stream::create(TEST_TMP_FILE, 0, SW_SOCK_UNIX_STREAM);
+        auto stream0 = Stream::create(TEST_TMP_FILE, 0, OSW_SOCK_UNIX_STREAM);
         ASSERT_EQ(stream0, nullptr);
 
         // bad request
-        auto stream1 = Stream::create(TEST_HOST, 39999, SW_SOCK_TCP);
+        auto stream1 = Stream::create(TEST_HOST, 39999, OSW_SOCK_TCP);
         ASSERT_TRUE(stream1);
         stream1->response = [](Stream *stream, const char *data, uint32_t length) {
             EXPECT_EQ(data, nullptr);
             EXPECT_EQ(stream->errCode, ECONNREFUSED);
         };
-        ASSERT_EQ(stream1->send(buf, sizeof(buf)), SW_OK);
+        ASSERT_EQ(stream1->send(buf, sizeof(buf)), OSW_OK);
 
         // success requset
-        auto stream2 = Stream::create(TEST_HOST, TEST_PORT, SW_SOCK_TCP);
+        auto stream2 = Stream::create(TEST_HOST, TEST_PORT, OSW_SOCK_TCP);
         ASSERT_TRUE(stream2);
         stream2->private_data = new string(buf, sizeof(buf));
         stream2->response = [](Stream *stream, const char *data, uint32_t length) {
@@ -73,7 +73,7 @@ TEST(stream, send) {
             EXPECT_EQ(string(data, length), pkt);
             delete buf;
         };
-        ASSERT_EQ(stream2->send(buf, sizeof(buf)), SW_OK);
+        ASSERT_EQ(stream2->send(buf, sizeof(buf)), OSW_OK);
 
         openswoole_event_wait();
 
@@ -97,11 +97,11 @@ TEST(stream, send) {
         packed_len = htonl(0);
         EXPECT_TRUE(serv->send(req->info.fd, &packed_len, sizeof(packed_len)));
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     serv.start();
     t1.join();
 
-    sw_logger()->set_level(ori_log_level);
+    osw_logger()->set_level(ori_log_level);
 }

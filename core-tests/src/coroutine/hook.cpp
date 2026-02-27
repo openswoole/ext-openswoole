@@ -61,7 +61,7 @@ TEST(coroutine_hook, gethostbyname) {
 TEST(coroutine_hook, getaddrinfo) {
     coroutine::run([](void *arg) {
         struct addrinfo hints;
-        sw_memset_zero(&hints, sizeof(struct addrinfo));
+        osw_memset_zero(&hints, sizeof(struct addrinfo));
         hints.ai_family = AF_INET;
         hints.ai_socktype = SOCK_STREAM;
         hints.ai_flags = AI_PASSIVE;
@@ -132,9 +132,9 @@ TEST(coroutine_hook, socket) {
         ASSERT_GT(sock, 0);
         swoole::network::Address sa;
         std::string ip = System::gethostbyname("www.baidu.com", AF_INET, 10);
-        sa.assign(SW_SOCK_TCP, ip, 80);
+        sa.assign(OSW_SOCK_TCP, ip, 80);
         ASSERT_EQ(openswoole_coroutine_connect(sock, &sa.addr.ss, sa.len), 0);
-        ASSERT_EQ(openswoole_coroutine_socket_wait_event(sock, OSW_EVENT_WRITE, 5), SW_OK);
+        ASSERT_EQ(openswoole_coroutine_socket_wait_event(sock, OSW_EVENT_WRITE, 5), OSW_OK);
 
         const char req[] = "GET / HTTP/1.1\r\nHost: www.baidu.com\r\nConnection: close\r\nKeepAlive: off\r\n\r\n";
         ASSERT_EQ(openswoole_coroutine_send(sock, req, strlen(req), 0), strlen(req));

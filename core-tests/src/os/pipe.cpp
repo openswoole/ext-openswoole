@@ -45,7 +45,7 @@ TEST(pipe, base) {
     ret = p.write((void *) OSW_STRL("你好中国。\n"));
     ASSERT_GT(ret, 0);
 
-    sw_memset_zero(data, 256);
+    osw_memset_zero(data, 256);
     ret = p.read(data, 255);
     ASSERT_GT(ret, 0);
     ASSERT_EQ(strcmp("hello world\n你好中国。\n", data), 0);

@@ -48,7 +48,7 @@ TEST(channel, push) {
         size_t bytes = 0;
 
         while (bytes < N) {
-            if (c->push(next->second.c_str(), next->second.length()) == SW_OK) {
+            if (c->push(next->second.c_str(), next->second.length()) == OSW_OK) {
                 openswoole_trace("[PUSH] index=%d, size=%lu", index, next->second.length());
                 bytes += next->second.length();
                 next = m.find(index++);

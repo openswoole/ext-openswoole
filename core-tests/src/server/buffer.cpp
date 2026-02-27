@@ -26,15 +26,15 @@ TEST(server, send_buffer) {
     swServer serv(swoole::Server::MODE_BASE);
     serv.worker_num = 1;
 
-    sw_logger()->set_level(OSW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
-    swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    swListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
         openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
-    ASSERT_EQ(serv.create(), SW_OK);
+    ASSERT_EQ(serv.create(), OSW_OK);
 
     mutex lock;
     lock.lock();
@@ -44,7 +44,7 @@ TEST(server, send_buffer) {
 
         lock.lock();
 
-        swoole::network::SyncClient c(SW_SOCK_TCP);
+        swoole::network::SyncClient c(OSW_SOCK_TCP);
         c.connect(TEST_HOST, port->port);
         c.send(packet, strlen(packet));
         char buf[4096];
@@ -72,7 +72,7 @@ TEST(server, send_buffer) {
         EXPECT_TRUE(serv->send(req->info.fd, resp.value(), resp.get_length()));
         EXPECT_TRUE(serv->close(req->info.fd, 0));
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     serv.start();

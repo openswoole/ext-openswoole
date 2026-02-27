@@ -28,7 +28,7 @@ using swoole::test::Server;
 
 TEST(coroutine_socket, connect_refused) {
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         bool retval = sock.connect("127.0.0.1", 9801);
         ASSERT_EQ(retval, false);
         ASSERT_EQ(sock.errCode, ECONNREFUSED);
@@ -37,7 +37,7 @@ TEST(coroutine_socket, connect_refused) {
 
 TEST(coroutine_socket, connect_timeout) {
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         sock.set_timeout(0.5);
         bool retval = sock.connect("192.0.0.1", 9801);
         ASSERT_EQ(retval, false);
@@ -47,7 +47,7 @@ TEST(coroutine_socket, connect_timeout) {
 
 TEST(coroutine_socket, connect_with_dns) {
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         bool retval = sock.connect("www.baidu.com", 80);
         ASSERT_EQ(retval, true);
         ASSERT_EQ(sock.errCode, 0);
@@ -62,7 +62,7 @@ TEST(coroutine_socket, recv_success) {
             SERVER_THIS->send(req->info.fd, req->data, req->info.len);
         };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_TCP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_TCP);
         serv.on("onReceive", (void *) receive_fn);
         serv.start();
     });
@@ -72,7 +72,7 @@ TEST(coroutine_socket, recv_success) {
     sleep(1);  // wait for the test server to start
 
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         bool retval = sock.connect(TEST_HOST, TEST_PORT, -1);
         ASSERT_EQ(retval, true);
         ASSERT_EQ(sock.errCode, 0);
@@ -94,7 +94,7 @@ TEST(coroutine_socket, recv_fail) {
     Process proc([](Process *proc) {
         on_receive_lambda_type receive_fn = [](ON_RECEIVE_PARAMS) { SERVER_THIS->close(req->info.fd, 0); };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_TCP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_TCP);
         serv.on("onReceive", (void *) receive_fn);
         serv.start();
     });
@@ -104,7 +104,7 @@ TEST(coroutine_socket, recv_fail) {
     sleep(1);  // wait for the test server to start
 
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         bool retval = sock.connect(TEST_HOST, TEST_PORT, -1);
         ASSERT_EQ(retval, true);
         ASSERT_EQ(sock.errCode, 0);
@@ -121,7 +121,7 @@ TEST(coroutine_socket, recv_fail) {
 
 TEST(coroutine_socket, bind_success) {
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         bool retval = sock.bind("127.0.0.1", 9909);
         ASSERT_EQ(retval, true);
     });
@@ -129,7 +129,7 @@ TEST(coroutine_socket, bind_success) {
 
 TEST(coroutine_socket, bind_fail) {
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         bool retval = sock.bind("192.111.11.1", 9909);
         ASSERT_EQ(retval, false);
         ASSERT_EQ(sock.errCode, EADDRNOTAVAIL);
@@ -138,7 +138,7 @@ TEST(coroutine_socket, bind_fail) {
 
 TEST(coroutine_socket, listen) {
     coroutine::run([](void *arg) {
-        Socket sock(SW_SOCK_TCP);
+        Socket sock(OSW_SOCK_TCP);
         bool retval = sock.bind("127.0.0.1", 9909);
         ASSERT_EQ(retval, true);
         ASSERT_EQ(sock.listen(128), true);
@@ -147,7 +147,7 @@ TEST(coroutine_socket, listen) {
 
 TEST(coroutine_socket, accept) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -157,7 +157,7 @@ TEST(coroutine_socket, accept) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -178,7 +178,7 @@ static void socket_set_eof_protocol(Socket &sock) {
 
 TEST(coroutine_socket, eof_1) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -191,7 +191,7 @@ TEST(coroutine_socket, eof_1) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -212,7 +212,7 @@ TEST(coroutine_socket, eof_1) {
 
 TEST(coroutine_socket, eof_2) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -225,7 +225,7 @@ TEST(coroutine_socket, eof_2) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -260,7 +260,7 @@ TEST(coroutine_socket, eof_2) {
 
 TEST(coroutine_socket, eof_3) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -273,7 +273,7 @@ TEST(coroutine_socket, eof_3) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -288,7 +288,7 @@ TEST(coroutine_socket, eof_3) {
 
 TEST(coroutine_socket, eof_4) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -302,7 +302,7 @@ TEST(coroutine_socket, eof_4) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -320,7 +320,7 @@ TEST(coroutine_socket, eof_4) {
 
 TEST(coroutine_socket, eof_5) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -338,7 +338,7 @@ TEST(coroutine_socket, eof_5) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -353,7 +353,7 @@ TEST(coroutine_socket, eof_5) {
 
 TEST(coroutine_socket, eof_6) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -371,7 +371,7 @@ TEST(coroutine_socket, eof_6) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -382,7 +382,7 @@ TEST(coroutine_socket, eof_6) {
 
                         ssize_t l = sock.recv_packet(RECV_TIMEOUT);
                         ASSERT_EQ(l, -1);
-                        ASSERT_EQ(sock.errCode, SW_ERROR_PACKAGE_LENGTH_TOO_LARGE);
+                        ASSERT_EQ(sock.errCode, OSW_ERROR_PACKAGE_LENGTH_TOO_LARGE);
                     }});
 }
 
@@ -412,7 +412,7 @@ static void socket_set_length_protocol_2(Socket &sock) {
 
 TEST(coroutine_socket, length_1) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9502);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -426,7 +426,7 @@ TEST(coroutine_socket, length_1) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9502, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -444,7 +444,7 @@ TEST(coroutine_socket, length_1) {
 
 TEST(coroutine_socket, length_2) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9502);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -457,7 +457,7 @@ TEST(coroutine_socket, length_2) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9502, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -475,7 +475,7 @@ TEST(coroutine_socket, length_2) {
 
 TEST(coroutine_socket, length_3) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9502);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -489,7 +489,7 @@ TEST(coroutine_socket, length_3) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9502, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -499,7 +499,7 @@ TEST(coroutine_socket, length_3) {
 
                         ssize_t l = sock.recv_packet(RECV_TIMEOUT);
                         ASSERT_EQ(l, -1);
-                        ASSERT_EQ(sock.errCode, SW_ERROR_PACKAGE_LENGTH_TOO_LARGE);
+                        ASSERT_EQ(sock.errCode, OSW_ERROR_PACKAGE_LENGTH_TOO_LARGE);
                     }});
 }
 
@@ -507,7 +507,7 @@ static string pkt_1;
 static string pkt_2;
 
 static void length_protocol_server_func(void *arg) {
-    Socket sock(SW_SOCK_TCP);
+    Socket sock(OSW_SOCK_TCP);
     bool retval = sock.bind("127.0.0.1", 9502);
     ASSERT_EQ(retval, true);
     ASSERT_EQ(sock.listen(128), true);
@@ -538,7 +538,7 @@ TEST(coroutine_socket, length_4) {
     coroutine::run({length_protocol_server_func,
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9502, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -570,7 +570,7 @@ TEST(coroutine_socket, length_5) {
     coroutine::run({length_protocol_server_func,
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9502, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -597,7 +597,7 @@ TEST(coroutine_socket, length_5) {
 
 TEST(coroutine_socket, length_7) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9502);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -612,7 +612,7 @@ TEST(coroutine_socket, length_7) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9502, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -630,7 +630,7 @@ TEST(coroutine_socket, length_7) {
 
 TEST(coroutine_socket, event_hup) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9502);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -644,7 +644,7 @@ TEST(coroutine_socket, event_hup) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9502, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);
@@ -662,7 +662,7 @@ TEST(coroutine_socket, event_hup) {
 
 TEST(coroutine_socket, recv_line) {
     coroutine::run({[](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.bind("127.0.0.1", 9909);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.listen(128), true);
@@ -678,7 +678,7 @@ TEST(coroutine_socket, recv_line) {
                     },
 
                     [](void *arg) {
-                        Socket sock(SW_SOCK_TCP);
+                        Socket sock(OSW_SOCK_TCP);
                         bool retval = sock.connect("127.0.0.1", 9909, -1);
                         ASSERT_EQ(retval, true);
                         ASSERT_EQ(sock.errCode, 0);

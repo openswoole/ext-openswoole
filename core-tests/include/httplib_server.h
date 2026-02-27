@@ -751,9 +751,9 @@ inline bool Server::listen_internal() {
             continue;
         }
         if (svr_sock_->errCode == EMFILE || svr_sock_->errCode == ENFILE) {
-            System::sleep(SW_ACCEPT_RETRY_TIME);
+            System::sleep(OSW_ACCEPT_RETRY_TIME);
             continue;
-        } else if (svr_sock_->errCode == ETIMEDOUT || svr_sock_->errCode == SW_ERROR_SSL_BAD_CLIENT) {
+        } else if (svr_sock_->errCode == ETIMEDOUT || svr_sock_->errCode == OSW_ERROR_SSL_BAD_CLIENT) {
             continue;
         } else if (svr_sock_->errCode == ECANCELED) {
             break;

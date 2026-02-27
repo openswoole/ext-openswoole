@@ -400,7 +400,7 @@ struct WebSocketFrame : public swoole::websocket::Frame {
     WebSocketFrame() = default;
     ~WebSocketFrame() {
         if (payload) {
-            sw_free(payload - header_length);
+            osw_free(payload - header_length);
         }
     }
 };
