@@ -334,7 +334,7 @@ inline bool Server::is_running() const {
 inline void Server::stop() {
     if (is_running_) {
         is_running_ = false;
-        svr_sock_->cancel(SW_EVENT_READ);
+        svr_sock_->cancel(OSW_EVENT_READ);
     }
 }
 
@@ -656,7 +656,7 @@ inline Socket *Server::create_server_socket(const char *host,
 
     auto service = std::to_string(port);
 
-    if (swoole_coroutine_getaddrinfo(host, service.c_str(), &hints, &result)) {
+    if (openswoole_coroutine_getaddrinfo(host, service.c_str(), &hints, &result)) {
         return nullptr;
     }
 
@@ -758,7 +758,7 @@ inline bool Server::listen_internal() {
         } else if (svr_sock_->errCode == ECANCELED) {
             break;
         } else {
-            swoole_warning("accept failed, Error: %s[%d]", svr_sock_->errMsg, svr_sock_->errCode);
+            openswoole_warning("accept failed, Error: %s[%d]", svr_sock_->errMsg, svr_sock_->errCode);
             break;
         }
     }

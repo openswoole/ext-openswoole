@@ -1,7 +1,7 @@
 #include "test_core.h"
 #include "openswoole_lru_cache.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 LRUCache cache(2);

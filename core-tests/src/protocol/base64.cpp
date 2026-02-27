@@ -21,7 +21,7 @@ TEST(base64, encode) {
     char inbuf[1024];
     char outbuf[2048];
 
-    auto n = swoole_random_bytes(inbuf, sizeof(inbuf) - 1);
+    auto n = openswoole_random_bytes(inbuf, sizeof(inbuf) - 1);
     auto n2 = swoole::base64_encode((uchar *) inbuf, n, outbuf);
     ASSERT_GT(n2, n);
 }

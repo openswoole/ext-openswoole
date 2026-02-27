@@ -17,14 +17,14 @@
 #include "test_core.h"
 #include "openswoole_pipe.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 TEST(reactor, create) {
-    swoole_event_init(0);
+    openswoole_event_init(0);
 
     Reactor *reactor = SwooleTG.reactor;
 
-    ASSERT_EQ(reactor->max_event_num, SW_REACTOR_MAXEVENTS);
+    ASSERT_EQ(reactor->max_event_num, OSW_REACTOR_MAXEVENTS);
 
     ASSERT_TRUE(reactor->running);
     ASSERT_NE(reactor->write, nullptr);
@@ -35,37 +35,37 @@ TEST(reactor, create) {
     /**
      * coroutine socket reactor
      */
-    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(SW_FD_CORO_SOCKET | SW_EVENT_READ)], nullptr);
-    ASSERT_NE(reactor->write_handler[Reactor::get_fd_type(SW_FD_CORO_SOCKET | SW_EVENT_WRITE)], nullptr);
-    ASSERT_NE(reactor->error_handler[Reactor::get_fd_type(SW_FD_CORO_SOCKET | SW_EVENT_ERROR)], nullptr);
+    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(OSW_FD_CORO_SOCKET | OSW_EVENT_READ)], nullptr);
+    ASSERT_NE(reactor->write_handler[Reactor::get_fd_type(OSW_FD_CORO_SOCKET | OSW_EVENT_WRITE)], nullptr);
+    ASSERT_NE(reactor->error_handler[Reactor::get_fd_type(OSW_FD_CORO_SOCKET | OSW_EVENT_ERROR)], nullptr);
 
     /**
      * system reactor
      */
-    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(SW_FD_CORO_POLL | SW_EVENT_READ)], nullptr);
-    ASSERT_NE(reactor->write_handler[Reactor::get_fd_type(SW_FD_CORO_POLL | SW_EVENT_WRITE)], nullptr);
-    ASSERT_NE(reactor->error_handler[Reactor::get_fd_type(SW_FD_CORO_POLL | SW_EVENT_ERROR)], nullptr);
+    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(OSW_FD_CORO_POLL | OSW_EVENT_READ)], nullptr);
+    ASSERT_NE(reactor->write_handler[Reactor::get_fd_type(OSW_FD_CORO_POLL | OSW_EVENT_WRITE)], nullptr);
+    ASSERT_NE(reactor->error_handler[Reactor::get_fd_type(OSW_FD_CORO_POLL | OSW_EVENT_ERROR)], nullptr);
 
-    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(SW_FD_CORO_EVENT | SW_EVENT_READ)], nullptr);
-    ASSERT_NE(reactor->write_handler[Reactor::get_fd_type(SW_FD_CORO_EVENT | SW_EVENT_WRITE)], nullptr);
-    ASSERT_NE(reactor->error_handler[Reactor::get_fd_type(SW_FD_CORO_EVENT | SW_EVENT_ERROR)], nullptr);
+    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(OSW_FD_CORO_EVENT | OSW_EVENT_READ)], nullptr);
+    ASSERT_NE(reactor->write_handler[Reactor::get_fd_type(OSW_FD_CORO_EVENT | OSW_EVENT_WRITE)], nullptr);
+    ASSERT_NE(reactor->error_handler[Reactor::get_fd_type(OSW_FD_CORO_EVENT | OSW_EVENT_ERROR)], nullptr);
 
-    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(SW_FD_AIO | SW_EVENT_READ)], nullptr);
+    ASSERT_NE(reactor->read_handler[Reactor::get_fd_type(OSW_FD_AIO | OSW_EVENT_READ)], nullptr);
 
-    swoole_event_free();
+    openswoole_event_free();
 }
 
 TEST(reactor, set_handler) {
     Reactor reactor;
 
-    reactor.set_handler(SW_EVENT_READ, (ReactorHandler) 0x1);
-    ASSERT_EQ(reactor.read_handler[Reactor::get_fd_type(SW_EVENT_READ)], (ReactorHandler) 0x1);
+    reactor.set_handler(OSW_EVENT_READ, (ReactorHandler) 0x1);
+    ASSERT_EQ(reactor.read_handler[Reactor::get_fd_type(OSW_EVENT_READ)], (ReactorHandler) 0x1);
 
-    reactor.set_handler(SW_EVENT_WRITE, (ReactorHandler) 0x2);
-    ASSERT_EQ(reactor.write_handler[Reactor::get_fd_type(SW_EVENT_WRITE)], (ReactorHandler) 0x2);
+    reactor.set_handler(OSW_EVENT_WRITE, (ReactorHandler) 0x2);
+    ASSERT_EQ(reactor.write_handler[Reactor::get_fd_type(OSW_EVENT_WRITE)], (ReactorHandler) 0x2);
 
-    reactor.set_handler(SW_EVENT_ERROR, (ReactorHandler) 0x3);
-    ASSERT_EQ(reactor.error_handler[Reactor::get_fd_type(SW_EVENT_ERROR)], (ReactorHandler) 0x3);
+    reactor.set_handler(OSW_EVENT_ERROR, (ReactorHandler) 0x3);
+    ASSERT_EQ(reactor.error_handler[Reactor::get_fd_type(OSW_EVENT_ERROR)], (ReactorHandler) 0x3);
 }
 
 TEST(reactor, wait) {
@@ -73,11 +73,11 @@ TEST(reactor, wait) {
     UnixSocket p(true, SOCK_DGRAM);
     ASSERT_TRUE(p.ready());
 
-    ret = swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    ret = openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
     ASSERT_EQ(ret, SW_OK);
     ASSERT_NE(SwooleTG.reactor, nullptr);
 
-    swoole_event_set_handler(SW_FD_PIPE | SW_EVENT_READ, [](Reactor *reactor, Event *ev) -> int {
+    openswoole_event_set_handler(OSW_FD_PIPE | OSW_EVENT_READ, [](Reactor *reactor, Event *ev) -> int {
         char buffer[16];
 
         ssize_t n = read(ev->fd, buffer, sizeof(buffer));
@@ -88,13 +88,13 @@ TEST(reactor, wait) {
         return SW_OK;
     });
 
-    ret = swoole_event_add(p.get_socket(false), SW_EVENT_READ);
+    ret = openswoole_event_add(p.get_socket(false), OSW_EVENT_READ);
     ASSERT_EQ(ret, SW_OK);
 
-    ret = p.write((void *) SW_STRS("hello world"));
+    ret = p.write((void *) OSW_STRS("hello world"));
     ASSERT_EQ(ret, sizeof("hello world"));
 
-    ret = swoole_event_wait();
+    ret = openswoole_event_wait();
     ASSERT_EQ(ret, SW_OK);
     ASSERT_EQ(SwooleTG.reactor, nullptr);
 }
@@ -104,11 +104,11 @@ TEST(reactor, write) {
     UnixSocket p(true, SOCK_DGRAM);
     ASSERT_TRUE(p.ready());
 
-    ret = swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    ret = openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
     ASSERT_EQ(ret, SW_OK);
     ASSERT_NE(SwooleTG.reactor, nullptr);
 
-    swoole_event_set_handler(SW_FD_PIPE | SW_EVENT_READ, [](Reactor *reactor, Event *ev) -> int {
+    openswoole_event_set_handler(OSW_FD_PIPE | OSW_EVENT_READ, [](Reactor *reactor, Event *ev) -> int {
         char buffer[16];
 
         ssize_t n = read(ev->fd, buffer, sizeof(buffer));
@@ -119,13 +119,13 @@ TEST(reactor, write) {
         return SW_OK;
     });
 
-    ret = swoole_event_add(p.get_socket(false), SW_EVENT_READ);
+    ret = openswoole_event_add(p.get_socket(false), OSW_EVENT_READ);
     ASSERT_EQ(ret, SW_OK);
 
-    ret = swoole_event_write(p.get_socket(true), (void *) SW_STRS("hello world"));
+    ret = openswoole_event_write(p.get_socket(true), (void *) OSW_STRS("hello world"));
     ASSERT_EQ(ret, sizeof("hello world"));
 
-    ret = swoole_event_wait();
+    ret = openswoole_event_wait();
     ASSERT_EQ(ret, SW_OK);
     ASSERT_EQ(SwooleTG.reactor, nullptr);
 }
@@ -136,7 +136,7 @@ static void reactor_test_func(Reactor *reactor) {
     Pipe p(true);
     ASSERT_TRUE(p.ready());
 
-    reactor->set_handler(SW_FD_PIPE | SW_EVENT_READ, [](Reactor *reactor, Event *event) -> int {
+    reactor->set_handler(OSW_FD_PIPE | OSW_EVENT_READ, [](Reactor *reactor, Event *event) -> int {
         char buf[1024];
         size_t l = strlen(pkt);
         size_t n = read(event->fd, buf, sizeof(buf));
@@ -147,15 +147,15 @@ static void reactor_test_func(Reactor *reactor) {
 
         return SW_OK;
     });
-    reactor->set_handler(SW_FD_PIPE | SW_EVENT_WRITE, [](Reactor *reactor, Event *event) -> int {
+    reactor->set_handler(OSW_FD_PIPE | OSW_EVENT_WRITE, [](Reactor *reactor, Event *event) -> int {
         size_t l = strlen(pkt);
         EXPECT_EQ(write(event->fd, pkt, l), l);
         reactor->del(event->socket);
 
         return SW_OK;
     });
-    reactor->add(p.get_socket(false), SW_EVENT_READ);
-    reactor->add(p.get_socket(true), SW_EVENT_WRITE);
+    reactor->add(p.get_socket(false), OSW_EVENT_READ);
+    reactor->add(p.get_socket(true), OSW_EVENT_WRITE);
     reactor->wait(nullptr);
 }
 
@@ -176,18 +176,18 @@ TEST(reactor, add_or_update) {
     UnixSocket p(true, SOCK_DGRAM);
     ASSERT_TRUE(p.ready());
 
-    ret = swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    ret = openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
     ASSERT_EQ(ret, SW_OK);
     ASSERT_NE(SwooleTG.reactor, nullptr);
 
-    ret = swoole_event_add_or_update(p.get_socket(false), SW_EVENT_READ);
+    ret = openswoole_event_add_or_update(p.get_socket(false), OSW_EVENT_READ);
     ASSERT_EQ(ret, SW_OK);
-    ASSERT_TRUE(p.get_socket(false)->events & SW_EVENT_READ);
+    ASSERT_TRUE(p.get_socket(false)->events & OSW_EVENT_READ);
 
-    ret = swoole_event_add_or_update(p.get_socket(false), SW_EVENT_WRITE);
+    ret = openswoole_event_add_or_update(p.get_socket(false), OSW_EVENT_WRITE);
     ASSERT_EQ(ret, SW_OK);
-    ASSERT_TRUE(p.get_socket(false)->events & SW_EVENT_READ);
-    ASSERT_TRUE(p.get_socket(false)->events & SW_EVENT_WRITE);
+    ASSERT_TRUE(p.get_socket(false)->events & OSW_EVENT_READ);
+    ASSERT_TRUE(p.get_socket(false)->events & OSW_EVENT_WRITE);
 
-    swoole_event_free();
+    openswoole_event_free();
 }

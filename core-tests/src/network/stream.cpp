@@ -18,7 +18,7 @@
 #include "openswoole_server.h"
 
 using namespace std;
-using namespace swoole::network;
+using namespace openswoole::network;
 
 TEST(stream, send) {
     swServer serv(swoole::Server::MODE_BASE);
@@ -28,7 +28,7 @@ TEST(stream, send) {
 
     swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, TEST_PORT);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -39,16 +39,16 @@ TEST(stream, send) {
     lock.lock();
 
     char buf[65536];
-    ASSERT_EQ(swoole_random_bytes(buf, sizeof(buf)), sizeof(buf));
+    ASSERT_EQ(openswoole_random_bytes(buf, sizeof(buf)), sizeof(buf));
 
     ASSERT_EQ(serv.create(), SW_OK);
 
     std::thread t1([&]() {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         lock.lock();
 
-        swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+        openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
         // bad request
         auto stream0 = Stream::create(TEST_TMP_FILE, 0, SW_SOCK_UNIX_STREAM);
@@ -75,7 +75,7 @@ TEST(stream, send) {
         };
         ASSERT_EQ(stream2->send(buf, sizeof(buf)), SW_OK);
 
-        swoole_event_wait();
+        openswoole_event_wait();
 
         kill(getpid(), SIGTERM);
     });

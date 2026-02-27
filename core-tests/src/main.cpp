@@ -1,6 +1,6 @@
 #include "test_core.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 static string root_path;
@@ -8,7 +8,7 @@ static string root_path;
 static void init_root_path(const char *);
 
 int main(int argc, char **argv) {
-    swoole_init();
+    openswoole_init();
     init_root_path(argv[0]);
 
     if (getenv("DISPLAY_BACKTRACE") != nullptr) {
@@ -18,7 +18,7 @@ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
     int retval = RUN_ALL_TESTS();
 
-    swoole_clean();
+    openswoole_clean();
 
     return retval;
 }
@@ -36,7 +36,7 @@ static void init_root_path(const char *_exec_file) {
     }
 }
 
-namespace swoole {
+namespace openswoole {
 namespace test {
 
 const string &get_root_path() {
@@ -52,4 +52,4 @@ bool is_github_ci() {
 }
 
 }  // namespace test
-}  // namespace swoole
+}  // namespace openswoole

@@ -10,30 +10,30 @@ TEST(os_signal, swSignalfd_set) {
 
     SwooleG.use_signalfd = 1;
 
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     sigemptyset(&curset);
     sigprocmask(SIG_BLOCK, NULL, &curset);
     ret = sigismember(&curset, SIGUSR1);
     ASSERT_EQ(ret, 0);
 
-    swoole_signalfd_init();
-    swoole_signal_set(SIGUSR1, sig_usr1);
-    swoole_signalfd_setup(SwooleTG.reactor);
+    openswoole_signalfd_init();
+    openswoole_signal_set(SIGUSR1, sig_usr1);
+    openswoole_signalfd_setup(SwooleTG.reactor);
 
     sigemptyset(&curset);
     sigprocmask(SIG_BLOCK, NULL, &curset);
     ret = sigismember(&curset, SIGUSR1);
     ASSERT_EQ(ret, 1);
 
-    swoole_signal_set(SIGUSR1, NULL);
-    swoole_signal_clear();
+    openswoole_signal_set(SIGUSR1, NULL);
+    openswoole_signal_clear();
 
     sigemptyset(&curset);
     sigprocmask(SIG_BLOCK, NULL, &curset);
     ret = sigismember(&curset, SIGUSR1);
     ASSERT_EQ(ret, 0);
 
-    swoole_event_wait();
+    openswoole_event_wait();
 }
 #endif

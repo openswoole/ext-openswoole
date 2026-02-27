@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace swoole {
+namespace openswoole {
 bool RedisClient::Connect(const string &host, int port, struct timeval timeout) {
     redisContext *c = redisConnectWithTimeout(host.c_str(), port, timeout);
     if (c == NULL) {
@@ -71,4 +71,4 @@ RedisReply RedisClient::Request(const vector<string> &args) {
     return reply;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

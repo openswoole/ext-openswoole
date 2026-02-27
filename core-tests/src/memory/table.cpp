@@ -17,7 +17,7 @@
 #include "test_core.h"
 #include "openswoole_table.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 #include <exception>
 #include <map>
@@ -52,7 +52,7 @@ class table_t {
     table_t(uint32_t rows_size, float conflict_proportion = 0.2) {
         table = Table::make(rows_size, conflict_proportion);
         if (!table) {
-            throw exception_t("alloc failed", swoole_get_last_error());
+            throw exception_t("alloc failed", openswoole_get_last_error());
         }
 
         table->add_column("id", TableColumn::TYPE_INT, 0);
@@ -60,7 +60,7 @@ class table_t {
         table->add_column("score", TableColumn::TYPE_FLOAT, 0);
 
         if (!table->create()) {
-            throw exception_t("create failed", swoole_get_last_error());
+            throw exception_t("create failed", openswoole_get_last_error());
         }
         column_id = table->get_column("id");
         column_name = table->get_column("name");

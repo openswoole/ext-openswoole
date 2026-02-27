@@ -19,14 +19,14 @@
 #include "openswoole_io_uring.h"
 #include "openswoole_coroutine.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 static const char *TEST_IO_URING_FILE = "/tmp/swoole_io_uring_test";
 static const char *TEST_IO_URING_FILE2 = "/tmp/swoole_io_uring_test2";
 static const char *TEST_IO_URING_DIR = "/tmp/swoole_io_uring_test_dir";
 
 TEST(io_uring_engine, create) {
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     Coroutine::create([](void *) {
         auto *engine = get_or_create_io_uring_engine();
@@ -34,11 +34,11 @@ TEST(io_uring_engine, create) {
         EXPECT_EQ(engine->get_pending_count(), 0u);
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
 }
 
 TEST(io_uring_engine, open_read_write) {
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     Coroutine::create([](void *) {
         auto *engine = get_or_create_io_uring_engine();
@@ -73,11 +73,11 @@ TEST(io_uring_engine, open_read_write) {
         ::unlink(TEST_IO_URING_FILE);
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
 }
 
 TEST(io_uring_engine, fstat_test) {
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     Coroutine::create([](void *) {
         auto *engine = get_or_create_io_uring_engine();
@@ -108,11 +108,11 @@ TEST(io_uring_engine, fstat_test) {
         ::unlink(TEST_IO_URING_FILE);
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
 }
 
 TEST(io_uring_engine, mkdir_rmdir) {
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     Coroutine::create([](void *) {
         auto *engine = get_or_create_io_uring_engine();
@@ -140,11 +140,11 @@ TEST(io_uring_engine, mkdir_rmdir) {
         }
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
 }
 
 TEST(io_uring_engine, unlink_test) {
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     Coroutine::create([](void *) {
         auto *engine = get_or_create_io_uring_engine();
@@ -169,11 +169,11 @@ TEST(io_uring_engine, unlink_test) {
         EXPECT_NE(::stat(TEST_IO_URING_FILE, &st), 0);
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
 }
 
 TEST(io_uring_engine, rename_test) {
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     Coroutine::create([](void *) {
         auto *engine = get_or_create_io_uring_engine();
@@ -205,7 +205,7 @@ TEST(io_uring_engine, rename_test) {
         ::unlink(TEST_IO_URING_FILE2);
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
 }
 
 #endif

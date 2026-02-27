@@ -18,7 +18,7 @@
 #include "openswoole_file.h"
 
 using namespace std;
-using namespace swoole;
+using namespace openswoole;
 
 const char test_data[] = "hello swoole, hello world, php is best";
 
@@ -225,7 +225,7 @@ TEST(socket, sendto_blocking) {
     sock2->info.assign(SW_SOCK_UNIX_DGRAM, sock2_path, 0);
 
     char sendbuf[65536] = {};
-    swoole_random_string(sendbuf, sizeof(sendbuf) - 1);
+    openswoole_random_string(sendbuf, sizeof(sendbuf) - 1);
 
     thread t1([sock2, sendbuf]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -269,7 +269,7 @@ TEST(socket, clean) {
     sock2->info.assign(SW_SOCK_UNIX_DGRAM, sock2_path, 0);
 
     char sendbuf[65536] = {};
-    swoole_random_string(sendbuf, sizeof(sendbuf) - 1);
+    openswoole_random_string(sendbuf, sizeof(sendbuf) - 1);
 
     for (int i = 0; i < 3; i++) {
         ASSERT_GT(sock1->sendto_blocking(sock2->info, sendbuf, strlen(sendbuf)), 0);
@@ -320,7 +320,7 @@ TEST(socket, check_liveness) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         ASSERT_TRUE(cli->check_liveness());
 
-        cli->send(SW_STRL("close"), 0);
+        cli->send(OSW_STRL("close"), 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
         ASSERT_FALSE(cli->check_liveness());
 

@@ -24,7 +24,7 @@ static A G_a =
 
 int main(int argc, char **argv)
 {
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
     /**
      * 协程1
      */
@@ -54,7 +54,7 @@ int main(int argc, char **argv)
         G_a.y = nullptr;
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
 
     return 0;
 }

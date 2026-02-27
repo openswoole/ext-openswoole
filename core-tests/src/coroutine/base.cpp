@@ -1,6 +1,6 @@
 #include "test_coroutine.h"
 
-using namespace swoole;
+using namespace openswoole;
 using swoole::coroutine::System;
 
 TEST(coroutine_base, create) {

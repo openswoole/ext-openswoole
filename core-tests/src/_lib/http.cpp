@@ -14,7 +14,7 @@ bool Client::Upgrade(const char *_path, Headers &_headers) {
     _headers.emplace("Sec-WebSocket-Version", "13");
 
     auto resp = Get(_path, _headers);
-    if (resp == nullptr or resp->status != SW_HTTP_SWITCHING_PROTOCOLS) {
+    if (resp == nullptr or resp->status != OSW_HTTP_SWITCHING_PROTOCOLS) {
         return false;
     }
 

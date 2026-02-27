@@ -33,14 +33,14 @@ TEST(async, dispatch) {
     event.callback = [](AsyncEvent *event) { callback_count++; };
     event.handler = [](AsyncEvent *event) { (*(std::atomic<int> *) event->object)++; };
 
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     for (int i = 0; i < 1000; ++i) {
         auto ret = swoole::async::dispatch(&event);
         EXPECT_EQ(ret->object, event.object);
     }
 
-    swoole_event_wait();
+    openswoole_event_wait();
 
     ASSERT_EQ(handle_count, 1000);
     ASSERT_EQ(callback_count, 1000);

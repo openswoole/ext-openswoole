@@ -21,7 +21,7 @@ TEST(string, strnpos) {
         string needle = " ";
         int pos;
 
-        pos = swoole_strnpos(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
+        pos = openswoole_strnpos(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
         ASSERT_EQ(pos, 5);
     }
     {
@@ -29,7 +29,7 @@ TEST(string, strnpos) {
         string needle = "*";
         int pos;
 
-        pos = swoole_strnpos(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
+        pos = openswoole_strnpos(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
         ASSERT_EQ(-1, pos);
     }
 }
@@ -40,7 +40,7 @@ TEST(string, strnstr) {
         string needle = " ";
         const char *pos;
 
-        pos = swoole_strnstr(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
+        pos = openswoole_strnstr(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
         ASSERT_EQ(haystack.c_str() + 5, pos);
     }
     {
@@ -48,7 +48,7 @@ TEST(string, strnstr) {
         string needle = "*";
         const char *pos;
 
-        pos = swoole_strnstr(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
+        pos = openswoole_strnstr(haystack.c_str(), haystack.length(), needle.c_str(), needle.length());
         ASSERT_EQ(NULL, pos);
     }
 }
@@ -185,7 +185,7 @@ TEST(string, reduce_3) {
 TEST(string, format) {
     swString str(128);
 
-    int a = swoole_rand(1000000, 9000000);
+    int a = openswoole_rand(1000000, 9000000);
 
     swString str2(1024);
     str2.append_random_bytes(1024, true);

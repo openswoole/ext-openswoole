@@ -2,7 +2,7 @@
 #include "openswoole_memory.h"
 #include "openswoole_pipe.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 #include <thread>
 
@@ -75,7 +75,7 @@ static void thread_write(void) {
         } while (yield_count < 100);
 
         if (!ptr) {
-            swoole_warning("alloc failed. index=%d, break", i);
+            openswoole_warning("alloc failed. index=%d, break", i);
         }
         ASSERT_NE(ptr, nullptr);
 

@@ -23,7 +23,7 @@ using on_workerstart_lambda_type = void (*)(ON_WORKERSTART_PARAMS);
 using on_receive_lambda_type = void (*)(ON_RECEIVE_PARAMS);
 using on_packet_lambda_type = void (*)(ON_PACKET_PARAMS);
 
-namespace swoole { namespace test {
+namespace openswoole { namespace test {
 //--------------------------------------------------------------------------------------------------------
 class Server
 {

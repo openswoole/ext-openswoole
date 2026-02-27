@@ -19,7 +19,7 @@
 #include "redis_client.h"
 #include "openswoole_redis.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 const std::string REDIS_TEST_KEY = "key-swoole";
@@ -39,7 +39,7 @@ TEST(redis, server) {
     serv.worker_num = 1;
     serv.enable_static_handler = true;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    sw_logger()->set_level(OSW_LOG_WARNING);
 
     ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
     ASSERT_TRUE(port);

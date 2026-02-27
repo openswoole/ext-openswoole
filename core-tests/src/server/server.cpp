@@ -22,7 +22,7 @@
 #include "openswoole_lock.h"
 
 using namespace std;
-using namespace swoole;
+using namespace openswoole;
 
 TEST(server, create_pipe_buffers) {
     int ret;
@@ -75,7 +75,7 @@ TEST(server, base) {
     Server serv(Server::MODE_BASE);
     serv.worker_num = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    sw_logger()->set_level(OSW_LOG_WARNING);
 
     swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
     ASSERT_TRUE(port);
@@ -86,7 +86,7 @@ TEST(server, base) {
     ASSERT_EQ(serv.create(), SW_OK);
 
     std::thread t1([&]() {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         lock.lock();
 
@@ -121,14 +121,14 @@ TEST(server, process) {
 
     SwooleG.running = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    sw_logger()->set_level(OSW_LOG_WARNING);
 
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
     ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -136,7 +136,7 @@ TEST(server, process) {
 
     serv.onStart = [&lock](swServer *serv) {
         thread t1([=]() {
-            swoole_signal_block_all();
+            openswoole_signal_block_all();
 
             lock->lock();
 
@@ -177,14 +177,14 @@ TEST(server, ssl) {
 
     SwooleG.running = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    sw_logger()->set_level(OSW_LOG_WARNING);
 
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
     ListenPort *port = serv.add_port((enum swSocketType)(SW_SOCK_TCP | SW_SOCK_SSL), TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -196,14 +196,14 @@ TEST(server, ssl) {
 
     serv.onStart = [&lock](Server *serv) {
         thread t1([=]() {
-            swoole_signal_block_all();
+            openswoole_signal_block_all();
 
             lock->lock();
 
             ListenPort *port = serv->get_primary_port();
 
             EXPECT_EQ(port->ssl, 1);
-            EXPECT_EQ(swoole_ssl_is_thread_safety(), true);
+            EXPECT_EQ(openswoole_ssl_is_thread_safety(), true);
 
             swoole::network::SyncClient c(SW_SOCK_TCP);
             c.connect(TEST_HOST, port->port);
@@ -240,14 +240,14 @@ TEST(server, dtls) {
 
     SwooleG.running = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    sw_logger()->set_level(OSW_LOG_WARNING);
 
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
     ListenPort *port = serv.add_port((enum swSocketType)(SW_SOCK_UDP | SW_SOCK_SSL), TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -259,7 +259,7 @@ TEST(server, dtls) {
 
     serv.onStart = [&lock](Server *serv) {
         thread t1([=]() {
-            swoole_signal_block_all();
+            openswoole_signal_block_all();
 
             lock->lock();
 
@@ -304,7 +304,7 @@ TEST(server, task_worker) {
 
     ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 

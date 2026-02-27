@@ -7,7 +7,7 @@
 #define sysv_signal signal
 #endif
 
-using namespace swoole;
+using namespace openswoole;
 
 static void test_func(ProcessPool &pool) {
     EventData data{};
@@ -106,7 +106,7 @@ TEST(process_pool, shutdown) {
 
     EventData msg{};
     msg.info.len = 128;
-    swoole_random_string(msg.data, msg.info.len);
+    openswoole_random_string(msg.data, msg.info.len);
     int worker_id = -1;
     pool.dispatch_blocking(&msg, &worker_id);
 

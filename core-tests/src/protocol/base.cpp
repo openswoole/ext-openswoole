@@ -19,7 +19,7 @@
 #include "redis_client.h"
 #include "openswoole_redis.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 constexpr int PKG_N = 32;
@@ -33,11 +33,11 @@ TEST(protocol, eof) {
     String pkgs[PKG_N];
 
     for (int i = 0; i < PKG_N; i++) {
-        pkgs[i].append_random_bytes(swoole_rand(MIN_SIZE, MAX_SIZE), true);
+        pkgs[i].append_random_bytes(openswoole_rand(MIN_SIZE, MAX_SIZE), true);
         pkgs[i].append("\r\n");
     }
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    sw_logger()->set_level(OSW_LOG_WARNING);
 
     ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
     ASSERT_TRUE(port);

@@ -17,7 +17,7 @@
 #include "test_core.h"
 #include "openswoole_mime_type.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 TEST(mime_type, get) {
     auto result = mime_type::get("test.html.json");

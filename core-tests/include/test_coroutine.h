@@ -8,7 +8,7 @@
 #include "openswoole_coroutine_socket.h"
 #include "openswoole_coroutine_c_api.h"
 
-namespace swoole { namespace test {
+namespace openswoole { namespace test {
 
 class coroutine
 {
@@ -37,31 +37,31 @@ public:
     inline static void run(std::initializer_list<std::pair<CoroutineFunc, void*>> args)
     {
         int complete_num = 0;
-        swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+        openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
         for (const auto &arg : args)
         {
             create(arg.first, arg.second, &complete_num);
         }
-        swoole_event_wait();
+        openswoole_event_wait();
     }
 
     inline static void run(std::initializer_list<CoroutineFunc> fns)
     {
         int complete_num = 0;
-        swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+        openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
         for (const auto &fn : fns)
         {
             create(fn, nullptr, &complete_num);
         }
-        swoole_event_wait();
+        openswoole_event_wait();
     }
 
     inline static void run(const CoroutineFunc &fn, void *arg = nullptr)
     {
         int complete_num = 0;
-        swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+        openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
         create(fn, arg, &complete_num);
-        swoole_event_wait();
+        openswoole_event_wait();
     }
 
 private:

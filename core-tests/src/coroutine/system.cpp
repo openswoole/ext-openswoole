@@ -16,8 +16,8 @@
 
 #include "test_coroutine.h"
 
-using namespace swoole;
-using namespace swoole::test;
+using namespace openswoole;
+using namespace openswoole::test;
 
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
@@ -30,7 +30,7 @@ static constexpr int DATA_SIZE_2 = 64 * 1024;
 TEST(coroutine_system, file) {
     test::coroutine::run([](void *arg) {
         std::shared_ptr<String> buf = std::make_shared<String>(DATA_SIZE);
-        ASSERT_EQ(swoole_random_bytes(buf->str, buf->size - 1), buf->size - 1);
+        ASSERT_EQ(openswoole_random_bytes(buf->str, buf->size - 1), buf->size - 1);
         buf->str[buf->size - 1] = 0;
         ASSERT_EQ(System::write_file(test_file, buf->str, buf->size, true, 0), buf->size);
         auto data = System::read_file(test_file, true);
@@ -42,38 +42,38 @@ TEST(coroutine_system, file) {
 
 TEST(coroutine_system, flock) {
     std::shared_ptr<String> buf = std::make_shared<String>(65536);
-    ASSERT_EQ(swoole_random_bytes(buf->str, buf->size - 1), buf->size - 1);
+    ASSERT_EQ(openswoole_random_bytes(buf->str, buf->size - 1), buf->size - 1);
     buf->str[buf->size - 1] = 0;
 
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     Coroutine::create([&buf](void *) {
-        int fd = swoole_coroutine_open(test_file, File::WRITE | File::CREATE, 0666);
+        int fd = openswoole_coroutine_open(test_file, File::WRITE | File::CREATE, 0666);
         ASSERT_TRUE(fd > 0);
-        swoole_coroutine_flock_ex(test_file, fd, LOCK_EX);
+        openswoole_coroutine_flock_ex(test_file, fd, LOCK_EX);
 
         for (int i = 0; i < 4; i++) {
             Coroutine::create([&buf](void *) {
-                int fd = swoole_coroutine_open(test_file, File::READ, 0);
+                int fd = openswoole_coroutine_open(test_file, File::READ, 0);
                 ASSERT_TRUE(fd > 0);
-                swoole_coroutine_flock_ex(test_file, fd, LOCK_SH);
+                openswoole_coroutine_flock_ex(test_file, fd, LOCK_SH);
                 String read_buf(DATA_SIZE_2);
-                auto rn = swoole_coroutine_read(fd, read_buf.str, read_buf.size - 1);
+                auto rn = openswoole_coroutine_read(fd, read_buf.str, read_buf.size - 1);
                 ASSERT_EQ(rn, read_buf.size - 1);
                 read_buf.str[read_buf.size - 1] = 0;
-                swoole_coroutine_flock_ex(test_file, fd, LOCK_UN);
+                openswoole_coroutine_flock_ex(test_file, fd, LOCK_UN);
                 EXPECT_STREQ(read_buf.str, buf->str);
-                swoole_coroutine_close(fd);
+                openswoole_coroutine_close(fd);
             });
         }
 
-        auto wn = swoole_coroutine_write(fd, buf->str, buf->size - 1);
+        auto wn = openswoole_coroutine_write(fd, buf->str, buf->size - 1);
         ASSERT_EQ(wn, buf->size - 1);
-        swoole_coroutine_flock_ex(test_file, fd, LOCK_UN);
-        swoole_coroutine_close(fd);
+        openswoole_coroutine_flock_ex(test_file, fd, LOCK_UN);
+        openswoole_coroutine_close(fd);
     });
 
-    swoole_event_wait();
+    openswoole_event_wait();
     unlink(test_file);
 }
 

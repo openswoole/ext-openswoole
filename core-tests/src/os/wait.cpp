@@ -1,7 +1,7 @@
 #include "test_coroutine.h"
 
-using namespace swoole;
-using namespace swoole::test;
+using namespace openswoole;
+using namespace openswoole::test;
 
 TEST(os_wait, waitpid_before_child_exit) {
     test::coroutine::run([](void *arg) {
@@ -14,7 +14,7 @@ TEST(os_wait, waitpid_before_child_exit) {
         }
 
         int status = -1;
-        pid_t pid2 = swoole_coroutine_waitpid(pid, &status, 0);
+        pid_t pid2 = openswoole_coroutine_waitpid(pid, &status, 0);
         ASSERT_EQ(status, 0);
         ASSERT_EQ(pid, pid2);
     });
@@ -31,7 +31,7 @@ TEST(os_wait, waitpid_after_child_exit) {
 
         usleep(100000);
         int status = -1;
-        pid_t pid2 = swoole_coroutine_waitpid(pid, &status, 0);
+        pid_t pid2 = openswoole_coroutine_waitpid(pid, &status, 0);
         ASSERT_EQ(status, 0);
         ASSERT_EQ(pid, pid2);
     });
@@ -51,7 +51,7 @@ TEST(os_wait, wait_before_child_exit) {
         pid_t pid2 = -1;
 
         for (;;) {
-            pid2 = swoole_coroutine_wait(&status);
+            pid2 = openswoole_coroutine_wait(&status);
             if (pid2 == pid) {
                 break;
             }
@@ -75,7 +75,7 @@ TEST(os_wait, wait_after_child_exit) {
         pid_t pid2 = -1;
 
         for (;;) {
-            pid2 = swoole_coroutine_wait(&status);
+            pid2 = openswoole_coroutine_wait(&status);
             if (pid2 == pid) {
                 break;
             }

@@ -2,27 +2,27 @@
 #include "openswoole_file.h"
 #include <regex>
 
-using namespace swoole;
+using namespace openswoole;
 
 const char *file = "/tmp/swoole_log_test.log";
 
 TEST(log, level) {
     sw_logger()->reset();
-    sw_logger()->set_level(SW_LOG_NOTICE);
+    sw_logger()->set_level(OSW_LOG_NOTICE);
     sw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_INFO, SW_STRL("hello info"));
-    sw_logger()->put(SW_LOG_NOTICE, SW_STRL("hello notice"));
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello warning"));
+    sw_logger()->put(OSW_LOG_INFO, OSW_STRL("hello info"));
+    sw_logger()->put(OSW_LOG_NOTICE, OSW_STRL("hello notice"));
+    sw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello warning"));
 
     auto content = file_get_contents(file);
 
     sw_logger()->close();
     unlink(file);
 
-    ASSERT_FALSE(content->contains(SW_STRL("hello info")));
-    ASSERT_TRUE(content->contains(SW_STRL("hello notice")));
-    ASSERT_TRUE(content->contains(SW_STRL("hello warning")));
+    ASSERT_FALSE(content->contains(OSW_STRL("hello info")));
+    ASSERT_TRUE(content->contains(OSW_STRL("hello notice")));
+    ASSERT_TRUE(content->contains(OSW_STRL("hello warning")));
 }
 
 TEST(log, date_format) {
@@ -30,7 +30,7 @@ TEST(log, date_format) {
     sw_logger()->set_date_format("day %d of %B in the year %Y. Time: %I:%S %p");
     sw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello world"));
+    sw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello world"));
     auto content = file_get_contents(file);
 
     sw_logger()->close();
@@ -61,12 +61,12 @@ TEST(log, date_format_long_string) {
     auto str = content.get();
 
     str->repeat("x", 1, 120);
-    str->append(SW_STRL("day %d of %B in the year %Y. Time: %I:%S %p"));
+    str->append(OSW_STRL("day %d of %B in the year %Y. Time: %I:%S %p"));
 
     bool retval = sw_logger()->set_date_format(str->str);
 
     ASSERT_FALSE(retval);
-    ASSERT_EQ(swoole_get_last_error(), SW_ERROR_INVALID_PARAMS);
+    ASSERT_EQ(openswoole_get_last_error(), OSW_ERROR_INVALID_PARAMS);
 }
 
 TEST(log, date_with_microseconds) {
@@ -74,7 +74,7 @@ TEST(log, date_with_microseconds) {
     sw_logger()->set_date_with_microseconds(true);
     sw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello world"));
+    sw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello world"));
     auto content = file_get_contents(file);
 
     sw_logger()->close();
@@ -89,7 +89,7 @@ TEST(log, rotation) {
     sw_logger()->set_rotation(SW_LOG_ROTATION_DAILY);
     sw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello world"));
+    sw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello world"));
 
     ASSERT_EQ(access(sw_logger()->get_file(), R_OK), -1);
     ASSERT_EQ(errno, ENOENT);
@@ -117,7 +117,7 @@ TEST(log, redirect) {
     ASSERT_TRUE(sw_logger()->redirect_stdout_and_stderr(0));
     unlink(sw_logger()->get_real_file());
 
-    ASSERT_TRUE(content->contains(SW_STRL("hello world\n")));
+    ASSERT_TRUE(content->contains(OSW_STRL("hello world\n")));
 }
 
 namespace TestA {

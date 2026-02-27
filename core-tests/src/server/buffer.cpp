@@ -18,7 +18,7 @@
 #include "openswoole_server.h"
 
 using namespace std;
-using namespace swoole;
+using namespace openswoole;
 
 static const char *packet = "hello world\n";
 
@@ -26,11 +26,11 @@ TEST(server, send_buffer) {
     swServer serv(swoole::Server::MODE_BASE);
     serv.worker_num = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    sw_logger()->set_level(OSW_LOG_WARNING);
 
     swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -40,7 +40,7 @@ TEST(server, send_buffer) {
     lock.lock();
 
     std::thread t1([&]() {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         lock.lock();
 

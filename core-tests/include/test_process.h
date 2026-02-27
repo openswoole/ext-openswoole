@@ -7,7 +7,7 @@
 
 using namespace std;
 
-namespace swoole { namespace test {
+namespace openswoole { namespace test {
 //-------------------------------------------------------------------------------
 class Process
 {

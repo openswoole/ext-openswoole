@@ -18,7 +18,7 @@
 #include "test_coroutine.h"
 #include "test_server.h"
 
-using namespace swoole::test;
+using namespace openswoole::test;
 
 using swoole::Protocol;
 using swoole::String;
@@ -76,7 +76,7 @@ TEST(coroutine_socket, recv_success) {
         bool retval = sock.connect(TEST_HOST, TEST_PORT, -1);
         ASSERT_EQ(retval, true);
         ASSERT_EQ(sock.errCode, 0);
-        sock.send(SW_STRS("hello world\n"));
+        sock.send(OSW_STRS("hello world\n"));
         char buf[128];
         int n = sock.recv(buf, sizeof(buf));
         buf[n] = 0;
@@ -171,7 +171,7 @@ TEST(coroutine_socket, accept) {
 #define RECV_TIMEOUT 10.0
 
 static void socket_set_eof_protocol(Socket &sock) {
-    memcpy(sock.protocol.package_eof, SW_STRL(CRLF));
+    memcpy(sock.protocol.package_eof, OSW_STRL(CRLF));
     sock.protocol.package_eof_len = 2;
     sock.open_eof_check = true;
 }
@@ -332,7 +332,7 @@ TEST(coroutine_socket, eof_5) {
 
                         swString *s = swoole::make_string(128 * 1024);
                         s->repeat("A", 1, 128 * 1024 - 16);
-                        s->append(SW_STRL(CRLF));
+                        s->append(OSW_STRL(CRLF));
 
                         conn->send_all(s->str, s->length);
                     },
@@ -365,7 +365,7 @@ TEST(coroutine_socket, eof_6) {
 
                         swString s(128 * 1024);
                         s.repeat("A", 1, 128 * 1024 - 16);
-                        s.append(SW_STRL(CRLF));
+                        s.append(OSW_STRL(CRLF));
 
                         conn->send_all(s.value(), s.get_length());
                     },
@@ -390,7 +390,7 @@ static void socket_set_length_protocol_1(Socket &sock) {
     sock.protocol = {};
 
     sock.protocol.package_length_type = 'n';
-    sock.protocol.package_length_size = swoole_type_size(sock.protocol.package_length_type);
+    sock.protocol.package_length_size = openswoole_type_size(sock.protocol.package_length_type);
     sock.protocol.package_body_offset = 2;
     sock.protocol.get_package_length = Protocol::default_length_func;
     sock.protocol.package_max_length = 65535;
@@ -402,7 +402,7 @@ static void socket_set_length_protocol_2(Socket &sock) {
     sock.protocol = {};
 
     sock.protocol.package_length_type = 'N';
-    sock.protocol.package_length_size = swoole_type_size(sock.protocol.package_length_type);
+    sock.protocol.package_length_size = openswoole_type_size(sock.protocol.package_length_type);
     sock.protocol.package_body_offset = 4;
     sock.protocol.get_package_length = Protocol::default_length_func;
     sock.protocol.package_max_length = 2 * 1024 * 1024;
@@ -419,7 +419,7 @@ TEST(coroutine_socket, length_1) {
 
                         Socket *conn = sock.accept();
                         char buf[1024];
-                        ssize_t l = swoole_random_bytes(buf + 2, sizeof(buf) - 2);
+                        ssize_t l = openswoole_random_bytes(buf + 2, sizeof(buf) - 2);
                         *(uint16_t *) buf = htons(l);
 
                         conn->send(buf, l + 2);
@@ -517,14 +517,14 @@ static void length_protocol_server_func(void *arg) {
 
     uint32_t pack_len;
 
-    size_t l_1 = swoole_rand(65536, 65536 * 2);
+    size_t l_1 = openswoole_rand(65536, 65536 * 2);
     pack_len = htonl(l_1);
     strbuf.append((char *) &pack_len, sizeof(pack_len));
     strbuf.append_random_bytes(l_1);
 
     pkt_1 = string(strbuf.str, l_1 + 4);
 
-    size_t l_2 = swoole_rand(65536, 65536 * 2);
+    size_t l_2 = openswoole_rand(65536, 65536 * 2);
     pack_len = htonl(l_2);
     strbuf.append((char *) &pack_len, sizeof(pack_len));
     strbuf.append_random_bytes(l_2);
