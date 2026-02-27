@@ -99,6 +99,7 @@ core-tests/samples/cmake_install\.cmake
 core-tests/samples/CMakeCache\.txt
 core-tests/samples/bin/
 core-tests/samples/CMakeFiles/
+core-tests/build/
 /out
 /gcov_result
 tools/PHP-Parser-*/

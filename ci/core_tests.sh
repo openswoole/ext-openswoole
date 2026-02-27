@@ -80,6 +80,10 @@ fi
 make -j$(nproc) > /dev/null 2>&1
 make install > /dev/null 2>&1
 
+# Create lib symlink so core-tests can link against -lopenswoole
+mkdir -p /ext-openswoole/lib
+ln -sf /ext-openswoole/modules/openswoole.so /ext-openswoole/lib/libopenswoole.so
+
 # Build core-tests
 echo "📦 Building core-tests..."
 cd /ext-openswoole/core-tests
