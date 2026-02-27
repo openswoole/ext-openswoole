@@ -1665,8 +1665,10 @@
             <file role="src" name="thirdparty/php/standard/proc_open.h"/>
             <file role="src" name="thirdparty/php/streams/php_streams_int.h"/>
             <file role="src" name="thirdparty/php/streams/plain_wrapper.c"/>
-            <file role="src" name="thirdparty/swoole_http_parser.c"/>
-            <file role="src" name="thirdparty/swoole_http_parser.h"/>
+            <file role="src" name="thirdparty/llhttp/api.c"/>
+            <file role="src" name="thirdparty/llhttp/http.c"/>
+            <file role="src" name="thirdparty/llhttp/llhttp.c"/>
+            <file role="src" name="thirdparty/llhttp/llhttp.h"/>
             <file role="src" name="tools/analysis.php"/>
             <file role="src" name="tools/arginfo-check.php"/>
             <file role="src" name="tools/bootstrap.php"/>

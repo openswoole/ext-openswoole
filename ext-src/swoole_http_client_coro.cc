@@ -33,7 +33,7 @@
 
 SW_EXTERN_C_BEGIN
 
-#include "thirdparty/swoole_http_parser.h"
+#include "thirdparty/llhttp/llhttp.h"
 
 #include "ext/standard/base64.h"
 
@@ -63,25 +63,25 @@ enum http_client_error_status_code {
 
 extern void php_swoole_client_coro_socket_free(Socket *cli);
 
-static int http_parser_on_header_field(swoole_http_parser *parser, const char *at, size_t length);
-static int http_parser_on_header_value(swoole_http_parser *parser, const char *at, size_t length);
-static int http_parser_on_headers_complete(swoole_http_parser *parser);
-static int http_parser_on_body(swoole_http_parser *parser, const char *at, size_t length);
-static int http_parser_on_message_complete(swoole_http_parser *parser);
+static int http_parser_on_header_field(llhttp_t *parser, const char *at, size_t length);
+static int http_parser_on_header_value(llhttp_t *parser, const char *at, size_t length);
+static int http_parser_on_headers_complete(llhttp_t *parser);
+static int http_parser_on_body(llhttp_t *parser, const char *at, size_t length);
+static int http_parser_on_message_complete(llhttp_t *parser);
 
 // clang-format off
-static const swoole_http_parser_settings http_parser_settings =
+static const llhttp_settings_t http_parser_settings =
 {
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    nullptr,
-    http_parser_on_header_field,
-    http_parser_on_header_value,
-    http_parser_on_headers_complete,
-    http_parser_on_body,
-    http_parser_on_message_complete
+    nullptr,                          // on_message_begin
+    nullptr,                          // on_url
+    nullptr,                          // on_status
+    http_parser_on_header_field,     // on_header_field
+    http_parser_on_header_value,     // on_header_value
+    http_parser_on_headers_complete, // on_headers_complete
+    http_parser_on_body,             // on_body
+    http_parser_on_message_complete, // on_message_complete
+    nullptr,                          // on_chunk_header
+    nullptr,                          // on_chunk_complete
 };
 // clang-format on
 
@@ -246,10 +246,12 @@ class HttpClient {
 
     ~HttpClient();
 
+    bool response_completed = false;
+
   private:
     Socket *socket = nullptr;
     swSocketType socket_type = SW_SOCK_TCP;
-    swoole_http_parser parser = {};
+    llhttp_t parser = {};
     bool wait = false;
 };
 
@@ -376,14 +378,14 @@ void http_parse_set_cookies(const char *at, size_t length, zval *zcookies, zval 
     add_next_index_stringl(zset_cookie_headers, (char *) at, length);
 }
 
-static int http_parser_on_header_field(swoole_http_parser *parser, const char *at, size_t length) {
+static int http_parser_on_header_field(llhttp_t *parser, const char *at, size_t length) {
     HttpClient *http = (HttpClient *) parser->data;
     http->tmp_header_field_name = (char *) at;
     http->tmp_header_field_name_len = length;
     return 0;
 }
 
-static int http_parser_on_header_value(swoole_http_parser *parser, const char *at, size_t length) {
+static int http_parser_on_header_value(llhttp_t *parser, const char *at, size_t length) {
     HttpClient *http = (HttpClient *) parser->data;
     zval *zobject = (zval *) http->zobject;
     zval *zheaders =
@@ -448,7 +450,7 @@ static int http_parser_on_header_value(swoole_http_parser *parser, const char *a
     return 0;
 }
 
-static int http_parser_on_headers_complete(swoole_http_parser *parser) {
+static int http_parser_on_headers_complete(llhttp_t *parser) {
     HttpClient *http = (HttpClient *) parser->data;
     if (http->method == SW_HTTP_HEAD || parser->status_code == SW_HTTP_NO_CONTENT) {
         return 1;
@@ -456,7 +458,7 @@ static int http_parser_on_headers_complete(swoole_http_parser *parser) {
     return 0;
 }
 
-static int http_parser_on_body(swoole_http_parser *parser, const char *at, size_t length) {
+static int http_parser_on_body(llhttp_t *parser, const char *at, size_t length) {
     HttpClient *http = (HttpClient *) parser->data;
 #ifdef SW_HAVE_COMPRESSION
     if (http->body_decompression && !http->compression_error && http->compress_method != HTTP_COMPRESS_NONE) {
@@ -504,7 +506,7 @@ static int http_parser_on_body(swoole_http_parser *parser, const char *at, size_
     return 0;
 }
 
-static int http_parser_on_message_complete(swoole_http_parser *parser) {
+static int http_parser_on_message_complete(llhttp_t *parser) {
     HttpClient *http = (HttpClient *) parser->data;
     zval *zobject = (zval *) http->zobject;
 
@@ -523,12 +525,8 @@ static int http_parser_on_message_complete(swoole_http_parser *parser) {
         http->download_file_name.release();
     }
 
-    if (parser->upgrade) {
-        // return 1 will finish the parser and means yes we support it.
-        return 1;
-    } else {
-        return 0;
-    }
+    http->response_completed = true;
+    return 0;
 }
 
 HttpClient::HttpClient(zval *zobject, std::string host, zend_long port, zend_bool ssl) {
@@ -1385,8 +1383,9 @@ bool HttpClient::recv_http_response(double timeout) {
     off_t header_crlf_offset = 0;
 
     // re-init http response parser
-    swoole_http_parser_init(&parser, PHP_HTTP_RESPONSE);
+    llhttp_init(&parser, HTTP_RESPONSE, &http_parser_settings);
     parser.data = this;
+    response_completed = false;
 
     if (timeout == 0) {
         timeout = socket->get_timeout(Socket::TIMEOUT_READ);
@@ -1400,7 +1399,7 @@ bool HttpClient::recv_http_response(double timeout) {
         if (sw_unlikely(retval <= 0)) {
             if (retval == 0) {
                 socket->set_err(ECONNRESET);
-                if (total_bytes > 0 && !swoole_http_should_keep_alive(&parser)) {
+                if (total_bytes > 0 && !llhttp_should_keep_alive(&parser)) {
                     http_parser_on_message_complete(&parser);
                     return true;
                 }
@@ -1428,14 +1427,16 @@ bool HttpClient::recv_http_response(double timeout) {
         }
 
         total_bytes += retval;
-        parsed_n = swoole_http_parser_execute(&parser, &http_parser_settings, buffer->str, retval);
+        llhttp_errno_t err = llhttp_execute(&parser, buffer->str, retval);
+        parsed_n = (err == HPE_OK) ? (size_t) retval :
+            (size_t)(llhttp_get_error_pos(&parser) - buffer->str);
         swoole_trace_log(SW_TRACE_HTTP_CLIENT,
                          "parsed_n=%ld, retval=%ld, total_bytes=%ld, completed=%d",
                          parsed_n,
                          retval,
                          total_bytes,
-                         parser.state == s_start_res);
-        if (parser.state == s_start_res) {
+                         response_completed);
+        if (response_completed) {
             // handle redundant data (websocket packet)
             if (parser.upgrade && (size_t) retval > parsed_n + SW_WEBSOCKET_HEADER_LEN) {
                 buffer->length = retval;
@@ -1444,7 +1445,7 @@ bool HttpClient::recv_http_response(double timeout) {
             }
             return true;
         }
-        if (sw_unlikely(parser.state == s_dead)) {
+        if (sw_unlikely(err != HPE_OK && err != HPE_PAUSED_UPGRADE)) {
             socket->set_err(SW_ERROR_HTTP_INVALID_PROTOCOL);
             return false;
         }
