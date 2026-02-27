@@ -131,17 +131,6 @@ void php_openswoole_lock_minit(int module_number) {
 #ifdef HAVE_SPINLOCK
     OSW_REGISTER_LONG_CONSTANT("OPENSWOOLE_SPINLOCK", Lock::SPIN_LOCK);
 #endif
-
-    // SWOOLE_* backward compatibility aliases
-    OSW_REGISTER_LONG_CONSTANT("SWOOLE_FILELOCK", Lock::FILE_LOCK);
-    OSW_REGISTER_LONG_CONSTANT("SWOOLE_MUTEX", Lock::MUTEX);
-    OSW_REGISTER_LONG_CONSTANT("SWOOLE_SEM", Lock::SEM);
-#ifdef HAVE_RWLOCK
-    OSW_REGISTER_LONG_CONSTANT("SWOOLE_RWLOCK", Lock::RW_LOCK);
-#endif
-#ifdef HAVE_SPINLOCK
-    OSW_REGISTER_LONG_CONSTANT("SWOOLE_SPINLOCK", Lock::SPIN_LOCK);
-#endif
 }
 
 static PHP_METHOD(openswoole_lock, __construct) {
