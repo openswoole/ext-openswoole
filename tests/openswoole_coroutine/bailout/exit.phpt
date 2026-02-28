@@ -29,5 +29,5 @@ if (Assert::isArray($status)) {
 }
 ?>
 --EXPECT--
-swoole exit
+openswoole exit
 shutdown
