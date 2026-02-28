@@ -82,6 +82,18 @@ bool Context::fiber_swap_out() {
 
 void Context::fiber_func(zend_fiber_transfer *transfer) {
     Context *_this = switching_context;
+
+#ifdef ZEND_CHECK_STACK_LIMIT
+    /* PHP's native Fiber class sets EG(stack_base/limit) in zend_fiber_execute(),
+     * but the generic trampoline does NOT. Since OpenSwoole provides its own entry
+     * function to zend_fiber_init_context(), we must set them ourselves. Without
+     * this, EG(stack_base/limit) retain the caller's values, and PHP's stack
+     * overflow check immediately triggers on the fiber's differently-addressed
+     * C stack (causing "Maximum call stack size reached" errors). */
+    EG(stack_base) = zend_fiber_stack_base(_this->fiber_.fiber_context.stack);
+    EG(stack_limit) = zend_fiber_stack_limit(_this->fiber_.fiber_context.stack);
+#endif
+
     _this->fn_(_this->private_data_);
     _this->end_ = true;
 
