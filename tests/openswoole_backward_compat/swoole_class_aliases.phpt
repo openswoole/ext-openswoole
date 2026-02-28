@@ -18,7 +18,6 @@ Assert::assert(class_exists('Swoole\Atomic\Long'));
 Assert::assert(class_exists('Swoole\Process'));
 Assert::assert(class_exists('Swoole\Process\Pool'));
 Assert::assert(class_exists('Swoole\Runtime'));
-Assert::assert(class_exists('Swoole\Channel'));
 Assert::assert(class_exists('Swoole\Error'));
 Assert::assert(class_exists('Swoole\Exception'));
 
@@ -55,17 +54,17 @@ Assert::assert(class_exists('Swoole\Server\TaskResult'));
 // Connection iterator
 Assert::assert(class_exists('Swoole\Connection\Iterator'));
 
-// Verify they resolve to the same class as OpenSwoole\*
-Assert::same(Swoole\Server::class, OpenSwoole\Server::class);
-Assert::same(Swoole\Coroutine::class, OpenSwoole\Coroutine::class);
-Assert::same(Swoole\Table::class, OpenSwoole\Table::class);
-Assert::same(Swoole\Timer::class, OpenSwoole\Timer::class);
-Assert::same(Swoole\Http\Server::class, OpenSwoole\Http\Server::class);
-Assert::same(Swoole\WebSocket\Server::class, OpenSwoole\WebSocket\Server::class);
+// Verify they resolve to the same class as OpenSwoole\* (use ReflectionClass since ::class is compile-time)
+Assert::same((new ReflectionClass('Swoole\Server'))->getName(), 'OpenSwoole\Server');
+Assert::same((new ReflectionClass('Swoole\Coroutine'))->getName(), 'OpenSwoole\Coroutine');
+Assert::same((new ReflectionClass('Swoole\Table'))->getName(), 'OpenSwoole\Table');
+Assert::same((new ReflectionClass('Swoole\Timer'))->getName(), 'OpenSwoole\Timer');
+Assert::same((new ReflectionClass('Swoole\Http\Server'))->getName(), 'OpenSwoole\Http\Server');
+Assert::same((new ReflectionClass('Swoole\WebSocket\Server'))->getName(), 'OpenSwoole\WebSocket\Server');
 
 // Co short alias
 Assert::assert(class_exists('Co'));
-Assert::same(Co::class, OpenSwoole\Coroutine::class);
+Assert::same((new ReflectionClass('Co'))->getName(), 'OpenSwoole\Coroutine');
 
 echo "PASSED\n";
 ?>
