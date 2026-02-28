@@ -33,7 +33,7 @@ co::run(function() {
 
 ?>
 --EXPECTF--
-Fatal error: Uncaught OpenSwoole\ExitException: swoole exit in %s/tests/openswoole_coroutine/exit_exception_backtrace.php:15
+Fatal error: Uncaught OpenSwoole\ExitException: openswoole exit in %s/tests/openswoole_coroutine/exit_exception_backtrace.php:15
 Stack trace:
 #0 %s/tests/openswoole_coroutine/exit_exception_backtrace.php(10): char(%d)
 #1 %s/tests/openswoole_coroutine/exit_exception_backtrace.php(5): bar('%s...')
