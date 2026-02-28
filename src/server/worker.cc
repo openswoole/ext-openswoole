@@ -404,6 +404,61 @@ void Server::worker_stop_callback() {
     }
 }
 
+void Server::event_loop_lag_callback(Timer *timer, TimerNode *tnode) {
+    Worker *worker = (Worker *) tnode->data;
+    int64_t now_msec = Timer::get_absolute_msec();
+    if (osw_unlikely(now_msec < 0)) {
+        return;
+    }
+    if (worker->event_loop_lag_last_msec_ > 0) {
+        double lag = (double)(now_msec - worker->event_loop_lag_last_msec_) - (double)tnode->interval;
+        if (lag < 0) lag = 0;
+        worker->event_loop_lag_ms = lag;
+        if (lag > worker->event_loop_lag_max_ms) {
+            worker->event_loop_lag_max_ms = lag;
+        }
+        worker->event_loop_lag_avg_ms = worker->event_loop_lag_avg_ms * 0.9 + lag * 0.1;
+    }
+    worker->event_loop_lag_last_msec_ = now_msec;
+}
+
+void Server::start_event_loop_lag_timer(Worker *worker) {
+    worker->event_loop_lag_ms = 0;
+    worker->event_loop_lag_max_ms = 0;
+    worker->event_loop_lag_avg_ms = 0;
+    worker->event_loop_lag_last_msec_ = Timer::get_absolute_msec();
+    OpenSwooleWG.event_loop_lag_timer =
+        openswoole_timer_add(1000, true, Server::event_loop_lag_callback, worker);
+}
+
+void Server::reactor_thread_lag_callback(Timer *timer, TimerNode *tnode) {
+    ReactorThreadLagData *lag = (ReactorThreadLagData *) tnode->data;
+    int64_t now_msec = Timer::get_absolute_msec();
+    if (osw_unlikely(now_msec < 0)) {
+        return;
+    }
+    if (lag->event_loop_lag_last_msec_ > 0) {
+        double delta = (double)(now_msec - lag->event_loop_lag_last_msec_) - (double)tnode->interval;
+        if (delta < 0) delta = 0;
+        lag->event_loop_lag_ms = delta;
+        if (delta > lag->event_loop_lag_max_ms) {
+            lag->event_loop_lag_max_ms = delta;
+        }
+        lag->event_loop_lag_avg_ms = lag->event_loop_lag_avg_ms * 0.9 + delta * 0.1;
+    }
+    lag->event_loop_lag_last_msec_ = now_msec;
+}
+
+void Server::start_reactor_thread_lag_timer(int reactor_id) {
+    ReactorThreadLagData *lag = &reactor_thread_lag_data[reactor_id];
+    lag->event_loop_lag_ms = 0;
+    lag->event_loop_lag_max_ms = 0;
+    lag->event_loop_lag_avg_ms = 0;
+    lag->event_loop_lag_last_msec_ = Timer::get_absolute_msec();
+    get_thread(reactor_id)->lag_timer =
+        openswoole_timer_add(1000, true, Server::reactor_thread_lag_callback, lag);
+}
+
 void Server::stop_async_worker(Worker *worker) {
     worker->status = OSW_WORKER_EXIT;
     Reactor *reactor = OpenSwooleTG.reactor;
@@ -463,6 +518,11 @@ void Server::stop_async_worker(Worker *worker) {
         } else {
             openswoole_kill(gs->manager_pid, SIGIO);
         }
+    }
+
+    if (OpenSwooleWG.event_loop_lag_timer) {
+        openswoole_timer_del(OpenSwooleWG.event_loop_lag_timer);
+        OpenSwooleWG.event_loop_lag_timer = nullptr;
     }
 
     reactor->set_wait_exit(true);
@@ -574,6 +634,7 @@ int Server::start_event_worker(Worker *worker) {
 
     worker->status = OSW_WORKER_IDLE;
     worker_start_callback();
+    start_event_loop_lag_timer(worker);
 
     // main loop
     reactor->wait(nullptr);

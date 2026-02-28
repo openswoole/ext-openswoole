@@ -349,6 +349,12 @@ static void ReactorThread_shutdown(Reactor *reactor) {
         }
     });
 
+    ReactorThread *thread = serv->get_thread(reactor->id);
+    if (thread->lag_timer) {
+        openswoole_timer_del(thread->lag_timer);
+        thread->lag_timer = nullptr;
+    }
+
     reactor->set_wait_exit(true);
 }
 
@@ -706,6 +712,11 @@ int Server::create_reactor_threads() {
         return OSW_ERR;
     }
     reactor_pipe_num = worker_num / reactor_num;
+    reactor_thread_lag_data = (ReactorThreadLagData *) osw_shm_calloc(reactor_num, sizeof(ReactorThreadLagData));
+    if (reactor_thread_lag_data == nullptr) {
+        openswoole_error("calloc[reactor_thread_lag_data] failed");
+        return OSW_ERR;
+    }
     return OSW_OK;
 }
 
@@ -811,6 +822,10 @@ _init_master_thread:
 
     if (onStart) {
         onStart(this);
+    }
+
+    if (single_thread) {
+        start_reactor_thread_lag_timer(0);
     }
 
     return openswoole_event_wait();
@@ -945,6 +960,7 @@ static void ReactorThread_loop(Server *serv, int reactor_id) {
 #else
     OSW_START_SLEEP;
 #endif
+    serv->start_reactor_thread_lag_timer(reactor_id);
     // main loop
     openswoole_event_wait();
 
@@ -1069,6 +1085,10 @@ void Server::join_reactor_thread() {
 
 void Server::destroy_reactor_threads() {
     osw_shm_free(connection_list);
+    if (reactor_thread_lag_data) {
+        osw_shm_free(reactor_thread_lag_data);
+        reactor_thread_lag_data = nullptr;
+    }
     delete[] reactor_threads;
 
     if (message_box) {

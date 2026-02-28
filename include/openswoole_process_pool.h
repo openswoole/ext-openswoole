@@ -94,6 +94,7 @@ struct WorkerGlobal {
     Worker *worker;
     time_t exit_time;
     uint32_t worker_concurrency = 0;
+    TimerNode *event_loop_lag_timer = nullptr;
 };
 
 struct Worker {
@@ -132,6 +133,11 @@ struct Worker {
     long dispatch_count;
     long request_count;
     size_t coroutine_num;
+
+    double event_loop_lag_ms;
+    double event_loop_lag_max_ms;
+    double event_loop_lag_avg_ms;
+    int64_t event_loop_lag_last_msec_;
 
     /**
      * worker id

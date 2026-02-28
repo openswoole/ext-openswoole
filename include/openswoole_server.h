@@ -139,12 +139,20 @@ struct Connection {
     osw_atomic_t lock;
 };
 
+struct ReactorThreadLagData {
+    double event_loop_lag_ms;
+    double event_loop_lag_max_ms;
+    double event_loop_lag_avg_ms;
+    int64_t event_loop_lag_last_msec_;
+};
+
 struct ReactorThread {
     std::thread thread;
     network::Socket *notify_pipe = nullptr;
     uint32_t pipe_num = 0;
     network::Socket *pipe_sockets = nullptr;
     std::unordered_map<int, String *> send_buffers;
+    TimerNode *lag_timer = nullptr;
 };
 
 struct WorkerStopMessage {
@@ -550,6 +558,7 @@ class Server {
      * reactor thread/process num
      */
     uint16_t reactor_num = 0;
+    ReactorThreadLagData *reactor_thread_lag_data = nullptr;
     /**
      * worker process num
      */
@@ -1313,6 +1322,10 @@ class Server {
      */
     void worker_start_callback();
     void worker_stop_callback();
+    void start_event_loop_lag_timer(Worker *worker);
+    static void event_loop_lag_callback(Timer *timer, TimerNode *tnode);
+    void start_reactor_thread_lag_timer(int reactor_id);
+    static void reactor_thread_lag_callback(Timer *timer, TimerNode *tnode);
     static void worker_signal_handler(int signo);
     static void worker_signal_init(void);
 

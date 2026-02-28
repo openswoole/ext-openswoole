@@ -372,6 +372,7 @@ static int ReactorProcess_loop(ProcessPool *pool, Worker *worker) {
     }
 
     serv->worker_start_callback();
+    serv->start_event_loop_lag_timer(worker);
 
     /**
      * for heartbeat check

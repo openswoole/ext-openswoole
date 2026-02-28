@@ -2876,6 +2876,9 @@ static PHP_METHOD(openswoole_server, stats) {
     add_assoc_long_ex(&stats, ZEND_STRL("worker_vm_object_num"), vm_object_count());
     add_assoc_long_ex(&stats, ZEND_STRL("worker_vm_resource_num"), zend_array_count(&EG(regular_list)));
     add_assoc_long_ex(&stats, ZEND_STRL("coroutine_num"), Coroutine::count());
+    add_assoc_double_ex(&stats, ZEND_STRL("event_loop_lag_ms"), OpenSwooleWG.worker->event_loop_lag_ms);
+    add_assoc_double_ex(&stats, ZEND_STRL("event_loop_lag_max_ms"), OpenSwooleWG.worker->event_loop_lag_max_ms);
+    add_assoc_double_ex(&stats, ZEND_STRL("event_loop_lag_avg_ms"), OpenSwooleWG.worker->event_loop_lag_avg_ms);
 
     // workers
 
@@ -2898,6 +2901,9 @@ static PHP_METHOD(openswoole_server, stats) {
             add_assoc_long(&worker_stats, "start_seconds", ::time(nullptr) - worker->start_time);
             add_assoc_long(&worker_stats, "request_count", worker->request_count);
             add_assoc_long(&worker_stats, "dispatch_count", worker->dispatch_count);
+            add_assoc_double(&worker_stats, "event_loop_lag_ms", worker->event_loop_lag_ms);
+            add_assoc_double(&worker_stats, "event_loop_lag_max_ms", worker->event_loop_lag_max_ms);
+            add_assoc_double(&worker_stats, "event_loop_lag_avg_ms", worker->event_loop_lag_avg_ms);
             add_next_index_zval(&event_workers, &worker_stats);
 
         } else if (i < server->worker_num + server->task_worker_num) {
@@ -2907,6 +2913,11 @@ static PHP_METHOD(openswoole_server, stats) {
             add_assoc_long(&worker_stats, "pid", worker->pid);
             add_assoc_long(&worker_stats, "start_time", worker->start_time);
             add_assoc_long(&worker_stats, "start_seconds", ::time(nullptr) - worker->start_time);
+            if (server->task_enable_coroutine) {
+                add_assoc_double(&worker_stats, "event_loop_lag_ms", worker->event_loop_lag_ms);
+                add_assoc_double(&worker_stats, "event_loop_lag_max_ms", worker->event_loop_lag_max_ms);
+                add_assoc_double(&worker_stats, "event_loop_lag_avg_ms", worker->event_loop_lag_avg_ms);
+            }
             add_next_index_zval(&task_workers, &worker_stats);
 
         } else {
@@ -2923,6 +2934,22 @@ static PHP_METHOD(openswoole_server, stats) {
     add_assoc_zval(&stats, "event_workers", &event_workers);
     add_assoc_zval(&stats, "task_workers", &task_workers);
     add_assoc_zval(&stats, "user_workers", &user_workers);
+
+    if (server->is_process_mode() && server->reactor_thread_lag_data) {
+        zval reactor_threads;
+        array_init_size(&reactor_threads, server->reactor_num);
+        OSW_LOOP_N(server->reactor_num) {
+            zval rt_stats;
+            array_init(&rt_stats);
+            add_assoc_long(&rt_stats, "reactor_id", i);
+            add_assoc_double(&rt_stats, "event_loop_lag_ms", server->reactor_thread_lag_data[i].event_loop_lag_ms);
+            add_assoc_double(&rt_stats, "event_loop_lag_max_ms", server->reactor_thread_lag_data[i].event_loop_lag_max_ms);
+            add_assoc_double(&rt_stats, "event_loop_lag_avg_ms", server->reactor_thread_lag_data[i].event_loop_lag_avg_ms);
+            add_next_index_zval(&reactor_threads, &rt_stats);
+        }
+        add_assoc_zval(&stats, "reactor_threads", &reactor_threads);
+    }
+
     zval topc = vm_object_top();
     add_assoc_zval(&stats, "top_classes", &topc);
 

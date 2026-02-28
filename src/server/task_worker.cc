@@ -216,6 +216,8 @@ static int TaskWorker_loop_async(ProcessPool *pool, Worker *worker) {
         worker->pipe_worker->buffer_size = UINT_MAX;
     }
 
+    serv->start_event_loop_lag_timer(OpenSwooleWG.worker);
+
     return openswoole_event_wait();
 }
 

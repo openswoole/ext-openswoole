@@ -775,6 +775,14 @@ void Server::clear_timer() {
         openswoole_timer_del(enable_accept_timer);
         enable_accept_timer = nullptr;
     }
+    if (OpenSwooleWG.event_loop_lag_timer) {
+        openswoole_timer_del(OpenSwooleWG.event_loop_lag_timer);
+        OpenSwooleWG.event_loop_lag_timer = nullptr;
+    }
+    if (single_thread && reactor_threads && reactor_threads[0].lag_timer) {
+        openswoole_timer_del(reactor_threads[0].lag_timer);
+        reactor_threads[0].lag_timer = nullptr;
+    }
 }
 
 void Server::shutdown() {
