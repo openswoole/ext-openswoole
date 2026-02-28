@@ -1,4 +1,33 @@
-# 
+# 26.2.0
+
+## New Features
+
+ . PHP 8.5 support
+ . PHP native Fiber context backend for coroutines: new coroutine context backend using PHP's native zend_fiber API instead of Boost ASM or ucontext. Enables proper integration with xdebug, profilers, and fiber-aware extensions. Configurable at runtime via `Co::set(['use_fiber_context' => true])` or INI `openswoole.use_fiber_context=On`
+ . Xdebug support: xdebug step debugging now works correctly inside coroutines when fiber context is enabled. Removed the legacy "extremely dangerous" warning
+ . Runtime reactor type selection: select the event reactor backend at runtime via `Co::set(['reactor_type' => OPENSWOOLE_IO_URING])`. New constants: OPENSWOOLE_EPOLL, OPENSWOOLE_KQUEUE, OPENSWOOLE_POLL, OPENSWOOLE_SELECT, OPENSWOOLE_IO_URING
+ . io_uring reactor backend: new event reactor using Linux io_uring with IORING_OP_POLL_ADD as a drop-in replacement for epoll. Enable with `--enable-io-uring` (requires liburing). Supports multishot poll on kernel 5.13+ with automatic fallback on older kernels
+ . io_uring async file I/O engine: dedicated io_uring ring for asynchronous file operations (open, read, write, fstat, fsync, unlink, rename, mkdir, rmdir), replacing the thread pool. Unsupported operations gracefully fall back to the thread pool
+ . Coroutine-safe exit() support: intercepts exit() calls inside coroutines on PHP 8.4+ (where exit changed from opcode to function) and throws openswoole_exit_exception instead
+ . Backward compatibility constant aliases
+ . Migrate HTTP parser to llhttp: replaces the custom openswoole_http_parser with llhttp parser for improved standards compliance and performance
+
+## Bug Fixes
+
+ . Fix reflection issues and scope leaks (#284): OSW_FUNCTION_ALIAS caused global functions to appear as class methods with corrupted return types in Reflection. Replaced with proper PHP_FE/PHP_FALIAS entries
+ . Fix file I/O hanging under io_uring: race condition where eventfd notification could be lost between draining and re-arming single-shot POLL_ADD. Added reactor end-of-loop callback and timeout CQE filtering
+ . Fix file lock bug: non-blocking flock (LOCK_NB) now properly checks in-process coroutine lock state before the system flock() call
+ . Fix CPU affinity compile check: add missing _GNU_SOURCE define before sched.h
+ . Fix futex compile check: add missing _GNU_SOURCE define before linux/futex.h
+
+## Refactoring
+
+ . Namespace normalization: openswoole_*, updated internal references and test directories
+ . Removed compile-time guards from reactor type PHP constants; runtime validation handles unsupported backends
+ . Removed PHP < 8.0 compatibility code
+ . Dropped PHP 8.2 support
+
+#
 
  . Fix postgres client bugs @mrVrAlex
 
