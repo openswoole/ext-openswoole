@@ -2,7 +2,7 @@
 <?php
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -22,7 +22,7 @@ $classes = array('Swoole\Event');
 $constant_prefix = 'X_';
 
 $php = '<?php' . N;
-$php .= '/**' . N . ' * This file is generated from Open Swoole, do not modify.' . N . ' */';
+$php .= '/**' . N . ' * This file is generated from OpenSwoole, do not modify.' . N . ' */';
 
 foreach (get_defined_constants() as $cname => $cvalue) {
     if (strpos($cname, $constant_prefix) === 0) {

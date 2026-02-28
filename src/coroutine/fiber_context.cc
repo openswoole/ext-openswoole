@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -12,18 +12,18 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_coroutine_context.h"
+#include "openswoole_coroutine_context.h"
 
-#if !defined(SW_USE_THREAD_CONTEXT) && defined(ENABLE_PHP_SWOOLE)
+#if !defined(OSW_USE_THREAD_CONTEXT) && defined(ENABLE_PHP_OPENSWOOLE)
 
-namespace swoole {
+namespace openswoole {
 namespace coroutine {
 
 /* Unique kind identifier for OpenSwoole fiber contexts.
  * Tools like xdebug can use this to distinguish OpenSwoole coroutines
  * from native PHP Fibers. */
-static char swoole_fiber_kind_storage;
-static void *swoole_fiber_kind = &swoole_fiber_kind_storage;
+static char openswoole_fiber_kind_storage;
+static void *openswoole_fiber_kind = &openswoole_fiber_kind_storage;
 
 /* Thread-local variable to pass Context* to the fiber entry function
  * during the first context switch. Set in fiber_swap_in() before calling
@@ -39,15 +39,15 @@ void Context::fiber_init(size_t stack_size) {
      * pointer and crash. */
     memset(&fiber_.fiber_context, 0, sizeof(fiber_.fiber_context));
 
-    if (zend_fiber_init_context(&fiber_.fiber_context, swoole_fiber_kind, fiber_func, stack_size) != SUCCESS) {
-        swoole_fatal_error(SW_ERROR_MALLOC_FAIL, "failed to init fiber context.");
+    if (zend_fiber_init_context(&fiber_.fiber_context, openswoole_fiber_kind, fiber_func, stack_size) != SUCCESS) {
+        openswoole_fatal_error(OSW_ERROR_MALLOC_FAIL, "failed to init fiber context.");
         exit(254);
     }
-    swoole_trace_log(SW_TRACE_COROUTINE, "fiber context init: size=%u, ptr=%p", stack_size_, &fiber_.fiber_context);
+    openswoole_trace_log(OSW_TRACE_COROUTINE, "fiber context init: size=%u, ptr=%p", stack_size_, &fiber_.fiber_context);
 }
 
 void Context::fiber_destroy() {
-    swoole_trace_log(SW_TRACE_COROUTINE, "fiber context destroy: ptr=%p, status=%d", &fiber_.fiber_context, fiber_.fiber_context.status);
+    openswoole_trace_log(OSW_TRACE_COROUTINE, "fiber context destroy: ptr=%p, status=%d", &fiber_.fiber_context, fiber_.fiber_context.status);
     /* When fiber_func returns normally, the PHP fiber trampoline sets the status
      * to ZEND_FIBER_STATUS_DEAD and does a final zend_fiber_switch_context. The
      * caller's zend_fiber_switch_context then auto-calls zend_fiber_destroy_context.
@@ -82,6 +82,18 @@ bool Context::fiber_swap_out() {
 
 void Context::fiber_func(zend_fiber_transfer *transfer) {
     Context *_this = switching_context;
+
+#ifdef ZEND_CHECK_STACK_LIMIT
+    /* PHP's native Fiber class sets EG(stack_base/limit) in zend_fiber_execute(),
+     * but the generic trampoline does NOT. Since OpenSwoole provides its own entry
+     * function to zend_fiber_init_context(), we must set them ourselves. Without
+     * this, EG(stack_base/limit) retain the caller's values, and PHP's stack
+     * overflow check immediately triggers on the fiber's differently-addressed
+     * C stack (causing "Maximum call stack size reached" errors). */
+    EG(stack_base) = zend_fiber_stack_base(_this->fiber_.fiber_context.stack);
+    EG(stack_limit) = zend_fiber_stack_limit(_this->fiber_.fiber_context.stack);
+#endif
+
     _this->fn_(_this->private_data_);
     _this->end_ = true;
 
@@ -98,5 +110,5 @@ void Context::fiber_func(zend_fiber_transfer *transfer) {
 }
 
 }  // namespace coroutine
-}  // namespace swoole
+}  // namespace openswoole
 #endif

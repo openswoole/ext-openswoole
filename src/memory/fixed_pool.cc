@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,10 +14,10 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_memory.h"
+#include "openswoole.h"
+#include "openswoole_memory.h"
 
-namespace swoole {
+namespace openswoole {
 
 struct FixedPoolSlice {
     uint8_t lock;
@@ -51,17 +51,17 @@ struct FixedPoolImpl {
  * create new FixedPool, random alloc/free fixed size memory
  */
 FixedPool::FixedPool(uint32_t slice_num, uint32_t slice_size, bool shared) {
-    slice_size = SW_MEM_ALIGNED_SIZE(slice_size);
+    slice_size = OSW_MEM_ALIGNED_SIZE(slice_size);
     size_t size = slice_num * (sizeof(FixedPoolSlice) + slice_size);
     size_t alloc_size = size + sizeof(*impl);
-    void *memory = shared ? ::sw_shm_malloc(alloc_size) : ::sw_malloc(alloc_size);
+    void *memory = shared ? ::osw_shm_malloc(alloc_size) : ::osw_malloc(alloc_size);
     if (!memory) {
         throw std::bad_alloc();
     }
 
     impl = (FixedPoolImpl *) memory;
     memory = (char *) memory + sizeof(*impl);
-    sw_memset_zero(impl, sizeof(*impl));
+    osw_memset_zero(impl, sizeof(*impl));
 
     impl->shared = shared;
     impl->slice_num = slice_num;
@@ -78,7 +78,7 @@ FixedPool::FixedPool(uint32_t slice_num, uint32_t slice_size, bool shared) {
 FixedPool::FixedPool(uint32_t slice_size, void *memory, size_t size, bool shared) {
     impl = (FixedPoolImpl *) memory;
     memory = (char *) memory + sizeof(*impl);
-    sw_memset_zero(impl, sizeof(*impl));
+    osw_memset_zero(impl, sizeof(*impl));
 
     impl->shared = shared;
     impl->slice_size = slice_size;
@@ -106,7 +106,7 @@ void FixedPoolImpl::init() {
     void *max = (char *) memory + size;
     do {
         slice = (FixedPoolSlice *) cur;
-        sw_memset_zero(slice, sizeof(FixedPoolSlice));
+        osw_memset_zero(slice, sizeof(FixedPoolSlice));
 
         if (head != nullptr) {
             head->pre = slice;
@@ -195,9 +195,9 @@ FixedPool::~FixedPool() {
         return;
     }
     if (impl->shared) {
-        ::sw_shm_free(impl);
+        ::osw_shm_free(impl);
     } else {
-        ::sw_free(impl);
+        ::osw_free(impl);
     }
 }
 
@@ -224,4 +224,4 @@ void FixedPool::debug() {
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole

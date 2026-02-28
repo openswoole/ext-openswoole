@@ -1,5 +1,5 @@
 #include "test_core.h"
-#include "swoole_heap.h"
+#include "openswoole_heap.h"
 #include <map>
 
 typedef struct node_t {
@@ -19,7 +19,7 @@ TEST(heap, random) {
 
     int i;
     for (i = 0; i < SIZE - 1; i++) {
-        int pri = swoole_system_random(10000, 99999);
+        int pri = openswoole_system_random(10000, 99999);
         ns = (node_t *) malloc(sizeof(node_t));
         ns->val = i;
         ns->pri = pri;

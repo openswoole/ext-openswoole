@@ -16,9 +16,9 @@
 
 #include "test_core.h"
 #include "test_server.h"
-#include "swoole_memory.h"
+#include "openswoole_memory.h"
 
-using namespace swoole::test;
+using namespace openswoole::test;
 using swoole::network::Address;
 
 Server::Server(std::string _host, int _port, swoole::Server::Mode _mode, int _type)
@@ -34,12 +34,12 @@ Server::Server(std::string _host, int _port, swoole::Server::Mode _mode, int _ty
     serv.private_data_2 = this;
 
     if (!listen(host, port, (swSocketType) type)) {
-        swoole_warning("listen(%s:%d) fail[error=%d].", host.c_str(), port, errno);
+        openswoole_warning("listen(%s:%d) fail[error=%d].", host.c_str(), port, errno);
         exit(0);
     }
 
     if (serv.create() < 0) {
-        swoole_warning("create server fail[error=%d].", errno);
+        openswoole_warning("create server fail[error=%d].", errno);
         exit(0);
     }
 }

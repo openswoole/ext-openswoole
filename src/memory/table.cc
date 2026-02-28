@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,9 +14,9 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_table.h"
+#include "openswoole_table.h"
 
-namespace swoole {
+namespace openswoole {
 
 Table *Table::make(uint32_t rows_size, float conflict_proportion) {
     if (rows_size >= 0x80000000) {
@@ -31,11 +31,11 @@ Table *Table::make(uint32_t rows_size, float conflict_proportion) {
 
     if (conflict_proportion > 1.0) {
         conflict_proportion = 1.0;
-    } else if (conflict_proportion < SW_TABLE_CONFLICT_PROPORTION) {
-        conflict_proportion = SW_TABLE_CONFLICT_PROPORTION;
+    } else if (conflict_proportion < OSW_TABLE_CONFLICT_PROPORTION) {
+        conflict_proportion = OSW_TABLE_CONFLICT_PROPORTION;
     }
 
-    Table *table = (Table *) sw_mem_pool()->alloc(sizeof(*table));
+    Table *table = (Table *) osw_mem_pool()->alloc(sizeof(*table));
     if (table == nullptr) {
         return nullptr;
     }
@@ -46,10 +46,10 @@ Table *Table::make(uint32_t rows_size, float conflict_proportion) {
     table->size = rows_size;
     table->mask = rows_size - 1;
     table->conflict_proportion = conflict_proportion;
-#ifdef SW_TABLE_USE_PHP_HASH
-    table->hash_func = swoole_hash_php;
+#ifdef OSW_TABLE_USE_PHP_HASH
+    table->hash_func = openswoole_hash_php;
 #else
-    table->hash_func = swoole_hash_austin;
+    table->hash_func = openswoole_hash_austin;
 #endif
 
     return table;
@@ -66,7 +66,7 @@ void Table::free() {
 
 bool Table::add_column(const std::string &_name, enum TableColumn::Type _type, size_t _size) {
     if (_type < TableColumn::TYPE_INT || _type > TableColumn::TYPE_STRING) {
-        swoole_warning("unknown column type");
+        openswoole_warning("unknown column type");
         return false;
     }
 
@@ -110,7 +110,7 @@ size_t Table::get_memory_size() {
 
     memory_size = _memory_size;
 
-    swoole_trace("_memory_size=%lu, _row_num=%lu, _row_memory_size=%lu", _memory_size, _row_num, _row_memory_size);
+    openswoole_trace("_memory_size=%lu, _row_num=%lu, _row_memory_size=%lu", _memory_size, _row_num, _row_memory_size);
 
     return _memory_size;
 }
@@ -123,7 +123,7 @@ bool Table::create() {
     size_t _memory_size = get_memory_size();
     size_t _row_memory_size = sizeof(TableRow) + item_size;
 
-    void *_memory = sw_shm_malloc(_memory_size);
+    void *_memory = osw_shm_malloc(_memory_size);
     if (_memory == nullptr) {
         return false;
     }
@@ -148,8 +148,8 @@ bool Table::create() {
 }
 
 void Table::destroy() {
-#ifdef SW_TABLE_DEBUG
-    printf("swoole_table: size=%ld, conflict_count=%d, conflict_max_level=%d, insert_count=%d\n",
+#ifdef OSW_TABLE_DEBUG
+    printf("openswoole_table: size=%ld, conflict_count=%d, conflict_max_level=%d, insert_count=%d\n",
            size,
            conflict_count,
            conflict_max_level,
@@ -168,30 +168,30 @@ void Table::destroy() {
     }
     delete pool;
     if (memory) {
-        sw_shm_free(memory);
+        osw_shm_free(memory);
     }
     memory = nullptr;
     delete mutex;
-    sw_mem_pool()->free(this);
+    osw_mem_pool()->free(this);
 }
 
 void TableRow::lock() {
-    sw_atomic_t *lock = &lock_;
+    osw_atomic_t *lock = &lock_;
     uint32_t i, n;
     long t = 0;
 
     while (1) {
-        if (*lock == 0 && sw_atomic_cmp_set(lock, 0, 1)) {
+        if (*lock == 0 && osw_atomic_cmp_set(lock, 0, 1)) {
         _success:
-            lock_pid = SwooleG.pid;
+            lock_pid = OpenSwooleG.pid;
             return;
         }
-        if (SW_CPU_NUM > 1) {
-            for (n = 1; n < SW_SPINLOCK_LOOP_N; n <<= 1) {
+        if (OSW_CPU_NUM > 1) {
+            for (n = 1; n < OSW_SPINLOCK_LOOP_N; n <<= 1) {
                 for (i = 0; i < n; i++) {
-                    sw_atomic_cpu_pause();
+                    osw_atomic_cpu_pause();
                 }
-                if (*lock == 0 && sw_atomic_cmp_set(lock, 0, 1)) {
+                if (*lock == 0 && osw_atomic_cmp_set(lock, 0, 1)) {
                     goto _success;
                 }
             }
@@ -203,26 +203,26 @@ void TableRow::lock() {
          */
         if (kill(lock_pid, 0) < 0 && errno == ESRCH) {
             *lock = 1;
-            swoole_warning("lock process[%d] not exists, force unlock", lock_pid);
+            openswoole_warning("lock process[%d] not exists, force unlock", lock_pid);
             goto _success;
         }
         /**
          * Mark time
          */
         if (t == 0) {
-            t = swoole::time<std::chrono::milliseconds>(true);
+            t = openswoole::time<std::chrono::milliseconds>(true);
         }
         /**
-         * The deadlock time exceeds 2 seconds (SW_TABLE_FORCE_UNLOCK_TIME),
+         * The deadlock time exceeds 2 seconds (OSW_TABLE_FORCE_UNLOCK_TIME),
          * indicating that the lock process has OOM,
          * and the PID has been reused, forcing the unlock
          */
-        else if ((swoole::time<std::chrono::milliseconds>(true) - t) > SW_TABLE_FORCE_UNLOCK_TIME) {
+        else if ((openswoole::time<std::chrono::milliseconds>(true) - t) > OSW_TABLE_FORCE_UNLOCK_TIME) {
             *lock = 1;
-            swoole_warning("timeout, force unlock");
+            openswoole_warning("timeout, force unlock");
             goto _success;
         }
-        sw_yield();
+        osw_yield();
     }
 }
 
@@ -260,7 +260,7 @@ void Table::forward() {
         }
         row->unlock();
     }
-    sw_memset_zero(iterator->current_, sizeof(TableRow));
+    osw_memset_zero(iterator->current_, sizeof(TableRow));
     iterator->unlock();
 }
 
@@ -273,7 +273,7 @@ TableRow *Table::get(const char *key, uint16_t keylen, TableRow **rowlock) {
     row->lock();
 
     for (;;) {
-        if (sw_mem_equal(row->key, row->key_len, key, keylen)) {
+        if (osw_mem_equal(row->key, row->key_len, key, keylen)) {
             if (!row->active) {
                 row = nullptr;
             }
@@ -297,18 +297,18 @@ TableRow *Table::set(const char *key, uint16_t keylen, TableRow **rowlock, int *
     row->lock();
     int _out_flags = 0;
 
-#ifdef SW_TABLE_DEBUG
+#ifdef OSW_TABLE_DEBUG
     int _conflict_level = 0;
 #endif
 
     if (row->active) {
         for (;;) {
-            if (sw_mem_equal(row->key, row->key_len, key, keylen)) {
+            if (osw_mem_equal(row->key, row->key_len, key, keylen)) {
                 break;
             } else if (row->next == nullptr) {
                 lock();
                 TableRow *new_row = (TableRow *) pool->alloc(0);
-#ifdef SW_TABLE_DEBUG
+#ifdef OSW_TABLE_DEBUG
                 conflict_count++;
                 if (_conflict_level > conflict_max_level) {
                     conflict_max_level = _conflict_level;
@@ -319,21 +319,21 @@ TableRow *Table::set(const char *key, uint16_t keylen, TableRow **rowlock, int *
                     return nullptr;
                 }
                 init_row(new_row, key, keylen);
-                _out_flags |= SW_TABLE_FLAG_NEW_ROW;
+                _out_flags |= OSW_TABLE_FLAG_NEW_ROW;
                 row->next = new_row;
                 row = new_row;
                 break;
             } else {
                 row = row->next;
-                _out_flags |= SW_TABLE_FLAG_CONFLICT;
-#ifdef SW_TABLE_DEBUG
+                _out_flags |= OSW_TABLE_FLAG_CONFLICT;
+#ifdef OSW_TABLE_DEBUG
                 _conflict_level++;
 #endif
             }
         }
     } else {
         init_row(row, key, keylen);
-        _out_flags |= SW_TABLE_FLAG_NEW_ROW;
+        _out_flags |= OSW_TABLE_FLAG_NEW_ROW;
     }
 
     if (out_flags) {
@@ -356,7 +356,7 @@ bool Table::del(const char *key, uint16_t keylen) {
 
     row->lock();
     if (row->next == nullptr) {
-        if (sw_mem_equal(row->key, row->key_len, key, keylen)) {
+        if (osw_mem_equal(row->key, row->key_len, key, keylen)) {
             row->clear();
             goto _delete_element;
         } else {
@@ -365,7 +365,7 @@ bool Table::del(const char *key, uint16_t keylen) {
     } else {
         tmp = row;
         while (tmp) {
-            if (sw_mem_equal(tmp->key, tmp->key_len, key, keylen)) {
+            if (osw_mem_equal(tmp->key, tmp->key_len, key, keylen)) {
                 break;
             }
             prev = tmp;
@@ -398,7 +398,7 @@ bool Table::del(const char *key, uint16_t keylen) {
     }
 
 _delete_element:
-    sw_atomic_fetch_sub(&(row_num), 1);
+    osw_atomic_fetch_sub(&(row_num), 1);
     row->unlock();
 
     return true;
@@ -427,7 +427,7 @@ void TableRow::set_value(TableColumn *col, void *value, size_t vlen) {
     default:
         if (vlen > (col->size - sizeof(TableStringLength))) {
             // error
-            swoole_warning("[key=%s,field=%s]string value is too long", key, col->name.c_str());
+            openswoole_warning("[key=%s,field=%s]string value is too long", key, col->name.c_str());
             vlen = col->size - sizeof(TableStringLength);
         }
         if (value == nullptr) {
@@ -454,4 +454,4 @@ void TableRow::get_value(TableColumn *col, char **value, TableStringLength *len)
     *value = data + col->index + sizeof(*len);
 }
 
-}  // namespace swoole
+}  // namespace openswoole

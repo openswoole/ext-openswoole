@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_msg_queue.h"
+#include "openswoole_msg_queue.h"
 
 using swoole::MsgQueue;
 using swoole::QueueNode;

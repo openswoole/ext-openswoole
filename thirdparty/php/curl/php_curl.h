@@ -19,7 +19,7 @@
 
 /* Copied from PHP-7.4.11 */
 
-#ifdef SW_USE_CURL
+#ifdef OSW_USE_CURL
 
 #ifndef _PHP_CURL_H
 #define _PHP_CURL_H
@@ -55,8 +55,8 @@
 PHP_CURL_API extern zend_class_entry *curl_ce;
 PHP_CURL_API extern zend_class_entry *curl_share_ce;
 PHP_CURL_API extern zend_class_entry *curl_multi_ce;
-PHP_CURL_API extern zend_class_entry *swoole_coroutine_curl_handle_ce;
-PHP_CURL_API extern zend_class_entry *swoole_coroutine_curl_multi_handle_ce;
+PHP_CURL_API extern zend_class_entry *openswoole_coroutine_curl_handle_ce;
+PHP_CURL_API extern zend_class_entry *openswoole_coroutine_curl_multi_handle_ce;
 
 PHP_CURL_API extern zend_class_entry *curl_CURLFile_class;
 

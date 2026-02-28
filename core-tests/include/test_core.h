@@ -1,7 +1,7 @@
 #pragma once
 
-#include "swoole_api.h"
-#include "swoole_client.h"
+#include "openswoole_api.h"
+#include "openswoole_client.h"
 
 #include <gtest/gtest.h>
 
@@ -29,7 +29,7 @@
 #define ASSERT_MEMEQ(x,y,n)   ASSERT_EQ(memcmp((x), (y), n), 0)
 #define EXPECT_MEMEQ(x,y,n)   EXPECT_EQ(memcmp((x), (y), n), 0)
 
-namespace swoole { namespace test {
+namespace openswoole { namespace test {
 const std::string &get_root_path();
 std::string get_jpg_file();
 bool is_github_ci();

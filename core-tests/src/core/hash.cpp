@@ -15,22 +15,22 @@
 */
 
 #include "test_core.h"
-#include "swoole_hash.h"
+#include "openswoole_hash.h"
 
 static const char *data = "hello world, PHP  the best.";
 
 TEST(hash, crc32) {
-    ASSERT_EQ(swoole_crc32(data, strlen(data)), 2962796788);
+    ASSERT_EQ(openswoole_crc32(data, strlen(data)), 2962796788);
 }
 
 TEST(hash, php) {
-    ASSERT_GT(swoole_hash_php(data, strlen(data)), 0);
+    ASSERT_GT(openswoole_hash_php(data, strlen(data)), 0);
 }
 
 TEST(hash, jenkins) {
-    ASSERT_GT(swoole_hash_jenkins(data, strlen(data)), 0);
+    ASSERT_GT(openswoole_hash_jenkins(data, strlen(data)), 0);
 }
 
 TEST(hash, austin) {
-    ASSERT_GT(swoole_hash_austin(data, strlen(data)), 0);
+    ASSERT_GT(openswoole_hash_austin(data, strlen(data)), 0);
 }

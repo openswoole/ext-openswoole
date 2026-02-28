@@ -16,14 +16,14 @@
 
 #include "test_coroutine.h"
 
-#include "swoole_socket.h"
+#include "openswoole_socket.h"
 
-#include "swoole_util.h"
+#include "openswoole_util.h"
 
-using namespace swoole;
+using namespace openswoole;
 using swoole::coroutine::Socket;
 using swoole::coroutine::System;
-using namespace swoole::test;
+using namespace openswoole::test;
 using namespace std;
 
 TEST(dns, lookup1) {
@@ -44,7 +44,7 @@ TEST(dns, domain_not_found) {
     test::coroutine::run([](void *arg) {
         auto list = swoole::coroutine::dns_lookup("www.baidu.com-not-found", AF_INET, 2);
         ASSERT_EQ(list.size(), 0);
-        ASSERT_EQ(swoole_get_last_error(), SW_ERROR_DNSLOOKUP_RESOLVE_FAILED);
+        ASSERT_EQ(openswoole_get_last_error(), OSW_ERROR_DNSLOOKUP_RESOLVE_FAILED);
     });
 }
 
@@ -56,8 +56,8 @@ TEST(dns, bad_family) {
 }
 
 TEST(dns, cancel) {
-    // swoole_set_trace_flags(SW_TRACE_CARES);
-    // swoole_set_log_level(SW_LOG_TRACE);
+    // openswoole_set_trace_flags(OSW_TRACE_CARES);
+    // openswoole_set_log_level(OSW_LOG_TRACE);
     test::coroutine::run([](void *arg) {
         auto co = Coroutine::get_current_safe();
         Coroutine::create([co](void *) {
@@ -66,7 +66,7 @@ TEST(dns, cancel) {
         });
         auto list1 = swoole::coroutine::dns_lookup("www.baidu-not-found-for-cancel.com", AF_INET, 2);
         ASSERT_EQ(list1.size(), 0);
-        ASSERT_EQ(swoole_get_last_error(), SW_ERROR_CO_CANCELED);
+        ASSERT_EQ(openswoole_get_last_error(), OSW_ERROR_CO_CANCELED);
     });
 }
 
@@ -91,8 +91,8 @@ TEST(dns, getaddrinfo) {
 }
 
 TEST(dns, load_resolv_conf) {
-    ASSERT_TRUE(swoole_load_resolv_conf());
-    auto dns_server = swoole_get_dns_server();
+    ASSERT_TRUE(openswoole_load_resolv_conf());
+    auto dns_server = openswoole_get_dns_server();
     ASSERT_FALSE(dns_server.first.empty());
     ASSERT_NE(dns_server.second, 0);
 }
@@ -116,7 +116,7 @@ TEST(dns, gethosts) {
     file << "       127.0.0.1 bbb.com               ccc.com      #ddd.com\n";
     file.close();
 
-    swoole_set_hosts_path(hosts_file);
+    openswoole_set_hosts_path(hosts_file);
 
     std::string ip = swoole::coroutine::get_ip_by_hosts("localhost");
     ASSERT_EQ(ip, "127.0.0.1");

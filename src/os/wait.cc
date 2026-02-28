@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -13,18 +13,18 @@
   | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
   +----------------------------------------------------------------------+
 */
-#include "swoole.h"
-#include "swoole_api.h"
-#include "swoole_process_pool.h"
-#include "swoole_coroutine.h"
-#include "swoole_coroutine_system.h"
-#include "swoole_signal.h"
+#include "openswoole.h"
+#include "openswoole_api.h"
+#include "openswoole_process_pool.h"
+#include "openswoole_coroutine.h"
+#include "openswoole_coroutine_system.h"
+#include "openswoole_signal.h"
 
 #include <list>
 #include <unordered_map>
 
-using namespace swoole;
-using swoole::coroutine::System;
+using namespace openswoole;
+using openswoole::coroutine::System;
 
 struct WaitTask {
     Coroutine *co;
@@ -44,7 +44,7 @@ static void signal_handler(int signo) {
     }
 
     while (true) {
-        auto exit_status = swoole::wait_process(-1, WNOHANG);
+        auto exit_status = openswoole::wait_process(-1, WNOHANG);
         if (exit_status.get_pid() <= 0) {
             break;
         }
@@ -68,21 +68,21 @@ static void signal_handler(int signo) {
 
 static void signal_init() {
     if (!signal_ready) {
-        Reactor *reactor = SwooleTG.reactor;
-        swoole_signal_set(SIGCHLD, signal_handler);
+        Reactor *reactor = OpenSwooleTG.reactor;
+        openswoole_signal_set(SIGCHLD, signal_handler);
 #ifdef HAVE_SIGNALFD
-        if (SwooleG.use_signalfd && !reactor->isset_handler(SW_FD_SIGNAL)) {
-            swoole_signalfd_setup(reactor);
+        if (OpenSwooleG.use_signalfd && !reactor->isset_handler(OSW_FD_SIGNAL)) {
+            openswoole_signalfd_setup(reactor);
         }
 #endif
 
         reactor->set_exit_condition(Reactor::EXIT_CONDITION_WAIT_PID, [](Reactor *reactor, size_t &event_num) -> bool {
-            return swoole_coroutine_wait_count() == 0;
+            return openswoole_coroutine_wait_count() == 0;
         });
 
         reactor->add_destroy_callback([](void *) {
             signal_ready = false;
-            swoole_signal_clear();
+            openswoole_signal_clear();
         });
 
         signal_ready = true;
@@ -94,7 +94,7 @@ pid_t System::wait(int *__stat_loc, double timeout) {
 }
 
 /**
- * @error: errno & swoole_get_last_error()
+ * @error: errno & openswoole_get_last_error()
  */
 pid_t System::waitpid(pid_t __pid, int *__stat_loc, int __options, double timeout) {
     if (__pid < 0) {
@@ -114,7 +114,7 @@ pid_t System::waitpid(pid_t __pid, int *__stat_loc, int __options, double timeou
         }
     }
 
-    if (sw_unlikely(SwooleTG.reactor == nullptr || !Coroutine::get_current() || (__options & WNOHANG))) {
+    if (osw_unlikely(OpenSwooleTG.reactor == nullptr || !Coroutine::get_current() || (__options & WNOHANG))) {
         return ::waitpid(__pid, __stat_loc, __options);
     }
 
@@ -141,7 +141,7 @@ pid_t System::waitpid(pid_t __pid, int *__stat_loc, int __options, double timeou
     /* timeout controller */
     TimerNode *timer = nullptr;
     if (timeout > 0) {
-        timer = swoole_timer_add(
+        timer = openswoole_timer_add(
             timeout * 1000,
             false,
             [](Timer *timer, TimerNode *tnode) {
@@ -153,7 +153,7 @@ pid_t System::waitpid(pid_t __pid, int *__stat_loc, int __options, double timeou
 
     Coroutine::CancelFunc cancel_fn = [timer](Coroutine *co) {
         if (timer) {
-            swoole_timer_del(timer);
+            openswoole_timer_del(timer);
         }
         co->resume();
         return true;
@@ -175,12 +175,12 @@ pid_t System::waitpid(pid_t __pid, int *__stat_loc, int __options, double timeou
     /* clear and assign result */
     if (task.pid > 0) {
         if (timer) {
-            swoole_timer_del(timer);
+            openswoole_timer_del(timer);
         }
         *__stat_loc = task.status;
     } else {
-        swoole_set_last_error(task.co->is_canceled() ? SW_ERROR_CO_CANCELED : ETIMEDOUT);
-        errno = swoole_get_last_error();
+        openswoole_set_last_error(task.co->is_canceled() ? OSW_ERROR_CO_CANCELED : ETIMEDOUT);
+        errno = openswoole_get_last_error();
     }
 
     return task.pid;
@@ -188,15 +188,15 @@ pid_t System::waitpid(pid_t __pid, int *__stat_loc, int __options, double timeou
 
 extern "C" {
 
-size_t swoole_coroutine_wait_count() {
+size_t openswoole_coroutine_wait_count() {
     return wait_list.size() + waitpid_map.size();
 }
 
-pid_t swoole_coroutine_wait(int *__stat_loc) {
+pid_t openswoole_coroutine_wait(int *__stat_loc) {
     return System::wait(__stat_loc);
 }
 
-pid_t swoole_coroutine_waitpid(pid_t __pid, int *__stat_loc, int __options) {
+pid_t openswoole_coroutine_waitpid(pid_t __pid, int *__stat_loc, int __options) {
     return System::waitpid(__pid, __stat_loc, __options);
 }
 }

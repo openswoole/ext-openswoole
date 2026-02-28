@@ -22,7 +22,7 @@ TEST(client, tcp) {
             SERVER_THIS->send(req->info.fd, req->data, req->info.len);
         };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_TCP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_TCP);
         serv.on("onReceive", (void *) receive_fn);
         serv.start();
     });
@@ -31,11 +31,11 @@ TEST(client, tcp) {
 
     sleep(1);  // wait for the test server to start
 
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ASSERT_NE(cli.socket, nullptr);
     ret = cli.connect(&cli, TEST_HOST, TEST_PORT, -1, 0);
     ASSERT_EQ(ret, 0);
-    ret = cli.send(&cli, SW_STRS(GREETER), 0);
+    ret = cli.send(&cli, OSW_STRS(GREETER), 0);
     ASSERT_GT(ret, 0);
     ret = cli.recv(&cli, buf, 128, 0);
     ASSERT_EQ(ret, GREETER_SIZE);
@@ -58,7 +58,7 @@ TEST(client, udp) {
             SERVER_THIS->sendto(packet->socket_addr, packet->data, packet->length, req->info.server_fd);
         };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_UDP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_UDP);
         serv.on("onPacket", (void *) packet_fn);
         serv.start();
     });
@@ -67,11 +67,11 @@ TEST(client, udp) {
 
     sleep(1);  // wait for the test server to start
 
-    Client cli(SW_SOCK_UDP, false);
+    Client cli(OSW_SOCK_UDP, false);
     ASSERT_NE(cli.socket, nullptr);
     ret = cli.connect(&cli, TEST_HOST, TEST_PORT, -1, 0);
     ASSERT_EQ(ret, 0);
-    ret = cli.send(&cli, SW_STRS(GREETER), 0);
+    ret = cli.send(&cli, OSW_STRS(GREETER), 0);
     ASSERT_GT(ret, 0);
     ret = cli.recv(&cli, buf, 128, 0);
     ASSERT_EQ(ret, GREETER_SIZE);
@@ -93,7 +93,7 @@ TEST(client, async_tcp) {
             SERVER_THIS->send(req->info.fd, req->data, req->info.len);
         };
 
-        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, SW_SOCK_TCP);
+        Server serv(TEST_HOST, TEST_PORT, swoole::Server::MODE_BASE, OSW_SOCK_TCP);
 
         serv.set_private_data("pipe", &p);
 
@@ -115,11 +115,11 @@ TEST(client, async_tcp) {
     p.set_timeout(10);
     p.read(&value, sizeof(value));
 
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
-    AsyncClient ac(SW_SOCK_TCP);
+    AsyncClient ac(OSW_SOCK_TCP);
 
-    ac.on_connect([](AsyncClient *ac) { ac->send(SW_STRS(GREETER)); });
+    ac.on_connect([](AsyncClient *ac) { ac->send(OSW_STRS(GREETER)); });
 
     ac.on_close([](AsyncClient *ac) {
 
@@ -137,7 +137,7 @@ TEST(client, async_tcp) {
     bool retval = ac.connect(TEST_HOST, TEST_PORT);
     EXPECT_TRUE(retval);
 
-    swoole_event_wait();
+    openswoole_event_wait();
 
     kill(pid, SIGTERM);
     int status;
@@ -146,41 +146,41 @@ TEST(client, async_tcp) {
 
 TEST(client, connect_refuse) {
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, TEST_HOST, TEST_PORT + 10001, -1, 0);
     ASSERT_EQ(ret, -1);
-    ASSERT_EQ(swoole_get_last_error(), ECONNREFUSED);
+    ASSERT_EQ(openswoole_get_last_error(), ECONNREFUSED);
 }
 
 TEST(client, connect_timeout) {
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "19.168.0.99", TEST_PORT + 10001, 0.2, 0);
     ASSERT_EQ(ret, -1);
-    ASSERT_EQ(swoole_get_last_error(), ETIMEDOUT);
+    ASSERT_EQ(openswoole_get_last_error(), ETIMEDOUT);
 }
 
 TEST(client, shutdown_write) {
     signal(SIGPIPE, SIG_IGN);
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
     ASSERT_EQ(ret, 0);
     cli.shutdown(SHUT_WR);
-    ssize_t retval = cli.send(&cli, SW_STRL("hello world"), 0);
+    ssize_t retval = cli.send(&cli, OSW_STRL("hello world"), 0);
     ASSERT_EQ(retval, -1);
-    ASSERT_EQ(swoole_get_last_error(), EPIPE);
+    ASSERT_EQ(openswoole_get_last_error(), EPIPE);
 }
 
 TEST(client, shutdown_read) {
     signal(SIGPIPE, SIG_IGN);
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
     ASSERT_EQ(ret, 0);
 
     cli.shutdown(SHUT_RD);
-    ssize_t retval = cli.send(&cli, SW_STRL("hello world\r\n\r\n"), 0);
+    ssize_t retval = cli.send(&cli, OSW_STRL("hello world\r\n\r\n"), 0);
     ASSERT_GT(retval, 0);
 
     char buf[1024];
@@ -191,22 +191,22 @@ TEST(client, shutdown_read) {
 TEST(client, shutdown_all) {
     signal(SIGPIPE, SIG_IGN);
     int ret;
-    Client cli(SW_SOCK_TCP, false);
+    Client cli(OSW_SOCK_TCP, false);
     ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
     ASSERT_EQ(ret, 0);
 
     cli.shutdown(SHUT_RDWR);
 
-    ssize_t retval = cli.send(&cli, SW_STRL("hello world\r\n\r\n"), 0);
+    ssize_t retval = cli.send(&cli, OSW_STRL("hello world\r\n\r\n"), 0);
     ASSERT_EQ(retval, -1);
-    ASSERT_EQ(swoole_get_last_error(), EPIPE);
+    ASSERT_EQ(openswoole_get_last_error(), EPIPE);
 
     char buf[1024];
     retval = cli.recv(&cli, buf, sizeof(buf), 0);
     ASSERT_EQ(retval, 0);
 }
 
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
 TEST(client, ssl_1) {
     int ret;
 
@@ -214,14 +214,14 @@ TEST(client, ssl_1) {
     bool closed = false;
     swoole::String buf(65536);
 
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
-    Client client(SW_SOCK_TCP, true);
+    Client client(OSW_SOCK_TCP, true);
     client.enable_ssl_encrypt();
     client.onConnect = [&connected](Client *cli) {
         connected = true;
         cli->send(cli,
-                  SW_STRL("GET / HTTP/1.1\r\n"
+                  OSW_STRL("GET / HTTP/1.1\r\n"
                           "Host: www.baidu.com\r\n"
                           "Connection: close\r\n"
                           "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -236,7 +236,7 @@ TEST(client, ssl_1) {
     ret = client.connect(&client, "www.baidu.com", 443, -1, 0);
     ASSERT_EQ(ret, 0);
 
-    swoole_event_wait();
+    openswoole_event_wait();
 
     ASSERT_TRUE(connected);
     ASSERT_TRUE(closed);
@@ -255,16 +255,16 @@ TEST(client, http_proxy) {
     bool closed = false;
     swoole::String buf(65536);
 
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
-    Client client(SW_SOCK_TCP, true);
+    Client client(OSW_SOCK_TCP, true);
     client.enable_ssl_encrypt();
     client.set_http_proxy(TEST_HTTP_PROXY_HOST, TEST_HTTP_PROXY_PORT);
 
     client.onConnect = [&connected](Client *cli) {
         connected = true;
         cli->send(cli,
-                  SW_STRL("GET / HTTP/1.1\r\n"
+                  OSW_STRL("GET / HTTP/1.1\r\n"
                           "Host: www.baidu.com\r\n"
                           "Connection: close\r\n"
                           "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
@@ -279,7 +279,7 @@ TEST(client, http_proxy) {
     ret = client.connect(&client, "www.baidu.com", 443, -1, 0);
     ASSERT_EQ(ret, 0);
 
-    swoole_event_wait();
+    openswoole_event_wait();
 
     ASSERT_TRUE(connected);
     ASSERT_TRUE(closed);

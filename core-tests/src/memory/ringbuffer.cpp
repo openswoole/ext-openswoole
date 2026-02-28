@@ -1,8 +1,8 @@
 #include "test_core.h"
-#include "swoole_memory.h"
-#include "swoole_pipe.h"
+#include "openswoole_memory.h"
+#include "openswoole_pipe.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 #include <thread>
 
@@ -55,7 +55,7 @@ static void thread_write(void) {
     uint32_t size, yield_count = 0, yield_total_count = 0;
     void *ptr;
     pkg send_pkg;
-    sw_memset_zero(&send_pkg, sizeof(send_pkg));
+    osw_memset_zero(&send_pkg, sizeof(send_pkg));
 
     int i;
     for (i = 0; i < WRITE_N; i++) {
@@ -75,7 +75,7 @@ static void thread_write(void) {
         } while (yield_count < 100);
 
         if (!ptr) {
-            swoole_warning("alloc failed. index=%d, break", i);
+            openswoole_warning("alloc failed. index=%d, break", i);
         }
         ASSERT_NE(ptr, nullptr);
 

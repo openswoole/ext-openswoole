@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,12 +14,12 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
+#include "openswoole.h"
 #if defined(HAVE_KQUEUE) && defined(HAVE_SENDFILE)
 #include <sys/socket.h>
 #include <sys/uio.h>
 
-int swoole_sendfile(int out_fd, int in_fd, off_t *offset, size_t size) {
+int openswoole_sendfile(int out_fd, int in_fd, off_t *offset, size_t size) {
     ssize_t ret;
 
 #ifdef __MACH__
@@ -40,7 +40,7 @@ _do_sendfile:
 #endif
 
     // sent_bytes = (off_t)size;
-    swoole_trace(
+    openswoole_trace(
         "send file, ret:%d, out_fd:%d, in_fd:%d, offset:%jd, size:%zu", ret, out_fd, in_fd, (intmax_t) *offset, size);
 
 #ifdef __MACH__
@@ -58,28 +58,28 @@ _do_sendfile:
     } else if (ret == 0) {
         return size;
     } else {
-        swoole_sys_warning("sendfile failed");
-        return SW_ERR;
+        openswoole_sys_warning("sendfile failed");
+        return OSW_ERR;
     }
-    return SW_OK;
+    return OSW_OK;
 }
 #elif !defined(HAVE_SENDFILE)
-int swoole_sendfile(int out_fd, int in_fd, off_t *offset, size_t size) {
-    char buf[SW_BUFFER_SIZE_BIG];
+int openswoole_sendfile(int out_fd, int in_fd, off_t *offset, size_t size) {
+    char buf[OSW_BUFFER_SIZE_BIG];
     size_t readn = size > sizeof(buf) ? sizeof(buf) : size;
     ssize_t n = pread(in_fd, buf, readn, *offset);
 
     if (n > 0) {
         ssize_t ret = write(out_fd, buf, n);
         if (ret < 0) {
-            swoole_sys_warning("write() failed");
+            openswoole_sys_warning("write() failed");
         } else {
             *offset += ret;
         }
         return ret;
     } else {
-        swoole_sys_warning("pread() failed");
-        return SW_ERR;
+        openswoole_sys_warning("pread() failed");
+        return OSW_ERR;
     }
 }
 #endif

@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,18 +14,18 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_api.h"
-#include "swoole_memory.h"
-#include "swoole_socket.h"
-#include "swoole_string.h"
-#include "swoole_msg_queue.h"
-#include "swoole_pipe.h"
-#include "swoole_server.h"
-#include "swoole_util.h"
-#include "swoole_process_pool.h"
-#include "swoole_client.h"
+#include "openswoole_api.h"
+#include "openswoole_memory.h"
+#include "openswoole_socket.h"
+#include "openswoole_string.h"
+#include "openswoole_msg_queue.h"
+#include "openswoole_pipe.h"
+#include "openswoole_server.h"
+#include "openswoole_util.h"
+#include "openswoole_process_pool.h"
+#include "openswoole_client.h"
 
-namespace swoole {
+namespace openswoole {
 
 using network::Socket;
 using network::Stream;
@@ -48,14 +48,14 @@ void ProcessPool::kill_timeout_worker(Timer *timer, TimerNode *tnode) {
     for (i = 0; i < pool->worker_num; i++) {
         if (i >= pool->reload_worker_i) {
             reload_worker_pid = pool->reload_workers[i].pid;
-            if (swoole_kill(reload_worker_pid, 0) == -1) {
+            if (openswoole_kill(reload_worker_pid, 0) == -1) {
                 continue;
             }
-            if (swoole_kill(reload_worker_pid, SIGKILL) < 0) {
-                swoole_sys_warning(
+            if (openswoole_kill(reload_worker_pid, SIGKILL) < 0) {
+                openswoole_sys_warning(
                     "failed to force kill worker process(pid=%d, id=%d)", pool->reload_workers[i].pid, i);
             } else {
-                swoole_warning("force kill worker process(pid=%d, id=%d)", pool->reload_workers[i].pid, i);
+                openswoole_warning("force kill worker process(pid=%d, id=%d)", pool->reload_workers[i].pid, i);
             }
         }
     }
@@ -71,103 +71,103 @@ int ProcessPool::create(uint32_t _worker_num, key_t _msgqueue_key, swIPCMode _ip
     /**
      * Shared memory is used here
      */
-    workers = (Worker *) sw_mem_pool()->alloc(_worker_num * sizeof(Worker));
+    workers = (Worker *) osw_mem_pool()->alloc(_worker_num * sizeof(Worker));
     if (workers == nullptr) {
-        swoole_sys_warning("malloc[1] failed");
-        return SW_ERR;
+        openswoole_sys_warning("malloc[1] failed");
+        return OSW_ERR;
     }
 
-    message_box = Channel::make(65536, sizeof(WorkerStopMessage), SW_CHAN_LOCK | SW_CHAN_SHM);
+    message_box = Channel::make(65536, sizeof(WorkerStopMessage), OSW_CHAN_LOCK | OSW_CHAN_SHM);
     if (message_box == nullptr) {
-        return SW_ERR;
+        return OSW_ERR;
     }
 
-    if (_ipc_mode == SW_IPC_MSGQUEUE) {
+    if (_ipc_mode == OSW_IPC_MSGQUEUE) {
         use_msgqueue = 1;
         msgqueue_key = _msgqueue_key;
         queue = new MsgQueue(msgqueue_key);
         if (!queue->ready()) {
             delete queue;
             queue = nullptr;
-            return SW_ERR;
+            return OSW_ERR;
         }
-    } else if (_ipc_mode == SW_IPC_UNIXSOCK) {
+    } else if (_ipc_mode == OSW_IPC_UNIXSOCK) {
         pipes = new std::vector<std::shared_ptr<UnixSocket>>;
-        SW_LOOP_N(_worker_num) {
+        OSW_LOOP_N(_worker_num) {
             auto sock = new UnixSocket(true, SOCK_DGRAM);
             if (!sock->ready()) {
                 delete sock;
                 delete pipes;
                 pipes = nullptr;
-                return SW_ERR;
+                return OSW_ERR;
             }
             pipes->emplace_back(sock);
             workers[i].pipe_master = sock->get_socket(true);
             workers[i].pipe_worker = sock->get_socket(false);
             workers[i].pipe_object = sock;
         }
-    } else if (_ipc_mode == SW_IPC_SOCKET) {
+    } else if (_ipc_mode == OSW_IPC_SOCKET) {
         use_socket = 1;
         stream_info_ = new StreamInfo();
     } else {
-        _ipc_mode = SW_IPC_NONE;
+        _ipc_mode = OSW_IPC_NONE;
     }
 
     map_ = new std::unordered_map<pid_t, Worker *>;
 
     ipc_mode = _ipc_mode;
-    if (_ipc_mode > SW_IPC_NONE) {
+    if (_ipc_mode > OSW_IPC_NONE) {
         main_loop = ProcessPool_worker_loop;
     }
 
-    SW_LOOP_N(_worker_num) {
+    OSW_LOOP_N(_worker_num) {
         workers[i].pool = this;
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ProcessPool::listen(const char *socket_file, int blacklog) {
-    if (ipc_mode != SW_IPC_SOCKET) {
-        swoole_warning("ipc_mode is not SW_IPC_SOCKET");
-        return SW_ERR;
+    if (ipc_mode != OSW_IPC_SOCKET) {
+        openswoole_warning("ipc_mode is not OSW_IPC_SOCKET");
+        return OSW_ERR;
     }
-    stream_info_->socket_file = sw_strdup(socket_file);
+    stream_info_->socket_file = osw_strdup(socket_file);
     if (stream_info_->socket_file == nullptr) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     stream_info_->socket_port = 0;
-    stream_info_->socket = make_server_socket(SW_SOCK_UNIX_STREAM, stream_info_->socket_file, 0, blacklog);
+    stream_info_->socket = make_server_socket(OSW_SOCK_UNIX_STREAM, stream_info_->socket_file, 0, blacklog);
     if (!stream_info_->socket) {
-        return SW_ERR;
+        return OSW_ERR;
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ProcessPool::listen(const char *host, int port, int blacklog) {
-    if (ipc_mode != SW_IPC_SOCKET) {
-        swoole_warning("ipc_mode is not SW_IPC_SOCKET");
-        return SW_ERR;
+    if (ipc_mode != OSW_IPC_SOCKET) {
+        openswoole_warning("ipc_mode is not OSW_IPC_SOCKET");
+        return OSW_ERR;
     }
-    stream_info_->socket_file = sw_strdup(host);
+    stream_info_->socket_file = osw_strdup(host);
     if (stream_info_->socket_file == nullptr) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     stream_info_->socket_port = port;
-    stream_info_->socket = make_server_socket(SW_SOCK_TCP, host, port, blacklog);
+    stream_info_->socket = make_server_socket(OSW_SOCK_TCP, host, port, blacklog);
     if (!stream_info_->socket) {
-        return SW_ERR;
+        return OSW_ERR;
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 /**
  * start workers
  */
 int ProcessPool::start() {
-    if (ipc_mode == SW_IPC_SOCKET && (stream_info_ == nullptr || stream_info_->socket == 0)) {
-        swoole_warning("must first listen to an tcp port");
-        return SW_ERR;
+    if (ipc_mode == OSW_IPC_SOCKET && (stream_info_ == nullptr || stream_info_->socket == 0)) {
+        openswoole_warning("must first listen to an tcp port");
+        return OSW_ERR;
     }
 
     uint32_t i;
@@ -182,11 +182,11 @@ int ProcessPool::start() {
 
     for (i = 0; i < worker_num; i++) {
         if (spawn(&(workers[i])) < 0) {
-            return SW_ERR;
+            return OSW_ERR;
         }
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ProcessPool::schedule() {
@@ -199,8 +199,8 @@ int ProcessPool::schedule() {
     uint8_t found = 0;
 
     for (i = 0; i < worker_num + 1; i++) {
-        target_worker_id = sw_atomic_fetch_add(&round_id, 1) % worker_num;
-        if (workers[target_worker_id].status == SW_WORKER_IDLE) {
+        target_worker_id = osw_atomic_fetch_add(&round_id, 1) % worker_num;
+        if (workers[target_worker_id].status == OSW_WORKER_IDLE) {
             found = 1;
             break;
         }
@@ -214,8 +214,8 @@ int ProcessPool::schedule() {
 int ProcessPool::response(const char *data, int length) {
     if (stream_info_ == nullptr || stream_info_->last_connection == nullptr ||
         stream_info_->response_buffer == nullptr) {
-        swoole_set_last_error(SW_ERROR_INVALID_PARAMS);
-        return SW_ERR;
+        openswoole_set_last_error(OSW_ERROR_INVALID_PARAMS);
+        return OSW_ERR;
     }
     return stream_info_->response_buffer->append(data, length);
 }
@@ -228,17 +228,17 @@ int ProcessPool::dispatch(EventData *data, int *dst_worker_id) {
     Worker *worker;
 
     if (use_socket) {
-        Stream *stream = Stream::create(stream_info_->socket_file, 0, SW_SOCK_UNIX_STREAM);
+        Stream *stream = Stream::create(stream_info_->socket_file, 0, OSW_SOCK_UNIX_STREAM);
         if (!stream) {
-            return SW_ERR;
+            return OSW_ERR;
         }
         stream->response = nullptr;
         if (stream->send((char *) data, sizeof(data->info) + data->info.len) < 0) {
             stream->cancel = 1;
             delete stream;
-            return SW_ERR;
+            return OSW_ERR;
         }
-        return SW_OK;
+        return OSW_OK;
     }
 
     if (*dst_worker_id < 0) {
@@ -249,12 +249,12 @@ int ProcessPool::dispatch(EventData *data, int *dst_worker_id) {
     worker = get_worker(*dst_worker_id);
 
     int sendn = sizeof(data->info) + data->info.len;
-    ret = worker->send_pipe_message(data, sendn, SW_PIPE_MASTER | SW_PIPE_NONBLOCK);
+    ret = worker->send_pipe_message(data, sendn, OSW_PIPE_MASTER | OSW_PIPE_NONBLOCK);
 
     if (ret >= 0) {
-        sw_atomic_fetch_add(&worker->tasking_num, 1);
+        osw_atomic_fetch_add(&worker->tasking_num, 1);
     } else {
-        swoole_warning("send %d bytes to worker#%d failed", sendn, *dst_worker_id);
+        openswoole_warning("send %d bytes to worker#%d failed", sendn, *dst_worker_id);
     }
 
     return ret;
@@ -265,25 +265,25 @@ int ProcessPool::dispatch_blocking(const char *data, uint32_t len) {
 
     network::Client _socket(stream_info_->socket->socket_type, false);
     if (!_socket.socket) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     if (_socket.connect(&_socket, stream_info_->socket_file, stream_info_->socket_port, -1, 0) < 0) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     uint32_t packed_len = htonl(len);
     if (_socket.send(&_socket, (char *) &packed_len, 4, 0) < 0) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     if (_socket.send(&_socket, (char *) data, len, 0) < 0) {
-        return SW_ERR;
+        return OSW_ERR;
     }
     _socket.close();
-    return SW_OK;
+    return OSW_OK;
 }
 
 /**
  * dispatch data to worker
- * @return SW_OK/SW_ERR
+ * @return OSW_OK/OSW_ERR
  */
 int ProcessPool::dispatch_blocking(EventData *data, int *dst_worker_id) {
     int ret = 0;
@@ -300,14 +300,14 @@ int ProcessPool::dispatch_blocking(EventData *data, int *dst_worker_id) {
     *dst_worker_id += start_id;
     Worker *worker = get_worker(*dst_worker_id);
 
-    ret = worker->send_pipe_message(data, sendn, SW_PIPE_MASTER);
+    ret = worker->send_pipe_message(data, sendn, OSW_PIPE_MASTER);
     if (ret < 0) {
-        swoole_warning("send %d bytes to worker#%d failed", sendn, *dst_worker_id);
+        openswoole_warning("send %d bytes to worker#%d failed", sendn, *dst_worker_id);
     } else {
-        sw_atomic_fetch_add(&worker->tasking_num, 1);
+        osw_atomic_fetch_add(&worker->tasking_num, 1);
     }
 
-    return ret > 0 ? SW_OK : SW_ERR;
+    return ret > 0 ? OSW_OK : OSW_ERR;
 }
 
 void ProcessPool::shutdown() {
@@ -319,22 +319,22 @@ void ProcessPool::shutdown() {
     // concurrent kill
     for (i = 0; i < worker_num; i++) {
         worker = &workers[i];
-        if (swoole_kill(worker->pid, SIGTERM) < 0) {
-            swoole_sys_warning("swKill(%d) failed", worker->pid);
+        if (openswoole_kill(worker->pid, SIGTERM) < 0) {
+            openswoole_sys_warning("swKill(%d) failed", worker->pid);
             continue;
         }
     }
     for (i = 0; i < worker_num; i++) {
         worker = &workers[i];
-        if (swoole_waitpid(worker->pid, &status, 0) < 0) {
-            swoole_sys_warning("waitpid(%d) failed", worker->pid);
+        if (openswoole_waitpid(worker->pid, &status, 0) < 0) {
+            openswoole_sys_warning("waitpid(%d) failed", worker->pid);
         }
     }
     started = false;
 }
 
 pid_t ProcessPool::spawn(Worker *worker) {
-    pid_t pid = swoole_fork(0);
+    pid_t pid = openswoole_fork(0);
     int ret_code = 0;
 
     switch (pid) {
@@ -361,7 +361,7 @@ pid_t ProcessPool::spawn(Worker *worker) {
         exit(ret_code);
         break;
     case -1:
-        swoole_sys_warning("fork() failed");
+        openswoole_sys_warning("fork() failed");
         break;
         // parent
     default:
@@ -384,7 +384,7 @@ int ProcessPool::get_max_request() {
     } else {
         task_n = max_request;
         if (max_request_grace > 0) {
-            task_n += swoole_system_random(1, max_request_grace);
+            task_n += openswoole_system_random(1, max_request_grace);
         }
     }
     return task_n;
@@ -419,14 +419,14 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
         out.mtype = worker->id + 1;
     }
 
-    while (pool->running && !SwooleWG.shutdown && task_n > 0) {
+    while (pool->running && !OpenSwooleWG.shutdown && task_n > 0) {
         /**
          * fetch task
          */
         if (pool->use_msgqueue) {
             n = pool->queue->pop((QueueNode *) &out, sizeof(out.buf));
             if (n < 0 && errno != EINTR) {
-                swoole_sys_warning("[Worker#%d] msgrcv() failed", worker->id);
+                openswoole_sys_warning("[Worker#%d] msgrcv() failed", worker->id);
                 break;
             }
         } else if (pool->use_socket) {
@@ -435,7 +435,7 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
                 if (errno == EAGAIN || errno == EINTR) {
                     continue;
                 } else {
-                    swoole_sys_warning("accept(%d) failed", pool->stream_info_->socket->get_fd());
+                    openswoole_sys_warning("accept(%d) failed", pool->stream_info_->socket->get_fd());
                     break;
                 }
             }
@@ -448,7 +448,7 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
         } else {
             n = worker->pipe_worker->read(&out.buf, sizeof(out.buf));
             if (n < 0 && errno != EINTR) {
-                swoole_sys_warning("[Worker#%d] read(%d) failed", worker->id, worker->pipe_worker->fd);
+                openswoole_sys_warning("[Worker#%d] read(%d) failed", worker->id, worker->pipe_worker->fd);
             }
         }
 
@@ -456,16 +456,16 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
          * timer
          */
         if (n < 0) {
-            if (errno == EINTR && SwooleG.signal_alarm && SwooleTG.timer) {
+            if (errno == EINTR && OpenSwooleG.signal_alarm && OpenSwooleTG.timer) {
             _alarm_handler:
-                SwooleG.signal_alarm = false;
-                SwooleTG.timer->select();
+                OpenSwooleG.signal_alarm = false;
+                OpenSwooleTG.timer->select();
             }
             continue;
         }
 
         if (n != (ssize_t) (out.buf.info.len + sizeof(out.buf.info))) {
-            swoole_warning("bad task packet, The received data-length[%ld] is inconsistent with the packet-length[%ld]",
+            openswoole_warning("bad task packet, The received data-length[%ld] is inconsistent with the packet-length[%ld]",
                            n,
                            out.buf.info.len + sizeof(out.buf.info));
             continue;
@@ -474,9 +474,9 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
         /**
          * do task
          */
-        worker->status = SW_WORKER_BUSY;
+        worker->status = OSW_WORKER_BUSY;
         ret = pool->onTask(pool, &out.buf);
-        worker->status = SW_WORKER_IDLE;
+        worker->status = OSW_WORKER_IDLE;
 
         if (pool->use_socket && pool->stream_info_->last_connection) {
             int _end = 0;
@@ -488,7 +488,7 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
         /**
          * timer
          */
-        if (SwooleG.signal_alarm) {
+        if (OpenSwooleG.signal_alarm) {
             goto _alarm_handler;
         }
 
@@ -496,7 +496,7 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
             task_n--;
         }
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 void ProcessPool::set_protocol(int task_protocol, uint32_t max_packet_size) {
@@ -505,7 +505,7 @@ void ProcessPool::set_protocol(int task_protocol, uint32_t max_packet_size) {
     } else {
         packet_buffer = new char[max_packet_size];
         if (stream_info_) {
-            stream_info_->response_buffer = new String(SW_BUFFER_SIZE_STD);
+            stream_info_->response_buffer = new String(OSW_BUFFER_SIZE_STD);
         }
         max_packet_size_ = max_packet_size;
         main_loop = ProcessPool_worker_loop_ex;
@@ -524,9 +524,9 @@ static int ProcessPool_worker_loop_ex(ProcessPool *pool, Worker *worker) {
          * fetch task
          */
         if (pool->use_msgqueue) {
-            n = pool->queue->pop(outbuf, SW_MSGMAX);
+            n = pool->queue->pop(outbuf, OSW_MSGMAX);
             if (n < 0 && errno != EINTR) {
-                swoole_sys_warning("[Worker#%d] msgrcv() failed", worker->id);
+                openswoole_sys_warning("[Worker#%d] msgrcv() failed", worker->id);
                 break;
             }
             data = outbuf->mdata;
@@ -537,7 +537,7 @@ static int ProcessPool_worker_loop_ex(ProcessPool *pool, Worker *worker) {
                 if (errno == EAGAIN || errno == EINTR) {
                     continue;
                 } else {
-                    swoole_sys_warning("accept(%d) failed", pool->stream_info_->socket->get_fd());
+                    openswoole_sys_warning("accept(%d) failed", pool->stream_info_->socket->get_fd());
                     break;
                 }
             }
@@ -561,7 +561,7 @@ static int ProcessPool_worker_loop_ex(ProcessPool *pool, Worker *worker) {
         } else {
             n = worker->pipe_worker->read(pool->packet_buffer, pool->max_packet_size_);
             if (n < 0 && errno != EINTR) {
-                swoole_sys_warning("[Worker#%d] read(%d) failed", worker->id, worker->pipe_worker->fd);
+                openswoole_sys_warning("[Worker#%d] read(%d) failed", worker->id, worker->pipe_worker->fd);
             }
             data = pool->packet_buffer;
         }
@@ -570,10 +570,10 @@ static int ProcessPool_worker_loop_ex(ProcessPool *pool, Worker *worker) {
          * timer
          */
         if (n < 0) {
-            if (errno == EINTR && SwooleG.signal_alarm && SwooleTG.timer) {
+            if (errno == EINTR && OpenSwooleG.signal_alarm && OpenSwooleTG.timer) {
             _alarm_handler:
-                SwooleG.signal_alarm = false;
-                SwooleTG.timer->select();
+                OpenSwooleG.signal_alarm = false;
+                OpenSwooleTG.timer->select();
             }
             continue;
         }
@@ -595,11 +595,11 @@ static int ProcessPool_worker_loop_ex(ProcessPool *pool, Worker *worker) {
         /**
          * timer
          */
-        if (SwooleG.signal_alarm) {
+        if (OpenSwooleG.signal_alarm) {
             goto _alarm_handler;
         }
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 /**
@@ -607,7 +607,7 @@ static int ProcessPool_worker_loop_ex(ProcessPool *pool, Worker *worker) {
  */
 int ProcessPool_add_worker(ProcessPool *pool, Worker *worker) {
     pool->map_->emplace(std::make_pair(worker->pid, worker));
-    return SW_OK;
+    return OSW_OK;
 }
 
 bool ProcessPool::detach() {
@@ -617,12 +617,12 @@ bool ProcessPool::detach() {
 
     WorkerStopMessage msg;
     msg.pid = getpid();
-    msg.worker_id = SwooleG.process_id;
+    msg.worker_id = OpenSwooleG.process_id;
 
     if (message_box && message_box->push(&msg, sizeof(msg)) < 0) {
         return false;
     }
-    if (swoole_kill(master_pid, SIGIO) < 0) {
+    if (openswoole_kill(master_pid, SIGIO) < 0) {
         return false;
     }
     running = false;
@@ -643,9 +643,9 @@ int ProcessPool::wait() {
     while (running) {
         ExitStatus exit_status = wait_process();
 
-        if (SwooleG.signal_alarm && SwooleTG.timer) {
-            SwooleG.signal_alarm = false;
-            SwooleTG.timer->select();
+        if (OpenSwooleG.signal_alarm && OpenSwooleTG.timer) {
+            OpenSwooleG.signal_alarm = false;
+            OpenSwooleTG.timer->select();
         }
         if (read_message) {
             WorkerStopMessage msg;
@@ -659,8 +659,8 @@ int ProcessPool::wait() {
                 }
                 pid_t new_pid = spawn(exit_worker);
                 if (new_pid < 0) {
-                    swoole_sys_warning("fork worker process failed");
-                    return SW_ERR;
+                    openswoole_sys_warning("fork worker process failed");
+                    return OSW_ERR;
                 }
                 map_->erase(msg.pid);
             }
@@ -672,16 +672,16 @@ int ProcessPool::wait() {
             }
             if (!reloading) {
                 if (errno > 0 && errno != EINTR) {
-                    swoole_sys_warning("[Manager] wait failed");
+                    openswoole_sys_warning("[Manager] wait failed");
                 }
                 continue;
             } else {
                 if (!reload_init) {
-                    swoole_info("reload workers");
+                    openswoole_info("reload workers");
                     reload_init = true;
                     memcpy(reload_workers, workers, sizeof(Worker) * worker_num);
                     if (max_wait_time) {
-                        swoole_timer_add((long) (max_wait_time * 1000), false, kill_timeout_worker, this);
+                        openswoole_timer_add((long) (max_wait_time * 1000), false, kill_timeout_worker, this);
                     }
                 }
                 goto _kill_worker;
@@ -694,23 +694,23 @@ int ProcessPool::wait() {
                 if (onWorkerNotFound) {
                     onWorkerNotFound(this, exit_status);
                 } else {
-                    swoole_warning("[Manager]unknown worker[pid=%d]", exit_status.get_pid());
+                    openswoole_warning("[Manager]unknown worker[pid=%d]", exit_status.get_pid());
                 }
                 continue;
             }
 
             if (!exit_status.is_normal_exit()) {
-                swoole_warning("worker#%d abnormal exit, status=%d, signal=%d"
+                openswoole_warning("worker#%d abnormal exit, status=%d, signal=%d"
                                "%s",
                                exit_worker->id,
                                exit_status.get_code(),
                                exit_status.get_signal(),
-                               exit_status.get_signal() == SIGSEGV ? SwooleG.bug_report_message.c_str() : "");
+                               exit_status.get_signal() == SIGSEGV ? OpenSwooleG.bug_report_message.c_str() : "");
             }
             new_pid = spawn(exit_worker);
             if (new_pid < 0) {
-                swoole_sys_warning("Fork worker process failed");
-                return SW_ERR;
+                openswoole_sys_warning("Fork worker process failed");
+                return OSW_ERR;
             }
             map_->erase(exit_status.get_pid());
             if (exit_status.get_pid() == reload_worker_pid) {
@@ -727,18 +727,18 @@ int ProcessPool::wait() {
                 continue;
             }
             reload_worker_pid = reload_workers[reload_worker_i].pid;
-            ret = swoole_kill(reload_worker_pid, SIGTERM);
+            ret = openswoole_kill(reload_worker_pid, SIGTERM);
             if (ret < 0) {
                 if (errno == ECHILD) {
                     reload_worker_i++;
                     goto _kill_worker;
                 }
-                swoole_sys_warning("[Manager]swKill(%d) failed", reload_workers[reload_worker_i].pid);
+                openswoole_sys_warning("[Manager]swKill(%d) failed", reload_workers[reload_worker_i].pid);
                 continue;
             }
         }
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 void ProcessPool::destroy() {
@@ -755,7 +755,7 @@ void ProcessPool::destroy() {
     if (stream_info_) {
         if (stream_info_->socket) {
             unlink(stream_info_->socket_file);
-            sw_free((void *) stream_info_->socket_file);
+            osw_free((void *) stream_info_->socket_file);
         }
         if (stream_info_->socket) {
             stream_info_->socket->free();
@@ -779,7 +779,7 @@ void ProcessPool::destroy() {
         message_box->destroy();
     }
 
-    sw_mem_pool()->free(workers);
+    osw_mem_pool()->free(workers);
 }
 
-}  // namespace swoole
+}  // namespace openswoole

@@ -1,6 +1,6 @@
 #include "test_core.h"
 #include "httplib_client.h"
-#include "swoole_http.h"
+#include "openswoole_http.h"
 
 namespace websocket = swoole::websocket;
 
@@ -14,7 +14,7 @@ bool Client::Upgrade(const char *_path, Headers &_headers) {
     _headers.emplace("Sec-WebSocket-Version", "13");
 
     auto resp = Get(_path, _headers);
-    if (resp == nullptr or resp->status != SW_HTTP_SWITCHING_PROTOCOLS) {
+    if (resp == nullptr or resp->status != OSW_HTTP_SWITCHING_PROTOCOLS) {
         return false;
     }
 
@@ -42,14 +42,14 @@ std::shared_ptr<WebSocketFrame> Client::Recv() {
     auto msg = std::make_shared<WebSocketFrame>();
     auto retval = process_socket(socket_, [&](Stream &strm) {
         swProtocol proto = {};
-        proto.package_length_size = SW_WEBSOCKET_HEADER_LEN;
+        proto.package_length_size = OSW_WEBSOCKET_HEADER_LEN;
         proto.get_package_length = websocket::get_package_length;
-        proto.package_max_length = SW_INPUT_BUFFER_SIZE;
+        proto.package_max_length = OSW_INPUT_BUFFER_SIZE;
 
         char buf[1024];
         ssize_t packet_len;
 
-        if (strm.read(buf, SW_WEBSOCKET_HEADER_LEN) <= 0) {
+        if (strm.read(buf, OSW_WEBSOCKET_HEADER_LEN) <= 0) {
             return false;
         }
         packet_len = proto.get_package_length(&proto, nullptr, buf, 2);
@@ -57,7 +57,7 @@ std::shared_ptr<WebSocketFrame> Client::Recv() {
             return false;
         }
         if (packet_len == 0) {
-            if (strm.read(buf + SW_WEBSOCKET_HEADER_LEN, proto.real_header_length - SW_WEBSOCKET_HEADER_LEN) <= 0) {
+            if (strm.read(buf + OSW_WEBSOCKET_HEADER_LEN, proto.real_header_length - OSW_WEBSOCKET_HEADER_LEN) <= 0) {
                 return false;
             }
             packet_len = proto.get_package_length(&proto, nullptr, buf, proto.real_header_length);
@@ -72,7 +72,7 @@ std::shared_ptr<WebSocketFrame> Client::Recv() {
         }
         data[packet_len] = 0;
 
-        uint32_t header_len = proto.real_header_length > 0 ? proto.real_header_length : SW_WEBSOCKET_HEADER_LEN;
+        uint32_t header_len = proto.real_header_length > 0 ? proto.real_header_length : OSW_WEBSOCKET_HEADER_LEN;
         memcpy(data, buf, header_len);
 
         ssize_t read_bytes = header_len;

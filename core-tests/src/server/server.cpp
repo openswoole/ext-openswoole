@@ -16,13 +16,13 @@
 
 #include "test_core.h"
 
-#include "swoole_server.h"
-#include "swoole_memory.h"
-#include "swoole_signal.h"
-#include "swoole_lock.h"
+#include "openswoole_server.h"
+#include "openswoole_memory.h"
+#include "openswoole_signal.h"
+#include "openswoole_lock.h"
 
 using namespace std;
-using namespace swoole;
+using namespace openswoole;
 
 TEST(server, create_pipe_buffers) {
     int ret;
@@ -43,10 +43,10 @@ TEST(server, schedule) {
     serv.worker_num = 6;
     serv.dispatch_mode = Server::DISPATCH_IDLE_WORKER;
     ret = serv.create();
-    ASSERT_EQ(SW_OK, ret);
+    ASSERT_EQ(OSW_OK, ret);
 
     for (uint32_t i = 0; i < serv.worker_num; i++) {
-        serv.workers[i].status = SW_WORKER_BUSY;
+        serv.workers[i].status = OSW_WORKER_BUSY;
     }
 
     std::set<int> _worker_id_set;
@@ -58,7 +58,7 @@ TEST(server, schedule) {
     ASSERT_EQ(_worker_id_set.size(), serv.worker_num);
 
     for (uint32_t i = 1; i < serv.worker_num - 1; i++) {
-        serv.workers[i].status = SW_WORKER_IDLE;
+        serv.workers[i].status = OSW_WORKER_IDLE;
     }
 
     _worker_id_set.clear();
@@ -75,22 +75,22 @@ TEST(server, base) {
     Server serv(Server::MODE_BASE);
     serv.worker_num = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
-    swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    swListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
     ASSERT_TRUE(port);
 
     mutex lock;
     lock.lock();
 
-    ASSERT_EQ(serv.create(), SW_OK);
+    ASSERT_EQ(serv.create(), OSW_OK);
 
     std::thread t1([&]() {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         lock.lock();
 
-        swoole::network::SyncClient c(SW_SOCK_TCP);
+        swoole::network::SyncClient c(OSW_SOCK_TCP);
         c.connect(TEST_HOST, port->port);
         c.send(packet, strlen(packet));
         char buf[1024];
@@ -108,7 +108,7 @@ TEST(server, base) {
         string resp = string("Server: ") + string(packet);
         serv->send(req->info.fd, resp.c_str(), resp.length());
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     serv.start();
@@ -121,28 +121,28 @@ TEST(server, process) {
 
     SwooleG.running = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
-    ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    ListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
-    ASSERT_EQ(serv.create(), SW_OK);
+    ASSERT_EQ(serv.create(), OSW_OK);
 
     serv.onStart = [&lock](swServer *serv) {
         thread t1([=]() {
-            swoole_signal_block_all();
+            openswoole_signal_block_all();
 
             lock->lock();
 
             swListenPort *port = serv->get_primary_port();
 
-            swoole::network::SyncClient c(SW_SOCK_TCP);
+            swoole::network::SyncClient c(OSW_SOCK_TCP);
             c.connect(TEST_HOST, port->port);
             c.send(packet, strlen(packet));
             char buf[1024];
@@ -162,7 +162,7 @@ TEST(server, process) {
         string resp = string("Server: ") + string(packet);
         serv->send(req->info.fd, resp.c_str(), resp.length());
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     ASSERT_EQ(serv.start(), 0);
@@ -170,21 +170,21 @@ TEST(server, process) {
     delete lock;
 }
 
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
 TEST(server, ssl) {
     Server serv(Server::MODE_PROCESS);
     serv.worker_num = 1;
 
     SwooleG.running = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
-    ListenPort *port = serv.add_port((enum swSocketType)(SW_SOCK_TCP | SW_SOCK_SSL), TEST_HOST, 0);
+    ListenPort *port = serv.add_port((enum swSocketType)(OSW_SOCK_TCP | OSW_SOCK_SSL), TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -192,20 +192,20 @@ TEST(server, ssl) {
     port->ssl_set_key_file(test::get_root_path() + "/tests/include/ssl_certs/server.key");
     port->ssl_init();
 
-    ASSERT_EQ(serv.create(), SW_OK);
+    ASSERT_EQ(serv.create(), OSW_OK);
 
     serv.onStart = [&lock](Server *serv) {
         thread t1([=]() {
-            swoole_signal_block_all();
+            openswoole_signal_block_all();
 
             lock->lock();
 
             ListenPort *port = serv->get_primary_port();
 
             EXPECT_EQ(port->ssl, 1);
-            EXPECT_EQ(swoole_ssl_is_thread_safety(), true);
+            EXPECT_EQ(openswoole_ssl_is_thread_safety(), true);
 
-            swoole::network::SyncClient c(SW_SOCK_TCP);
+            swoole::network::SyncClient c(OSW_SOCK_TCP);
             c.connect(TEST_HOST, port->port);
             c.enable_ssl_encrypt();
             c.send(packet, strlen(packet));
@@ -226,7 +226,7 @@ TEST(server, ssl) {
         string resp = string("Server: ") + string(packet);
         serv->send(req->info.fd, resp.c_str(), resp.length());
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     ASSERT_EQ(serv.start(), 0);
@@ -240,14 +240,14 @@ TEST(server, dtls) {
 
     SwooleG.running = 1;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
     Mutex *lock = new Mutex(Mutex::PROCESS_SHARED);
     lock->lock();
 
-    ListenPort *port = serv.add_port((enum swSocketType)(SW_SOCK_UDP | SW_SOCK_SSL), TEST_HOST, 0);
+    ListenPort *port = serv.add_port((enum swSocketType)(OSW_SOCK_UDP | OSW_SOCK_SSL), TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -255,11 +255,11 @@ TEST(server, dtls) {
     port->ssl_set_key_file(test::get_root_path() + "/tests/include/ssl_certs/server.key");
     port->ssl_init();
 
-    ASSERT_EQ(serv.create(), SW_OK);
+    ASSERT_EQ(serv.create(), OSW_OK);
 
     serv.onStart = [&lock](Server *serv) {
         thread t1([=]() {
-            swoole_signal_block_all();
+            openswoole_signal_block_all();
 
             lock->lock();
 
@@ -267,7 +267,7 @@ TEST(server, dtls) {
 
             EXPECT_EQ(port->ssl, 1);
 
-            swoole::network::SyncClient c(SW_SOCK_UDP);
+            swoole::network::SyncClient c(OSW_SOCK_UDP);
             c.connect(TEST_HOST, port->port);
             c.enable_ssl_encrypt();
             c.send(packet, strlen(packet));
@@ -288,7 +288,7 @@ TEST(server, dtls) {
         string resp = string("Server: ") + string(packet);
         serv->send(req->info.fd, resp.c_str(), resp.length());
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     ASSERT_EQ(serv.start(), 0);
@@ -302,9 +302,9 @@ TEST(server, task_worker) {
     serv.worker_num = 1;
     serv.task_worker_num = 1;
 
-    ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    ListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
 
@@ -314,8 +314,8 @@ TEST(server, task_worker) {
         return 0;
     };
 
-    ASSERT_EQ(serv.create(), SW_OK);
-    ASSERT_EQ(serv.create_task_workers(), SW_OK);
+    ASSERT_EQ(serv.create(), OSW_OK);
+    ASSERT_EQ(serv.create_task_workers(), OSW_OK);
 
     thread t1([&serv]() {
         serv.gs->task_workers.running = 1;
@@ -327,7 +327,7 @@ TEST(server, task_worker) {
     EventData buf;
     memset(&buf.info, 0, sizeof(buf.info));
 
-    SW_TASK_TYPE(&buf) |= SW_TASK_NOREPLY;
+    OSW_TASK_TYPE(&buf) |= OSW_TASK_NOREPLY;
     buf.info.len = strlen(packet);
     memcpy(buf.data, packet, strlen(packet));
 
@@ -343,7 +343,7 @@ TEST(server, max_connection) {
     Server serv;
 
     serv.set_max_connection(0);
-    ASSERT_EQ(serv.get_max_connection(), SW_MIN(SW_MAX_CONNECTION, SwooleG.max_sockets));
+    ASSERT_EQ(serv.get_max_connection(), OSW_MIN(OSW_MAX_CONNECTION, SwooleG.max_sockets));
 
     serv.set_max_connection(SwooleG.max_sockets + 13);
     ASSERT_EQ(serv.get_max_connection(), SwooleG.max_sockets);
@@ -365,7 +365,7 @@ TEST(server, min_connection) {
     serv.task_worker_num = 14;
     serv.worker_num = 5;
 
-    serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
 
     serv.set_max_connection(15);
     serv.create();
@@ -375,17 +375,17 @@ TEST(server, min_connection) {
 TEST(server, worker_num) {
     Server serv;
 
-    serv.worker_num = SW_CPU_NUM * SW_MAX_WORKER_NCPU + 99;
-    serv.task_worker_num = SW_CPU_NUM * SW_MAX_WORKER_NCPU + 99;
+    serv.worker_num = OSW_CPU_NUM * OSW_MAX_WORKER_NCPU + 99;
+    serv.task_worker_num = OSW_CPU_NUM * OSW_MAX_WORKER_NCPU + 99;
     serv.create();
 
-    ASSERT_EQ(serv.worker_num, SW_CPU_NUM * SW_MAX_WORKER_NCPU);
-    ASSERT_EQ(serv.task_worker_num, SW_CPU_NUM * SW_MAX_WORKER_NCPU);
+    ASSERT_EQ(serv.worker_num, OSW_CPU_NUM * OSW_MAX_WORKER_NCPU);
+    ASSERT_EQ(serv.task_worker_num, OSW_CPU_NUM * OSW_MAX_WORKER_NCPU);
 }
 
 TEST(server, reactor_num_base) {
     Server serv(Server::MODE_BASE);
-    serv.reactor_num = SW_CPU_NUM * SW_MAX_THREAD_NCPU + 99;
+    serv.reactor_num = OSW_CPU_NUM * OSW_MAX_THREAD_NCPU + 99;
     serv.create();
 
     ASSERT_EQ(serv.reactor_num, serv.worker_num);
@@ -393,16 +393,16 @@ TEST(server, reactor_num_base) {
 
 TEST(server, reactor_num_large) {
     Server serv(Server::MODE_PROCESS);
-    serv.worker_num = SW_CPU_NUM * SW_MAX_WORKER_NCPU;
-    serv.reactor_num = SW_CPU_NUM * SW_MAX_THREAD_NCPU + 99;
+    serv.worker_num = OSW_CPU_NUM * OSW_MAX_WORKER_NCPU;
+    serv.reactor_num = OSW_CPU_NUM * OSW_MAX_THREAD_NCPU + 99;
     serv.create();
 
-    ASSERT_EQ(serv.reactor_num, SW_CPU_NUM * SW_MAX_THREAD_NCPU);
+    ASSERT_EQ(serv.reactor_num, OSW_CPU_NUM * OSW_MAX_THREAD_NCPU);
 }
 
 TEST(server, reactor_num_large2) {
     Server serv(Server::MODE_PROCESS);
-    serv.reactor_num = SW_CPU_NUM * SW_MAX_THREAD_NCPU + 99;
+    serv.reactor_num = OSW_CPU_NUM * OSW_MAX_THREAD_NCPU + 99;
     serv.create();
 
     ASSERT_EQ(serv.reactor_num, serv.worker_num);
@@ -413,5 +413,5 @@ TEST(server, reactor_num_zero) {
     serv.reactor_num = 0;
     serv.create();
 
-    ASSERT_EQ(serv.reactor_num, SW_CPU_NUM);
+    ASSERT_EQ(serv.reactor_num, OSW_CPU_NUM);
 }

@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,10 +14,10 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_lock.h"
+#include "openswoole.h"
+#include "openswoole_lock.h"
 
-namespace swoole {
+namespace openswoole {
 
 struct MutexImpl {
     pthread_mutex_t lock_;
@@ -26,7 +26,7 @@ struct MutexImpl {
 
 Mutex::Mutex(int flags) : Lock() {
     if (flags & PROCESS_SHARED) {
-        impl = (MutexImpl *) sw_mem_pool()->alloc(sizeof(*impl));
+        impl = (MutexImpl *) osw_mem_pool()->alloc(sizeof(*impl));
         if (impl == nullptr) {
             throw std::bad_alloc();
         }
@@ -43,7 +43,7 @@ Mutex::Mutex(int flags) : Lock() {
 #ifdef HAVE_PTHREAD_MUTEXATTR_SETPSHARED
         pthread_mutexattr_setpshared(&impl->attr_, PTHREAD_PROCESS_SHARED);
 #else
-        swoole_warning("PTHREAD_MUTEX_PSHARED is not supported");
+        openswoole_warning("PTHREAD_MUTEX_PSHARED is not supported");
 #endif
     }
 
@@ -51,7 +51,7 @@ Mutex::Mutex(int flags) : Lock() {
 #ifdef HAVE_PTHREAD_MUTEXATTR_SETROBUST
         pthread_mutexattr_setrobust(&impl->attr_, PTHREAD_MUTEX_ROBUST);
 #else
-        swoole_warning("PTHREAD_MUTEX_ROBUST is not supported");
+        openswoole_warning("PTHREAD_MUTEX_ROBUST is not supported");
 #endif
     }
 
@@ -88,7 +88,7 @@ int Mutex::trylock_rd() {
 
 #ifdef HAVE_MUTEX_TIMEDLOCK
 int Mutex::lock_wait(int timeout_msec) {
-    struct timespec timeo = swoole_time_until(timeout_msec);
+    struct timespec timeo = openswoole_time_until(timeout_msec);
     return pthread_mutex_timedlock(&impl->lock_, &timeo);
 }
 #else
@@ -117,10 +117,10 @@ Mutex::~Mutex() {
     pthread_mutexattr_destroy(&impl->attr_);
     pthread_mutex_destroy(&impl->lock_);
     if (shared_) {
-        sw_mem_pool()->free(impl);
+        osw_mem_pool()->free(impl);
     } else {
         delete impl;
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole

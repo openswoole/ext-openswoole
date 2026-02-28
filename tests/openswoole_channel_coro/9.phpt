@@ -1,0 +1,45 @@
+--TEST--
+openswoole_channel_coro: pop priority
+--SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+use OpenSwoole\Coroutine as co;
+
+$chan = new co\Channel(2);
+
+for ($i = 0; $i < 4; $i++) {
+    go(function () use ($i, $chan) {
+        $chan->push($i);
+    });
+};
+
+openswoole_timer_after(200, function () use ($chan) {
+    for ($i = 0; $i < 6; $i++)  {
+        $chan->push($i);
+    }
+});
+
+go(function () use ($chan){
+    for ($i = 0; $i < 2; $i++)  {
+        echo "[read]".var_export($chan->pop(), true)."\n";
+    }
+    for ($i = 0; $i < 8; $i++)  {
+        echo "[read & write]".var_export($chan->pop(), true)."\n";
+    }
+});
+
+openswoole_event::wait();
+?>
+--EXPECT--
+[read]0
+[read]1
+[read & write]2
+[read & write]3
+[read & write]0
+[read & write]1
+[read & write]2
+[read & write]3
+[read & write]4
+[read & write]5

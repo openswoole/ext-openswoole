@@ -1,8 +1,8 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
- | Copyright (c) 2017-now Open Swoole Group                             |
+ | Copyright (c) 2017-now OpenSwoole Group                             |
  | Copyright (c) 2012-2017 The Swoole Group                             |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
@@ -17,40 +17,40 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole.h"
-#include "swoole_socket.h"
-#include "swoole_http2.h"
+#include "openswoole.h"
+#include "openswoole_socket.h"
+#include "openswoole_http2.h"
 
-using swoole::Protocol;
-using swoole::network::Socket;
+using openswoole::Protocol;
+using openswoole::network::Socket;
 
-namespace swoole {
+namespace openswoole {
 namespace http2 {
 
 int send_setting_frame(Protocol *protocol, Socket *_socket) {
-    char setting_frame[SW_HTTP2_FRAME_HEADER_SIZE + SW_HTTP2_SETTING_OPTION_SIZE * 3];
+    char setting_frame[OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_SETTING_OPTION_SIZE * 3];
     char *p = setting_frame;
     uint16_t id;
     uint32_t value;
 
-    set_frame_header(p, SW_HTTP2_TYPE_SETTINGS, SW_HTTP2_SETTING_OPTION_SIZE * 3, 0, 0);
-    p += SW_HTTP2_FRAME_HEADER_SIZE;
+    set_frame_header(p, OSW_HTTP2_TYPE_SETTINGS, OSW_HTTP2_SETTING_OPTION_SIZE * 3, 0, 0);
+    p += OSW_HTTP2_FRAME_HEADER_SIZE;
 
-    id = htons(SW_HTTP2_SETTINGS_MAX_CONCURRENT_STREAMS);
+    id = htons(OSW_HTTP2_SETTINGS_MAX_CONCURRENT_STREAMS);
     memcpy(p, &id, sizeof(id));
-    value = htonl(SW_HTTP2_MAX_MAX_CONCURRENT_STREAMS);
+    value = htonl(OSW_HTTP2_MAX_MAX_CONCURRENT_STREAMS);
     memcpy(p + 2, &value, sizeof(value));
-    p += SW_HTTP2_SETTING_OPTION_SIZE;
+    p += OSW_HTTP2_SETTING_OPTION_SIZE;
 
-    id = htons(SW_HTTP2_SETTINGS_INIT_WINDOW_SIZE);
+    id = htons(OSW_HTTP2_SETTINGS_INIT_WINDOW_SIZE);
     memcpy(p, &id, sizeof(id));
-    value = htonl(SW_HTTP2_DEFAULT_WINDOW_SIZE);
+    value = htonl(OSW_HTTP2_DEFAULT_WINDOW_SIZE);
     memcpy(p + 2, &value, sizeof(value));
-    p += SW_HTTP2_SETTING_OPTION_SIZE;
+    p += OSW_HTTP2_SETTING_OPTION_SIZE;
 
-    id = htons(SW_HTTP2_SETTINGS_MAX_FRAME_SIZE);
+    id = htons(OSW_HTTP2_SETTINGS_MAX_FRAME_SIZE);
     memcpy(p, &id, sizeof(id));
-    value = htonl(SW_HTTP2_MAX_MAX_FRAME_SIZE);
+    value = htonl(OSW_HTTP2_MAX_MAX_FRAME_SIZE);
     memcpy(p + 2, &value, sizeof(value));
 
     return _socket->send(setting_frame, sizeof(setting_frame), 0);
@@ -68,33 +68,33 @@ int send_setting_frame(Protocol *protocol, Socket *_socket) {
  +---------------------------------------------------------------+
  */
 ssize_t get_frame_length(Protocol *protocol, Socket *conn, const char *buf, uint32_t length) {
-    if (length < SW_HTTP2_FRAME_HEADER_SIZE) {
+    if (length < OSW_HTTP2_FRAME_HEADER_SIZE) {
         return 0;
     }
-    return get_length(buf) + SW_HTTP2_FRAME_HEADER_SIZE;
+    return get_length(buf) + OSW_HTTP2_FRAME_HEADER_SIZE;
 }
 
 const char *get_type(int type) {
     switch (type) {
-    case SW_HTTP2_TYPE_DATA:
+    case OSW_HTTP2_TYPE_DATA:
         return "DATA";
-    case SW_HTTP2_TYPE_HEADERS:
+    case OSW_HTTP2_TYPE_HEADERS:
         return "HEADERS";
-    case SW_HTTP2_TYPE_PRIORITY:
+    case OSW_HTTP2_TYPE_PRIORITY:
         return "PRIORITY";
-    case SW_HTTP2_TYPE_RST_STREAM:
+    case OSW_HTTP2_TYPE_RST_STREAM:
         return "RST_STREAM";
-    case SW_HTTP2_TYPE_SETTINGS:
+    case OSW_HTTP2_TYPE_SETTINGS:
         return "SETTINGS";
-    case SW_HTTP2_TYPE_PUSH_PROMISE:
+    case OSW_HTTP2_TYPE_PUSH_PROMISE:
         return "PUSH_PROMISE";
-    case SW_HTTP2_TYPE_PING:
+    case OSW_HTTP2_TYPE_PING:
         return "PING";
-    case SW_HTTP2_TYPE_GOAWAY:
+    case OSW_HTTP2_TYPE_GOAWAY:
         return "GOAWAY";
-    case SW_HTTP2_TYPE_WINDOW_UPDATE:
+    case OSW_HTTP2_TYPE_WINDOW_UPDATE:
         return "WINDOW_UPDATE";
-    case SW_HTTP2_TYPE_CONTINUATION:
+    case OSW_HTTP2_TYPE_CONTINUATION:
         return "CONTINUATION";
     default:
         return "UNKOWN";
@@ -103,23 +103,23 @@ const char *get_type(int type) {
 
 int get_type_color(int type) {
     switch (type) {
-    case SW_HTTP2_TYPE_DATA:
-    case SW_HTTP2_TYPE_WINDOW_UPDATE:
-        return SW_COLOR_MAGENTA;
-    case SW_HTTP2_TYPE_HEADERS:
-    case SW_HTTP2_TYPE_SETTINGS:
-    case SW_HTTP2_TYPE_PUSH_PROMISE:
-    case SW_HTTP2_TYPE_CONTINUATION:
-        return SW_COLOR_GREEN;
-    case SW_HTTP2_TYPE_PING:
-    case SW_HTTP2_TYPE_PRIORITY:
-        return SW_COLOR_WHITE;
-    case SW_HTTP2_TYPE_RST_STREAM:
-    case SW_HTTP2_TYPE_GOAWAY:
+    case OSW_HTTP2_TYPE_DATA:
+    case OSW_HTTP2_TYPE_WINDOW_UPDATE:
+        return OSW_COLOR_MAGENTA;
+    case OSW_HTTP2_TYPE_HEADERS:
+    case OSW_HTTP2_TYPE_SETTINGS:
+    case OSW_HTTP2_TYPE_PUSH_PROMISE:
+    case OSW_HTTP2_TYPE_CONTINUATION:
+        return OSW_COLOR_GREEN;
+    case OSW_HTTP2_TYPE_PING:
+    case OSW_HTTP2_TYPE_PRIORITY:
+        return OSW_COLOR_WHITE;
+    case OSW_HTTP2_TYPE_RST_STREAM:
+    case OSW_HTTP2_TYPE_GOAWAY:
     default:
-        return SW_COLOR_RED;
+        return OSW_COLOR_RED;
     }
 }
 
 }  // namespace http2
-}  // namespace swoole
+}  // namespace openswoole

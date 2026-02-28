@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,17 +14,17 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_socket.h"
-#include "swoole_signal.h"
-#include "swoole_reactor.h"
-#include "swoole_api.h"
-#include "swoole_c_api.h"
+#include "openswoole.h"
+#include "openswoole_socket.h"
+#include "openswoole_signal.h"
+#include "openswoole_reactor.h"
+#include "openswoole_api.h"
+#include "openswoole_c_api.h"
 
-namespace swoole {
+namespace openswoole {
 using network::Socket;
 
-#ifdef SW_USE_MALLOC_TRIM
+#ifdef OSW_USE_MALLOC_TRIM
 #ifdef __APPLE__
 #include <sys/malloc.h>
 #else
@@ -33,6 +33,10 @@ using network::Socket;
 #endif
 
 static void reactor_begin(Reactor *reactor);
+
+#ifdef HAVE_IO_URING
+ReactorImpl *make_reactor_io_uring(Reactor *_reactor, int max_events);
+#endif
 
 #ifdef HAVE_EPOLL
 ReactorImpl *make_reactor_epoll(Reactor *_reactor, int max_events);
@@ -50,7 +54,7 @@ ReactorImpl *make_reactor_select(Reactor *_reactor);
 
 void ReactorImpl::after_removal_failure(network::Socket *_socket) {
     if (!_socket->silent_remove) {
-        swoole_sys_warning("failed to delete events[fd=%d#%d, type=%d, events=%d]",
+        openswoole_sys_warning("failed to delete events[fd=%d#%d, type=%d, events=%d]",
                            _socket->fd,
                            reactor_->id,
                            _socket->fd_type,
@@ -74,6 +78,11 @@ Reactor::Reactor(int max_event, Type _type) {
     }
 
     switch (type_) {
+#ifdef HAVE_IO_URING
+    case TYPE_IO_URING:
+        impl = make_reactor_io_uring(this, max_event);
+        break;
+#endif
 #ifdef HAVE_EPOLL
     case TYPE_EPOLL:
         impl = make_reactor_epoll(this, max_event);
@@ -110,8 +119,8 @@ Reactor::Reactor(int max_event, Type _type) {
 
     default_write_handler = _writable_callback;
 
-    if (SwooleG.hooks[SW_GLOBAL_HOOK_ON_REACTOR_CREATE]) {
-        swoole_call_hook(SW_GLOBAL_HOOK_ON_REACTOR_CREATE, this);
+    if (OpenSwooleG.hooks[OSW_GLOBAL_HOOK_ON_REACTOR_CREATE]) {
+        openswoole_call_hook(OSW_GLOBAL_HOOK_ON_REACTOR_CREATE, this);
     }
 
     set_end_callback(PRIORITY_DEFER_TASK, [](Reactor *reactor) {
@@ -132,11 +141,11 @@ Reactor::Reactor(int max_event, Type _type) {
         }
     });
 
-    swoole_signal_set(SIGPIPE, nullptr);
+    openswoole_signal_set(SIGPIPE, nullptr);
 
     set_end_callback(PRIORITY_SIGNAL_CALLBACK, [](Reactor *reactor) {
-        if (sw_unlikely(reactor->singal_no)) {
-            swoole_signal_callback(reactor->singal_no);
+        if (osw_unlikely(reactor->singal_no)) {
+            openswoole_signal_callback(reactor->singal_no);
             reactor->singal_no = 0;
         }
     });
@@ -147,11 +156,11 @@ Reactor::Reactor(int max_event, Type _type) {
         }
     });
 
-#ifdef SW_USE_MALLOC_TRIM
+#ifdef OSW_USE_MALLOC_TRIM
     set_end_callback(PRIORITY_MALLOC_TRIM, [](Reactor *reactor) {
         time_t now = ::time(nullptr);
-        if (reactor->last_malloc_trim_time < now - SW_MALLOC_TRIM_INTERVAL) {
-            malloc_trim(SW_MALLOC_TRIM_PAD);
+        if (reactor->last_malloc_trim_time < now - OSW_MALLOC_TRIM_INTERVAL) {
+            malloc_trim(OSW_MALLOC_TRIM_PAD);
             reactor->last_malloc_trim_time = now;
         }
     });
@@ -164,8 +173,8 @@ Reactor::Reactor(int max_event, Type _type) {
 bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
     int fdtype = get_fd_type(_fdtype);
 
-    if (fdtype >= SW_MAX_FDTYPE) {
-        swoole_warning("fdtype > SW_MAX_FDTYPE[%d]", SW_MAX_FDTYPE);
+    if (fdtype >= OSW_MAX_FDTYPE) {
+        openswoole_warning("fdtype > OSW_MAX_FDTYPE[%d]", OSW_MAX_FDTYPE);
         return false;
     }
 
@@ -176,7 +185,7 @@ bool Reactor::set_handler(int _fdtype, ReactorHandler handler) {
     } else if (isset_error_event(_fdtype)) {
         error_handler[fdtype] = handler;
     } else {
-        swoole_warning("unknown fdtype");
+        openswoole_warning("unknown fdtype");
         return false;
     }
 
@@ -204,9 +213,9 @@ static void reactor_begin(Reactor *reactor) {
 }
 
 int Reactor::_close(Reactor *reactor, Socket *socket) {
-    swoole_trace_log(SW_TRACE_CLOSE, "fd=%d", socket->fd);
+    openswoole_trace_log(OSW_TRACE_CLOSE, "fd=%d", socket->fd);
     socket->free();
-    return SW_OK;
+    return OSW_OK;
 }
 
 using SendFunc = std::function<ssize_t(void)>;
@@ -227,14 +236,14 @@ static ssize_t write_func(
     }
 
     if ((uint32_t) __len > socket->buffer_size) {
-        swoole_error_log(SW_LOG_WARNING,
-                         SW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
+        openswoole_error_log(OSW_LOG_WARNING,
+                         OSW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
                          "data packet is too large, cannot exceed the buffer size");
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     if (Buffer::empty(buffer)) {
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
         if (socket->ssl_send_) {
             goto _alloc_buffer;
         }
@@ -248,13 +257,13 @@ static ssize_t write_func(
             } else {
                 goto _alloc_buffer;
             }
-        } else if (socket->catch_error(errno) == SW_WAIT) {
+        } else if (socket->catch_error(errno) == OSW_WAIT) {
         _alloc_buffer:
             if (!socket->out_buffer) {
                 buffer = new Buffer(socket->chunk_size);
                 if (!buffer) {
-                    swoole_warning("create worker buffer failed");
-                    return SW_ERR;
+                    openswoole_warning("create worker buffer failed");
+                    return OSW_ERR;
                 }
                 socket->out_buffer = buffer;
             }
@@ -265,25 +274,25 @@ static ssize_t write_func(
         } else if (errno == EINTR) {
             goto _do_send;
         } else {
-            swoole_set_last_error(errno);
-            return SW_ERR;
+            openswoole_set_last_error(errno);
+            return OSW_ERR;
         }
     } else {
     _append_buffer:
         if (buffer->length() > socket->buffer_size) {
             if (socket->dontwait) {
-                swoole_set_last_error(SW_ERROR_OUTPUT_BUFFER_OVERFLOW);
-                return SW_ERR;
+                openswoole_set_last_error(OSW_ERROR_OUTPUT_BUFFER_OVERFLOW);
+                return OSW_ERR;
             } else {
-                swoole_error_log(
-                    SW_LOG_WARNING, SW_ERROR_OUTPUT_BUFFER_OVERFLOW, "socket#%d output buffer overflow", fd);
-                sw_yield();
-                socket->wait_event(SW_SOCKET_OVERFLOW_WAIT, SW_EVENT_WRITE);
+                openswoole_error_log(
+                    OSW_LOG_WARNING, OSW_ERROR_OUTPUT_BUFFER_OVERFLOW, "socket#%d output buffer overflow", fd);
+                osw_yield();
+                socket->wait_event(OSW_SOCKET_OVERFLOW_WAIT, OSW_EVENT_WRITE);
             }
         }
         append_fn(buffer);
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 ssize_t Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_t n) {
@@ -300,16 +309,16 @@ ssize_t Reactor::_write(Reactor *reactor, Socket *socket, const void *buf, size_
 }
 
 ssize_t Reactor::_writev(Reactor *reactor, network::Socket *socket, const iovec *iov, size_t iovcnt) {
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
     if (socket->ssl) {
-        swoole_error_log(SW_LOG_WARNING, SW_ERROR_OPERATION_NOT_SUPPORT, "does not support SSL");
-        return SW_ERR;
+        openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_OPERATION_NOT_SUPPORT, "does not support SSL");
+        return OSW_ERR;
     }
 #endif
 
     ssize_t send_bytes = 0;
     size_t n = 0;
-    SW_LOOP_N(iovcnt) {
+    OSW_LOOP_N(iovcnt) {
         n += iov[i].iov_len;
     }
     auto send_fn = [&send_bytes, socket, iov, iovcnt]() -> ssize_t {
@@ -343,13 +352,13 @@ int Reactor::_writable_callback(Reactor *reactor, Event *ev) {
             if (socket->close_wait) {
                 return reactor->trigger_close_event(ev);
             } else if (socket->send_wait) {
-                return SW_OK;
+                return OSW_OK;
             }
         }
     }
 
     if (socket->send_timer) {
-        swoole_timer_del(socket->send_timer);
+        openswoole_timer_del(socket->send_timer);
         socket->send_timer = nullptr;
     }
 
@@ -358,7 +367,7 @@ int Reactor::_writable_callback(Reactor *reactor, Event *ev) {
         reactor->remove_write_event(ev->socket);
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 void Reactor::drain_write_buffer(swSocket *socket) {
@@ -367,7 +376,7 @@ void Reactor::drain_write_buffer(swSocket *socket) {
     event.fd = socket->fd;
 
     while (!Buffer::empty(socket->out_buffer)) {
-        if (socket->wait_event(network::Socket::default_write_timeout, SW_EVENT_WRITE) == SW_ERR) {
+        if (socket->wait_event(network::Socket::default_write_timeout, OSW_EVENT_WRITE) == OSW_ERR) {
             break;
         }
         _writable_callback(this, &event);
@@ -406,9 +415,9 @@ Reactor::~Reactor() {
     destroyed = true;
     destroy_callbacks.execute();
     delete impl;
-    if (SwooleG.hooks[SW_GLOBAL_HOOK_ON_REACTOR_DESTROY]) {
-        swoole_call_hook(SW_GLOBAL_HOOK_ON_REACTOR_DESTROY, this);
+    if (OpenSwooleG.hooks[OSW_GLOBAL_HOOK_ON_REACTOR_DESTROY]) {
+        openswoole_call_hook(OSW_GLOBAL_HOOK_ON_REACTOR_DESTROY, this);
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole

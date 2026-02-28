@@ -2,8 +2,8 @@
 
 namespace SwooleTest;
 
-use Swoole\Process;
-use Swoole;
+use OpenSwoole\Process;
+use OpenSwoole\Runtime;
 
 class CurlManager
 {
@@ -52,13 +52,13 @@ class CurlManager
         global $argc, $argv;
         if (!($argc > 1 and $argv[1] == 'ori')) {
             $flags = $this->nativeCurl ? SWOOLE_HOOK_NATIVE_CURL : SWOOLE_HOOK_CURL;
-            Swoole\Runtime::enableCoroutine($flags);
+            Runtime::enableCoroutine($flags);
         }
 
         \co::run(function () use ($fn, $proc) {
             $fn("127.0.0.1:{$this->port}");
             if ($proc) {
-                Swoole\Process::kill($proc->pid);
+                Process::kill($proc->pid);
             }
         });
 

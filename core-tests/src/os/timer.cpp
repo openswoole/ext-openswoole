@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_util.h"
+#include "openswoole_util.h"
 
 using swoole::Timer;
 using swoole::TimerNode;
@@ -28,16 +28,16 @@ TEST(timer, sys) {
 
     uint64_t ms1 = swoole::time<std::chrono::milliseconds>();
 
-    swoole_timer_add(
+    openswoole_timer_add(
         20, false, [&](Timer *, TimerNode *) { timer1_count++; }, nullptr);
 
-    swoole_timer_add(
+    openswoole_timer_add(
         100,
         true,
         [&](Timer *, TimerNode *tnode) {
             timer2_count++;
             if (timer2_count == 5) {
-                swoole_timer_del(tnode);
+                openswoole_timer_del(tnode);
                 timer_running = false;
             }
         },
@@ -46,7 +46,7 @@ TEST(timer, sys) {
     while (1) {
         sleep(10);
         if (SwooleG.signal_alarm) {
-            swoole_timer_select();
+            openswoole_timer_select();
             if (!timer_running) {
                 break;
             }
@@ -55,7 +55,7 @@ TEST(timer, sys) {
 
     uint64_t ms2 = swoole::time<std::chrono::milliseconds>();
 
-    swoole_timer_free();
+    openswoole_timer_free();
 
     ASSERT_LE(ms2 - ms1, 510);
     ASSERT_EQ(timer1_count, 1);
@@ -66,23 +66,23 @@ TEST(timer, async) {
     int timer1_count = 0;
     int timer2_count = 0;
 
-    swoole_event_init(SW_EVENTLOOP_WAIT_EXIT);
+    openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT);
 
     uint64_t ms1 = swoole::time<std::chrono::milliseconds>();
-    swoole_timer_after(
+    openswoole_timer_after(
         20, [&](Timer *, TimerNode *) { timer1_count++; }, nullptr);
 
-    swoole_timer_tick(
+    openswoole_timer_tick(
         100,
         [&](Timer *, TimerNode *tnode) {
             timer2_count++;
             if (timer2_count == 5) {
-                swoole_timer_del(tnode);
+                openswoole_timer_del(tnode);
             }
         },
         nullptr);
 
-    swoole_event_wait();
+    openswoole_event_wait();
     uint64_t ms2 = swoole::time<std::chrono::milliseconds>();
     ASSERT_LE(ms2 - ms1, 510);
     ASSERT_EQ(timer1_count, 1);

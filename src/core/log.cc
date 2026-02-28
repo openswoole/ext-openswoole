@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,7 +14,7 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
+#include "openswoole.h"
 
 #include <string.h>
 #include <fcntl.h>
@@ -23,7 +23,7 @@
 #include <string>
 #include <chrono>  // NOLINT [build/c++11]
 
-namespace swoole {
+namespace openswoole {
 
 std::string Logger::get_pretty_name(const std::string &pretty_function, bool strip) {
     size_t brackets = pretty_function.find_first_of("(");
@@ -100,11 +100,11 @@ int Logger::get_level() {
 }
 
 void Logger::set_level(int level) {
-    if (level < SW_LOG_DEBUG) {
-        level = SW_LOG_DEBUG;
+    if (level < OSW_LOG_DEBUG) {
+        level = OSW_LOG_DEBUG;
     }
-    if (level > SW_LOG_NONE) {
-        level = SW_LOG_NONE;
+    if (level > OSW_LOG_NONE) {
+        level = OSW_LOG_NONE;
     }
     log_level = level;
 }
@@ -116,33 +116,33 @@ void Logger::set_rotation(int _rotation) {
 bool Logger::redirect_stdout_and_stderr(int enable) {
     if (enable) {
         if (!opened) {
-            swoole_warning("no log file opened");
+            openswoole_warning("no log file opened");
             return false;
         }
         if (redirected) {
-            swoole_warning("has been redirected");
+            openswoole_warning("has been redirected");
             return false;
         }
         if ((stdout_fd = dup(STDOUT_FILENO)) < 0) {
-            swoole_sys_warning("dup(STDOUT_FILENO) failed");
+            openswoole_sys_warning("dup(STDOUT_FILENO) failed");
             return false;
         }
         if ((stderr_fd = dup(STDERR_FILENO)) < 0) {
-            swoole_sys_warning("dup(STDERR_FILENO) failed");
+            openswoole_sys_warning("dup(STDERR_FILENO) failed");
             return false;
         }
-        swoole_redirect_stdout(log_fd);
+        openswoole_redirect_stdout(log_fd);
         redirected = true;
     } else {
         if (!redirected) {
-            swoole_warning("no redirected");
+            openswoole_warning("no redirected");
             return false;
         }
         if (dup2(stdout_fd, STDOUT_FILENO) < 0) {
-            swoole_sys_warning("dup2(STDOUT_FILENO) failed");
+            openswoole_sys_warning("dup2(STDOUT_FILENO) failed");
         }
         if (dup2(stderr_fd, STDERR_FILENO) < 0) {
-            swoole_sys_warning("dup2(STDERR_FILENO) failed");
+            openswoole_sys_warning("dup2(STDERR_FILENO) failed");
         }
         ::close(stdout_fd);
         ::close(stderr_fd);
@@ -155,23 +155,23 @@ bool Logger::redirect_stdout_and_stderr(int enable) {
 }
 
 void Logger::reset() {
-    date_format = SW_LOG_DEFAULT_DATE_FORMAT;
+    date_format = OSW_LOG_DEFAULT_DATE_FORMAT;
     date_with_microseconds = false;
-    log_rotation = SW_LOG_ROTATION_SINGLE;
-    log_level = SW_LOG_INFO;
+    log_rotation = OSW_LOG_ROTATION_SINGLE;
+    log_level = OSW_LOG_INFO;
 }
 
 bool Logger::set_date_format(const char *format) {
-    char date_str[SW_LOG_DATE_STRLEN];
+    char date_str[OSW_LOG_DATE_STRLEN];
     time_t now_sec;
 
     now_sec = ::time(nullptr);
     size_t l_data_str = std::strftime(date_str, sizeof(date_str), format, std::localtime(&now_sec));
 
     if (l_data_str == 0) {
-        swoole_set_last_error(SW_ERROR_INVALID_PARAMS);
-        swoole_error_log(
-            SW_LOG_WARNING, SW_ERROR_INVALID_PARAMS, "The date format string[length=%ld] is too long", strlen(format));
+        openswoole_set_last_error(OSW_ERROR_INVALID_PARAMS);
+        openswoole_error_log(
+            OSW_LOG_WARNING, OSW_ERROR_INVALID_PARAMS, "The date format string[length=%ld] is too long", strlen(format));
 
         return false;
     } else {
@@ -200,7 +200,7 @@ void Logger::reopen() {
      * redirect STDOUT & STDERR to log file
      */
     if (redirected) {
-        swoole_redirect_stdout(log_fd);
+        openswoole_redirect_stdout(log_fd);
     }
 }
 
@@ -218,16 +218,16 @@ std::string Logger::gen_real_file(const std::string &file) {
     const char *fmt;
 
     switch (log_rotation) {
-    case SW_LOG_ROTATION_MONTHLY:
+    case OSW_LOG_ROTATION_MONTHLY:
         fmt = "%Y%m";
         break;
-    case SW_LOG_ROTATION_HOURLY:
+    case OSW_LOG_ROTATION_HOURLY:
         fmt = "%Y%m%d%H";
         break;
-    case SW_LOG_ROTATION_EVERY_MINUTE:
+    case OSW_LOG_ROTATION_EVERY_MINUTE:
         fmt = "%Y%m%d%H%M";
         break;
-    case SW_LOG_ROTATION_DAILY:
+    case OSW_LOG_ROTATION_DAILY:
     default:
         fmt = "%Y%m%d";
         break;
@@ -245,8 +245,8 @@ bool Logger::is_opened() {
 
 void Logger::put(int level, const char *content, size_t length) {
     const char *level_str;
-    char date_str[SW_LOG_DATE_STRLEN];
-    char log_str[SW_LOG_BUFFER_SIZE];
+    char date_str[OSW_LOG_DATE_STRLEN];
+    char log_str[OSW_LOG_BUFFER_SIZE];
     int n;
 
     if (level < log_level) {
@@ -254,22 +254,22 @@ void Logger::put(int level, const char *content, size_t length) {
     }
 
     switch (level) {
-    case SW_LOG_DEBUG:
+    case OSW_LOG_DEBUG:
         level_str = "DEBUG";
         break;
-    case SW_LOG_TRACE:
+    case OSW_LOG_TRACE:
         level_str = "TRACE";
         break;
-    case SW_LOG_NOTICE:
+    case OSW_LOG_NOTICE:
         level_str = "NOTICE";
         break;
-    case SW_LOG_WARNING:
+    case OSW_LOG_WARNING:
         level_str = "WARNING";
         break;
-    case SW_LOG_ERROR:
+    case OSW_LOG_ERROR:
         level_str = "ERROR";
         break;
-    case SW_LOG_INFO:
+    case OSW_LOG_INFO:
     default:
         level_str = "INFO";
         break;
@@ -288,40 +288,40 @@ void Logger::put(int level, const char *content, size_t length) {
 
     if (date_with_microseconds) {
         auto now_us = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
-        l_data_str += sw_snprintf(
-            date_str + l_data_str, SW_LOG_DATE_STRLEN - l_data_str, "<.%lld>", (long long) now_us - now_sec * 1000000);
+        l_data_str += osw_snprintf(
+            date_str + l_data_str, OSW_LOG_DATE_STRLEN - l_data_str, "<.%lld>", (long long) now_us - now_sec * 1000000);
     }
 
     char process_flag = '@';
     int process_id = 0;
 
-    switch (swoole_get_process_type()) {
-    case SW_PROCESS_MASTER:
+    switch (openswoole_get_process_type()) {
+    case OSW_PROCESS_MASTER:
         process_flag = '#';
-        process_id = swoole_get_thread_id();
+        process_id = openswoole_get_thread_id();
         break;
-    case SW_PROCESS_MANAGER:
+    case OSW_PROCESS_MANAGER:
         process_flag = '$';
         break;
-    case SW_PROCESS_WORKER:
+    case OSW_PROCESS_WORKER:
         process_flag = '*';
-        process_id = swoole_get_process_id();
+        process_id = openswoole_get_process_id();
         break;
-    case SW_PROCESS_TASKWORKER:
+    case OSW_PROCESS_TASKWORKER:
         process_flag = '^';
-        process_id = swoole_get_process_id();
+        process_id = openswoole_get_process_id();
         break;
     default:
         break;
     }
 
-    n = sw_snprintf(log_str,
-                    SW_LOG_BUFFER_SIZE,
+    n = osw_snprintf(log_str,
+                    OSW_LOG_BUFFER_SIZE,
                     "[%.*s %c%d.%d]\t%s\t%.*s\n",
                     static_cast<int>(l_data_str),
                     date_str,
                     process_flag,
-                    SwooleG.pid,
+                    OpenSwooleG.pid,
                     process_id,
                     level_str,
                     static_cast<int>(length),
@@ -345,7 +345,7 @@ void Logger::put(int level, const char *content, size_t length) {
         printf("flock(%d, LOCK_UN) failed. Error: %s[%d]\n", log_fd, strerror(errno), errno);
     }
     if (display_backtrace_) {
-        swoole_print_backtrace();
+        openswoole_print_backtrace();
     }
 }
-}  // namespace swoole
+}  // namespace openswoole

@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,10 +14,10 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_coroutine.h"
-#include "swoole_coroutine_c_api.h"
+#include "openswoole_coroutine.h"
+#include "openswoole_coroutine_c_api.h"
 
-namespace swoole {
+namespace openswoole {
 
 Coroutine *Coroutine::current = nullptr;
 long Coroutine::last_cid = 0;
@@ -26,13 +26,13 @@ uint64_t Coroutine::peak_num = 0;
 bool Coroutine::activated = false;
 bool Coroutine::use_fiber_context = false;
 
-size_t Coroutine::stack_size = SW_DEFAULT_C_STACK_SIZE;
+size_t Coroutine::stack_size = OSW_DEFAULT_C_STACK_SIZE;
 Coroutine::SwapCallback Coroutine::on_yield = nullptr;
 Coroutine::SwapCallback Coroutine::on_resume = nullptr;
 Coroutine::SwapCallback Coroutine::on_close = nullptr;
 Coroutine::BailoutCallback Coroutine::on_bailout = nullptr;
 
-#ifdef SW_USE_THREAD_CONTEXT
+#ifdef OSW_USE_THREAD_CONTEXT
 namespace coroutine {
 void thread_context_init();
 void thread_context_clean();
@@ -40,24 +40,24 @@ void thread_context_clean();
 #endif
 
 void Coroutine::activate() {
-#ifdef SW_USE_THREAD_CONTEXT
+#ifdef OSW_USE_THREAD_CONTEXT
     coroutine::thread_context_init();
 #endif
     activated = true;
 }
 
 void Coroutine::deactivate() {
-#ifdef SW_USE_THREAD_CONTEXT
+#ifdef OSW_USE_THREAD_CONTEXT
     coroutine::thread_context_clean();
 #endif
     activated = false;
 }
 
 void Coroutine::yield() {
-    SW_ASSERT(current == this || on_bailout != nullptr);
+    OSW_ASSERT(current == this || on_bailout != nullptr);
     state = STATE_WAITING;
     resume_code_ = RC_OK;
-    if (sw_likely(on_yield && task)) {
+    if (osw_likely(on_yield && task)) {
         on_yield(task);
     }
     current = origin;
@@ -78,7 +78,7 @@ bool Coroutine::yield_ex(double timeout) {
     };
 
     if (timeout > 0) {
-        timer = swoole_timer_add((long) (timeout * 1000), false, timer_callback, nullptr);
+        timer = openswoole_timer_add((long) (timeout * 1000), false, timer_callback, nullptr);
     }
 
     CancelFunc cancel_fn = [](Coroutine *co) {
@@ -89,26 +89,26 @@ bool Coroutine::yield_ex(double timeout) {
     yield(&cancel_fn);
 
     if (is_timedout()) {
-        swoole_set_last_error(SW_ERROR_CO_TIMEDOUT);
+        openswoole_set_last_error(OSW_ERROR_CO_TIMEDOUT);
         return false;
     }
     if (timer) {
-        swoole_timer_del(timer);
+        openswoole_timer_del(timer);
     }
     if (is_canceled()) {
-        swoole_set_last_error(SW_ERROR_CO_CANCELED);
+        openswoole_set_last_error(OSW_ERROR_CO_CANCELED);
         return false;
     }
     return true;
 }
 
 void Coroutine::resume() {
-    SW_ASSERT(current != this);
-    if (sw_unlikely(on_bailout)) {
+    OSW_ASSERT(current != this);
+    if (osw_unlikely(on_bailout)) {
         return;
     }
     state = STATE_RUNNING;
-    if (sw_likely(on_resume && task)) {
+    if (osw_likely(on_resume && task)) {
         on_resume(task);
     }
     origin = current;
@@ -119,7 +119,7 @@ void Coroutine::resume() {
 
 bool Coroutine::cancel() {
     if (!cancel_fn_) {
-        swoole_set_last_error(SW_ERROR_CO_CANNOT_CANCEL);
+        openswoole_set_last_error(OSW_ERROR_CO_CANNOT_CANCEL);
         return false;
     }
     auto fn = *cancel_fn_;
@@ -129,15 +129,15 @@ bool Coroutine::cancel() {
 }
 
 void Coroutine::close() {
-    SW_ASSERT(current == this);
+    OSW_ASSERT(current == this);
     state = STATE_END;
     if (on_close && task) {
         on_close(task);
     }
-#if !defined(SW_USE_THREAD_CONTEXT) && defined(SW_CONTEXT_DETECT_STACK_USAGE)
+#if !defined(OSW_USE_THREAD_CONTEXT) && defined(OSW_CONTEXT_DETECT_STACK_USAGE)
     if (!use_fiber_context) {
-        swoole_trace_log(
-            SW_TRACE_CONTEXT, "coroutine#%ld stack memory use less than %ld bytes", get_cid(), ctx.get_stack_usage());
+        openswoole_trace_log(
+            OSW_TRACE_CONTEXT, "coroutine#%ld stack memory use less than %ld bytes", get_cid(), ctx.get_stack_usage());
     }
 #endif
     current = origin;
@@ -189,7 +189,7 @@ void Coroutine::bailout(BailoutCallback func) {
         return;
     }
     if (!func) {
-        swoole_error("bailout without bailout function");
+        openswoole_error("bailout without bailout function");
     }
     if (!co->task) {
         // TODO: decoupling
@@ -208,53 +208,53 @@ void Coroutine::bailout(BailoutCallback func) {
 
 namespace coroutine {
 bool run(const CoroutineFunc &fn, void *arg) {
-    if (swoole_event_init(SW_EVENTLOOP_WAIT_EXIT) < 0) {
+    if (openswoole_event_init(OSW_EVENTLOOP_WAIT_EXIT) < 0) {
         return false;
     }
     Coroutine::activate();
     long cid = Coroutine::create(fn, arg);
-    swoole_event_wait();
+    openswoole_event_wait();
     Coroutine::deactivate();
     return cid > 0;
 }
 }  // namespace coroutine
-}  // namespace swoole
+}  // namespace openswoole
 
-uint8_t swoole_coroutine_is_in() {
-    return !!swoole::Coroutine::get_current();
+uint8_t openswoole_coroutine_is_in() {
+    return !!openswoole::Coroutine::get_current();
 }
 
-long swoole_coroutine_get_current_id() {
-    return swoole::Coroutine::get_current_cid();
+long openswoole_coroutine_get_current_id() {
+    return openswoole::Coroutine::get_current_cid();
 }
 
-swoole::Coroutine *swoole_coroutine_get(long cid) {
-    auto i = swoole::Coroutine::coroutines.find(cid);
-    if (i == swoole::Coroutine::coroutines.end()) {
+openswoole::Coroutine *openswoole_coroutine_get(long cid) {
+    auto i = openswoole::Coroutine::coroutines.find(cid);
+    if (i == openswoole::Coroutine::coroutines.end()) {
         return nullptr;
     } else {
         return i->second;
     }
 }
 
-size_t swoole_coroutine_count() {
-    return swoole::Coroutine::coroutines.size();
+size_t openswoole_coroutine_count() {
+    return openswoole::Coroutine::coroutines.size();
 }
 
 /**
  * for gdb
  */
-static std::unordered_map<long, swoole::Coroutine *>::iterator _gdb_iterator;
+static std::unordered_map<long, openswoole::Coroutine *>::iterator _gdb_iterator;
 
-void swoole_coroutine_iterator_reset() {
-    _gdb_iterator = swoole::Coroutine::coroutines.begin();
+void openswoole_coroutine_iterator_reset() {
+    _gdb_iterator = openswoole::Coroutine::coroutines.begin();
 }
 
-swoole::Coroutine *swoole_coroutine_iterator_each() {
-    if (_gdb_iterator == swoole::Coroutine::coroutines.end()) {
+openswoole::Coroutine *openswoole_coroutine_iterator_each() {
+    if (_gdb_iterator == openswoole::Coroutine::coroutines.end()) {
         return nullptr;
     } else {
-        swoole::Coroutine *co = _gdb_iterator->second;
+        openswoole::Coroutine *co = _gdb_iterator->second;
         _gdb_iterator++;
         return co;
     }

@@ -3,7 +3,7 @@
 using swoole::coroutine::Channel;
 
 using namespace std;
-using namespace swoole::test;
+using namespace openswoole::test;
 
 TEST(coroutine_channel, push_pop) {
     coroutine::run([](void *arg) {

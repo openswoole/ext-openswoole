@@ -17,9 +17,9 @@
 #include "test_core.h"
 #include "test_coroutine.h"
 #include "redis_client.h"
-#include "swoole_redis.h"
+#include "openswoole_redis.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 constexpr int PKG_N = 32;
@@ -33,13 +33,13 @@ TEST(protocol, eof) {
     String pkgs[PKG_N];
 
     for (int i = 0; i < PKG_N; i++) {
-        pkgs[i].append_random_bytes(swoole_rand(MIN_SIZE, MAX_SIZE), true);
+        pkgs[i].append_random_bytes(openswoole_rand(MIN_SIZE, MAX_SIZE), true);
         pkgs[i].append("\r\n");
     }
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
-    ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    ListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
     ASSERT_TRUE(port);
     port->set_eof_protocol("\r\n", false);
 
@@ -50,7 +50,7 @@ TEST(protocol, eof) {
     thread t1([&]() {
         lock.lock();
 
-        network::Client cli(SW_SOCK_TCP, false);
+        network::Client cli(OSW_SOCK_TCP, false);
         EXPECT_EQ(cli.connect(&cli, TEST_HOST, port->port, 1, 0), 0);
 
         for (int i = 0; i < PKG_N; i++) {
@@ -75,7 +75,7 @@ TEST(protocol, eof) {
             kill(serv->gs->master_pid, SIGTERM);
         }
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     serv.start();

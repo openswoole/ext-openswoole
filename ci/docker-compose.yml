@@ -8,6 +8,8 @@ services:
     ulimits:
       core: -1
     privileged: true
+    security_opt:
+      - seccomp:unconfined
     depends_on:
       - mysql
       - redis
@@ -25,8 +27,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: test
-      MYSQL_USER: swoole
-      MYSQL_PASSWORD: swoole
+      MYSQL_USER: openswoole
+      MYSQL_PASSWORD: openswoole
   postgres:
     container_name: "postgres"
     image: postgres

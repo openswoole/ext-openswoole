@@ -23,7 +23,7 @@ Process::~Process() {
 
 pid_t Process::start() {
     // std::system("ls /proc/self/task");
-    pid_t pid = swoole_fork(0);
+    pid_t pid = openswoole_fork(0);
     if (pid < 0) {
         printf("[Worker] Fatal Error: fork() failed");
         exit(1);

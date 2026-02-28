@@ -18,11 +18,11 @@
 
 #include "httplib_client.h"
 #include "llhttp.h"
-#include "swoole_server.h"
-#include "swoole_file.h"
-#include "swoole_http.h"
+#include "openswoole_server.h"
+#include "openswoole_file.h"
+#include "openswoole_http.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 struct http_context {
@@ -46,14 +46,14 @@ struct http_context {
 
     void response(int code) {
         swString *buf = swoole::make_string(1024);
-        buf->length = sw_snprintf(buf->str, buf->size, "HTTP/1.1 %s\r\n", http_server::get_status_message(code));
+        buf->length = osw_snprintf(buf->str, buf->size, "HTTP/1.1 %s\r\n", http_server::get_status_message(code));
         for (auto &kv : response_headers) {
             buf->append(kv.first.c_str(), kv.first.length());
-            buf->append(SW_STRL(": "));
+            buf->append(OSW_STRL(": "));
             buf->append(kv.second.c_str(), kv.second.length());
-            buf->append(SW_STRL("\r\n"));
+            buf->append(OSW_STRL("\r\n"));
         }
-        buf->append(SW_STRL("\r\n"));
+        buf->append(OSW_STRL("\r\n"));
         server->send(fd, buf->str, buf->length);
         delete buf;
     }
@@ -93,11 +93,11 @@ static void test_run_server(function<void(swServer *)> fn) {
     serv.set_document_root(test::get_root_path());
     serv.add_static_handler_location("/tests/assets");
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
-    swListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    swListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
     if (!port) {
-        swoole_warning("listen failed, [error=%d]", swoole_get_last_error());
+        openswoole_warning("listen failed, [error=%d]", openswoole_get_last_error());
         exit(2);
     }
     port->open_http_protocol = 1;
@@ -115,15 +115,15 @@ static void test_run_server(function<void(swServer *)> fn) {
         auto conn = serv->get_connection_by_session_id(session_id);
 
         if (conn->websocket_status == swoole::websocket::STATUS_ACTIVE) {
-            sw_tg_buffer()->clear();
+            osw_tg_buffer()->clear();
             std::string resp = "Swoole: " + string(req->data, req->info.len);
-            swoole::websocket::encode(sw_tg_buffer(),
+            swoole::websocket::encode(osw_tg_buffer(),
                                       resp.c_str(),
                                       resp.length(),
                                       swoole::websocket::OPCODE_TEXT,
                                       swoole::websocket::FLAG_FIN);
-            serv->send(session_id, sw_tg_buffer()->str, sw_tg_buffer()->length);
-            return SW_OK;
+            serv->send(session_id, osw_tg_buffer()->str, osw_tg_buffer()->length);
+            return OSW_OK;
         }
 
         llhttp_t parser = {};
@@ -149,24 +149,24 @@ static void test_run_server(function<void(swServer *)> fn) {
             ctx.setHeader("Upgrade", "websocket");
             ctx.setHeader("Content-Length", "0");
 
-            ctx.response(SW_HTTP_SWITCHING_PROTOCOLS);
+            ctx.response(OSW_HTTP_SWITCHING_PROTOCOLS);
 
             conn->websocket_status = swoole::websocket::STATUS_ACTIVE;
 
-            return SW_OK;
+            return OSW_OK;
         }
 
         if (err != HPE_OK) {
             fprintf(stderr, "Parse error: %s %s\n", llhttp_errno_name(err), parser.reason);
-            return SW_ERR;
+            return OSW_ERR;
         }
         EXPECT_EQ(err, HPE_OK);
 
-        ctx.response(SW_HTTP_OK, "hello world");
+        ctx.response(OSW_HTTP_OK, "hello world");
 
         EXPECT_EQ(ctx.headers["User-Agent"], httplib::USER_AGENT);
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     serv.start();
@@ -175,7 +175,7 @@ static void test_run_server(function<void(swServer *)> fn) {
 
 TEST(http_server, get) {
     test_run_server([](swServer *serv) {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         auto port = serv->get_primary_port();
 
@@ -190,7 +190,7 @@ TEST(http_server, get) {
 
 TEST(http_server, post) {
     test_run_server([](swServer *serv) {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         auto port = serv->get_primary_port();
 
@@ -208,7 +208,7 @@ TEST(http_server, post) {
 
 TEST(http_server, static_get) {
     test_run_server([](swServer *serv) {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         auto port = serv->get_primary_port();
 
@@ -241,15 +241,15 @@ static void websocket_test(int server_port, const char *data, size_t length) {
 
 TEST(http_server, websocket_small) {
     test_run_server([](swServer *serv) {
-        swoole_signal_block_all();
-        websocket_test(serv->get_primary_port()->get_port(), SW_STRL("hello world, swoole is best!"));
+        openswoole_signal_block_all();
+        websocket_test(serv->get_primary_port()->get_port(), OSW_STRL("hello world, swoole is best!"));
         kill(getpid(), SIGTERM);
     });
 }
 
 TEST(http_server, websocket_medium) {
     test_run_server([](swServer *serv) {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         swString str(8192);
         str.repeat("A", 1, 8192);
@@ -261,7 +261,7 @@ TEST(http_server, websocket_medium) {
 
 TEST(http_server, websocket_big) {
     test_run_server([](swServer *serv) {
-        swoole_signal_block_all();
+        openswoole_signal_block_all();
 
         swString str(128 * 1024);
         str.repeat("A", 1, str.capacity() - 1);

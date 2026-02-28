@@ -30,7 +30,7 @@
 
 #include "main/php_network.h"
 
-using swoole::coroutine::Socket;
+using openswoole::coroutine::Socket;
 
 enum source_op {
 	JOIN_SOURCE,
@@ -217,7 +217,7 @@ mcast_req_fun:
 
 	if (retval != 0) {
 		if (retval != -2) { /* error, but message already emitted */
-			PHP_SWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
+			PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
 		}
 		return FAILURE;
 	}
@@ -287,7 +287,7 @@ ipv4_loop_ttl:
 dosockopt:
 	retval = setsockopt(php_sock->get_fd(), level, optname, opt_ptr, optlen);
 	if (retval != 0) {
-		PHP_SWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
+		PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
 		return FAILURE;
 	}
 
@@ -349,7 +349,7 @@ ipv6_loop_hops:
 dosockopt:
 	retval = setsockopt(php_sock->get_fd(), level, optname, opt_ptr, optlen);
 	if (retval != 0) {
-		PHP_SWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
+		PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
 		return FAILURE;
 	}
 

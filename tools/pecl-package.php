@@ -10,13 +10,13 @@ require __DIR__ . '/bootstrap.php';
 
 function check_source_ver(string $expect_ver, $source_file)
 {
-    static $source_ver_regex = '/(SWOOLE_VERSION +)("?)(?<ver>[\w\-.]+)("?)/';
+    static $source_ver_regex = '/(OPENSWOOLE_VERSION +)("?)(?<ver>[\w\-.]+)("?)/';
     $replaced = false;
     _check:
     $source_content = file_get_contents($source_file);
     if (!preg_match($source_ver_regex, $source_content, $matches)) {
         swoole_log(
-            "Warning: Match SWOOLE_VERSION Failed, skip check!\n",
+            "Warning: Match OPENSWOOLE_VERSION Failed, skip check!\n",
             SWOOLE_COLOR_MAGENTA
         );
         return;
@@ -25,20 +25,20 @@ function check_source_ver(string $expect_ver, $source_file)
     $source_ver = $matches['ver'];
 
     // auto fixed sub version values
-    if (strpos($source_content, 'SWOOLE_MAJOR_VERSION') !== false) {
+    if (strpos($source_content, 'OPENSWOOLE_MAJOR_VERSION') !== false) {
         $version_parts = array_values(array_filter(preg_split('/(?:\b)|(?:(?<=[0-9])(?=[a-zA-Z]))/',
             $source_ver), function (string $char) {
             return preg_match('/[0-9a-zA-Z]/', $char);
         }));
         list($major, $minor, $release, $extra) = $version_parts;
         $source_content = preg_replace(
-            '/^(\#define[ ]+SWOOLE_VERSION_ID[ ]+)\d+$/m',
+            '/^(\#define[ ]+OPENSWOOLE_VERSION_ID[ ]+)\d+$/m',
             '${1}' . sprintf('%d%02d%02d', $major, $minor, $release),
             $source_content
         );
         (function (&$source_content, $replacements) {
             foreach ($replacements as $replacement) {
-                $regex = '/^(\#define[ ]+SWOOLE_' . $replacement[0] . '_VERSION[ ]+' . (is_numeric($replacement[1]) ? ')\d+()$' : '")[^"]*("$)') . '/m';
+                $regex = '/^(\#define[ ]+OPENSWOOLE_' . $replacement[0] . '_VERSION[ ]+' . (is_numeric($replacement[1]) ? ')\d+()$' : '")[^"]*("$)') . '/m';
                 $source_content = preg_replace(
                     $regex, '${1}' . $replacement[1] . '${2}',
                     $source_content,
@@ -51,7 +51,7 @@ function check_source_ver(string $expect_ver, $source_file)
 
     if (!preg_match('/^\d+?\.\d+?\.\d+?$/', $source_ver)) {
         $is_release_ver = false;
-        swoole_warn("SWOOLE_VERSION v{$source_ver} is not a release version number in {$source_file}");
+        swoole_warn("OPENSWOOLE_VERSION v{$source_ver} is not a release version number in {$source_file}");
     } else {
         $is_release_ver = true;
     }
@@ -63,7 +63,7 @@ function check_source_ver(string $expect_ver, $source_file)
                     _replaced_error:
                     swoole_error("Fix version number failed in {$source_file}");
                 }
-                swoole_warn("SWOOLE_VERSION v{$source_ver} will be replaced to v{$expect_ver} in {$source_file}");
+                swoole_warn("OPENSWOOLE_VERSION v{$source_ver} will be replaced to v{$expect_ver} in {$source_file}");
                 $source_content = preg_replace(
                     $source_ver_regex, '$1${2}' . $expect_ver . '$4',
                     $source_content, 1, $replaced
@@ -79,7 +79,7 @@ function check_source_ver(string $expect_ver, $source_file)
         case 1: // >
             {
                 if ($is_release_ver) {
-                    swoole_error("Wrong SWOOLE_VERSION {$source_ver} in {$source_file}, please check your package.xml");
+                    swoole_error("Wrong OPENSWOOLE_VERSION {$source_ver} in {$source_file}, please check your package.xml");
                 }
             }
             break;
@@ -122,7 +122,7 @@ echo "[Version] => {$package_release_ver}\n";
 echo "[API-Ver] => {$package_api_ver}\n";
 echo "[RStable] => {$package_release_stable}\n";
 echo "[AStable] => {$package_api_stable}\n";
-check_source_ver($package_release_ver, dirname(__DIR__) . '/include/swoole_version.h');
+check_source_ver($package_release_ver, dirname(__DIR__) . '/include/openswoole_version.h');
 check_source_ver($package_release_ver, dirname(__DIR__) . '/CMakeLists.txt');
 
 // check file lists

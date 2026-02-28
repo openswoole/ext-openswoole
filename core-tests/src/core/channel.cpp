@@ -15,15 +15,15 @@
 */
 
 #include "test_core.h"
-#include "swoole_channel.h"
+#include "openswoole_channel.h"
 
 using namespace std;
-using namespace swoole;
+using namespace openswoole;
 
 const int N = 10000000;
 
 TEST(channel, push) {
-    auto *c = Channel::make(128 * 1024, 8192, SW_CHAN_LOCK | SW_CHAN_NOTIFY);
+    auto *c = Channel::make(128 * 1024, 8192, OSW_CHAN_LOCK | OSW_CHAN_NOTIFY);
     map<int, string> m;
 
     size_t bytes = 0;
@@ -31,16 +31,16 @@ TEST(channel, push) {
 
     while (bytes < N) {
         char buf[8000];
-        int n = swoole_random_bytes(buf, (rand() % (sizeof(buf) / 2)) + (sizeof(buf) / 2));
+        int n = openswoole_random_bytes(buf, (rand() % (sizeof(buf) / 2)) + (sizeof(buf) / 2));
         if (n <= 0) {
-            swoole_trace("no enough data, n=%d, errno=%d\n", n, errno);
+            openswoole_trace("no enough data, n=%d, errno=%d\n", n, errno);
             continue;
         }
         m[index++] = string(buf, n);
         bytes += n;
     }
 
-    swoole_trace("size=%lu", m.size());
+    openswoole_trace("size=%lu", m.size());
 
     thread t1([&]() {
         auto next = m.find(0);
@@ -48,8 +48,8 @@ TEST(channel, push) {
         size_t bytes = 0;
 
         while (bytes < N) {
-            if (c->push(next->second.c_str(), next->second.length()) == SW_OK) {
-                swoole_trace("[PUSH] index=%d, size=%lu", index, next->second.length());
+            if (c->push(next->second.c_str(), next->second.length()) == OSW_OK) {
+                openswoole_trace("[PUSH] index=%d, size=%lu", index, next->second.length());
                 bytes += next->second.length();
                 next = m.find(index++);
                 if (next == m.end()) {
@@ -68,7 +68,7 @@ TEST(channel, push) {
         while (bytes < N) {
             int retval = c->pop(buf, sizeof(buf));
             if (retval > 0) {
-                swoole_trace("[POP] index=%d, size=%d", index, retval);
+                openswoole_trace("[POP] index=%d, size=%d", index, retval);
                 string &_data = m[index++];
                 bytes += retval;
                 ASSERT_EQ(_data, string(buf, retval));

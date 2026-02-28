@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,13 +14,13 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_pipe.h"
-#include "swoole_socket.h"
+#include "openswoole_pipe.h"
+#include "openswoole_socket.h"
 
-namespace swoole {
+namespace openswoole {
 UnixSocket::UnixSocket(bool blocking, int _protocol) : SocketPair(blocking), protocol_(_protocol) {
     if (socketpair(AF_UNIX, protocol_, 0, socks) < 0) {
-        swoole_sys_warning("socketpair() failed");
+        openswoole_sys_warning("socketpair() failed");
         return;
     }
     if (!init_socket(socks[1], socks[0])) {
@@ -38,4 +38,4 @@ bool UnixSocket::set_buffer_size(size_t _size) {
     }
     return true;
 }
-}  // namespace swoole
+}  // namespace openswoole

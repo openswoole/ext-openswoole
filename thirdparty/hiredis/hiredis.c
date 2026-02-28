@@ -42,7 +42,7 @@
 #include "net.h"
 #include "sds.h"
 
-#include "swoole_socket_hook.h"
+#include "openswoole_socket_hook.h"
 
 extern int redisContextUpdateConnectTimeout(redisContext *c, const struct timeval *timeout);
 extern int redisContextUpdateCommandTimeout(redisContext *c, const struct timeval *timeout);

@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,9 +14,9 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_file.h"
-#include "swoole_memory.h"
+#include "openswoole.h"
+#include "openswoole_file.h"
+#include "openswoole_memory.h"
 
 #include <sys/mman.h>
 
@@ -24,7 +24,7 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-namespace swoole {
+namespace openswoole {
 
 struct SharedMemory {
     size_t size_;
@@ -43,7 +43,7 @@ void *SharedMemory::alloc(size_t size) {
     int flags = MAP_SHARED;
     SharedMemory object;
 
-    size = SW_MEM_ALIGNED_SIZE(size);
+    size = OSW_MEM_ALIGNED_SIZE(size);
     size += sizeof(SharedMemory);
 
 #ifdef MAP_ANONYMOUS
@@ -62,7 +62,7 @@ void *SharedMemory::alloc(size_t size) {
     if (!mem)
 #endif
     {
-        swoole_sys_warning("mmap(%lu) failed", size);
+        openswoole_sys_warning("mmap(%lu) failed", size);
         return nullptr;
     } else {
         object.size_ = size;
@@ -75,34 +75,34 @@ void SharedMemory::free(void *ptr) {
     SharedMemory *object = SharedMemory::fetch_object(ptr);
     size_t size = object->size_;
     if (munmap(object, size) < 0) {
-        swoole_sys_warning("munmap(%p, %lu) failed", object, size);
+        openswoole_sys_warning("munmap(%p, %lu) failed", object, size);
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole
 
-using swoole::SharedMemory;
+using openswoole::SharedMemory;
 
-void *sw_shm_malloc(size_t size) {
+void *osw_shm_malloc(size_t size) {
     return SharedMemory::alloc(size);
 }
 
-void *sw_shm_calloc(size_t num, size_t _size) {
+void *osw_shm_calloc(size_t num, size_t _size) {
     return SharedMemory::alloc(num * _size);
 }
 
-int sw_shm_protect(void *ptr, int flags) {
+int osw_shm_protect(void *ptr, int flags) {
     SharedMemory *object = SharedMemory::fetch_object(ptr);
     return mprotect(object, object->size_, flags);
 }
 
-void sw_shm_free(void *ptr) {
+void osw_shm_free(void *ptr) {
     SharedMemory::free(ptr);
 }
 
-void *sw_shm_realloc(void *ptr, size_t new_size) {
+void *osw_shm_realloc(void *ptr, size_t new_size) {
     SharedMemory *object = SharedMemory::fetch_object(ptr);
-    void *new_ptr = sw_shm_malloc(new_size);
+    void *new_ptr = osw_shm_malloc(new_size);
     if (new_ptr == nullptr) {
         return nullptr;
     }

@@ -1,6 +1,6 @@
 /**
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,114 +14,114 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_api.h"
-#include "swoole_timer.h"
+#include "openswoole_api.h"
+#include "openswoole_timer.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 #ifdef __MACH__
-Timer *sw_timer() {
-    return SwooleTG.timer;
+Timer *osw_timer() {
+    return OpenSwooleTG.timer;
 }
 #endif
 
-bool swoole_timer_is_available() {
-    return SwooleTG.timer != nullptr;
+bool openswoole_timer_is_available() {
+    return OpenSwooleTG.timer != nullptr;
 }
 
-TimerNode *swoole_timer_add(long ms, bool persistent, const TimerCallback &callback, void *private_data) {
-    if (sw_unlikely(!swoole_timer_is_available())) {
-        SwooleTG.timer = new Timer();
-        if (sw_unlikely(!SwooleTG.timer->init())) {
-            delete SwooleTG.timer;
-            SwooleTG.timer = nullptr;
+TimerNode *openswoole_timer_add(long ms, bool persistent, const TimerCallback &callback, void *private_data) {
+    if (osw_unlikely(!openswoole_timer_is_available())) {
+        OpenSwooleTG.timer = new Timer();
+        if (osw_unlikely(!OpenSwooleTG.timer->init())) {
+            delete OpenSwooleTG.timer;
+            OpenSwooleTG.timer = nullptr;
             return nullptr;
         }
     }
-    return SwooleTG.timer->add(ms, persistent, private_data, callback);
+    return OpenSwooleTG.timer->add(ms, persistent, private_data, callback);
 }
 
-bool swoole_timer_del(TimerNode *tnode) {
-    if (!swoole_timer_is_available()) {
-        swoole_warning("timer is not available");
+bool openswoole_timer_del(TimerNode *tnode) {
+    if (!openswoole_timer_is_available()) {
+        openswoole_warning("timer is not available");
         return false;
     }
-    return SwooleTG.timer->remove(tnode);
+    return OpenSwooleTG.timer->remove(tnode);
 }
 
-void swoole_timer_delay(TimerNode *tnode, long delay_ms) {
-    if (!swoole_timer_is_available()) {
-        swoole_warning("timer is not available");
+void openswoole_timer_delay(TimerNode *tnode, long delay_ms) {
+    if (!openswoole_timer_is_available()) {
+        openswoole_warning("timer is not available");
         return;
     }
-    return SwooleTG.timer->delay(tnode, delay_ms);
+    return OpenSwooleTG.timer->delay(tnode, delay_ms);
 }
 
-long swoole_timer_after(long ms, const TimerCallback &callback, void *private_data) {
+long openswoole_timer_after(long ms, const TimerCallback &callback, void *private_data) {
     if (ms <= 0) {
-        swoole_warning("Timer must be greater than 0");
-        return SW_ERR;
+        openswoole_warning("Timer must be greater than 0");
+        return OSW_ERR;
     }
-    TimerNode *tnode = swoole_timer_add(ms, false, callback, private_data);
+    TimerNode *tnode = openswoole_timer_add(ms, false, callback, private_data);
     if (tnode == nullptr) {
-        return SW_ERR;
+        return OSW_ERR;
     } else {
         return tnode->id;
     }
 }
 
-long swoole_timer_tick(long ms, const TimerCallback &callback, void *private_data) {
+long openswoole_timer_tick(long ms, const TimerCallback &callback, void *private_data) {
     if (ms <= 0) {
-        swoole_warning("Timer must be greater than 0");
-        return SW_ERR;
+        openswoole_warning("Timer must be greater than 0");
+        return OSW_ERR;
     }
-    TimerNode *tnode = swoole_timer_add(ms, true, callback, private_data);
+    TimerNode *tnode = openswoole_timer_add(ms, true, callback, private_data);
     if (tnode == nullptr) {
-        return SW_ERR;
+        return OSW_ERR;
     } else {
         return tnode->id;
     }
 }
 
-bool swoole_timer_exists(long timer_id) {
-    if (!swoole_timer_is_available()) {
-        swoole_warning("timer is not available");
+bool openswoole_timer_exists(long timer_id) {
+    if (!openswoole_timer_is_available()) {
+        openswoole_warning("timer is not available");
         return false;
     }
-    TimerNode *tnode = SwooleTG.timer->get(timer_id);
+    TimerNode *tnode = OpenSwooleTG.timer->get(timer_id);
     return (tnode && !tnode->removed);
 }
 
-bool swoole_timer_clear(long timer_id) {
-    if (!swoole_timer_is_available()) {
-        swoole_warning("timer is not available");
+bool openswoole_timer_clear(long timer_id) {
+    if (!openswoole_timer_is_available()) {
+        openswoole_warning("timer is not available");
         return false;
     }
-    return SwooleTG.timer->remove(SwooleTG.timer->get(timer_id));
+    return OpenSwooleTG.timer->remove(OpenSwooleTG.timer->get(timer_id));
 }
 
-TimerNode *swoole_timer_get(long timer_id) {
-    if (!swoole_timer_is_available()) {
-        swoole_warning("timer is not available");
+TimerNode *openswoole_timer_get(long timer_id) {
+    if (!openswoole_timer_is_available()) {
+        openswoole_warning("timer is not available");
         return nullptr;
     }
-    return SwooleTG.timer->get(timer_id);
+    return OpenSwooleTG.timer->get(timer_id);
 }
 
-void swoole_timer_free() {
-    if (!swoole_timer_is_available()) {
-        swoole_warning("timer is not available");
+void openswoole_timer_free() {
+    if (!openswoole_timer_is_available()) {
+        openswoole_warning("timer is not available");
         return;
     }
-    delete SwooleTG.timer;
-    SwooleTG.timer = nullptr;
-    SwooleG.signal_alarm = false;
+    delete OpenSwooleTG.timer;
+    OpenSwooleTG.timer = nullptr;
+    OpenSwooleG.signal_alarm = false;
 }
 
-int swoole_timer_select() {
-    if (!swoole_timer_is_available()) {
-        swoole_warning("timer is not available");
-        return SW_ERR;
+int openswoole_timer_select() {
+    if (!openswoole_timer_is_available()) {
+        openswoole_warning("timer is not available");
+        return OSW_ERR;
     }
-    return SwooleTG.timer->select();
+    return OpenSwooleTG.timer->select();
 }

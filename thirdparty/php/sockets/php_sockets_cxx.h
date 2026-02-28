@@ -1,6 +1,6 @@
 #pragma once
 
-#include "php_swoole_cxx.h"
+#include "php_openswoole_cxx.h"
 
 #include <php_network.h>
 #include <netinet/in.h>
@@ -8,9 +8,9 @@
 #include "thirdparty/php/sockets/multicast.h"
 #include "thirdparty/php/sockets/conversions.h"
 
-using swoole::coroutine::Socket;
+using openswoole::coroutine::Socket;
 
-#define PHP_SWOOLE_SOCKET_ERROR(socket, msg, errn) \
+#define PHP_OPENSWOOLE_SOCKET_ERROR(socket, msg, errn) \
         do { \
             int _err = (errn); /* save value to avoid repeated calls to WSAGetLastError() on Windows */ \
             (socket)->errCode = _err; \

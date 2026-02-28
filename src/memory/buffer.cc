@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,10 +14,10 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_buffer.h"
+#include "openswoole.h"
+#include "openswoole_buffer.h"
 
-namespace swoole {
+namespace openswoole {
 
 Buffer::Buffer(uint32_t _chunk_size) {
     chunk_size = _chunk_size == 0 ? INT_MAX : _chunk_size;
@@ -75,8 +75,8 @@ void Buffer::append(const void *data, uint32_t size) {
         memcpy(chunk->value.ptr, _pos, _n);
         chunk->length = _n;
 
-        swoole_trace_log(
-            SW_TRACE_BUFFER, "chunk_n=%lu|size=%u|chunk_len=%u|chunk=%p", count(), _n, chunk->length, chunk);
+        openswoole_trace_log(
+            OSW_TRACE_BUFFER, "chunk_n=%lu|size=%u|chunk_len=%u|chunk=%p", count(), _n, chunk->length, chunk);
 
         _pos += _n;
         _length -= _n;
@@ -86,7 +86,7 @@ void Buffer::append(const void *data, uint32_t size) {
 void Buffer::append(const struct iovec *iov, size_t iovcnt, off_t offset) {
     size_t _length = 0;
 
-    SW_LOOP_N(iovcnt) {
+    OSW_LOOP_N(iovcnt) {
         assert(iov[i].iov_len > 0);
         assert(iov[i].iov_base != nullptr);
         _length += iov[i].iov_len;
@@ -126,8 +126,8 @@ void Buffer::append(const struct iovec *iov, size_t iovcnt, off_t offset) {
         total_length += _n;
         _length -= _n;
 
-        swoole_trace_log(
-            SW_TRACE_BUFFER, "chunk_n=%lu|size=%lu|chunk_len=%u|chunk=%p", count(), _n, chunk->length, chunk);
+        openswoole_trace_log(
+            OSW_TRACE_BUFFER, "chunk_n=%lu|size=%lu|chunk_len=%u|chunk=%p", count(), _n, chunk->length, chunk);
 
         chunk->length += _n;
         iov_remain_len -= _n;
@@ -144,4 +144,4 @@ void Buffer::append(const struct iovec *iov, size_t iovcnt, off_t offset) {
         }
     }
 }
-}  // namespace swoole
+}  // namespace openswoole

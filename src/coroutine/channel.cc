@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,9 +14,9 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_coroutine_channel.h"
+#include "openswoole_coroutine_channel.h"
 
-namespace swoole {
+namespace openswoole {
 namespace coroutine {
 
 void Channel::timer_callback(Timer *timer, TimerNode *tnode) {
@@ -35,10 +35,10 @@ void Channel::yield(enum Opcode type) {
     Coroutine *co = Coroutine::get_current_safe();
     if (type == PRODUCER) {
         producer_queue.push_back(co);
-        swoole_trace_log(SW_TRACE_CHANNEL, "producer cid=%ld", co->get_cid());
+        openswoole_trace_log(OSW_TRACE_CHANNEL, "producer cid=%ld", co->get_cid());
     } else {
         consumer_queue.push_back(co);
-        swoole_trace_log(SW_TRACE_CHANNEL, "consumer cid=%ld", co->get_cid());
+        openswoole_trace_log(OSW_TRACE_CHANNEL, "consumer cid=%ld", co->get_cid());
     }
     Coroutine::CancelFunc cancel_fn = [this, type](Coroutine *co) {
         if (type == CONSUMER) {
@@ -67,13 +67,13 @@ void *Channel::pop(double timeout) {
             msg.chan = this;
             msg.type = CONSUMER;
             msg.co = current_co;
-            msg.timer = swoole_timer_add(msec, false, timer_callback, &msg);
+            msg.timer = openswoole_timer_add(msec, false, timer_callback, &msg);
         }
 
         yield(CONSUMER);
 
         if (msg.timer) {
-            swoole_timer_del(msg.timer);
+            openswoole_timer_del(msg.timer);
         }
         if (current_co->is_canceled()) {
             error_ = ERROR_CANCELED;
@@ -118,13 +118,13 @@ bool Channel::push(void *data, double timeout) {
             msg.chan = this;
             msg.type = PRODUCER;
             msg.co = current_co;
-            msg.timer = swoole_timer_add(msec, false, timer_callback, &msg);
+            msg.timer = openswoole_timer_add(msec, false, timer_callback, &msg);
         }
 
         yield(PRODUCER);
 
         if (msg.timer) {
-            swoole_timer_del(msg.timer);
+            openswoole_timer_del(msg.timer);
         }
         if (current_co->is_canceled()) {
             error_ = ERROR_CANCELED;
@@ -143,8 +143,8 @@ bool Channel::push(void *data, double timeout) {
      * push data
      */
     data_queue.push(data);
-    swoole_trace_log(
-        SW_TRACE_CHANNEL, "push data to channel, count=%ld, consumer_queue size=%ld", length(), consumer_queue.size());
+    openswoole_trace_log(
+        OSW_TRACE_CHANNEL, "push data to channel, count=%ld, consumer_queue size=%ld", length(), consumer_queue.size());
     /**
      * notify consumer
      */
@@ -160,7 +160,7 @@ bool Channel::close() {
     if (closed) {
         return false;
     }
-    swoole_trace_log(SW_TRACE_CHANNEL, "channel closed");
+    openswoole_trace_log(OSW_TRACE_CHANNEL, "channel closed");
     closed = true;
     while (!producer_queue.empty()) {
         Coroutine *co = pop_coroutine(PRODUCER);
@@ -174,4 +174,4 @@ bool Channel::close() {
 }
 
 }  // namespace coroutine
-}  // namespace swoole
+}  // namespace openswoole

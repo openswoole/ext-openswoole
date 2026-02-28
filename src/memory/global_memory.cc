@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,15 +14,15 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_memory.h"
+#include "openswoole.h"
+#include "openswoole_memory.h"
 
 #include <vector>
 #include <mutex>
 
-#define SW_MIN_PAGE_SIZE 4096
+#define OSW_MIN_PAGE_SIZE 4096
 
-namespace swoole {
+namespace openswoole {
 
 struct GlobalMemoryImpl {
     bool shared;
@@ -48,14 +48,14 @@ struct MemoryBlock {
  * it will not be released until it is recycled by OS when the process exits
  */
 GlobalMemory::GlobalMemory(uint32_t pagesize, bool shared) {
-    assert(pagesize >= SW_MIN_PAGE_SIZE);
+    assert(pagesize >= OSW_MIN_PAGE_SIZE);
     impl = new GlobalMemoryImpl(pagesize, shared);
 }
 
 GlobalMemoryImpl::GlobalMemoryImpl(uint32_t _pagesize, bool _shared) {
     shared = _shared;
-    pagesize = SW_MEM_ALIGNED_SIZE_EX(_pagesize, SwooleG.pagesize);
-    create_pid = SwooleG.pid;
+    pagesize = OSW_MEM_ALIGNED_SIZE_EX(_pagesize, OpenSwooleG.pagesize);
+    create_pid = OpenSwooleG.pid;
 
     if (new_page() == nullptr) {
         throw std::bad_alloc();
@@ -63,7 +63,7 @@ GlobalMemoryImpl::GlobalMemoryImpl(uint32_t _pagesize, bool _shared) {
 }
 
 char *GlobalMemoryImpl::new_page() {
-    char *page = (char *) (shared ? sw_shm_malloc(pagesize) : sw_malloc(pagesize));
+    char *page = (char *) (shared ? osw_shm_malloc(pagesize) : osw_malloc(pagesize));
     if (page == nullptr) {
         return nullptr;
     }
@@ -79,12 +79,12 @@ char *GlobalMemoryImpl::new_page() {
  */
 void *GlobalMemory::alloc(uint32_t size) {
     MemoryBlock *block;
-    size = SW_MEM_ALIGNED_SIZE(size);
+    size = OSW_MEM_ALIGNED_SIZE(size);
     uint32_t alloc_size = sizeof(*block) + size;
     std::unique_lock<std::mutex> lock(impl->lock);
 
     if (alloc_size > impl->pagesize) {
-        swoole_warning("failed to alloc %d bytes, exceed the maximum size[%d]", size, impl->pagesize);
+        openswoole_warning("failed to alloc %d bytes, exceed the maximum size[%d]", size, impl->pagesize);
         return nullptr;
     }
 
@@ -93,12 +93,12 @@ void *GlobalMemory::alloc(uint32_t size) {
         impl = new GlobalMemoryImpl(old_impl->pagesize, old_impl->shared);
     }
 
-    swoole_trace("alloc_size=%u, size=%u", alloc_size, size);
+    openswoole_trace("alloc_size=%u, size=%u", alloc_size, size);
 
     if (impl->alloc_offset + alloc_size > impl->pagesize) {
         char *page = impl->new_page();
         if (page == nullptr) {
-            swoole_warning("alloc memory error");
+            openswoole_warning("alloc memory error");
             return nullptr;
         }
     }
@@ -108,7 +108,7 @@ void *GlobalMemory::alloc(uint32_t size) {
 
     block->size = size;
 
-    sw_memset_zero(block->memory, size);
+    osw_memset_zero(block->memory, size);
     return block->memory;
 }
 
@@ -116,7 +116,7 @@ void GlobalMemory::free(void *ptr) {}
 
 void GlobalMemory::destroy() {
     for (auto page : impl->pages) {
-        impl->shared ? ::sw_shm_free(page) : ::sw_free(page);
+        impl->shared ? ::osw_shm_free(page) : ::osw_free(page);
     }
 }
 
@@ -132,4 +132,4 @@ GlobalMemory::~GlobalMemory() {
     delete impl;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

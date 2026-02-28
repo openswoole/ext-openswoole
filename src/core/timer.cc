@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | This source file is subject to version 2.0 of the Apache license,    |
  | that is bundled with this package in the file LICENSE, and is        |
@@ -14,9 +14,9 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_api.h"
-#include "swoole_reactor.h"
-#include "swoole_timer.h"
+#include "openswoole_api.h"
+#include "openswoole_reactor.h"
+#include "openswoole_timer.h"
 
 #if !defined(HAVE_CLOCK_GETTIME) && defined(__MACH__)
 #include <mach/clock.h>
@@ -29,7 +29,7 @@
 static double orwl_timebase = 0.0;
 static uint64_t orwl_timestart = 0;
 
-int swoole_clock_gettime(int which_clock, struct timespec *t) {
+int openswoole_clock_gettime(int which_clock, struct timespec *t) {
     // be more careful in a multithreaded environement
     if (!orwl_timestart) {
         mach_timebase_info_data_t tb = {0};
@@ -45,7 +45,7 @@ int swoole_clock_gettime(int which_clock, struct timespec *t) {
 }
 #endif
 
-namespace swoole {
+namespace openswoole {
 
 Timer::Timer() : heap(1024, Heap::MIN_HEAP) {
     _current_id = -1;
@@ -59,8 +59,8 @@ bool Timer::init() {
     if (now(&base_time) < 0) {
         return false;
     }
-    if (SwooleTG.reactor) {
-        return init_reactor(SwooleTG.reactor);
+    if (OpenSwooleTG.reactor) {
+        return init_reactor(OpenSwooleTG.reactor);
     } else {
         return init_system_timer();
     }
@@ -70,7 +70,7 @@ bool Timer::init_reactor(Reactor *reactor) {
     reactor_ = reactor;
     set = [](Timer *timer, long exec_msec) -> int {
         timer->reactor_->timeout_msec = exec_msec;
-        return SW_OK;
+        return OSW_OK;
     };
     close = [](Timer *timer) { timer->set(timer, -1); };
 
@@ -80,8 +80,8 @@ bool Timer::init_reactor(Reactor *reactor) {
                                 [this](Reactor *reactor, size_t &event_num) -> bool { return count() == 0; });
 
     reactor->add_destroy_callback([](void *) {
-        if (swoole_timer_is_available()) {
-            swoole_timer_free();
+        if (openswoole_timer_is_available()) {
+            openswoole_timer_free();
         }
     });
 
@@ -104,13 +104,13 @@ Timer::~Timer() {
 }
 
 TimerNode *Timer::add(long _msec, bool persistent, void *data, const TimerCallback &callback) {
-    if (sw_unlikely(_msec <= 0)) {
-        swoole_error_log(SW_LOG_WARNING, SW_ERROR_INVALID_PARAMS, "msec value[%ld] is invalid", _msec);
+    if (osw_unlikely(_msec <= 0)) {
+        openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_INVALID_PARAMS, "msec value[%ld] is invalid", _msec);
         return nullptr;
     }
 
     int64_t now_msec = get_relative_msec();
-    if (sw_unlikely(now_msec < 0)) {
+    if (osw_unlikely(now_msec < 0)) {
         return nullptr;
     }
 
@@ -130,18 +130,18 @@ TimerNode *Timer::add(long _msec, bool persistent, void *data, const TimerCallba
     }
 
     tnode->id = _next_id++;
-    if (sw_unlikely(tnode->id < 0)) {
+    if (osw_unlikely(tnode->id < 0)) {
         tnode->id = 1;
         _next_id = 2;
     }
 
     tnode->heap_node = heap.push(tnode->exec_msec, tnode);
-    if (sw_unlikely(tnode->heap_node == nullptr)) {
+    if (osw_unlikely(tnode->heap_node == nullptr)) {
         delete tnode;
         return nullptr;
     }
     map.emplace(std::make_pair(tnode->id, tnode));
-    swoole_trace_log(SW_TRACE_TIMER,
+    openswoole_trace_log(OSW_TRACE_TIMER,
                      "id=%ld, exec_msec=%" PRId64 ", msec=%ld, round=%" PRIu64 ", exist=%lu",
                      tnode->id,
                      tnode->exec_msec,
@@ -152,12 +152,12 @@ TimerNode *Timer::add(long _msec, bool persistent, void *data, const TimerCallba
 }
 
 bool Timer::remove(TimerNode *tnode) {
-    if (sw_unlikely(!tnode || tnode->removed)) {
+    if (osw_unlikely(!tnode || tnode->removed)) {
         return false;
     }
-    if (sw_unlikely(_current_id > 0 && tnode->id == _current_id)) {
+    if (osw_unlikely(_current_id > 0 && tnode->id == _current_id)) {
         tnode->removed = true;
-        swoole_trace_log(SW_TRACE_TIMER,
+        openswoole_trace_log(OSW_TRACE_TIMER,
                          "set-remove: id=%ld, exec_msec=%" PRId64 ", round=%" PRIu64 ", exist=%lu",
                          tnode->id,
                          tnode->exec_msec,
@@ -165,7 +165,7 @@ bool Timer::remove(TimerNode *tnode) {
                          count());
         return true;
     }
-    if (sw_unlikely(!map.erase(tnode->id))) {
+    if (osw_unlikely(!map.erase(tnode->id))) {
         return false;
     }
     if (tnode->heap_node) {
@@ -174,7 +174,7 @@ bool Timer::remove(TimerNode *tnode) {
     if (tnode->destructor) {
         tnode->destructor(tnode);
     }
-    swoole_trace_log(SW_TRACE_TIMER,
+    openswoole_trace_log(OSW_TRACE_TIMER,
                      "id=%ld, exec_msec=%" PRId64 ", round=%" PRIu64 ", exist=%lu",
                      tnode->id,
                      tnode->exec_msec,
@@ -186,14 +186,14 @@ bool Timer::remove(TimerNode *tnode) {
 
 int Timer::select() {
     int64_t now_msec = get_relative_msec();
-    if (sw_unlikely(now_msec < 0)) {
-        return SW_ERR;
+    if (osw_unlikely(now_msec < 0)) {
+        return OSW_ERR;
     }
 
     TimerNode *tnode = nullptr;
     HeapNode *tmp;
 
-    swoole_trace_log(SW_TRACE_TIMER, "timer msec=%" PRId64 ", round=%" PRId64, now_msec, round);
+    openswoole_trace_log(OSW_TRACE_TIMER, "timer msec=%" PRId64 ", round=%" PRId64, now_msec, round);
 
     while ((tmp = heap.top())) {
         tnode = (TimerNode *) tmp->data;
@@ -203,7 +203,7 @@ int Timer::select() {
 
         _current_id = tnode->id;
         if (!tnode->removed) {
-            swoole_trace_log(SW_TRACE_TIMER,
+            openswoole_trace_log(OSW_TRACE_TIMER,
                              "id=%ld, exec_msec=%" PRId64 ", round=%" PRIu64 ", exist=%lu",
                              tnode->id,
                              tnode->exec_msec,
@@ -239,25 +239,25 @@ int Timer::select() {
     }
     round++;
 
-    return SW_OK;
+    return OSW_OK;
 }
 
-#if defined(SW_USE_MONOTONIC_TIME) && defined(CLOCK_MONOTONIC)
+#if defined(OSW_USE_MONOTONIC_TIME) && defined(CLOCK_MONOTONIC)
 int Timer::now(struct timeval *time) {
     struct timespec _now;
     if (clock_gettime(CLOCK_MONOTONIC, &_now) < 0) {
-        swoole_sys_warning("clock_gettime(CLOCK_MONOTONIC) failed");
-        return SW_ERR;
+        openswoole_sys_warning("clock_gettime(CLOCK_MONOTONIC) failed");
+        return OSW_ERR;
     }
     time->tv_sec = _now.tv_sec;
     time->tv_usec = _now.tv_nsec / 1000;
 #else
 if (gettimeofday(time, nullptr) < 0) {
-    swoole_sys_warning("gettimeofday() failed");
-    return SW_ERR;
+    openswoole_sys_warning("gettimeofday() failed");
+    return OSW_ERR;
 }
 #endif
-    return SW_OK;
-}  // namespace swoole
+    return OSW_OK;
+}  // namespace openswoole
 
-};  // namespace swoole
+};  // namespace openswoole

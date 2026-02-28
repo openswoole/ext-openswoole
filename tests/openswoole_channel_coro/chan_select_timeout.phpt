@@ -1,0 +1,24 @@
+--TEST--
+openswoole_channel_coro: coro channel select timeout
+--SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc';
+exit("skip for select");
+?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+use OpenSwoole\Coroutine as co;
+
+$chan = new co\Channel(1);
+
+go(function () use ($chan) {
+    $read_list = [$chan];
+    $write_list = null;
+    $result = chan::select($read_list, $write_list, 0.1);
+    Assert::false($result);
+});
+
+openswoole_event::wait();
+?>
+--EXPECT--

@@ -1,0 +1,182 @@
+/*
+  +----------------------------------------------------------------------+
+  | OpenSwoole                                                          |
+  +----------------------------------------------------------------------+
+  | This source file is subject to version 2.0 of the Apache license,    |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.apache.org/licenses/LICENSE-2.0.html                      |
+  | If you did not receive a copy of the Apache2.0 license and are unable|
+  | to obtain it through the world-wide-web, please send a note to       |
+  | license@php.net so we can mail you a copy immediately.               |
+  +----------------------------------------------------------------------+
+  | Author: Tianfeng Han  <mikan.tenny@gmail.com>                        |
+  |         Twosee  <twose@qq.com>                                       |
+  +----------------------------------------------------------------------+
+*/
+
+#pragma once
+
+#define OSW_HTTP2_PRI_STRING "PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n"
+
+enum swHttp2_error_code {
+    OSW_HTTP2_ERROR_NO_ERROR = 0,
+    OSW_HTTP2_ERROR_PROTOCOL_ERROR = 1,
+    OSW_HTTP2_ERROR_INTERNAL_ERROR = 2,
+    OSW_HTTP2_ERROR_FLOW_CONTROL_ERROR = 3,
+    OSW_HTTP2_ERROR_SETTINGS_TIMEOUT = 4,
+    OSW_HTTP2_ERROR_STREAM_CLOSED = 5,
+    OSW_HTTP2_ERROR_FRAME_SIZE_ERROR = 6,
+    OSW_HTTP2_ERROR_REFUSED_STREAM = 7,
+    OSW_HTTP2_ERROR_CANCEL = 8,
+    OSW_HTTP2_ERROR_COMPRESSION_ERROR = 9,
+    OSW_HTTP2_ERROR_CONNECT_ERROR = 10,
+    OSW_HTTP2_ERROR_ENHANCE_YOUR_CALM = 11,
+    OSW_HTTP2_ERROR_INADEQUATE_SECURITY = 12,
+};
+
+enum swHttp2_frame_type {
+    OSW_HTTP2_TYPE_DATA = 0,
+    OSW_HTTP2_TYPE_HEADERS = 1,
+    OSW_HTTP2_TYPE_PRIORITY = 2,
+    OSW_HTTP2_TYPE_RST_STREAM = 3,
+    OSW_HTTP2_TYPE_SETTINGS = 4,
+    OSW_HTTP2_TYPE_PUSH_PROMISE = 5,
+    OSW_HTTP2_TYPE_PING = 6,
+    OSW_HTTP2_TYPE_GOAWAY = 7,
+    OSW_HTTP2_TYPE_WINDOW_UPDATE = 8,
+    OSW_HTTP2_TYPE_CONTINUATION = 9,
+};
+
+enum swHttp2_frame_flag {
+    OSW_HTTP2_FLAG_NONE = 0x00,
+    OSW_HTTP2_FLAG_ACK = 0x01,
+    OSW_HTTP2_FLAG_END_STREAM = 0x01,
+    OSW_HTTP2_FLAG_END_HEADERS = 0x04,
+    OSW_HTTP2_FLAG_PADDED = 0x08,
+    OSW_HTTP2_FLAG_PRIORITY = 0x20,
+};
+
+enum swHttp2_setting_id {
+    OSW_HTTP2_SETTING_HEADER_TABLE_SIZE = 0x1,
+    OSW_HTTP2_SETTINGS_ENABLE_PUSH = 0x2,
+    OSW_HTTP2_SETTINGS_MAX_CONCURRENT_STREAMS = 0x3,
+    OSW_HTTP2_SETTINGS_INIT_WINDOW_SIZE = 0x4,
+    OSW_HTTP2_SETTINGS_MAX_FRAME_SIZE = 0x5,
+    OSW_HTTP2_SETTINGS_MAX_HEADER_LIST_SIZE = 0x6,
+};
+
+enum swHttp2_stream_flag {
+    OSW_HTTP2_STREAM_NORMAL = 0,
+    OSW_HTTP2_STREAM_REQUEST_END = 1 << 0,
+    OSW_HTTP2_STREAM_PIPELINE_REQUEST = 1 << 1,
+    OSW_HTTP2_STREAM_PIPELINE_RESPONSE = 1 << 2,
+    OSW_HTTP2_STREAM_USE_PIPELINE_READ = 1 << 3,
+};
+
+#define OSW_HTTP2_FRAME_HEADER_SIZE 9
+#define OSW_HTTP2_SETTING_OPTION_SIZE 6
+#define OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE 8
+
+#define OSW_HTTP2_RST_STREAM_SIZE 4
+#define OSW_HTTP2_PRIORITY_SIZE 5
+#define OSW_HTTP2_PING_SIZE 8
+#define OSW_HTTP2_RST_STREAM_SIZE 4
+#define OSW_HTTP2_GOAWAY_SIZE 8
+#define OSW_HTTP2_WINDOW_UPDATE_SIZE 4
+#define OSW_HTTP2_STREAM_ID_SIZE 4
+#define OSW_HTTP2_SETTINGS_PARAM_SIZE 6
+
+#define swHttp2FrameTraceLogFlags                                                                                      \
+    ((flags & OSW_HTTP2_FLAG_ACK) ? "\nEND_ACK |" : ""), ((flags & OSW_HTTP2_FLAG_END_STREAM) ? "\nEND_STREAM |" : ""),  \
+        ((flags & OSW_HTTP2_FLAG_END_HEADERS) ? "\nEND_HEADERS |" : ""),                                                \
+        ((flags & OSW_HTTP2_FLAG_PADDED) ? "\nEND_PADDED |" : ""),                                                      \
+        ((flags & OSW_HTTP2_FLAG_PRIORITY) ? "\nEND_PRIORITY |" : "")
+
+#define swHttp2FrameTraceLog(recv, str, ...)                                                                           \
+    openswoole_trace_log(OSW_TRACE_HTTP2,                                                                                   \
+                     "\nrecv ["                                                                                        \
+                     "\e[3"                                                                                            \
+                     "%d"                                                                                              \
+                     "m"                                                                                               \
+                     "%s"                                                                                              \
+                     "\e[0m"                                                                                           \
+                     "] frame <length=%jd, flags=%d, stream_id=%d> " str "%s%s%s%s%s",                                 \
+                     openswoole::http2::get_type_color(type),                                                              \
+                     openswoole::http2::get_type(type),                                                                    \
+                     length,                                                                                           \
+                     flags,                                                                                            \
+                     stream_id,                                                                                        \
+                     ##__VA_ARGS__,                                                                                    \
+                     swHttp2FrameTraceLogFlags);
+
+namespace openswoole {
+namespace http2 {
+
+struct Settings {
+    uint32_t header_table_size;
+    uint32_t window_size;
+    uint32_t max_concurrent_streams;
+    uint32_t max_frame_size;
+    uint32_t max_header_list_size;
+};
+
+/**
+ +-----------------------------------------------+
+ |                 Length (24)                   |
+ +---------------+---------------+---------------+
+ |   Type (8)    |   Flags (8)   |
+ +-+-------------+---------------+-------------------------------+
+ |R|                 Stream Identifier (31)                      |
+ +=+=============================================================+
+ |                   Frame Payload (0...)                      ...
+ +---------------------------------------------------------------+
+ */
+struct Frame {
+    uint32_t length : 24;
+    uint32_t type : 8;
+    uint32_t flags : 8;
+    uint32_t rsv1 : 1;
+    uint32_t identifier : 31;
+    char data[0];
+};
+
+static osw_inline ssize_t get_length(const char *buf) {
+    return (((uint8_t) buf[0]) << 16) + (((uint8_t) buf[1]) << 8) + (uint8_t) buf[2];
+}
+
+ssize_t get_frame_length(Protocol *protocol, network::Socket *conn, const char *buf, uint32_t length);
+int send_setting_frame(Protocol *protocol, network::Socket *conn);
+const char *get_type(int type);
+int get_type_color(int type);
+
+static osw_inline void init_settings(Settings *settings) {
+    settings->header_table_size = OSW_HTTP2_DEFAULT_HEADER_TABLE_SIZE;
+    settings->window_size = OSW_HTTP2_DEFAULT_WINDOW_SIZE;
+    settings->max_concurrent_streams = OSW_HTTP2_MAX_MAX_CONCURRENT_STREAMS;
+    settings->max_frame_size = OSW_HTTP2_MAX_MAX_FRAME_SIZE;
+    settings->max_header_list_size = OSW_HTTP2_DEFAULT_MAX_HEADER_LIST_SIZE;
+}
+
+/**
+ +-----------------------------------------------+
+ |                 Length (24)                   |
+ +---------------+---------------+---------------+
+ |   Type (8)    |   Flags (8)   |
+ +-+-------------+---------------+-------------------------------+
+ |R|                 Stream Identifier (31)                      |
+ +=+=============================================================+
+ |                   Frame Payload (0...)                      ...
+ +---------------------------------------------------------------+
+ */
+static osw_inline void set_frame_header(char *buffer, uint8_t type, uint32_t length, uint8_t flags, uint32_t stream_id) {
+    buffer[0] = length >> 16;
+    buffer[1] = length >> 8;
+    buffer[2] = length;
+    buffer[3] = type;
+    buffer[4] = flags;
+    *(uint32_t *) (buffer + 5) = htonl(stream_id);
+}
+
+}  // namespace http2
+}  // namespace openswoole

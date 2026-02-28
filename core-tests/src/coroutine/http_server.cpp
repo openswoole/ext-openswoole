@@ -17,7 +17,7 @@
 #include "test_coroutine.h"
 #include "httplib_server.h"
 
-using namespace swoole::test;
+using namespace openswoole::test;
 using namespace httplib;
 using namespace std;
 

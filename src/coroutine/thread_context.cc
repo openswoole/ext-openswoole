@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,13 +14,13 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_api.h"
-#include "swoole_async.h"
-#include "swoole_coroutine_context.h"
+#include "openswoole_api.h"
+#include "openswoole_async.h"
+#include "openswoole_coroutine_context.h"
 
-#ifdef SW_USE_THREAD_CONTEXT
+#ifdef OSW_USE_THREAD_CONTEXT
 
-namespace swoole {
+namespace openswoole {
 namespace coroutine {
 
 static std::mutex g_lock;
@@ -31,8 +31,8 @@ static AsyncThreads *g_async_threads = nullptr;
 static std::mutex *current_lock = nullptr;
 
 void thread_context_init() {
-    if (!swoole_timer_is_available()) {
-        swoole_timer_add(
+    if (!openswoole_timer_is_available()) {
+        openswoole_timer_add(
             1,
             false,
             [](Timer *timer, TimerNode *tnode) {
@@ -40,13 +40,13 @@ void thread_context_init() {
             },
             nullptr);
     }
-    if (SwooleTG.async_threads == nullptr) {
-        SwooleTG.async_threads = new AsyncThreads();
+    if (OpenSwooleTG.async_threads == nullptr) {
+        OpenSwooleTG.async_threads = new AsyncThreads();
     }
-    g_reactor = SwooleTG.reactor;
-    g_buffer = SwooleTG.buffer_stack;
-    g_timer = SwooleTG.timer;
-    g_async_threads = SwooleTG.async_threads;
+    g_reactor = OpenSwooleTG.reactor;
+    g_buffer = OpenSwooleTG.buffer_stack;
+    g_timer = OpenSwooleTG.timer;
+    g_async_threads = OpenSwooleTG.async_threads;
     current_lock = &g_lock;
     g_lock.lock();
 }
@@ -89,10 +89,10 @@ bool Context::swap_out() {
 
 void Context::context_func(void *arg) {
     Context *_this = (Context *) arg;
-    SwooleTG.reactor = g_reactor;
-    SwooleTG.timer = g_timer;
-    SwooleTG.buffer_stack = g_buffer;
-    SwooleTG.async_threads = g_async_threads;
+    OpenSwooleTG.reactor = g_reactor;
+    OpenSwooleTG.timer = g_timer;
+    OpenSwooleTG.buffer_stack = g_buffer;
+    OpenSwooleTG.async_threads = g_async_threads;
     _this->lock_.lock();
     _this->fn_(_this->private_data_);
     _this->end_ = true;
@@ -100,5 +100,5 @@ void Context::context_func(void *arg) {
     _this->swap_lock_->unlock();
 }
 }  // namespace coroutine
-}  // namespace swoole
+}  // namespace openswoole
 #endif

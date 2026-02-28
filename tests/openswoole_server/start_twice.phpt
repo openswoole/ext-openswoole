@@ -1,0 +1,47 @@
+--TEST--
+openswoole_server: start twice
+--SKIPIF--
+<?php
+require __DIR__ . '/../include/skipif.inc';
+?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+use OpenSwoole\Coroutine\Client;
+use OpenSwoole\Timer;
+use OpenSwoole\Event;
+use OpenSwoole\Server;
+
+$pm = new SwooleTest\ProcessManager;
+$pm->parentFunc = function ($pid) use ($pm) {
+    $cli = new openswoole_client(SWOOLE_SOCK_TCP, OPENSWOOLE_SOCK_SYNC);
+    $cli->connect('127.0.0.1', $pm->getFreePort(), 0.5) or die("ERROR");
+    $cli->send("signal") or die("ERROR");
+};
+
+$pm->childFunc = function () use ($pm) {
+    ini_set('openswoole.display_errors', 'Off');
+    $serv = new Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $serv->set(array(
+        "worker_num" => 1,
+        'enable_coroutine' => false,
+        'log_file' => '/dev/null',
+    ));
+    $serv->on("WorkerStart", function (Server $serv) use ($pm) {
+        $pm->wakeup();
+    });
+    $serv->on('receive', function (Server $serv, $fd, $rid, $data) {
+        $serv->shutdown();
+    });
+    $n = 2;
+    while ($n--) {
+        $serv->start();
+    }
+};
+
+$pm->childFirst();
+$pm->run();
+?>
+--EXPECTF--
+Warning: OpenSwoole\Server::start(): server have been shutdown, unable to execute OpenSwoole\Server->start() in %s on line %d

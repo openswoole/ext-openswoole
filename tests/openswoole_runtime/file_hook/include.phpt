@@ -1,0 +1,21 @@
+--TEST--
+openswoole_runtime/file_hook: include
+--SKIPIF--
+<?php
+require __DIR__ . '/../../include/skipif.inc';
+?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../../include/bootstrap.php';
+
+swoole\runtime::enableCoroutine();
+
+go(function () {
+    include __DIR__."/a.inc";
+    include __DIR__."/b.inc";
+});
+openswoole_event_wait();
+?>
+--EXPECT--
+A
+B

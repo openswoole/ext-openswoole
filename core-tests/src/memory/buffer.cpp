@@ -15,11 +15,11 @@
 */
 
 #include "test_core.h"
-#include "swoole_memory.h"
-#include "swoole_buffer.h"
+#include "openswoole_memory.h"
+#include "openswoole_buffer.h"
 
 using namespace std;
-using namespace swoole;
+using namespace openswoole;
 
 TEST(buffer, append_iov) {
     Buffer buf(1024);
@@ -27,10 +27,10 @@ TEST(buffer, append_iov) {
     int iovcnt = 4;
     iovec v[iovcnt];
 
-    v[0].iov_len = swoole_rand(99, 4095);
-    v[1].iov_len = swoole_rand(99, 4095);
-    v[2].iov_len = swoole_rand(99, 4095);
-    v[3].iov_len = swoole_rand(99, 4095);
+    v[0].iov_len = openswoole_rand(99, 4095);
+    v[1].iov_len = openswoole_rand(99, 4095);
+    v[2].iov_len = openswoole_rand(99, 4095);
+    v[3].iov_len = openswoole_rand(99, 4095);
 
     unique_ptr<char> s1(new char[v[0].iov_len]);
     unique_ptr<char> s2(new char[v[1].iov_len]);
@@ -61,7 +61,7 @@ TEST(buffer, append_iov) {
 
     size_t offset = 0;
 
-    SW_LOOP_N(iovcnt) {
+    OSW_LOOP_N(iovcnt) {
         ASSERT_EQ(memcmp(str.str + offset, v[i].iov_base, v[i].iov_len), 0);
         offset += v[i].iov_len;
     }

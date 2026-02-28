@@ -1,0 +1,47 @@
+--TEST--
+openswoole_client_sync: recv witch open_eof_check and check errCode
+--SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+use OpenSwoole\Server;
+
+$pm = new SwooleTest\ProcessManager;
+$pm->parentFunc = function () use ($pm) {
+    $client = new \OpenSwoole\Client(SWOOLE_SOCK_TCP);
+
+    $client->set([
+        'open_eof_check'     => true,
+        'package_eof'        => "\n",
+        'package_max_length' => 1024 * 1024 * 2,
+    ]);
+    if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
+        throw new Exception("connect failed");
+    }
+
+    $data = @$client->recv(1024 * 1024 * 2);
+    Assert::false($data);
+    // Assert::eq(SOCKET_EINPROGRESS, $client->errCode);
+    $client->close();
+    $pm->kill();
+    echo "DONE\n";
+};
+$pm->childFunc = function () use ($pm) {
+    $serv = new Server("127.0.0.1", $pm->getFreePort(), SWOOLE_BASE);
+
+    $serv->set([
+        "worker_num" => 1,
+        'log_file' => '/dev/null',
+    ]);
+
+    $serv->on('receive', function (Server $serv, $fd, $reactor_id, $data) {
+    });
+
+    $serv->start();
+};
+$pm->childFirst();
+$pm->run();
+?>
+--EXPECT--
+DONE

@@ -1,17 +1,17 @@
 PROJECT(libopenswoole)
 
 ENABLE_LANGUAGE(ASM)
-set(SWOOLE_VERSION 25.2.0)
+set(OPENSWOOLE_VERSION 26.2.0)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
 cmake_minimum_required(VERSION 2.8)
 
-file(READ ./config.h SWOOLE_CONFIG_FILE)
+file(READ ./config.h OPENSWOOLE_CONFIG_FILE)
 
 set(CMAKE_MACOSX_RPATH 1)
-set(SWOOLE_LINK_LIBRARIES pthread dl)
+set(OPENSWOOLE_LINK_LIBRARIES pthread dl)
 
 if (APPLE)
     set(CMAKE_SHARED_LINKER_FLAGS "-undefined dynamic_lookup")
@@ -28,7 +28,7 @@ if (APPLE)
         link_directories(BEFORE /opt/homebrew/lib)
     endif()
 else()
-    list(APPEND SWOOLE_LINK_LIBRARIES rt crypt)
+    list(APPEND OPENSWOOLE_LINK_LIBRARIES rt crypt)
 endif()
 
 SET(CMAKE_BUILD_TYPE Debug)
@@ -73,7 +73,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 add_definitions(-DHAVE_CONFIG_H)
 # test
-#add_definitions(-DSW_USE_THREAD_CONTEXT)
+#add_definitions(-DOSW_USE_THREAD_CONTEXT)
 
 include_directories(BEFORE ./include ./include/wrapper ext-src/ ./)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
@@ -87,7 +87,7 @@ else()
     if (${OPENSSL_FOUND})
         message(STATUS "Found OpenSSL, ${OPENSSL_LIBRARIES}")
         include_directories(BEFORE ${OPENSSL_INCLUDE_DIR})
-        list(APPEND SWOOLE_LINK_LIBRARIES ssl crypto)
+        list(APPEND OPENSWOOLE_LINK_LIBRARIES ssl crypto)
     else()
         message(STATUS "Not found OpenSSL")
     endif()
@@ -98,15 +98,19 @@ if (DEFINED brotli_dir)
     link_directories(${brotli_dir}/lib)
 endif()
 
-foreach (LINE ${SWOOLE_CONFIG_FILE})
-  if ("${LINE}" MATCHES "define SW_USE_CARES 1")
+foreach (LINE ${OPENSWOOLE_CONFIG_FILE})
+  if ("${LINE}" MATCHES "define OSW_USE_CARES 1")
       message(STATUS "enable c-ares")
-      list(APPEND SWOOLE_LINK_LIBRARIES cares)
+      list(APPEND OPENSWOOLE_LINK_LIBRARIES cares)
+  endif()
+  if ("${LINE}" MATCHES "define HAVE_IO_URING 1")
+      message(STATUS "enable io_uring")
+      list(APPEND OPENSWOOLE_LINK_LIBRARIES uring)
   endif()
 endforeach()
 
 if (DEFINED enable_trace_log)
-	add_definitions(-DSW_LOG_TRACE_OPEN)
+	add_definitions(-DOSW_LOG_TRACE_OPEN)
 endif()
 
 execute_process(COMMAND php-config --includes OUTPUT_VARIABLE PHP_INCLUDES OUTPUT_STRIP_TRAILING_WHITESPACE)
@@ -118,19 +122,19 @@ if (CMAKE_SYSTEM_NAME MATCHES "Linux")
     execute_process(COMMAND ldconfig -p OUTPUT_VARIABLE LDCONFIG_LIST OUTPUT_STRIP_TRAILING_WHITESPACE)
     #message(STATUS LDCONFIG_LIST)
     if (LDCONFIG_LIST MATCHES brotlienc)
-         list(APPEND SWOOLE_LINK_LIBRARIES brotlienc)
+         list(APPEND OPENSWOOLE_LINK_LIBRARIES brotlienc)
     endif()
 
     if (LDCONFIG_LIST MATCHES brotlidec)
-        list(APPEND SWOOLE_LINK_LIBRARIES brotlidec)
+        list(APPEND OPENSWOOLE_LINK_LIBRARIES brotlidec)
     endif()
 endif()
 
 # lib-openswoole
 link_directories(${LIBRARY_OUTPUT_PATH})
 add_library(lib-openswoole SHARED ${SRC_LIST})
-set_target_properties(lib-openswoole PROPERTIES OUTPUT_NAME "openswoole" VERSION ${SWOOLE_VERSION})
-target_link_libraries(lib-openswoole ${SWOOLE_LINK_LIBRARIES})
+set_target_properties(lib-openswoole PROPERTIES OUTPUT_NAME "openswoole" VERSION ${OPENSWOOLE_VERSION})
+target_link_libraries(lib-openswoole ${OPENSWOOLE_LINK_LIBRARIES})
 if(CODE_COVERAGE)
     target_link_libraries(lib-openswoole coverage_config gcov)
 endif(CODE_COVERAGE)
@@ -155,7 +159,9 @@ set(ext_src_list  ${ext_cxx_files}
         thirdparty/php/sockets/conversions.cc
         thirdparty/php/sockets/sockaddr_conv.cc
         thirdparty/php/standard/proc_open.cc
-        thirdparty/swoole_http_parser.c
+        thirdparty/llhttp/api.c
+        thirdparty/llhttp/http.c
+        thirdparty/llhttp/llhttp.c
         thirdparty/multipart_parser.c
         thirdparty/nghttp2/nghttp2_hd.c
         thirdparty/nghttp2/nghttp2_rcbuf.c

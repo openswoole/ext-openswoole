@@ -1,7 +1,7 @@
 #include "test_core.h"
-#include "swoole_pipe.h"
+#include "openswoole_pipe.h"
 
-using namespace swoole;
+using namespace openswoole;
 
 TEST(pipe, unixsock) {
     UnixSocket p(true, SOCK_DGRAM);
@@ -9,17 +9,17 @@ TEST(pipe, unixsock) {
 
     char buf[1024];
 
-    int ret = p.write((void *) SW_STRS("hello world1"));
+    int ret = p.write((void *) OSW_STRS("hello world1"));
     ASSERT_GT(ret, 0);
-    ret = p.write((void *) SW_STRS("hello world2"));
+    ret = p.write((void *) OSW_STRS("hello world2"));
     ASSERT_GT(ret, 0);
-    ret = p.write((void *) SW_STRS("hello world3"));
+    ret = p.write((void *) OSW_STRS("hello world3"));
     ASSERT_GT(ret, 0);
 
     // 1
     ret = p.read(buf, sizeof(buf));
     if (ret < 0) {
-        swoole_sys_warning("read() failed.");
+        openswoole_sys_warning("read() failed.");
     }
     ASSERT_GT(ret, 0);
     ASSERT_EQ(strcmp("hello world1", buf), 0);
@@ -40,12 +40,12 @@ TEST(pipe, base) {
     Pipe p(true);
     ASSERT_TRUE(p.ready());
 
-    ret = p.write((void *) SW_STRL("hello world\n"));
+    ret = p.write((void *) OSW_STRL("hello world\n"));
     ASSERT_GT(ret, 0);
-    ret = p.write((void *) SW_STRL("你好中国。\n"));
+    ret = p.write((void *) OSW_STRL("你好中国。\n"));
     ASSERT_GT(ret, 0);
 
-    sw_memset_zero(data, 256);
+    osw_memset_zero(data, 256);
     ret = p.read(data, 255);
     ASSERT_GT(ret, 0);
     ASSERT_EQ(strcmp("hello world\n你好中国。\n", data), 0);

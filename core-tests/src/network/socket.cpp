@@ -15,10 +15,10 @@
 */
 
 #include "test_core.h"
-#include "swoole_file.h"
+#include "openswoole_file.h"
 
 using namespace std;
-using namespace swoole;
+using namespace openswoole;
 
 const char test_data[] = "hello swoole, hello world, php is best";
 
@@ -29,17 +29,17 @@ TEST(socket, sendto) {
     unlink(sock1_path);
     unlink(sock2_path);
 
-    auto sock1 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock1 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock1->bind(sock1_path, nullptr);
 
-    auto sock2 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock2 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock2->bind(sock2_path, nullptr);
 
     ASSERT_GT(sock1->sendto(sock2_path, 0, test_data, strlen(test_data)), 0);
 
     char buf[1024] = {};
     network::Address sa;
-    sa.type = SW_SOCK_UNIX_DGRAM;
+    sa.type = OSW_SOCK_UNIX_DGRAM;
     ASSERT_GT(sock2->recvfrom(buf, sizeof(buf), 0, &sa), 0);
     ASSERT_STREQ(test_data, buf);
     ASSERT_STREQ(sa.get_ip(), sock1_path);
@@ -52,12 +52,12 @@ TEST(socket, sendto) {
 
 static void test_sendto(enum swSocketType sock_type) {
     int port1 = 0, port2 = 0;
-    const char *ip = sock_type == SW_SOCK_UDP ? "127.0.0.1" : "::1";
+    const char *ip = sock_type == OSW_SOCK_UDP ? "127.0.0.1" : "::1";
 
-    auto sock1 = make_socket(sock_type, SW_FD_DGRAM_SERVER, 0);
+    auto sock1 = make_socket(sock_type, OSW_FD_DGRAM_SERVER, 0);
     sock1->bind(ip, &port1);
 
-    auto sock2 = make_socket(sock_type, SW_FD_DGRAM_SERVER, 0);
+    auto sock2 = make_socket(sock_type, OSW_FD_DGRAM_SERVER, 0);
     sock2->bind(ip, &port2);
 
     ASSERT_GT(sock1->sendto(ip, port2, test_data, strlen(test_data)), 0);
@@ -76,11 +76,11 @@ static void test_sendto(enum swSocketType sock_type) {
 }
 
 TEST(socket, sendto_ipv4) {
-    test_sendto(SW_SOCK_UDP);
+    test_sendto(OSW_SOCK_UDP);
 }
 
 TEST(socket, sendto_ipv6) {
-    test_sendto(SW_SOCK_UDP6);
+    test_sendto(OSW_SOCK_UDP6);
 }
 
 TEST(socket, recv) {
@@ -88,7 +88,7 @@ TEST(socket, recv) {
     m.lock();
 
     thread t1([&m]() {
-        auto svr = make_server_socket(SW_SOCK_TCP, TEST_HOST, TEST_PORT);
+        auto svr = make_server_socket(OSW_SOCK_TCP, TEST_HOST, TEST_PORT);
         char buf[1024] = {};
         svr->set_block();
         m.unlock();
@@ -102,8 +102,8 @@ TEST(socket, recv) {
 
     thread t2([&m]() {
         m.lock();
-        auto cli = make_socket(SW_SOCK_TCP, SW_FD_STREAM_CLIENT, 0);
-        ASSERT_EQ(cli->connect(TEST_HOST, TEST_PORT), SW_OK);
+        auto cli = make_socket(OSW_SOCK_TCP, OSW_FD_STREAM_CLIENT, 0);
+        ASSERT_EQ(cli->connect(TEST_HOST, TEST_PORT), OSW_OK);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         cli->send(test_data, sizeof(test_data), 0);
         cli->free();
@@ -118,7 +118,7 @@ TEST(socket, recvfrom_blocking) {
     m.lock();
 
     thread t1([&m]() {
-        auto svr = make_server_socket(SW_SOCK_UDP, TEST_HOST, TEST_PORT);
+        auto svr = make_server_socket(OSW_SOCK_UDP, TEST_HOST, TEST_PORT);
         network::Address addr;
         char buf[1024] = {};
         svr->set_nonblock();
@@ -130,10 +130,10 @@ TEST(socket, recvfrom_blocking) {
 
     thread t2([&m]() {
         m.lock();
-        auto cli = make_socket(SW_SOCK_UDP, SW_FD_STREAM_CLIENT, 0);
+        auto cli = make_socket(OSW_SOCK_UDP, OSW_FD_STREAM_CLIENT, 0);
         network::Address addr;
-        addr.assign(SW_SOCK_TCP, TEST_HOST, TEST_PORT);
-        ASSERT_EQ(cli->connect(addr), SW_OK);
+        addr.assign(OSW_SOCK_TCP, TEST_HOST, TEST_PORT);
+        ASSERT_EQ(cli->connect(addr), OSW_OK);
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
         cli->send(test_data, sizeof(test_data), 0);
         cli->free();
@@ -151,7 +151,7 @@ TEST(socket, sendfile_blocking) {
     auto str = file_get_contents(file);
 
     thread t1([&m, &str]() {
-        auto svr = make_server_socket(SW_SOCK_TCP, TEST_HOST, TEST_PORT);
+        auto svr = make_server_socket(OSW_SOCK_TCP, TEST_HOST, TEST_PORT);
         m.unlock();
         auto cli = svr->accept();
         int len;
@@ -168,13 +168,13 @@ TEST(socket, sendfile_blocking) {
 
     thread t2([&m, &file, &str]() {
         m.lock();
-        auto cli = make_socket(SW_SOCK_TCP, SW_FD_STREAM_CLIENT, 0);
+        auto cli = make_socket(OSW_SOCK_TCP, OSW_FD_STREAM_CLIENT, 0);
         network::Address addr;
-        addr.assign(SW_SOCK_TCP, TEST_HOST, TEST_PORT);
-        ASSERT_EQ(cli->connect(addr), SW_OK);
+        addr.assign(OSW_SOCK_TCP, TEST_HOST, TEST_PORT);
+        ASSERT_EQ(cli->connect(addr), OSW_OK);
         int len = htonl(str->get_length());
         cli->send(&len, sizeof(len), 0);
-        ASSERT_EQ(cli->sendfile_blocking(file.c_str(), 0, 0, -1), SW_OK);
+        ASSERT_EQ(cli->sendfile_blocking(file.c_str(), 0, 0, -1), OSW_OK);
         cli->free();
     });
 
@@ -189,10 +189,10 @@ TEST(socket, peek) {
     unlink(sock1_path);
     unlink(sock2_path);
 
-    auto sock1 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock1 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock1->bind(sock1_path, nullptr);
 
-    auto sock2 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock2 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock2->bind(sock2_path, nullptr);
 
     ASSERT_GT(sock1->sendto(sock2_path, 0, test_data, strlen(test_data)), 0);
@@ -201,7 +201,7 @@ TEST(socket, peek) {
     ASSERT_GT(sock2->peek(buf, sizeof(buf), 0), 0);
     ASSERT_STREQ(test_data, buf);
 
-    sw_memset_zero(buf, sizeof(buf));
+    osw_memset_zero(buf, sizeof(buf));
     ASSERT_GT(sock2->recv(buf, sizeof(buf), 0), 0);
     ASSERT_STREQ(test_data, buf);
 
@@ -214,18 +214,18 @@ TEST(socket, peek) {
 TEST(socket, sendto_blocking) {
     char sock1_path[] = "/tmp/udp_unix1.sock";
     unlink(sock1_path);
-    auto sock1 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock1 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock1->bind(sock1_path, nullptr);
-    sock1->info.assign(SW_SOCK_UNIX_DGRAM, sock1_path, 0);
+    sock1->info.assign(OSW_SOCK_UNIX_DGRAM, sock1_path, 0);
 
     char sock2_path[] = "/tmp/udp_unix2.sock";
     unlink(sock2_path);
-    auto sock2 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock2 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock2->bind(sock2_path, nullptr);
-    sock2->info.assign(SW_SOCK_UNIX_DGRAM, sock2_path, 0);
+    sock2->info.assign(OSW_SOCK_UNIX_DGRAM, sock2_path, 0);
 
     char sendbuf[65536] = {};
-    swoole_random_string(sendbuf, sizeof(sendbuf) - 1);
+    openswoole_random_string(sendbuf, sizeof(sendbuf) - 1);
 
     thread t1([sock2, sendbuf]() {
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -258,18 +258,18 @@ TEST(socket, sendto_blocking) {
 TEST(socket, clean) {
     char sock1_path[] = "/tmp/udp_unix1.sock";
     unlink(sock1_path);
-    auto sock1 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock1 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock1->bind(sock1_path, nullptr);
-    sock1->info.assign(SW_SOCK_UNIX_DGRAM, sock1_path, 0);
+    sock1->info.assign(OSW_SOCK_UNIX_DGRAM, sock1_path, 0);
 
     char sock2_path[] = "/tmp/udp_unix2.sock";
     unlink(sock2_path);
-    auto sock2 = make_socket(SW_SOCK_UNIX_DGRAM, SW_FD_DGRAM_SERVER, 0);
+    auto sock2 = make_socket(OSW_SOCK_UNIX_DGRAM, OSW_FD_DGRAM_SERVER, 0);
     sock2->bind(sock2_path, nullptr);
-    sock2->info.assign(SW_SOCK_UNIX_DGRAM, sock2_path, 0);
+    sock2->info.assign(OSW_SOCK_UNIX_DGRAM, sock2_path, 0);
 
     char sendbuf[65536] = {};
-    swoole_random_string(sendbuf, sizeof(sendbuf) - 1);
+    openswoole_random_string(sendbuf, sizeof(sendbuf) - 1);
 
     for (int i = 0; i < 3; i++) {
         ASSERT_GT(sock1->sendto_blocking(sock2->info, sendbuf, strlen(sendbuf)), 0);
@@ -291,7 +291,7 @@ TEST(socket, check_liveness) {
     m.lock();
 
     thread t1([&m]() {
-        auto svr = make_server_socket(SW_SOCK_TCP, TEST_HOST, TEST_PORT);
+        auto svr = make_server_socket(OSW_SOCK_TCP, TEST_HOST, TEST_PORT);
         m.unlock();
 
         auto cli = svr->accept();
@@ -313,14 +313,14 @@ TEST(socket, check_liveness) {
     thread t2([&m]() {
         m.lock();
 
-        auto cli = make_socket(SW_SOCK_TCP, SW_FD_STREAM_CLIENT, 0);
-        ASSERT_EQ(cli->connect(TEST_HOST, TEST_PORT), SW_OK);
+        auto cli = make_socket(OSW_SOCK_TCP, OSW_FD_STREAM_CLIENT, 0);
+        ASSERT_EQ(cli->connect(TEST_HOST, TEST_PORT), OSW_OK);
 
         cli->send(test_data, sizeof(test_data), 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(1));
         ASSERT_TRUE(cli->check_liveness());
 
-        cli->send(SW_STRL("close"), 0);
+        cli->send(OSW_STRL("close"), 0);
         std::this_thread::sleep_for(std::chrono::milliseconds(5));
         ASSERT_FALSE(cli->check_liveness());
 

@@ -1,0 +1,24 @@
+--TEST--
+openswoole_table: negative
+--SKIPIF--
+<?php require  __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+$table = new openswoole_table(65536);
+
+$table->column('v1', openswoole_table::TYPE_INT);
+$table->column('v2', openswoole_table::TYPE_FLOAT);
+
+if (!$table->create())
+{
+    echo __LINE__." error";
+}
+$table->set('test1', ['v1' => 0, 'v2' => (float)0]);
+
+Assert::same($table->decr('test1', 'v1', 1), -1);
+Assert::same($table->decr('test1', 'v2', 1.5), -1.5);
+
+?>
+--EXPECT--

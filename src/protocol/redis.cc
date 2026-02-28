@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | Copyright (c) 2012-2015 The Swoole Group                             |
  +----------------------------------------------------------------------+
@@ -16,14 +16,14 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole.h"
-#include "swoole_string.h"
-#include "swoole_socket.h"
-#include "swoole_protocol.h"
-#include "swoole_server.h"
-#include "swoole_redis.h"
+#include "openswoole.h"
+#include "openswoole_string.h"
+#include "openswoole_socket.h"
+#include "openswoole_protocol.h"
+#include "openswoole_server.h"
+#include "openswoole_redis.h"
 
-namespace swoole {
+namespace openswoole {
 namespace redis {
 
 struct Request {
@@ -48,12 +48,12 @@ int recv_packet(Protocol *protocol, Connection *conn, String *buffer) {
     network::Socket *socket = conn->socket;
 
     if (conn->object == nullptr) {
-        request = (Request *) sw_malloc(sizeof(Request));
+        request = (Request *) osw_malloc(sizeof(Request));
         if (!request) {
-            swoole_warning("malloc(%ld) failed", sizeof(Request));
-            return SW_ERR;
+            openswoole_warning("malloc(%ld) failed", sizeof(Request));
+            return OSW_ERR;
         }
-        sw_memset_zero(request, sizeof(Request));
+        osw_memset_zero(request, sizeof(Request));
         conn->object = request;
     } else {
         request = (Request *) conn->object;
@@ -66,32 +66,32 @@ _recv_data:
     int n = socket->recv(buf_ptr, buf_size, 0);
     if (n < 0) {
         switch (socket->catch_error(errno)) {
-        case SW_ERROR:
-            swoole_sys_warning("recv from socket#%d failed", conn->fd);
-            return SW_OK;
-        case SW_CLOSE:
-            return SW_ERR;
+        case OSW_ERROR:
+            openswoole_sys_warning("recv from socket#%d failed", conn->fd);
+            return OSW_OK;
+        case OSW_CLOSE:
+            return OSW_ERR;
         default:
-            return SW_OK;
+            return OSW_OK;
         }
     } else if (n == 0) {
-        return SW_ERR;
+        return OSW_ERR;
     } else {
         buffer->length += n;
 
-        if (strncmp(buffer->str + buffer->length - SW_CRLF_LEN, SW_CRLF, SW_CRLF_LEN) != 0) {
+        if (strncmp(buffer->str + buffer->length - OSW_CRLF_LEN, OSW_CRLF, OSW_CRLF_LEN) != 0) {
             if (buffer->size < protocol->package_max_length) {
-                uint32_t extend_size = swoole_size_align(buffer->size * 2, SwooleG.pagesize);
+                uint32_t extend_size = openswoole_size_align(buffer->size * 2, OpenSwooleG.pagesize);
                 if (extend_size > protocol->package_max_length) {
                     extend_size = protocol->package_max_length;
                 }
                 if (!buffer->extend(extend_size)) {
-                    return SW_ERR;
+                    return OSW_ERR;
                 }
             } else if (buffer->length == buffer->size) {
             _package_too_big:
-                swoole_warning("Package is too big. package_length=%ld", buffer->length);
-                return SW_ERR;
+                openswoole_warning("Package is too big. package_length=%ld", buffer->length);
+                return OSW_ERR;
             }
             goto _recv_data;
         }
@@ -136,9 +136,9 @@ _recv_data:
             case STATE_RECEIVE_STRING:
                 if (pe - p < request->n_bytes_total - request->n_bytes_received) {
                     request->n_bytes_received += pe - p;
-                    return SW_OK;
+                    return OSW_OK;
                 } else {
-                    p += request->n_bytes_total + SW_CRLF_LEN;
+                    p += request->n_bytes_total + OSW_CRLF_LEN;
                     request->n_bytes_total = 0;
                     request->n_lines_received++;
                     request->state = STATE_RECEIVE_LENGTH;
@@ -146,14 +146,14 @@ _recv_data:
 
                     if (request->n_lines_received == request->n_lines_total) {
                         if (protocol->onPackage(protocol, socket, buffer->str, buffer->length) < 0) {
-                            return SW_ERR;
+                            return OSW_ERR;
                         }
                         if (socket->removed) {
-                            return SW_OK;
+                            return OSW_OK;
                         }
                         buffer->clear();
-                        sw_memset_zero(request, sizeof(Request));
-                        return SW_OK;
+                        osw_memset_zero(request, sizeof(Request));
+                        return OSW_OK;
                     }
                 }
                 break;
@@ -164,36 +164,36 @@ _recv_data:
         } while (p < pe);
     }
 _failed:
-    swoole_warning("redis protocol error");
-    return SW_ERR;
+    openswoole_warning("redis protocol error");
+    return OSW_ERR;
 }
 
 bool format(String *buf) {
-    return buf->append(SW_STRL(SW_REDIS_RETURN_NIL)) == SW_OK;
+    return buf->append(OSW_STRL(OSW_REDIS_RETURN_NIL)) == OSW_OK;
 }
 
 bool format(String *buf, enum ReplyType type, const std::string &value) {
     if (type == REPLY_STATUS) {
         if (value.empty()) {
-            return buf->append(SW_STRL("+OK\r\n")) == SW_OK;
+            return buf->append(OSW_STRL("+OK\r\n")) == OSW_OK;
         } else {
             return buf->format("+%.*s\r\n", value.length(), value.c_str()) > 0;
         }
     } else if (type == REPLY_ERROR) {
         if (value.empty()) {
-            return buf->append(SW_STRL("-ERR\r\n")) == SW_OK;
+            return buf->append(OSW_STRL("-ERR\r\n")) == OSW_OK;
         } else {
             return buf->format("-%.*s\r\n", value.length(), value.c_str()) > 0;
         }
     } else if (type == REPLY_STRING) {
-        if (value.empty() or value.length() > SW_REDIS_MAX_STRING_SIZE) {
+        if (value.empty() or value.length() > OSW_REDIS_MAX_STRING_SIZE) {
             return false;
         } else {
             if (buf->format("$%zu\r\n", value.length()) == 0) {
                 return false;
             }
             buf->append(value);
-            buf->append(SW_CRLF, SW_CRLF_LEN);
+            buf->append(OSW_CRLF, OSW_CRLF_LEN);
             return true;
         }
     }
@@ -240,7 +240,7 @@ std::vector<std::string> parse(const char *data, size_t len) {
 
         case STATE_RECEIVE_STRING:
             result.push_back(std::string(p, length));
-            p += length + SW_CRLF_LEN;
+            p += length + OSW_CRLF_LEN;
             state = STATE_RECEIVE_LENGTH;
             break;
 
@@ -252,4 +252,4 @@ std::vector<std::string> parse(const char *data, size_t len) {
     return result;
 }
 }  // namespace redis
-}  // namespace swoole
+}  // namespace openswoole

@@ -28,9 +28,9 @@ int php_set_inet6_addr(struct sockaddr_in6 *sin6, char *string, Socket *php_sock
 		getaddrinfo(string, NULL, &hints, &addrinfo);
 		if (!addrinfo) {
 #ifdef PHP_WIN32
-			PHP_SWOOLE_SOCKET_ERROR(php_sock, "Host lookup failed", WSAGetLastError());
+			PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "Host lookup failed", WSAGetLastError());
 #else
-			PHP_SWOOLE_SOCKET_ERROR(php_sock, "Host lookup failed", (-10000 - h_errno));
+			PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "Host lookup failed", (-10000 - h_errno));
 #endif
 			return 0;
 		}
@@ -86,7 +86,7 @@ int php_set_inet_addr(struct sockaddr_in *sin, char *string, Socket *php_sock) /
         if (strlen(string) > MAXFQDNLEN || ! (host_entry = gethostbyname(string))) {
 #endif
 			/* Note: < -10000 indicates a host lookup error */
-			PHP_SWOOLE_SOCKET_ERROR(php_sock, "Host lookup failed", (-10000 - h_errno));
+			PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "Host lookup failed", (-10000 - h_errno));
 			return 0;
 		}
 		if (host_entry->h_addrtype != AF_INET) {

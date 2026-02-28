@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace swoole {
+namespace openswoole {
 bool RedisClient::Connect(const string &host, int port, struct timeval timeout) {
     redisContext *c = redisConnectWithTimeout(host.c_str(), port, timeout);
     if (c == NULL) {
@@ -27,7 +27,7 @@ string RedisClient::Get(const string &key) {
     const char *argv[] = {"GET", key.c_str()};
     size_t argvlen[] = {strlen(argv[0]), key.length()};
 
-    auto reply = Request(SW_ARRAY_SIZE(argv), argv, argvlen);
+    auto reply = Request(OSW_ARRAY_SIZE(argv), argv, argvlen);
     if (!reply.empty() && reply->str) {
         return string(reply->str, reply->len);
     } else {
@@ -39,7 +39,7 @@ bool RedisClient::Set(const string &key, const string &value) {
     const char *argv[] = {"SET", key.c_str(), value.c_str()};
     size_t argvlen[] = {strlen(argv[0]), key.length(), value.length()};
 
-    auto reply = Request(SW_ARRAY_SIZE(argv), argv, argvlen);
+    auto reply = Request(OSW_ARRAY_SIZE(argv), argv, argvlen);
     if (!reply.empty() && reply->type == REDIS_REPLY_STATUS && strncmp(reply->str, "OK", 2) == 0) {
         return true;
     } else {
@@ -71,4 +71,4 @@ RedisReply RedisClient::Request(const vector<string> &args) {
     return reply;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

@@ -17,9 +17,9 @@
 #include "test_core.h"
 #include "test_coroutine.h"
 #include "redis_client.h"
-#include "swoole_redis.h"
+#include "openswoole_redis.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 const std::string REDIS_TEST_KEY = "key-swoole";
@@ -39,9 +39,9 @@ TEST(redis, server) {
     serv.worker_num = 1;
     serv.enable_static_handler = true;
 
-    sw_logger()->set_level(SW_LOG_WARNING);
+    osw_logger()->set_level(OSW_LOG_WARNING);
 
-    ListenPort *port = serv.add_port(SW_SOCK_TCP, TEST_HOST, 0);
+    ListenPort *port = serv.add_port(OSW_SOCK_TCP, TEST_HOST, 0);
     ASSERT_TRUE(port);
     port->open_redis_protocol = true;
 
@@ -67,7 +67,7 @@ TEST(redis, server) {
         int session_id = req->info.fd;
         auto list = redis::parse(req->data, req->info.len);
 
-        String *buffer = sw_tg_buffer();
+        String *buffer = osw_tg_buffer();
         buffer->clear();
 
         if (strcasecmp(list[0].c_str(), "GET") == 0) {
@@ -78,7 +78,7 @@ TEST(redis, server) {
             serv->send(session_id, buffer->str, buffer->length);
         }
 
-        return SW_OK;
+        return OSW_OK;
     };
 
     serv.start();

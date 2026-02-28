@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -12,8 +12,8 @@
   +----------------------------------------------------------------------+
 */
 
-#ifndef PHP_SWOOLE_H
-#define PHP_SWOOLE_H
+#ifndef PHP_OPENSWOOLE_H
+#define PHP_OPENSWOOLE_H
 
 #include "php.h"
 #include "php_ini.h"
@@ -57,9 +57,12 @@ ZEND_END_MODULE_GLOBALS(openswoole)
 extern ZEND_DECLARE_MODULE_GLOBALS(openswoole);
 
 #ifdef ZTS
-#define SWOOLE_G(v) TSRMG(openswoole_globals_id, zend_openswoole_globals *, v)
+#define OPENSWOOLE_G(v) TSRMG(openswoole_globals_id, zend_openswoole_globals *, v)
 #else
-#define SWOOLE_G(v) (openswoole_globals.v)
+#define OPENSWOOLE_G(v) (openswoole_globals.v)
 #endif
 
-#endif /* PHP_SWOOLE_H */
+/* Backward compatibility */
+#define SWOOLE_G(v) OPENSWOOLE_G(v)
+
+#endif /* PHP_OPENSWOOLE_H */

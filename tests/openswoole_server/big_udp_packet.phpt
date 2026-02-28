@@ -1,0 +1,46 @@
+--TEST--
+openswoole_server: send big udp packet to server
+--SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+//最大长度：65535 - UDP包头 8字节 + IP包头 20字节 = 65507
+const N = 65507;
+$port = get_one_free_port();
+
+$pm = new SwooleTest\ProcessManager;
+
+$pm->parentFunc = function ($pid) use ($port)
+{
+    $client = new openswoole_client(SWOOLE_SOCK_UDP, OPENSWOOLE_SOCK_SYNC);
+    if (!$client->connect('127.0.0.1', $port))
+    {
+        exit("connect failed\n");
+    }
+    $client->send(str_repeat('A',  N));
+    $data = $client->recv();
+    Assert::same(strlen($data), N);
+    openswoole_process::kill($pid);
+};
+
+$pm->childFunc = function () use ($pm, $port)
+{
+    $serv = new openswoole_server('127.0.0.1', $port, SWOOLE_BASE, SWOOLE_SOCK_UDP);
+    $serv->set(['worker_num' => 1, 'log_file' => '/dev/null']);
+    $serv->on("workerStart", function ($serv) use ($pm)
+    {
+        $pm->wakeup();
+    });
+    $serv->on('packet', function ($serv, $data, $client)
+    {
+        $serv->sendto($client['address'], $client['port'], str_repeat('B', strlen($data)));
+    });
+    $serv->start();
+};
+
+$pm->childFirst();
+$pm->run();
+?>
+--EXPECT--

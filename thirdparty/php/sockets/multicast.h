@@ -18,9 +18,9 @@
 
 #pragma once
 
-#include "php_swoole_cxx.h"
+#include "php_openswoole_cxx.h"
 
-using swoole::coroutine::Socket;
+using openswoole::coroutine::Socket;
 
 #if defined(MCAST_JOIN_GROUP) && !defined(__APPLE__)
 # define RFC3678_API 1

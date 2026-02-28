@@ -1,6 +1,6 @@
 #pragma once
 
-#include "swoole.h"
+#include "openswoole.h"
 
 #include <string>
 #include <vector>
@@ -8,7 +8,7 @@
 
 #include "hiredis.h"
 
-namespace swoole {
+namespace openswoole {
 
 class RedisReply {
   private:
@@ -64,4 +64,4 @@ class RedisClient {
     bool Set(const std::string &key, const std::string &value);
 };
 
-}  // namespace swoole
+}  // namespace openswoole

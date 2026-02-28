@@ -1,8 +1,8 @@
 #include "test_coroutine.h"
 #ifdef HAVE_SWOOLE_DIR
-#include "swoole_async.h"
+#include "openswoole_async.h"
 #else
-#include "openswoole/swoole_async.h"
+#include "openswoole/openswoole_async.h"
 #endif
 #include <iostream>
 #include <regex>
@@ -33,7 +33,7 @@ TEST(coroutine_async, gethostbyname) {
 
         bool retval = swoole::coroutine::async([&]() {
             char buf[128];
-            if (swoole::network::gethostbyname(AF_INET, domain.c_str(), buf) == SW_OK) {
+            if (swoole::network::gethostbyname(AF_INET, domain.c_str(), buf) == OSW_OK) {
                 char addr[128];
                 inet_ntop(AF_INET, buf, addr, sizeof(addr));
                 ip = addr;

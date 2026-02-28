@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -12,9 +12,9 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_coroutine_selector.h"
+#include "openswoole_coroutine_selector.h"
 
-namespace swoole {
+namespace openswoole {
 namespace coroutine {
 
 void Selector::timer_callback(Timer *timer, TimerNode *tnode) {
@@ -43,7 +43,7 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
         if (timeout > 0) {
             long msec = (long) (timeout * 1000);
             msg.co = current_co;
-            msg.timer = swoole_timer_add(msec, false, timer_callback, &msg);
+            msg.timer = openswoole_timer_add(msec, false, timer_callback, &msg);
         }
 
         for (auto &chan : pull_chans) {
@@ -58,7 +58,7 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
         current_co->yield();
 
         if (msg.timer) {
-            swoole_timer_del(msg.timer);
+            openswoole_timer_del(msg.timer);
         }
     }
 
@@ -85,4 +85,4 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
 }
 
 }  // namespace coroutine
-}  // namespace swoole
+}  // namespace openswoole

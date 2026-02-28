@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -16,11 +16,11 @@
 
 #include <poll.h>
 
-#include "swoole.h"
-#include "swoole_socket.h"
-#include "swoole_reactor.h"
+#include "openswoole.h"
+#include "openswoole_socket.h"
+#include "openswoole_reactor.h"
 
-namespace swoole {
+namespace openswoole {
 
 using network::Socket;
 
@@ -62,19 +62,19 @@ ReactorPoll::~ReactorPoll() {
 int ReactorPoll::add(Socket *socket, int events) {
     int fd = socket->fd;
     if (exists(fd)) {
-        swoole_warning("fd#%d is already exists", fd);
-        return SW_ERR;
+        openswoole_warning("fd#%d is already exists", fd);
+        return OSW_ERR;
     }
 
     int cur = reactor_->get_event_num();
     if (reactor_->get_event_num() == max_fd_num) {
-        swoole_warning("too many connection, more than %d", max_fd_num);
-        return SW_ERR;
+        openswoole_warning("too many connection, more than %d", max_fd_num);
+        return OSW_ERR;
     }
 
     reactor_->_add(socket, events);
 
-    swoole_trace("fd=%d, events=%d", fd, events);
+    openswoole_trace("fd=%d, events=%d", fd, events);
 
     fds_[cur] = socket;
     events_[cur].fd = fd;
@@ -90,13 +90,13 @@ int ReactorPoll::add(Socket *socket, int events) {
         events_[cur].events |= POLLHUP;
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 int ReactorPoll::set(Socket *socket, int events) {
     uint32_t i;
 
-    swoole_trace("fd=%d, events=%d", socket->fd, events);
+    openswoole_trace("fd=%d, events=%d", socket->fd, events);
 
     for (i = 0; i < reactor_->get_event_num(); i++) {
         // found
@@ -110,20 +110,20 @@ int ReactorPoll::set(Socket *socket, int events) {
             }
             // execute parent method
             reactor_->_set(socket, events);
-            return SW_OK;
+            return OSW_OK;
         }
     }
 
-    return SW_ERR;
+    return OSW_ERR;
 }
 
 int ReactorPoll::del(Socket *socket) {
     if (socket->removed) {
-        swoole_error_log(SW_LOG_WARNING,
-                         SW_ERROR_EVENT_SOCKET_REMOVED,
+        openswoole_error_log(OSW_LOG_WARNING,
+                         OSW_ERROR_EVENT_SOCKET_REMOVED,
                          "failed to delete event[%d], it has already been removed",
                          socket->fd);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     for (uint32_t i = 0; i < reactor_->get_event_num(); i++) {
@@ -139,11 +139,11 @@ int ReactorPoll::del(Socket *socket) {
                 }
             }
             reactor_->_del(socket);
-            return SW_OK;
+            return OSW_OK;
         }
     }
 
-    return SW_ERR;
+    return OSW_ERR;
 }
 
 int ReactorPoll::wait(struct timeval *timeo) {
@@ -169,14 +169,14 @@ int ReactorPoll::wait(struct timeval *timeo) {
         ret = poll(events_, reactor_->get_event_num(), reactor_->get_timeout_msec());
         if (ret < 0) {
             if (!reactor_->catch_error()) {
-                swoole_sys_warning("poll error");
+                openswoole_sys_warning("poll error");
                 break;
             } else {
                 goto _continue;
             }
         } else if (ret == 0) {
             reactor_->execute_end_callbacks(true);
-            SW_REACTOR_CONTINUE;
+            OSW_REACTOR_CONTINUE;
         } else {
             for (uint32_t i = 0; i < reactor_->get_event_num(); i++) {
                 event.socket = fds_[i];
@@ -188,21 +188,21 @@ int ReactorPoll::wait(struct timeval *timeo) {
                     event.socket->event_hup = 1;
                 }
 
-                swoole_trace("Event: fd=%d|reactor_id=%d|type=%d", event.fd, reactor_->id, event.type);
+                openswoole_trace("Event: fd=%d|reactor_id=%d|type=%d", event.fd, reactor_->id, event.type);
                 // in
                 if ((events_[i].revents & POLLIN) && !event.socket->removed) {
-                    handler = reactor_->get_handler(SW_EVENT_READ, event.type);
+                    handler = reactor_->get_handler(OSW_EVENT_READ, event.type);
                     ret = handler(reactor_, &event);
                     if (ret < 0) {
-                        swoole_sys_warning("poll[POLLIN] handler failed. fd=%d", event.fd);
+                        openswoole_sys_warning("poll[POLLIN] handler failed. fd=%d", event.fd);
                     }
                 }
                 // out
                 if ((events_[i].revents & POLLOUT) && !event.socket->removed) {
-                    handler = reactor_->get_handler(SW_EVENT_WRITE, event.type);
+                    handler = reactor_->get_handler(OSW_EVENT_WRITE, event.type);
                     ret = handler(reactor_, &event);
                     if (ret < 0) {
-                        swoole_sys_warning("poll[POLLOUT] handler failed. fd=%d", event.fd);
+                        openswoole_sys_warning("poll[POLLOUT] handler failed. fd=%d", event.fd);
                     }
                 }
                 // error
@@ -214,19 +214,19 @@ int ReactorPoll::wait(struct timeval *timeo) {
                     handler = reactor_->get_error_handler(event.type);
                     ret = handler(reactor_, &event);
                     if (ret < 0) {
-                        swoole_sys_warning("poll[POLLERR] handler failed. fd=%d", event.fd);
+                        openswoole_sys_warning("poll[POLLERR] handler failed. fd=%d", event.fd);
                     }
                 }
-                if (!event.socket->removed && (event.socket->events & SW_EVENT_ONCE)) {
+                if (!event.socket->removed && (event.socket->events & OSW_EVENT_ONCE)) {
                     del(event.socket);
                 }
             }
         }
     _continue:
         reactor_->execute_end_callbacks(false);
-        SW_REACTOR_CONTINUE;
+        OSW_REACTOR_CONTINUE;
     }
-    return SW_OK;
+    return OSW_OK;
 }
 
 bool ReactorPoll::exists(int fd) {
@@ -238,4 +238,4 @@ bool ReactorPoll::exists(int fd) {
     return false;
 }
 
-}  // namespace swoole
+}  // namespace openswoole

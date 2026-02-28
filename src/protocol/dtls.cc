@@ -1,12 +1,12 @@
-#include "swoole_server.h"
-#ifdef SW_SUPPORT_DTLS
+#include "openswoole_server.h"
+#ifdef OSW_SUPPORT_DTLS
 
-namespace swoole {
+namespace openswoole {
 namespace dtls {
 //-------------------------------------------------------------------------------
 
 int BIO_write(BIO *b, const char *data, int dlen) {
-    swoole_trace_log(SW_TRACE_SSL, "BIO_write(%d)", dlen);
+    openswoole_trace_log(OSW_TRACE_SSL, "BIO_write(%d)", dlen);
 
     Session *session = (Session *) BIO_get_data(b);
     return session->socket->write(data, dlen);
@@ -20,14 +20,14 @@ int BIO_read(BIO *b, char *data, int len) {
     if (!session->rxqueue.empty()) {
         buffer = session->rxqueue.front();
 
-        swoole_trace("BIO_read(%d, peek=%d)=%d", len, session->peek_mode, buffer->length);
+        openswoole_trace("BIO_read(%d, peek=%d)=%d", len, session->peek_mode, buffer->length);
 
         int n = (buffer->length <= len) ? buffer->length : len;
         memmove(data, buffer->data, n);
 
         if (!session->peek_mode) {
             session->rxqueue.pop_front();
-            sw_free(buffer);
+            osw_free(buffer);
         }
 
         return n;
@@ -41,8 +41,8 @@ long BIO_ctrl(BIO *b, int cmd, long lval, void *ptrval) {
     long retval = 0;
     Session *session = (Session *) BIO_get_data(b);
 
-    swoole_trace_log(
-        SW_TRACE_SSL, "BIO_ctrl(BIO[0x%016lX], cmd[%d], lval[%ld], ptrval[0x%016lX])", b, cmd, lval, ptrval);
+    openswoole_trace_log(
+        OSW_TRACE_SSL, "BIO_ctrl(BIO[0x%016lX], cmd[%d], lval[%ld], ptrval[0x%016lX])", b, cmd, lval, ptrval);
 
     switch (cmd) {
     case BIO_CTRL_EOF:
@@ -95,7 +95,7 @@ long BIO_ctrl(BIO *b, int cmd, long lval, void *ptrval) {
         break;
 #endif
     default:
-        swoole_warning("unknown cmd: %d", cmd);
+        openswoole_warning("unknown cmd: %d", cmd);
         retval = 0;
         break;
     }
@@ -108,7 +108,7 @@ int BIO_create(BIO *b) {
 }
 
 int BIO_destroy(BIO *b) {
-    swoole_trace_log(SW_TRACE_SSL, "BIO_destroy(BIO[0x%016lX])\n", b);
+    openswoole_trace_log(OSW_TRACE_SSL, "BIO_destroy(BIO[0x%016lX])\n", b);
     return 1;
 }
 
@@ -121,7 +121,7 @@ BIO_METHOD *BIO_get_methods(void) {
     }
 
     dtls_session_index = BIO_get_new_index();
-    _bio_methods = BIO_meth_new(dtls_session_index | BIO_TYPE_SOURCE_SINK, "swoole_dtls_bio");
+    _bio_methods = BIO_meth_new(dtls_session_index | BIO_TYPE_SOURCE_SINK, "openswoole_dtls_bio");
 
     BIO_meth_set_write(_bio_methods, BIO_write);
     BIO_meth_set_read(_bio_methods, BIO_read);
@@ -142,7 +142,7 @@ void BIO_meth_free(void) {
 }
 
 void Session::append(const char *data, ssize_t len) {
-    Buffer *buffer = (Buffer *) sw_malloc(sizeof(*buffer) + len);
+    Buffer *buffer = (Buffer *) osw_malloc(sizeof(*buffer) + len);
     buffer->length = len;
     memcpy(buffer->data, data, buffer->length);
     rxqueue.push_back(buffer);
@@ -152,7 +152,7 @@ bool Session::init() {
     if (socket->ssl) {
         return false;
     }
-    if (socket->ssl_create(ctx, SW_SSL_SERVER) < 0) {
+    if (socket->ssl_create(ctx, OSW_SSL_SERVER) < 0) {
         return false;
     }
     socket->dtls = 1;
@@ -177,11 +177,11 @@ bool Session::listen() {
         return true;
     } else if (retval < 0) {
         int reason = ERR_GET_REASON(ERR_peek_error());
-        swoole_warning("DTLSv1_listen() failed, client[%s:%d], reason=%d, error_string=%s",
+        openswoole_warning("DTLSv1_listen() failed, client[%s:%d], reason=%d, error_string=%s",
                        socket->info.get_ip(),
                        socket->info.get_port(),
                        reason,
-                       swoole_ssl_get_error());
+                       openswoole_ssl_get_error());
         return false;
     } else {
         listened = true;
@@ -192,6 +192,6 @@ bool Session::listen() {
 
 //-------------------------------------------------------------------------------
 }  // namespace dtls
-}  // namespace swoole
+}  // namespace openswoole
 
 #endif

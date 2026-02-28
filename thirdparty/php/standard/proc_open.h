@@ -1,16 +1,16 @@
-#include "php_swoole_cxx.h"
+#include "php_openswoole_cxx.h"
 
 extern "C"
 {
-PHP_FUNCTION(swoole_proc_open);
-PHP_FUNCTION(swoole_proc_close);
-PHP_FUNCTION(swoole_proc_get_status);
-PHP_FUNCTION(swoole_proc_terminate);
+PHP_FUNCTION(openswoole_proc_open);
+PHP_FUNCTION(openswoole_proc_close);
+PHP_FUNCTION(openswoole_proc_get_status);
+PHP_FUNCTION(openswoole_proc_terminate);
 }
 
 typedef int php_file_descriptor_t;
 
-void swoole_proc_open_init(int module_number);
+void openswoole_proc_open_init(int module_number);
 
 struct proc_co_env_t
 {

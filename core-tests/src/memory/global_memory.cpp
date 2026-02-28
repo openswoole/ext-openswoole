@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_memory.h"
+#include "openswoole_memory.h"
 
 TEST(global_memory, alloc) {
     auto pool = new swoole::GlobalMemory(2 * 1024 * 1024, false);

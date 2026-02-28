@@ -1,39 +1,39 @@
 #include "test_core.h"
-#include "swoole_file.h"
+#include "openswoole_file.h"
 #include <regex>
 
-using namespace swoole;
+using namespace openswoole;
 
 const char *file = "/tmp/swoole_log_test.log";
 
 TEST(log, level) {
-    sw_logger()->reset();
-    sw_logger()->set_level(SW_LOG_NOTICE);
-    sw_logger()->open(file);
+    osw_logger()->reset();
+    osw_logger()->set_level(OSW_LOG_NOTICE);
+    osw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_INFO, SW_STRL("hello info"));
-    sw_logger()->put(SW_LOG_NOTICE, SW_STRL("hello notice"));
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello warning"));
+    osw_logger()->put(OSW_LOG_INFO, OSW_STRL("hello info"));
+    osw_logger()->put(OSW_LOG_NOTICE, OSW_STRL("hello notice"));
+    osw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello warning"));
 
     auto content = file_get_contents(file);
 
-    sw_logger()->close();
+    osw_logger()->close();
     unlink(file);
 
-    ASSERT_FALSE(content->contains(SW_STRL("hello info")));
-    ASSERT_TRUE(content->contains(SW_STRL("hello notice")));
-    ASSERT_TRUE(content->contains(SW_STRL("hello warning")));
+    ASSERT_FALSE(content->contains(OSW_STRL("hello info")));
+    ASSERT_TRUE(content->contains(OSW_STRL("hello notice")));
+    ASSERT_TRUE(content->contains(OSW_STRL("hello warning")));
 }
 
 TEST(log, date_format) {
-    sw_logger()->reset();
-    sw_logger()->set_date_format("day %d of %B in the year %Y. Time: %I:%S %p");
-    sw_logger()->open(file);
+    osw_logger()->reset();
+    osw_logger()->set_date_format("day %d of %B in the year %Y. Time: %I:%S %p");
+    osw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello world"));
+    osw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello world"));
     auto content = file_get_contents(file);
 
-    sw_logger()->close();
+    osw_logger()->close();
     unlink(file);
 
     int data[16];
@@ -55,29 +55,29 @@ TEST(log, date_format) {
 }
 
 TEST(log, date_format_long_string) {
-    sw_logger()->reset();
-    sw_logger()->set_level(SW_LOG_ERROR);
+    osw_logger()->reset();
+    osw_logger()->set_level(OSW_LOG_ERROR);
     std::unique_ptr<String> content(new String(256));
     auto str = content.get();
 
     str->repeat("x", 1, 120);
-    str->append(SW_STRL("day %d of %B in the year %Y. Time: %I:%S %p"));
+    str->append(OSW_STRL("day %d of %B in the year %Y. Time: %I:%S %p"));
 
-    bool retval = sw_logger()->set_date_format(str->str);
+    bool retval = osw_logger()->set_date_format(str->str);
 
     ASSERT_FALSE(retval);
-    ASSERT_EQ(swoole_get_last_error(), SW_ERROR_INVALID_PARAMS);
+    ASSERT_EQ(openswoole_get_last_error(), OSW_ERROR_INVALID_PARAMS);
 }
 
 TEST(log, date_with_microseconds) {
-    sw_logger()->reset();
-    sw_logger()->set_date_with_microseconds(true);
-    sw_logger()->open(file);
+    osw_logger()->reset();
+    osw_logger()->set_date_with_microseconds(true);
+    osw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello world"));
+    osw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello world"));
     auto content = file_get_contents(file);
 
-    sw_logger()->close();
+    osw_logger()->close();
     unlink(file);
 
     std::regex e("\\[\\S+\\s\\d{2}:\\d{2}:\\d{2}\\<\\.(\\d+)\\>\\s@\\d+\\.\\d+\\]\tWARNING\thello world");
@@ -85,18 +85,18 @@ TEST(log, date_with_microseconds) {
 }
 
 TEST(log, rotation) {
-    sw_logger()->reset();
-    sw_logger()->set_rotation(SW_LOG_ROTATION_DAILY);
-    sw_logger()->open(file);
+    osw_logger()->reset();
+    osw_logger()->set_rotation(OSW_LOG_ROTATION_DAILY);
+    osw_logger()->open(file);
 
-    sw_logger()->put(SW_LOG_WARNING, SW_STRL("hello world"));
+    osw_logger()->put(OSW_LOG_WARNING, OSW_STRL("hello world"));
 
-    ASSERT_EQ(access(sw_logger()->get_file(), R_OK), -1);
+    ASSERT_EQ(access(osw_logger()->get_file(), R_OK), -1);
     ASSERT_EQ(errno, ENOENT);
-    ASSERT_EQ(access(sw_logger()->get_real_file(), R_OK), 0);
+    ASSERT_EQ(access(osw_logger()->get_real_file(), R_OK), 0);
 
-    sw_logger()->close();
-    unlink(sw_logger()->get_real_file());
+    osw_logger()->close();
+    unlink(osw_logger()->get_real_file());
 }
 
 TEST(log, redirect) {
@@ -105,19 +105,19 @@ TEST(log, redirect) {
         return;
     }
 
-    sw_logger()->reset();
-    ASSERT_TRUE(sw_logger()->open(file));
-    ASSERT_TRUE(sw_logger()->redirect_stdout_and_stderr(1));
+    osw_logger()->reset();
+    ASSERT_TRUE(osw_logger()->open(file));
+    ASSERT_TRUE(osw_logger()->redirect_stdout_and_stderr(1));
 
     printf("hello world\n");
     auto content = file_get_contents(file);
     ASSERT_NE(content.get(), nullptr);
 
-    sw_logger()->close();
-    ASSERT_TRUE(sw_logger()->redirect_stdout_and_stderr(0));
-    unlink(sw_logger()->get_real_file());
+    osw_logger()->close();
+    ASSERT_TRUE(osw_logger()->redirect_stdout_and_stderr(0));
+    unlink(osw_logger()->get_real_file());
 
-    ASSERT_TRUE(content->contains(SW_STRL("hello world\n")));
+    ASSERT_TRUE(content->contains(OSW_STRL("hello world\n")));
 }
 
 namespace TestA {

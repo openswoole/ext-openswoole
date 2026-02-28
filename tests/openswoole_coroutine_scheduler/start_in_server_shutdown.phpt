@@ -1,0 +1,41 @@
+--TEST--
+openswoole_coroutine_scheduler: start in server onShutdown callback
+--SKIPIF--
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
+--FILE--
+<?php declare(strict_types = 1);
+require __DIR__ . '/../include/bootstrap.php';
+
+$file = file_get_contents(__FILE__);
+
+$server = new OpenSwoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS);
+$server->set(['worker_num' => 2, 'log_level' => SWOOLE_LOG_WARNING,]);
+
+$server->on('WorkerStart', function (OpenSwoole\Server $server, int $worker_id) use ($file) {
+    if ($worker_id == 1) {
+        $server->after(200, function () use ($server, $file) {
+            co::usleep(100000);
+            echo "[1] Co " . Co::getCid() . "\n";
+            Assert::same(Co::readFile(__FILE__), $file);
+            $server->shutdown();
+        });
+    }
+});
+
+$server->on('Receive', function (OpenSwoole\Server $server, $fd, $reactor_id, $data) {
+});
+
+$server->on('shutdown', function () use ($file) {
+    $sch = new OpenSwoole\Coroutine\Scheduler;
+    $sch->add(function ($t, $n) use ($file) {
+        Co::usleep($t);
+        echo "[2] Co " . Co::getCid() . "\n";
+        Assert::same(Co::readFile(__FILE__), $file);
+    }, 50000, 'A');
+    $sch->start();
+});
+$server->start();
+?>
+--EXPECTF--
+[1] Co 2
+[2] Co 1

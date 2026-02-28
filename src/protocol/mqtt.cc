@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | Copyright (c) 2012-2015 The Swoole Group                             |
  +----------------------------------------------------------------------+
@@ -17,12 +17,12 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole_mqtt.h"
-#include "swoole_protocol.h"
+#include "openswoole_mqtt.h"
+#include "openswoole_protocol.h"
 
-using swoole::network::Socket;
+using openswoole::network::Socket;
 
-namespace swoole {
+namespace openswoole {
 namespace mqtt {
 
 void print_package(Packet *pkg) {
@@ -30,7 +30,7 @@ void print_package(Packet *pkg) {
 }
 
 void set_protocol(Protocol *protocol) {
-    protocol->package_length_size = SW_MQTT_MAX_LENGTH_SIZE;
+    protocol->package_length_size = OSW_MQTT_MAX_LENGTH_SIZE;
     protocol->package_length_offset = 1;
     protocol->package_body_offset = 0;
     protocol->get_package_length = get_package_length;
@@ -38,13 +38,13 @@ void set_protocol(Protocol *protocol) {
 
 // recv variable_header packet twice may cause that the '*data' contain the payload data,
 // but there's no chance to read the next mqtt request ,because MQTT client will recv ACK blocking
-#define SW_MQTT_RECV_LEN_AGAIN 0
+#define OSW_MQTT_RECV_LEN_AGAIN 0
 
 ssize_t get_package_length(Protocol *protocol, Socket *conn, const char *data, uint32_t size) {
     //-1 cause the arg 'size' contain length_offset(1 byte len)
     uint32_t recv_variable_header_size = (size - 1);
-    if (recv_variable_header_size < SW_MQTT_MIN_LENGTH_SIZE) {  // recv continue
-        return SW_MQTT_RECV_LEN_AGAIN;
+    if (recv_variable_header_size < OSW_MQTT_MIN_LENGTH_SIZE) {  // recv continue
+        return OSW_MQTT_RECV_LEN_AGAIN;
     }
 
     uint8_t byte;
@@ -59,15 +59,15 @@ ssize_t get_package_length(Protocol *protocol, Socket *conn, const char *data, u
         if ((byte & 128) == 0) {  // done! there is no surplus length byte
             break;
         }
-        if (variable_header_byte_count >= SW_MQTT_MAX_LENGTH_SIZE) {
-            swoole_error_log(SW_LOG_WARNING,
-                             SW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
+        if (variable_header_byte_count >= OSW_MQTT_MAX_LENGTH_SIZE) {
+            openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
                              "bad request, the variable header size is larger than %d",
-                             SW_MQTT_MAX_LENGTH_SIZE);
-            return SW_ERR;
+                             OSW_MQTT_MAX_LENGTH_SIZE);
+            return OSW_ERR;
         }
         if (variable_header_byte_count >= recv_variable_header_size) {  // length not enough
-            return SW_MQTT_RECV_LEN_AGAIN;
+            return OSW_MQTT_RECV_LEN_AGAIN;
         }
     }
     // payload_length + variable_header_byte_count + length_offset(1)
@@ -75,4 +75,4 @@ ssize_t get_package_length(Protocol *protocol, Socket *conn, const char *data, u
 }
 
 }  // namespace mqtt
-}  // namespace swoole
+}  // namespace openswoole

@@ -15,7 +15,7 @@
 */
 
 #include "test_core.h"
-#include "swoole_memory.h"
+#include "openswoole_memory.h"
 
 using namespace std;
 

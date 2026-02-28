@@ -2,7 +2,7 @@ dnl $Id$
 dnl config.m4 for extension openswoole
 
 dnl  +----------------------------------------------------------------------+
-dnl  | Open Swoole                                                          |
+dnl  | OpenSwoole                                                          |
 dnl  +----------------------------------------------------------------------+
 dnl  | This source file is subject to version 2.0 of the Apache license,    |
 dnl  | that is bundled with this package in the file LICENSE, and is        |
@@ -93,7 +93,12 @@ PHP_ARG_ENABLE([thread-context],
   [AS_HELP_STRING([--enable-thread-context],
     [Use Thread Context])], [no], [no])
 
-AC_DEFUN([SWOOLE_HAVE_PHP_EXT], [
+PHP_ARG_ENABLE([io-uring],
+  [whether to enable io_uring reactor],
+  [AS_HELP_STRING([--enable-io-uring],
+    [Enable io_uring reactor backend (requires liburing)])], [no], [no])
+
+AC_DEFUN([OPENSWOOLE_HAVE_PHP_EXT], [
     extname=$1
     haveext=$[PHP_]translit($1,a-z_-,A-Z__)
 
@@ -120,7 +125,7 @@ AC_DEFUN([SWOOLE_HAVE_PHP_EXT], [
     fi
 ])
 
-AC_DEFUN([AC_SWOOLE_CPU_AFFINITY],
+AC_DEFUN([AC_OPENSWOOLE_CPU_AFFINITY],
 [
     AC_MSG_CHECKING([for cpu affinity])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -143,7 +148,7 @@ AC_DEFUN([AC_SWOOLE_CPU_AFFINITY],
     ])
 ])
 
-AC_DEFUN([AC_SWOOLE_HAVE_REUSEPORT],
+AC_DEFUN([AC_OPENSWOOLE_HAVE_REUSEPORT],
 [
     AC_MSG_CHECKING([for socket REUSEPORT])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -159,7 +164,7 @@ AC_DEFUN([AC_SWOOLE_HAVE_REUSEPORT],
     ])
 ])
 
-AC_DEFUN([AC_SWOOLE_HAVE_FUTEX],
+AC_DEFUN([AC_OPENSWOOLE_HAVE_FUTEX],
 [
     AC_MSG_CHECKING([for futex])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -179,7 +184,7 @@ AC_DEFUN([AC_SWOOLE_HAVE_FUTEX],
     ])
 ])
 
-AC_DEFUN([AC_SWOOLE_HAVE_UCONTEXT],
+AC_DEFUN([AC_OPENSWOOLE_HAVE_UCONTEXT],
 [
     AC_MSG_CHECKING([for ucontext])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
@@ -198,7 +203,7 @@ AC_DEFUN([AC_SWOOLE_HAVE_UCONTEXT],
     ])
 ])
 
-AC_DEFUN([AC_SWOOLE_HAVE_VALGRIND],
+AC_DEFUN([AC_OPENSWOOLE_HAVE_VALGRIND],
 [
     AC_MSG_CHECKING([for valgrind])
     AC_LANG([C++])
@@ -214,7 +219,7 @@ AC_DEFUN([AC_SWOOLE_HAVE_VALGRIND],
     ])
 ])
 
-AC_DEFUN([AC_SWOOLE_HAVE_BOOST_STACKTRACE],
+AC_DEFUN([AC_OPENSWOOLE_HAVE_BOOST_STACKTRACE],
 [
     AC_MSG_CHECKING([for valgrind])
     AC_LANG([C++])
@@ -230,7 +235,7 @@ AC_DEFUN([AC_SWOOLE_HAVE_BOOST_STACKTRACE],
     ])
 ])
 
-AC_DEFUN([AC_SWOOLE_CHECK_SOCKETS], [
+AC_DEFUN([AC_OPENSWOOLE_CHECK_SOCKETS], [
     dnl Check for struct cmsghdr
     AC_CACHE_CHECK([for struct cmsghdr], ac_cv_cmsghdr,
     [
@@ -331,7 +336,7 @@ CFLAGS="$CFLAGS -std=c99"
 
 AC_CANONICAL_HOST
 
-if test "$PHP_SWOOLE" != "no"; then
+if test "$PHP_OPENSWOOLE" != "no"; then
 
     AC_CHECK_LIB(c, accept4, AC_DEFINE(HAVE_ACCEPT4, 1, [have accept4]))
     AC_CHECK_LIB(c, signalfd, AC_DEFINE(HAVE_SIGNALFD, 1, [have signalfd]))
@@ -358,8 +363,18 @@ if test "$PHP_SWOOLE" != "no"; then
     AC_CHECK_LIB(pthread, pthread_mutex_consistent, AC_DEFINE(HAVE_PTHREAD_MUTEX_CONSISTENT, 1, [have pthread_mutex_consistent]))
     AC_CHECK_LIB(pcre, pcre_compile, AC_DEFINE(HAVE_PCRE, 1, [have pcre]))
     AC_CHECK_LIB(cares, ares_gethostbyname, AC_DEFINE(HAVE_CARES, 1, [have c-ares]))
-    
-    if test "$PHP_SWOOLE_DEV" = "yes"; then
+
+    if test "$PHP_IO_URING" = "yes"; then
+        AC_CHECK_FILE([/usr/include/liburing.h], [],
+            [AC_CHECK_FILE([/usr/local/include/liburing.h], [],
+                [AC_MSG_ERROR([liburing.h not found. Install liburing-dev.])])])
+        AC_CHECK_LIB(uring, io_uring_queue_init, [
+            AC_DEFINE(HAVE_IO_URING, 1, [have io_uring])
+            PHP_ADD_LIBRARY(uring, 1, OPENSWOOLE_SHARED_LIBADD)
+        ], [AC_MSG_ERROR([liburing not found. Install liburing-dev.])])
+    fi
+
+    if test "$PHP_OPENSWOOLE_DEV" = "yes"; then
         AX_CHECK_COMPILE_FLAG(-Wbool-conversion,                _MAINTAINER_CFLAGS="$_MAINTAINER_CFLAGS -Wbool-conversion")
         AX_CHECK_COMPILE_FLAG(-Wignored-qualifiers,             _MAINTAINER_CFLAGS="$_MAINTAINER_CFLAGS -Wignored-qualifiers")
         AX_CHECK_COMPILE_FLAG(-Wduplicate-enum,                 _MAINTAINER_CFLAGS="$_MAINTAINER_CFLAGS -Wduplicate-enum")
@@ -395,19 +410,19 @@ if test "$PHP_SWOOLE" != "no"; then
     fi
 
     if test "$PHP_HOOK_CURL" = "yes"; then
-        AC_DEFINE(SW_USE_CURL, 1, [do we enable cURL native client])
+        AC_DEFINE(OSW_USE_CURL, 1, [do we enable cURL native client])
     fi
 
     AC_CHECK_LIB(z, gzgets, [
-        AC_DEFINE(SW_HAVE_COMPRESSION, 1, [have compression])
-        AC_DEFINE(SW_HAVE_ZLIB, 1, [have zlib])
+        AC_DEFINE(OSW_HAVE_COMPRESSION, 1, [have compression])
+        AC_DEFINE(OSW_HAVE_ZLIB, 1, [have zlib])
         PHP_ADD_LIBRARY(z, 1, OPENSWOOLE_SHARED_LIBADD)
     ])
 
     AC_CHECK_LIB(brotlienc, BrotliEncoderCreateInstance, [
         AC_CHECK_LIB(brotlidec, BrotliDecoderCreateInstance, [
-            AC_DEFINE(SW_HAVE_COMPRESSION, 1, [have compression])
-            AC_DEFINE(SW_HAVE_BROTLI, 1, [have brotli encoder])
+            AC_DEFINE(OSW_HAVE_COMPRESSION, 1, [have compression])
+            AC_DEFINE(OSW_HAVE_BROTLI, 1, [have brotli encoder])
             PHP_ADD_LIBRARY(brotlienc, 1, OPENSWOOLE_SHARED_LIBADD)
             PHP_ADD_LIBRARY(brotlidec, 1, OPENSWOOLE_SHARED_LIBADD)
         ])
@@ -423,7 +438,7 @@ if test "$PHP_SWOOLE" != "no"; then
     )
 
     if test "$PHP_DEBUG_LOG" != "no"; then
-        AC_DEFINE(SW_DEBUG, 1, [do we enable swoole debug])
+        AC_DEFINE(OSW_DEBUG, 1, [do we enable openswoole debug])
         PHP_DEBUG=1
     fi
 
@@ -434,7 +449,7 @@ if test "$PHP_SWOOLE" != "no"; then
     fi
 
     if test "$PHP_TRACE_LOG" != "no"; then
-        AC_DEFINE(SW_LOG_TRACE_OPEN, 1, [enable trace log])
+        AC_DEFINE(OSW_LOG_TRACE_OPEN, 1, [enable trace log])
     fi
 
     if test "$PHP_SOCKETS" = "yes"; then
@@ -445,7 +460,7 @@ if test "$PHP_SWOOLE" != "no"; then
             [AC_MSG_ERROR([cannot find php_sockets.h. Please check if sockets extension is installed.])
         ])
 
-        AC_DEFINE(SW_SOCKETS, 1, [enable sockets support])
+        AC_DEFINE(OSW_SOCKETS, 1, [enable sockets support])
 
         dnl Some systems build and package PHP socket extension separately
         dnl and php_config.h does not have HAVE_SOCKETS defined.
@@ -455,7 +470,7 @@ if test "$PHP_SWOOLE" != "no"; then
     fi
 
     if test "$PHP_THREAD" = "yes"; then
-        AC_DEFINE(SW_USE_THREAD, 1, [enable thread support])
+        AC_DEFINE(OSW_USE_THREAD, 1, [enable thread support])
     fi
     
     if test "$PHP_CARES" = "yes"; then
@@ -463,17 +478,17 @@ if test "$PHP_SWOOLE" != "no"; then
             CPPFLAGS="$CPPFLAGS -I/opt/homebrew/opt/c-ares/include"
             LDFLAGS="$LDFLAGS -L/opt/homebrew/opt/c-ares/lib"
         fi
-        AC_DEFINE(SW_USE_CARES, 1, [do we enable c-ares support])
+        AC_DEFINE(OSW_USE_CARES, 1, [do we enable c-ares support])
         PHP_ADD_LIBRARY(cares, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
 
-    AC_SWOOLE_CPU_AFFINITY
-    AC_SWOOLE_HAVE_REUSEPORT
-    AC_SWOOLE_HAVE_FUTEX
-    AC_SWOOLE_HAVE_UCONTEXT
-    AC_SWOOLE_HAVE_VALGRIND
-    AC_SWOOLE_CHECK_SOCKETS
-    AC_SWOOLE_HAVE_BOOST_STACKTRACE
+    AC_OPENSWOOLE_CPU_AFFINITY
+    AC_OPENSWOOLE_HAVE_REUSEPORT
+    AC_OPENSWOOLE_HAVE_FUTEX
+    AC_OPENSWOOLE_HAVE_UCONTEXT
+    AC_OPENSWOOLE_HAVE_VALGRIND
+    AC_OPENSWOOLE_CHECK_SOCKETS
+    AC_OPENSWOOLE_HAVE_BOOST_STACKTRACE
 
     AS_CASE([$host_os],
       [darwin*], [SW_OS="MAC"],
@@ -517,13 +532,13 @@ if test "$PHP_SWOOLE" != "no"; then
             AC_CHECK_LIB(ssl, SSL_connect, AC_DEFINE(HAVE_OPENSSL, 1, [have openssl]))
         fi
 
-        AC_DEFINE(SW_USE_OPENSSL, 1, [enable openssl support])
+        AC_DEFINE(OSW_USE_OPENSSL, 1, [enable openssl support])
         PHP_ADD_LIBRARY(ssl, 1, OPENSWOOLE_SHARED_LIBADD)
         PHP_ADD_LIBRARY(crypto, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
 
     if test "$PHP_JEMALLOC_DIR" != "no"; then
-        AC_DEFINE(SW_USE_JEMALLOC, 1, [use jemalloc])
+        AC_DEFINE(OSW_USE_JEMALLOC, 1, [use jemalloc])
         PHP_ADD_INCLUDE("${PHP_JEMALLOC_DIR}/include")
         PHP_ADD_LIBRARY_WITH_PATH(jemalloc, "${PHP_JEMALLOC_DIR}/${PHP_LIBDIR}")
         PHP_ADD_LIBRARY(jemalloc, 1, OPENSWOOLE_SHARED_LIBADD)
@@ -532,12 +547,12 @@ if test "$PHP_SWOOLE" != "no"; then
     PHP_ADD_LIBRARY(pthread, 1, OPENSWOOLE_SHARED_LIBADD)
 
     if test "$PHP_HTTP2" = "yes"; then
-        AC_DEFINE(SW_USE_HTTP2, 1, [enable HTTP2 support])
+        AC_DEFINE(OSW_USE_HTTP2, 1, [enable HTTP2 support])
     fi
 
     if test "$PHP_MYSQLND" = "yes"; then
         PHP_ADD_EXTENSION_DEP(mysqli, mysqlnd)
-        AC_DEFINE(SW_USE_MYSQLND, 1, [use mysqlnd])
+        AC_DEFINE(OSW_USE_MYSQLND, 1, [use mysqlnd])
     fi
 
     if test "$PHP_POSTGRES" != "no" && test "$PHP_POSTGRES" != "n"; then
@@ -597,39 +612,39 @@ if test "$PHP_SWOOLE" != "no"; then
 
         PHP_ADD_INCLUDE($PGSQL_INCLUDE)
 
-        AC_DEFINE(SW_USE_POSTGRES, 1, [use postgres])
+        AC_DEFINE(OSW_USE_POSTGRES, 1, [use postgres])
     fi
 
-    swoole_source_file=" \
-        ext-src/php_swoole.cc \
-        ext-src/php_swoole_cxx.cc \
-        ext-src/swoole_atomic.cc \
-        ext-src/swoole_channel_coro.cc \
-        ext-src/swoole_client.cc \
-        ext-src/swoole_client_coro.cc \
-        ext-src/swoole_coroutine.cc \
-        ext-src/swoole_coroutine_scheduler.cc \
-        ext-src/swoole_coroutine_system.cc \
-        ext-src/swoole_curl.cc \
-        ext-src/swoole_event.cc \
-        ext-src/swoole_http2_client_coro.cc \
-        ext-src/swoole_http2_server.cc \
-        ext-src/swoole_http_client_coro.cc \
-        ext-src/swoole_http_request.cc \
-        ext-src/swoole_http_response.cc \
-        ext-src/swoole_http_server.cc \
-        ext-src/swoole_lock.cc \
-        ext-src/swoole_postgres_coro.cc \
-        ext-src/swoole_process.cc \
-        ext-src/swoole_process_pool.cc \
-        ext-src/swoole_runtime.cc \
-        ext-src/swoole_server.cc \
-        ext-src/swoole_server_port.cc \
-        ext-src/swoole_socket_coro.cc \
-        ext-src/swoole_table.cc \
-        ext-src/swoole_timer.cc \
-        ext-src/swoole_util.cc \
-        ext-src/swoole_websocket_server.cc \
+    openswoole_source_file=" \
+        ext-src/openswoole_atomic.cc \
+        ext-src/openswoole_channel_coro.cc \
+        ext-src/openswoole_client.cc \
+        ext-src/openswoole_client_coro.cc \
+        ext-src/openswoole_coroutine.cc \
+        ext-src/openswoole_coroutine_scheduler.cc \
+        ext-src/openswoole_coroutine_system.cc \
+        ext-src/openswoole_curl.cc \
+        ext-src/openswoole_event.cc \
+        ext-src/openswoole_http2_client_coro.cc \
+        ext-src/openswoole_http2_server.cc \
+        ext-src/openswoole_http_client_coro.cc \
+        ext-src/openswoole_http_request.cc \
+        ext-src/openswoole_http_response.cc \
+        ext-src/openswoole_http_server.cc \
+        ext-src/openswoole_lock.cc \
+        ext-src/openswoole_postgres_coro.cc \
+        ext-src/openswoole_process.cc \
+        ext-src/openswoole_process_pool.cc \
+        ext-src/openswoole_runtime.cc \
+        ext-src/openswoole_server.cc \
+        ext-src/openswoole_server_port.cc \
+        ext-src/openswoole_socket_coro.cc \
+        ext-src/openswoole_table.cc \
+        ext-src/openswoole_timer.cc \
+        ext-src/openswoole_util.cc \
+        ext-src/openswoole_websocket_server.cc \
+        ext-src/php_openswoole.cc \
+        ext-src/php_openswoole_cxx.cc \
         src/core/base.cc \
         src/core/channel.cc \
         src/core/crc32.cc \
@@ -665,6 +680,7 @@ if test "$PHP_SWOOLE" != "no"; then
         src/os/async_thread.cc \
         src/os/base.cc \
         src/os/file.cc \
+        src/os/io_uring_engine.cc \
         src/os/msg_queue.cc \
         src/os/pipe.cc \
         src/os/process_pool.cc \
@@ -686,6 +702,7 @@ if test "$PHP_SWOOLE" != "no"; then
         src/protocol/websocket.cc \
         src/reactor/base.cc \
         src/reactor/epoll.cc \
+        src/reactor/io_uring.cc \
         src/reactor/kqueue.cc \
         src/reactor/poll.cc \
         src/reactor/select.cc \
@@ -702,7 +719,7 @@ if test "$PHP_SWOOLE" != "no"; then
         src/wrapper/event.cc \
         src/wrapper/timer.cc"
 
-    swoole_source_file="$swoole_source_file \
+    openswoole_source_file="$openswoole_source_file \
         thirdparty/php/curl/interface.cc \
         thirdparty/php/curl/multi.cc \
         thirdparty/php/sockets/multicast.cc \
@@ -711,18 +728,20 @@ if test "$PHP_SWOOLE" != "no"; then
         thirdparty/php/sockets/sockaddr_conv.cc \
         thirdparty/php/standard/proc_open.cc"
 
-    swoole_source_file="$swoole_source_file \
-        thirdparty/swoole_http_parser.c \
+    openswoole_source_file="$openswoole_source_file \
+        thirdparty/llhttp/api.c \
+        thirdparty/llhttp/http.c \
+        thirdparty/llhttp/llhttp.c \
         thirdparty/multipart_parser.c"
 
-    swoole_source_file="$swoole_source_file \
+    openswoole_source_file="$openswoole_source_file \
         thirdparty/hiredis/hiredis.c \
         thirdparty/hiredis/alloc.c \
         thirdparty/hiredis/net.c \
         thirdparty/hiredis/read.c \
         thirdparty/hiredis/sds.c"
 
-    swoole_source_file="$swoole_source_file \
+    openswoole_source_file="$openswoole_source_file \
         thirdparty/nghttp2/nghttp2_hd.c \
         thirdparty/nghttp2/nghttp2_rcbuf.c \
         thirdparty/nghttp2/nghttp2_helper.c \
@@ -812,17 +831,17 @@ if test "$PHP_SWOOLE" != "no"; then
     fi
 
     if test "$PHP_THREAD_CONTEXT" != "no"; then
-		AC_DEFINE(SW_USE_THREAD_CONTEXT, 1, [do we enable thread context])
+		AC_DEFINE(OSW_USE_THREAD_CONTEXT, 1, [do we enable thread context])
 		SW_USE_ASM_CONTEXT="no"
     fi
 
     if test "$SW_USE_ASM_CONTEXT" = "yes"; then
-        swoole_source_file="$swoole_source_file \
+        openswoole_source_file="$openswoole_source_file \
             ${SW_ASM_DIR_V1}make_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR_V1}jump_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}make_${SW_CONTEXT_ASM_FILE} \
             ${SW_ASM_DIR}jump_${SW_CONTEXT_ASM_FILE} "
-        AC_DEFINE(SW_USE_ASM_CONTEXT, 1, [use boost asm context])
+        AC_DEFINE(OSW_USE_ASM_CONTEXT, 1, [use boost asm context])
     fi
 
     # 32-bit ARM
@@ -830,7 +849,7 @@ if test "$PHP_SWOOLE" != "no"; then
         PHP_ADD_LIBRARY(atomic, 1, OPENSWOOLE_SHARED_LIBADD)
     fi
 
-    PHP_NEW_EXTENSION(openswoole, $swoole_source_file, $ext_shared,, "$EXTRA_CFLAGS -DENABLE_PHP_SWOOLE", cxx)
+    PHP_NEW_EXTENSION(openswoole, $openswoole_source_file, $ext_shared,, "$EXTRA_CFLAGS -DENABLE_PHP_OPENSWOOLE", cxx)
 
     PHP_ADD_INCLUDE([$ext_srcdir])
     PHP_ADD_INCLUDE([$ext_srcdir/include])
@@ -838,7 +857,7 @@ if test "$PHP_SWOOLE" != "no"; then
     PHP_ADD_INCLUDE([$ext_srcdir/thirdparty/hiredis])
 
     AC_MSG_CHECKING([openswoole coverage])
-    if test "$PHP_SWOOLE_COVERAGE" != "no"; then
+    if test "$PHP_OPENSWOOLE_COVERAGE" != "no"; then
         AC_MSG_RESULT([enabled])
 
         PHP_ADD_MAKEFILE_FRAGMENT
@@ -846,7 +865,7 @@ if test "$PHP_SWOOLE" != "no"; then
         AC_MSG_RESULT([disabled])
     fi
 
-    PHP_INSTALL_HEADERS([ext/openswoole], [ext-src/*.h config.h php_openswoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h])
+    PHP_INSTALL_HEADERS([ext/openswoole], [ext-src/*.h config.h php_openswoole.h include/*.h thirdparty/*.h thirdparty/hiredis/*.h thirdparty/llhttp/*.h])
 
     PHP_REQUIRE_CXX()
 
@@ -869,6 +888,7 @@ if test "$PHP_SWOOLE" != "no"; then
     PHP_ADD_BUILD_DIR($ext_builddir/src/protocol)
     PHP_ADD_BUILD_DIR($ext_builddir/src/coroutine)
     PHP_ADD_BUILD_DIR($ext_builddir/src/wrapper)
+    PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/llhttp)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asmv1)
     PHP_ADD_BUILD_DIR($ext_builddir/thirdparty/boost/asm)

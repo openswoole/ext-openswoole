@@ -17,7 +17,7 @@
 
 /* Copied from PHP-4f68662f5b61aecf90f6d8005976f5f91d4ce8d3 */
 
-#ifdef SW_USE_CURL
+#ifdef OSW_USE_CURL
 
 #ifndef _PHP_CURL_PRIVATE_H
 #define _PHP_CURL_PRIVATE_H
@@ -169,11 +169,11 @@ typedef struct {
 } php_curlm_handlers;
 #endif
 
-namespace swoole  { namespace curl {
+namespace openswoole  { namespace curl {
 class Multi;
 }}
 
-using swoole::curl::Multi;
+using openswoole::curl::Multi;
 
 typedef struct {
 	Multi *multi;
@@ -193,12 +193,12 @@ typedef struct _php_curlsh {
 	zend_object std;
 } php_curlsh;
 
-php_curl *swoole_curl_init_handle_into_zval(zval *curl);
-void swoole_curl_init_handle(php_curl *ch);
-void swoole_curl_cleanup_handle(php_curl *);
-void swoole_curl_multi_cleanup_list(void *data);
-void swoole_curl_verify_handlers(php_curl *ch, int reporterror);
-void swoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source);
+php_curl *openswoole_curl_init_handle_into_zval(zval *curl);
+void openswoole_curl_init_handle(php_curl *ch);
+void openswoole_curl_cleanup_handle(php_curl *);
+void openswoole_curl_multi_cleanup_list(void *data);
+void openswoole_curl_verify_handlers(php_curl *ch, int reporterror);
+void openswoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source);
 
 static inline php_curl_handlers *curl_handlers(php_curl *ch) {
     return &ch->handlers;
@@ -217,12 +217,12 @@ static inline php_curlsh *curl_share_from_obj(zend_object *obj) {
 #define Z_CURL_SHARE_P(zv) curl_share_from_obj(Z_OBJ_P(zv))
 void curl_multi_register_class(const zend_function_entry *method_entries);
 
-zend_result swoole_curl_cast_object(zend_object *obj, zval *result, int type);
+zend_result openswoole_curl_cast_object(zend_object *obj, zval *result, int type);
 
-php_curl *swoole_curl_get_handle(zval *zid, bool exclusive = true, bool required = true);
+php_curl *openswoole_curl_get_handle(zval *zid, bool exclusive = true, bool required = true);
 
-SW_EXTERN_C_BEGIN
-SW_EXTERN_C_END
+OSW_EXTERN_C_BEGIN
+OSW_EXTERN_C_END
 
 #endif  /* _PHP_CURL_PRIVATE_H */
 #endif

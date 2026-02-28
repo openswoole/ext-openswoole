@@ -1,5 +1,5 @@
 <?php
-$serv = new \swoole_server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
+$serv = new \openswoole_server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
 $serv->set([
 //            'log_file' => __DIR__ . '/simple_server.log',
     'dispatch_mode' => 2,
@@ -7,7 +7,7 @@ $serv->set([
     'worker_num' => 1,
 ]);
 
-$serv->on('workerStart', function (\swoole_server $serv)
+$serv->on('workerStart', function (\openswoole_server $serv)
 {
     /**
      * @var $pm ProcessManager
@@ -16,7 +16,7 @@ $serv->on('workerStart', function (\swoole_server $serv)
     $pm->wakeup();
 });
 
-$serv->on('receive', function (swoole_server $serv, $fd, $rid, $data)
+$serv->on('receive', function (openswoole_server $serv, $fd, $rid, $data)
 {
     if (trim($data) == 'shutdown')
     {

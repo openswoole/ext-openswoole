@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,16 +14,16 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole.h"
-#include "swoole_lock.h"
+#include "openswoole.h"
+#include "openswoole_lock.h"
 
 #ifdef HAVE_SPINLOCK
 
-namespace swoole {
+namespace openswoole {
 
 SpinLock::SpinLock(int use_in_process) : Lock() {
     if (use_in_process) {
-        impl = (pthread_spinlock_t *) sw_mem_pool()->alloc(sizeof(*impl));
+        impl = (pthread_spinlock_t *) osw_mem_pool()->alloc(sizeof(*impl));
         if (impl == nullptr) {
             throw std::bad_alloc();
         }
@@ -62,10 +62,10 @@ int SpinLock::trylock_rd() {
 SpinLock::~SpinLock() {
     pthread_spin_destroy(impl);
     if (shared_) {
-        sw_mem_pool()->free((void *) impl);
+        osw_mem_pool()->free((void *) impl);
     } else {
         delete impl;
     }
 }
-}  // namespace swoole
+}  // namespace openswoole
 #endif

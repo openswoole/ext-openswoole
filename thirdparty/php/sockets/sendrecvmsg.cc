@@ -74,7 +74,7 @@ dosockopt:
 #endif
 	retval = setsockopt(php_sock->get_fd(), level, optname, opt_ptr, optlen);
 	if (retval != 0) {
-		PHP_SWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
+		PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "unable to set socket option", errno);
 	}
 	allocations_dispose(&allocations);
 
@@ -106,11 +106,11 @@ int php_do_getsockopt_ipv6_rfc3542(Socket *php_sock, int level, int optname, zva
     buffer = (char*) ecalloc(1, size);
 	res = getsockopt(php_sock->get_fd(), level, optname, buffer, &size);
 	if (res != 0) {
-		PHP_SWOOLE_SOCKET_ERROR(php_sock, "unable to get socket option", errno);
+		PHP_OPENSWOOLE_SOCKET_ERROR(php_sock, "unable to get socket option", errno);
 	} else {
 		zval tmp;
 		zval *zv = to_zval_run_conversions(buffer, reader, "in6_pktinfo",
-				sw_empty_key_value_list, &err, &tmp);
+				osw_empty_key_value_list, &err, &tmp);
 		if (err.has_error) {
 			err_msg_dispose(&err);
 			res = -1;

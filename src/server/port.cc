@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -14,18 +14,18 @@
   +----------------------------------------------------------------------+
 */
 
-#include "swoole_server.h"
-#include "swoole_http.h"
-#include "swoole_http2.h"
-#include "swoole_websocket.h"
-#include "swoole_mqtt.h"
-#include "swoole_redis.h"
+#include "openswoole_server.h"
+#include "openswoole_http.h"
+#include "openswoole_http2.h"
+#include "openswoole_websocket.h"
+#include "openswoole_mqtt.h"
+#include "openswoole_redis.h"
 
-using swoole::http_server::Request;
-using swoole::network::Address;
-using swoole::network::Socket;
+using openswoole::http_server::Request;
+using openswoole::network::Address;
+using openswoole::network::Socket;
 
-namespace swoole {
+namespace openswoole {
 
 static int Port_onRead_raw(Reactor *reactor, ListenPort *lp, Event *event);
 static int Port_onRead_check_length(Reactor *reactor, ListenPort *lp, Event *event);
@@ -37,13 +37,13 @@ ListenPort::ListenPort() {
     protocol.package_length_type = 'N';
     protocol.package_length_size = 4;
     protocol.package_body_offset = 4;
-    protocol.package_max_length = SW_INPUT_BUFFER_SIZE;
+    protocol.package_max_length = OSW_INPUT_BUFFER_SIZE;
 
-    protocol.package_eof_len = sizeof(SW_DATA_EOF) - 1;
-    memcpy(protocol.package_eof, SW_DATA_EOF, protocol.package_eof_len);
+    protocol.package_eof_len = sizeof(OSW_DATA_EOF) - 1;
+    memcpy(protocol.package_eof, OSW_DATA_EOF, protocol.package_eof_len);
 }
 
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
 
 bool ListenPort::ssl_add_sni_cert(const std::string &name, SSLContext *ctx) {
     if (!ssl_create_context(ctx)) {
@@ -93,7 +93,7 @@ static int ssl_server_sni_callback(SSL *ssl, int *al, void *arg) {
         return SSL_TLSEXT_ERR_NOACK;
     }
 
-    ListenPort *port = (ListenPort *) SSL_get_ex_data(ssl, swoole_ssl_get_ex_port_index());
+    ListenPort *port = (ListenPort *) SSL_get_ex_data(ssl, openswoole_ssl_get_ex_port_index());
 
     if (port->sni_contexts.empty()) {
         return SSL_TLSEXT_ERR_NOACK;
@@ -120,12 +120,12 @@ bool ListenPort::ssl_init() {
 }
 
 bool ListenPort::ssl_create(Connection *conn, Socket *sock) {
-    if (sock->ssl_create(ssl_context, SW_SSL_SERVER) < 0) {
+    if (sock->ssl_create(ssl_context, OSW_SSL_SERVER) < 0) {
         return false;
     }
     conn->ssl = 1;
-    if (SSL_set_ex_data(sock->ssl, swoole_ssl_get_ex_port_index(), this) == 0) {
-        swoole_warning("SSL_set_ex_data() failed");
+    if (SSL_set_ex_data(sock->ssl, openswoole_ssl_get_ex_port_index(), this) == 0) {
+        openswoole_warning("SSL_set_ex_data() failed");
         return false;
     }
     return true;
@@ -133,7 +133,7 @@ bool ListenPort::ssl_create(Connection *conn, Socket *sock) {
 
 bool ListenPort::ssl_create_context(SSLContext *context) {
     if (context->cert_file.empty() || context->key_file.empty()) {
-        swoole_warning("SSL error, require ssl_cert_file and ssl_key_file");
+        openswoole_warning("SSL error, require ssl_cert_file and ssl_key_file");
         return false;
     }
     if (open_http_protocol) {
@@ -143,7 +143,7 @@ bool ListenPort::ssl_create_context(SSLContext *context) {
         context->http_v2 = 1;
     }
     if (!context->create()) {
-        swoole_warning("swSSL_get_context() error");
+        openswoole_warning("swSSL_get_context() error");
         return false;
     }
     return true;
@@ -153,15 +153,15 @@ bool ListenPort::ssl_create_context(SSLContext *context) {
 int ListenPort::listen() {
     // listen stream socket
     if (!listening && socket->listen(backlog) < 0) {
-        swoole_sys_warning("listen(%s:%d, %d) failed", host.c_str(), port, backlog);
-        return SW_ERR;
+        openswoole_sys_warning("listen(%s:%d, %d) failed", host.c_str(), port, backlog);
+        return OSW_ERR;
     }
     listening = true;
 
 #ifdef TCP_DEFER_ACCEPT
     if (tcp_defer_accept) {
         if (socket->set_option(IPPROTO_TCP, TCP_DEFER_ACCEPT, tcp_defer_accept) != 0) {
-            swoole_sys_warning("setsockopt(TCP_DEFER_ACCEPT) failed");
+            openswoole_sys_warning("setsockopt(TCP_DEFER_ACCEPT) failed");
         }
     }
 #endif
@@ -172,7 +172,7 @@ int ListenPort::listen() {
         memset(&a, 0, sizeof(a));
         strcpy(a.af_name, "httpready");
         if (socket->set_option(SOL_SOCKET, SO_ACCEPTFILTER, &a, sizeof(a)) != 0) {
-            swoole_sys_warning("setsockopt(SO_ACCEPTFILTER) failed");
+            openswoole_sys_warning("setsockopt(SO_ACCEPTFILTER) failed");
         }
     }
 #endif
@@ -180,7 +180,7 @@ int ListenPort::listen() {
 #ifdef TCP_FASTOPEN
     if (tcp_fastopen) {
         if (socket->set_option(IPPROTO_TCP, TCP_FASTOPEN, tcp_fastopen) != 0) {
-            swoole_sys_warning("setsockopt(TCP_FASTOPEN) failed");
+            openswoole_sys_warning("setsockopt(TCP_FASTOPEN) failed");
         }
     }
 #endif
@@ -188,22 +188,22 @@ int ListenPort::listen() {
 #ifdef SO_KEEPALIVE
     if (open_tcp_keepalive == 1) {
         if (socket->set_option(SOL_SOCKET, SO_KEEPALIVE, 1) != 0) {
-            swoole_sys_warning("setsockopt(SO_KEEPALIVE) failed");
+            openswoole_sys_warning("setsockopt(SO_KEEPALIVE) failed");
         }
 #ifdef TCP_KEEPIDLE
         if (socket->set_option(IPPROTO_TCP, TCP_KEEPIDLE, tcp_keepidle) < 0) {
-            swoole_sys_warning("setsockopt(TCP_KEEPIDLE) failed");
+            openswoole_sys_warning("setsockopt(TCP_KEEPIDLE) failed");
         }
         if (socket->set_option(IPPROTO_TCP, TCP_KEEPINTVL, tcp_keepinterval) < 0) {
-            swoole_sys_warning("setsockopt(TCP_KEEPINTVL) failed");
+            openswoole_sys_warning("setsockopt(TCP_KEEPINTVL) failed");
         }
         if (socket->set_option(IPPROTO_TCP, TCP_KEEPCNT, tcp_keepcount) < 0) {
-            swoole_sys_warning("setsockopt(TCP_KEEPCNT) failed");
+            openswoole_sys_warning("setsockopt(TCP_KEEPCNT) failed");
         }
 #endif
 #ifdef TCP_USER_TIMEOUT
         if (tcp_user_timeout > 0 && socket->set_option(IPPROTO_TCP, TCP_USER_TIMEOUT, tcp_user_timeout) != 0) {
-            swoole_sys_warning("setsockopt(TCP_USER_TIMEOUT) failed");
+            openswoole_sys_warning("setsockopt(TCP_USER_TIMEOUT) failed");
         }
 #endif
     }
@@ -212,7 +212,7 @@ int ListenPort::listen() {
     buffer_high_watermark = socket_buffer_size * 0.8;
     buffer_low_watermark = 0;
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 void Server::init_port_protocol(ListenPort *ls) {
@@ -220,8 +220,8 @@ void Server::init_port_protocol(ListenPort *ls) {
     // Thread mode must copy the data.
     // will free after onFinish
     if (ls->open_eof_check) {
-        if (ls->protocol.package_eof_len > SW_DATA_EOF_MAXLEN) {
-            ls->protocol.package_eof_len = SW_DATA_EOF_MAXLEN;
+        if (ls->protocol.package_eof_len > OSW_DATA_EOF_MAXLEN) {
+            ls->protocol.package_eof_len = OSW_DATA_EOF_MAXLEN;
         }
         ls->protocol.onPackage = Server::dispatch_task;
         ls->onRead = Port_onRead_check_eof;
@@ -232,19 +232,19 @@ void Server::init_port_protocol(ListenPort *ls) {
         ls->protocol.onPackage = Server::dispatch_task;
         ls->onRead = Port_onRead_check_length;
     } else if (ls->open_http_protocol) {
-#ifdef SW_USE_HTTP2
+#ifdef OSW_USE_HTTP2
         if (ls->open_http2_protocol && ls->open_websocket_protocol) {
             ls->protocol.get_package_length = http_server::get_package_length;
             ls->protocol.get_package_length_size = http_server::get_package_length_size;
             ls->protocol.onPackage = http_server::dispatch_frame;
         } else if (ls->open_http2_protocol) {
-            ls->protocol.package_length_size = SW_HTTP2_FRAME_HEADER_SIZE;
+            ls->protocol.package_length_size = OSW_HTTP2_FRAME_HEADER_SIZE;
             ls->protocol.get_package_length = http2::get_frame_length;
             ls->protocol.onPackage = Server::dispatch_task;
         } else
 #endif
             if (ls->open_websocket_protocol) {
-            ls->protocol.package_length_size = SW_WEBSOCKET_HEADER_LEN + SW_WEBSOCKET_MASK_LEN + sizeof(uint64_t);
+            ls->protocol.package_length_size = OSW_WEBSOCKET_HEADER_LEN + OSW_WEBSOCKET_MASK_LEN + sizeof(uint64_t);
             ls->protocol.get_package_length = websocket::get_package_length;
             ls->protocol.onPackage = websocket::dispatch_frame;
         }
@@ -274,11 +274,11 @@ bool ListenPort::import(int sock) {
 
     // get socket type
     if (socket->get_option(SOL_SOCKET, SO_TYPE, &_type) < 0) {
-        swoole_sys_warning("getsockopt(%d, SOL_SOCKET, SO_TYPE) failed", sock);
+        openswoole_sys_warning("getsockopt(%d, SOL_SOCKET, SO_TYPE) failed", sock);
         return false;
     }
     if (socket->get_name(&socket->info) < 0) {
-        swoole_sys_warning("getsockname(%d) failed", sock);
+        openswoole_sys_warning("getsockname(%d) failed", sock);
         return false;
     }
 
@@ -288,7 +288,7 @@ bool ListenPort::import(int sock) {
     port = socket->info.get_port();
     listening = true;
 
-    socket->fd_type = socket->is_dgram() ? SW_FD_DGRAM_SERVER : SW_FD_STREAM_SERVER;
+    socket->fd_type = socket->is_dgram() ? OSW_FD_DGRAM_SERVER : OSW_FD_STREAM_SERVER;
     socket->removed = 1;
 
     return true;
@@ -299,7 +299,7 @@ void ListenPort::clear_protocol() {
     open_length_check = 0;
     open_http_protocol = 0;
     open_websocket_protocol = 0;
-#ifdef SW_USE_HTTP2
+#ifdef OSW_USE_HTTP2
     open_http2_protocol = 0;
 #endif
     open_mqtt_protocol = 0;
@@ -314,25 +314,25 @@ static int Port_onRead_raw(Reactor *reactor, ListenPort *port, Event *event) {
 
     String *buffer = serv->get_recv_buffer(_socket);
     if (!buffer) {
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     n = _socket->recv(buffer->str, buffer->size, 0);
     if (n < 0) {
         switch (_socket->catch_error(errno)) {
-        case SW_ERROR:
-            swoole_sys_warning("recv from connection#%d failed", event->fd);
-            return SW_OK;
-        case SW_CLOSE:
+        case OSW_ERROR:
+            openswoole_sys_warning("recv from connection#%d failed", event->fd);
+            return OSW_OK;
+        case OSW_CLOSE:
             conn->close_errno = errno;
             goto _close_fd;
         default:
-            return SW_OK;
+            return OSW_OK;
         }
     } else if (n == 0) {
     _close_fd:
         reactor->trigger_close_event(event);
-        return SW_OK;
+        return OSW_OK;
     } else {
         buffer->offset = buffer->length = n;
         return Server::dispatch_task(&port->protocol, _socket, buffer->str, n);
@@ -348,11 +348,11 @@ static int Port_onRead_check_length(Reactor *reactor, ListenPort *port, Event *e
     String *buffer = serv->get_recv_buffer(_socket);
     if (!buffer) {
         reactor->trigger_close_event(event);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     if (protocol->recv_with_length_protocol(_socket, buffer) < 0) {
-        swoole_trace("Close Event.FD=%d|From=%d", event->fd, event->reactor_id);
+        openswoole_trace("Close Event.FD=%d|From=%d", event->fd, event->reactor_id);
         conn->close_errno = errno;
         reactor->trigger_close_event(event);
     }
@@ -361,12 +361,12 @@ static int Port_onRead_check_length(Reactor *reactor, ListenPort *port, Event *e
      * if the length is 0, which means the onPackage has been called, we can free the buffer.
      */
     if (_socket->recv_buffer && _socket->recv_buffer->length == 0 &&
-        _socket->recv_buffer->size > SW_BUFFER_SIZE_BIG * 2) {
+        _socket->recv_buffer->size > OSW_BUFFER_SIZE_BIG * 2) {
         delete _socket->recv_buffer;
         _socket->recv_buffer = nullptr;
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 #define CLIENT_INFO_FMT " from session#%ld on %s:%d"
@@ -389,7 +389,7 @@ static int Port_onRead_http(Reactor *reactor, ListenPort *port, Event *event) {
         return Port_onRead_check_length(reactor, port, event);
     }
 
-#ifdef SW_USE_HTTP2
+#ifdef OSW_USE_HTTP2
     if (conn->http2_stream) {
         return Port_onRead_check_length(reactor, port, event);
     }
@@ -409,7 +409,7 @@ static int Port_onRead_http(Reactor *reactor, ListenPort *port, Event *event) {
         request->buffer_ = serv->get_recv_buffer(_socket);
         if (!request->buffer_) {
             reactor->trigger_close_event(event);
-            return SW_ERR;
+            return OSW_ERR;
         }
     }
 
@@ -419,79 +419,79 @@ _recv_data:
     ssize_t n = _socket->recv(buffer->str + buffer->length, buffer->size - buffer->length, 0);
     if (n < 0) {
         switch (_socket->catch_error(errno)) {
-        case SW_ERROR:
-            swoole_sys_warning("recv from connection#%d failed", event->fd);
-            return SW_OK;
-        case SW_CLOSE:
+        case OSW_ERROR:
+            openswoole_sys_warning("recv from connection#%d failed", event->fd);
+            return OSW_OK;
+        case OSW_CLOSE:
             conn->close_errno = errno;
             goto _close_fd;
         default:
-            return SW_OK;
+            return OSW_OK;
         }
     }
 
     if (n == 0) {
         if (0) {
         _bad_request:
-#ifdef SW_HTTP_BAD_REQUEST_PACKET
-            _socket->send(SW_STRL(SW_HTTP_BAD_REQUEST_PACKET), 0);
+#ifdef OSW_HTTP_BAD_REQUEST_PACKET
+            _socket->send(OSW_STRL(OSW_HTTP_BAD_REQUEST_PACKET), 0);
 #endif
         }
         if (0) {
         _too_large:
-#ifdef SW_HTTP_REQUEST_ENTITY_TOO_LARGE_PACKET
-            _socket->send(SW_STRL(SW_HTTP_REQUEST_ENTITY_TOO_LARGE_PACKET), 0);
+#ifdef OSW_HTTP_REQUEST_ENTITY_TOO_LARGE_PACKET
+            _socket->send(OSW_STRL(OSW_HTTP_REQUEST_ENTITY_TOO_LARGE_PACKET), 0);
 #endif
         }
         if (0) {
         _unavailable:
-#ifdef SW_HTTP_SERVICE_UNAVAILABLE_PACKET
-            _socket->send(SW_STRL(SW_HTTP_SERVICE_UNAVAILABLE_PACKET), 0);
+#ifdef OSW_HTTP_SERVICE_UNAVAILABLE_PACKET
+            _socket->send(OSW_STRL(OSW_HTTP_SERVICE_UNAVAILABLE_PACKET), 0);
 #endif
         }
     _close_fd:
         serv->destroy_http_request(conn);
         reactor->trigger_close_event(event);
-        return SW_OK;
+        return OSW_OK;
     }
 
     buffer->length += n;
 
 _parse:
     if (request->method == 0 && request->get_protocol() < 0) {
-        if (!request->excepted && buffer->length < SW_HTTP_HEADER_MAX_SIZE) {
-            return SW_OK;
+        if (!request->excepted && buffer->length < OSW_HTTP_HEADER_MAX_SIZE) {
+            return OSW_OK;
         }
-        swoole_error_log(SW_LOG_TRACE,
-                         SW_ERROR_HTTP_INVALID_PROTOCOL,
+        openswoole_error_log(OSW_LOG_TRACE,
+                         OSW_ERROR_HTTP_INVALID_PROTOCOL,
                          "Bad Request: unknown protocol" CLIENT_INFO_FMT,
                          CLIENT_INFO_ARGS);
         goto _bad_request;
     }
 
-    if (request->method > SW_HTTP_PRI) {
-        swoole_error_log(SW_LOG_TRACE,
-                         SW_ERROR_HTTP_INVALID_PROTOCOL,
+    if (request->method > OSW_HTTP_PRI) {
+        openswoole_error_log(OSW_LOG_TRACE,
+                         OSW_ERROR_HTTP_INVALID_PROTOCOL,
                          "Bad Request: unknown HTTP method" CLIENT_INFO_FMT,
                          CLIENT_INFO_ARGS);
         goto _bad_request;
-    } else if (request->method == SW_HTTP_PRI) {
-#ifdef SW_USE_HTTP2
-        if (sw_unlikely(!port->open_http2_protocol)) {
+    } else if (request->method == OSW_HTTP_PRI) {
+#ifdef OSW_USE_HTTP2
+        if (osw_unlikely(!port->open_http2_protocol)) {
 #endif
-            swoole_error_log(SW_LOG_TRACE,
-                             SW_ERROR_HTTP_INVALID_PROTOCOL,
+            openswoole_error_log(OSW_LOG_TRACE,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
                              "Bad Request: can not handle HTTP2 request" CLIENT_INFO_FMT,
                              CLIENT_INFO_ARGS);
             goto _bad_request;
-#ifdef SW_USE_HTTP2
+#ifdef OSW_USE_HTTP2
         }
         conn->http2_stream = 1;
         http2::send_setting_frame(protocol, _socket);
-        if (buffer->length == sizeof(SW_HTTP2_PRI_STRING) - 1) {
+        if (buffer->length == sizeof(OSW_HTTP2_PRI_STRING) - 1) {
             serv->destroy_http_request(conn);
             buffer->clear();
-            return SW_OK;
+            return OSW_OK;
         }
         buffer->reduce(buffer->offset);
         serv->destroy_http_request(conn);
@@ -504,8 +504,8 @@ _parse:
     if (request->header_length_ == 0) {
         if (request->get_header_length() < 0) {
             if (buffer->size == buffer->length) {
-                swoole_error_log(SW_LOG_TRACE,
-                                 SW_ERROR_HTTP_INVALID_PROTOCOL,
+                openswoole_error_log(OSW_LOG_TRACE,
+                                 OSW_ERROR_HTTP_INVALID_PROTOCOL,
                                  "Bad Request: request header size is too large" CLIENT_INFO_FMT,
                                  CLIENT_INFO_ARGS);
                 goto _bad_request;
@@ -517,7 +517,7 @@ _parse:
     // parse http header and got http body length
     if (!request->header_parsed) {
         request->parse_header_info();
-        swoole_trace_log(SW_TRACE_SERVER,
+        openswoole_trace_log(OSW_TRACE_SERVER,
                          "content-length=%u, keep-alive=%u, chunked=%u",
                          request->content_length_,
                          request->keep_alive,
@@ -543,7 +543,7 @@ _parse:
                 Server::dispatch_task(protocol, _socket, buffer->str, request->header_length_);
             }
             if (!conn->active || _socket->removed) {
-                return SW_OK;
+                return OSW_OK;
             }
             if (buffer->length > request->header_length_) {
                 // http pipeline, multi requests, parse the next one
@@ -553,7 +553,7 @@ _parse:
             } else {
                 serv->destroy_http_request(conn);
                 buffer->clear();
-                return SW_OK;
+                return OSW_OK;
             }
         }
     }
@@ -563,16 +563,16 @@ _parse:
         /* unknown length, should find chunked eof */
         if (request->get_chunked_body_length() < 0) {
             if (request->excepted) {
-                swoole_error_log(SW_LOG_TRACE,
-                                 SW_ERROR_HTTP_INVALID_PROTOCOL,
+                openswoole_error_log(OSW_LOG_TRACE,
+                                 OSW_ERROR_HTTP_INVALID_PROTOCOL,
                                  "Bad Request: protocol error when parse chunked length" CLIENT_INFO_FMT,
                                  CLIENT_INFO_ARGS);
                 goto _bad_request;
             }
             request_length = request->header_length_ + request->content_length_;
             if (request_length > protocol->package_max_length) {
-                swoole_error_log(SW_LOG_WARNING,
-                                 SW_ERROR_HTTP_INVALID_PROTOCOL,
+                openswoole_error_log(OSW_LOG_WARNING,
+                                 OSW_ERROR_HTTP_INVALID_PROTOCOL,
                                  "Request Entity Too Large: request length (chunked) has already been greater than the "
                                  "package_max_length(%u)" CLIENT_INFO_FMT,
                                  protocol->package_max_length,
@@ -589,12 +589,12 @@ _parse:
         } else {
             request_length = request->header_length_ + request->content_length_;
         }
-        swoole_trace_log(SW_TRACE_SERVER, "received chunked eof, real content-length=%u", request->content_length_);
+        openswoole_trace_log(OSW_TRACE_SERVER, "received chunked eof, real content-length=%u", request->content_length_);
     } else {
         request_length = request->header_length_ + request->content_length_;
         if (request_length > protocol->package_max_length) {
-            swoole_error_log(SW_LOG_WARNING,
-                             SW_ERROR_HTTP_INVALID_PROTOCOL,
+            openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
                              "Request Entity Too Large: header-length (%u) + content-length (%u) is greater than the "
                              "package_max_length(%u)" CLIENT_INFO_FMT,
                              request->header_length_,
@@ -609,13 +609,13 @@ _parse:
         }
 
         if (buffer->length < request_length) {
-#ifdef SW_HTTP_100_CONTINUE
+#ifdef OSW_HTTP_100_CONTINUE
             // Expect: 100-continue
             if (request->has_expect_header()) {
-                _socket->send(SW_STRL(SW_HTTP_100_CONTINUE_PACKET), 0);
+                _socket->send(OSW_STRL(OSW_HTTP_100_CONTINUE_PACKET), 0);
             } else {
-                swoole_trace_log(
-                    SW_TRACE_SERVER,
+                openswoole_trace_log(
+                    OSW_TRACE_SERVER,
                     "PostWait: request->content_length=%d, buffer->length=%zu, request->header_length=%d\n",
                     request->content_length,
                     buffer_->length,
@@ -628,8 +628,8 @@ _parse:
 
     // discard the redundant data
     if (buffer->length > request_length) {
-        swoole_error_log(SW_LOG_TRACE,
-                         SW_ERROR_HTTP_INVALID_PROTOCOL,
+        openswoole_error_log(OSW_LOG_TRACE,
+                         OSW_ERROR_HTTP_INVALID_PROTOCOL,
                          "Invalid Request: %zu bytes has been discard" CLIENT_INFO_FMT,
                          buffer->length - request_length,
                          CLIENT_INFO_ARGS);
@@ -641,7 +641,7 @@ _parse:
 
     if (conn->active && !_socket->removed) {
         serv->destroy_http_request(conn);
-        if (_socket->recv_buffer && _socket->recv_buffer->size > SW_BUFFER_SIZE_BIG * 2) {
+        if (_socket->recv_buffer && _socket->recv_buffer->size > OSW_BUFFER_SIZE_BIG * 2) {
             delete _socket->recv_buffer;
             _socket->recv_buffer = nullptr;
         } else {
@@ -649,7 +649,7 @@ _parse:
         }
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 static int Port_onRead_redis(Reactor *reactor, ListenPort *port, Event *event) {
@@ -661,7 +661,7 @@ static int Port_onRead_redis(Reactor *reactor, ListenPort *port, Event *event) {
     String *buffer = serv->get_recv_buffer(_socket);
     if (!buffer) {
         reactor->trigger_close_event(event);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     if (redis::recv_packet(protocol, conn, buffer) < 0) {
@@ -669,7 +669,7 @@ static int Port_onRead_redis(Reactor *reactor, ListenPort *port, Event *event) {
         reactor->trigger_close_event(event);
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 static int Port_onRead_check_eof(Reactor *reactor, ListenPort *port, Event *event) {
@@ -681,7 +681,7 @@ static int Port_onRead_check_eof(Reactor *reactor, ListenPort *port, Event *even
     String *buffer = serv->get_recv_buffer(_socket);
     if (!buffer) {
         reactor->trigger_close_event(event);
-        return SW_ERR;
+        return OSW_ERR;
     }
 
     if (protocol->recv_with_eof_protocol(_socket, buffer) < 0) {
@@ -691,21 +691,21 @@ static int Port_onRead_check_eof(Reactor *reactor, ListenPort *port, Event *even
 
     // If the length is 0, which means the onPackage has been called, we can free the buffer.
     if (_socket->recv_buffer && _socket->recv_buffer->length == 0 &&
-        _socket->recv_buffer->size > SW_BUFFER_SIZE_BIG * 2) {
+        _socket->recv_buffer->size > OSW_BUFFER_SIZE_BIG * 2) {
         delete _socket->recv_buffer;
         _socket->recv_buffer = nullptr;
     }
 
-    return SW_OK;
+    return OSW_OK;
 }
 
 void ListenPort::close() {
-#ifdef SW_USE_OPENSSL
+#ifdef OSW_USE_OPENSSL
     if (ssl) {
         if (ssl_context) {
             delete ssl_context;
         }
-#ifdef SW_SUPPORT_DTLS
+#ifdef OSW_SUPPORT_DTLS
         if (dtls_sessions) {
             delete dtls_sessions;
         }
@@ -719,9 +719,9 @@ void ListenPort::close() {
     }
 
     // remove unix socket file
-    if (type == SW_SOCK_UNIX_STREAM || type == SW_SOCK_UNIX_DGRAM) {
+    if (type == OSW_SOCK_UNIX_STREAM || type == OSW_SOCK_UNIX_DGRAM) {
         unlink(host.c_str());
     }
 }
 
-}  // namespace swoole
+}  // namespace openswoole

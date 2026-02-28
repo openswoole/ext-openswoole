@@ -15,10 +15,10 @@
 */
 
 #include "test_core.h"
-#include "swoole_file.h"
-#include "swoole_util.h"
+#include "openswoole_file.h"
+#include "openswoole_util.h"
 
-using namespace swoole;
+using namespace openswoole;
 using namespace std;
 
 static const string test_data("hello world\n");
@@ -33,30 +33,30 @@ TEST(base, datahead_dump) {
 }
 
 TEST(base, dec2hex) {
-    auto result = swoole_dec2hex(2684326179, 16);
+    auto result = openswoole_dec2hex(2684326179, 16);
     ASSERT_STREQ(result, "9fff9123");
-    sw_free(result);
+    osw_free(result);
 }
 
 TEST(base, hex2dec) {
     size_t n_parsed;
-    ASSERT_EQ(swoole_hex2dec("9fff9123", &n_parsed), 2684326179);
+    ASSERT_EQ(openswoole_hex2dec("9fff9123", &n_parsed), 2684326179);
     ASSERT_EQ(n_parsed, 8);
-    ASSERT_EQ(swoole_hex2dec("0x9fff9123", &n_parsed), 2684326179);
+    ASSERT_EQ(openswoole_hex2dec("0x9fff9123", &n_parsed), 2684326179);
     ASSERT_EQ(n_parsed, 10);
-    ASSERT_EQ(swoole_hex2dec("f", &n_parsed), 15);
+    ASSERT_EQ(openswoole_hex2dec("f", &n_parsed), 15);
     ASSERT_EQ(n_parsed, 1);
 }
 
 TEST(base, random_string) {
     char buf[1024] = {};
-    swoole_random_string(buf, sizeof(buf) - 1);
+    openswoole_random_string(buf, sizeof(buf) - 1);
     ASSERT_EQ(strlen(buf), sizeof(buf) - 1);
 }
 
 TEST(base, file_put_contents) {
     char buf[65536];
-    swoole_random_string(buf, sizeof(buf) - 1);
+    openswoole_random_string(buf, sizeof(buf) - 1);
     ASSERT_TRUE(file_put_contents(TEST_TMP_FILE, buf, sizeof(buf)));
     auto result = file_get_contents(TEST_TMP_FILE);
     ASSERT_STREQ(buf, result->value());
@@ -65,7 +65,7 @@ TEST(base, file_put_contents) {
 TEST(base, file_get_size) {
     File f(TEST_TMP_FILE, File::WRITE | File::CREATE);
     char buf[65536];
-    swoole_random_string(buf, sizeof(buf) - 1);
+    openswoole_random_string(buf, sizeof(buf) - 1);
 
     ASSERT_TRUE(f.ready());
     f.truncate(0);
@@ -77,28 +77,28 @@ TEST(base, file_get_size) {
 }
 
 TEST(base, version_compare) {
-    ASSERT_EQ(swoole_version_compare("1.2.1", "1.2.0"), 1);
-    ASSERT_EQ(swoole_version_compare("1.2.3", "1.3.0"), -1);
-    ASSERT_EQ(swoole_version_compare("1.2.3", "1.2.9"), -1);
-    ASSERT_EQ(swoole_version_compare("1.2.0", "1.2.0"), 0);
+    ASSERT_EQ(openswoole_version_compare("1.2.1", "1.2.0"), 1);
+    ASSERT_EQ(openswoole_version_compare("1.2.3", "1.3.0"), -1);
+    ASSERT_EQ(openswoole_version_compare("1.2.3", "1.2.9"), -1);
+    ASSERT_EQ(openswoole_version_compare("1.2.0", "1.2.0"), 0);
 }
 
 TEST(base, common_divisor) {
-    ASSERT_EQ(swoole_common_divisor(16, 12), 4);
-    ASSERT_EQ(swoole_common_divisor(6, 15), 3);
-    ASSERT_EQ(swoole_common_divisor(32, 16), 16);
+    ASSERT_EQ(openswoole_common_divisor(16, 12), 4);
+    ASSERT_EQ(openswoole_common_divisor(6, 15), 3);
+    ASSERT_EQ(openswoole_common_divisor(32, 16), 16);
 }
 
 TEST(base, common_multiple) {
-    ASSERT_EQ(swoole_common_multiple(16, 12), 48);
-    ASSERT_EQ(swoole_common_multiple(6, 15), 30);
-    ASSERT_EQ(swoole_common_multiple(32, 16), 32);
+    ASSERT_EQ(openswoole_common_multiple(16, 12), 48);
+    ASSERT_EQ(openswoole_common_multiple(6, 15), 30);
+    ASSERT_EQ(openswoole_common_multiple(32, 16), 32);
 }
 
 TEST(base, shell_exec) {
     pid_t pid;
     string str = "md5sum " + test::get_jpg_file();
-    int _pipe = swoole_shell_exec(str.c_str(), &pid, 0);
+    int _pipe = openswoole_shell_exec(str.c_str(), &pid, 0);
     ASSERT_GT(_pipe, 0);
     ASSERT_GT(pid, 0);
     char buf[1024] = {};
@@ -125,12 +125,12 @@ TEST(base, eventdata_pack) {
     ASSERT_EQ(string(ed1.data, ed1.info.len), test_data);
 
     swEventData ed2{};
-    ASSERT_EQ(swoole_random_bytes(sw_tg_buffer()->str, SW_BUFFER_SIZE_BIG), SW_BUFFER_SIZE_BIG);
-    ASSERT_TRUE(ed2.pack(sw_tg_buffer()->str, SW_BUFFER_SIZE_BIG));
+    ASSERT_EQ(openswoole_random_bytes(osw_tg_buffer()->str, OSW_BUFFER_SIZE_BIG), OSW_BUFFER_SIZE_BIG);
+    ASSERT_TRUE(ed2.pack(osw_tg_buffer()->str, OSW_BUFFER_SIZE_BIG));
 
-    String _buffer(SW_BUFFER_SIZE_BIG);
+    String _buffer(OSW_BUFFER_SIZE_BIG);
     ASSERT_TRUE(ed2.unpack(&_buffer));
-    ASSERT_EQ(memcmp(sw_tg_buffer()->str, _buffer.str, SW_BUFFER_SIZE_BIG), 0);
+    ASSERT_EQ(memcmp(osw_tg_buffer()->str, _buffer.str, OSW_BUFFER_SIZE_BIG), 0);
 }
 
 TEST(base, stack_defer_fn) {
@@ -148,9 +148,9 @@ TEST(base, stack_defer_fn) {
 }
 
 TEST(base, string_format) {
-    char *data = swoole_string_format(128, "hello %d world, %s is best.", 2020, "swoole");
+    char *data = openswoole_string_format(128, "hello %d world, %s is best.", 2020, "swoole");
     ASSERT_STREQ(data, "hello 2020 world, swoole is best.");
-    sw_free(data);
+    osw_free(data);
 }
 
 TEST(base, dirname) {
@@ -162,12 +162,12 @@ TEST(base, dirname) {
 
 TEST(base, set_task_tmpdir) {
     const char *tmpdir = "/tmp/swoole/core_tests/base";
-    ASSERT_TRUE(swoole_set_task_tmpdir(tmpdir));
+    ASSERT_TRUE(openswoole_set_task_tmpdir(tmpdir));
     File fp = swoole::make_tmpfile();
     ASSERT_TRUE(fp.ready());
 
     char buf[128];
-    swoole_random_string(buf, sizeof(buf) - 2);
+    openswoole_random_string(buf, sizeof(buf) - 2);
     buf[sizeof(buf) - 2] = '\n';
 
     fp.write(buf, sizeof(buf) - 1);
@@ -181,8 +181,8 @@ TEST(base, set_task_tmpdir) {
 }
 
 TEST(base, version) {
-    ASSERT_STREQ(swoole_version(), SWOOLE_VERSION);
-    ASSERT_EQ(swoole_version_id(), SWOOLE_VERSION_ID);
+    ASSERT_STREQ(openswoole_version(), OPENSWOOLE_VERSION);
+    ASSERT_EQ(openswoole_version_id(), OPENSWOOLE_VERSION_ID);
 }
 
 static std::string test_func(std::string test_data_2) {
@@ -191,8 +191,8 @@ static std::string test_func(std::string test_data_2) {
 
 TEST(base, add_function) {
     typedef std::string (*_func_t)(std::string);
-    swoole_add_function("test_func", (void *) test_func);
-    _func_t _func = (_func_t) swoole_get_function(SW_STRL("test_func"));
+    openswoole_add_function("test_func", (void *) test_func);
+    _func_t _func = (_func_t) openswoole_get_function(OSW_STRL("test_func"));
     std::string b = ", swoole is best";
     auto rs = _func(", swoole is best");
     ASSERT_EQ(rs, test_data + b);
@@ -200,15 +200,15 @@ TEST(base, add_function) {
 
 TEST(base, hook) {
     int count = 0;
-    swoole_add_hook(
-        SW_GLOBAL_HOOK_END,
+    openswoole_add_hook(
+        OSW_GLOBAL_HOOK_END,
         [](void *data) -> void {
             int *_count = (int *) data;
             *_count = 9999;
         },
         1);
-    ASSERT_TRUE(swoole_isset_hook(SW_GLOBAL_HOOK_END));
-    swoole_call_hook(SW_GLOBAL_HOOK_END, &count);
+    ASSERT_TRUE(openswoole_isset_hook(OSW_GLOBAL_HOOK_END));
+    openswoole_call_hook(OSW_GLOBAL_HOOK_END, &count);
     ASSERT_EQ(count, 9999);
 }
 
@@ -225,7 +225,7 @@ TEST(base, intersection) {
 TEST(base, itoa) {
     char buf[128];
     long value = 123456987;
-    int n = swoole_itoa(buf, value);
+    int n = openswoole_itoa(buf, value);
 
     ASSERT_EQ(n, 9);
     ASSERT_STREQ(buf, "123456987");

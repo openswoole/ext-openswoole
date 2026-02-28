@@ -1,6 +1,6 @@
 /*
  +----------------------------------------------------------------------+
- | Open Swoole                                                          |
+ | OpenSwoole                                                          |
  +----------------------------------------------------------------------+
  | Copyright (c) 2012-2018 The Swoole Group                             |
  +----------------------------------------------------------------------+
@@ -16,54 +16,54 @@
  +----------------------------------------------------------------------+
  */
 
-#include "swoole.h"
-#include "swoole_socket.h"
-#include "swoole_async.h"
+#include "openswoole.h"
+#include "openswoole_socket.h"
+#include "openswoole_async.h"
 
 #include <arpa/inet.h>
 
 #if __APPLE__
-int swoole_daemon(int nochdir, int noclose) {
+int openswoole_daemon(int nochdir, int noclose) {
     pid_t pid;
 
     if (!nochdir && chdir("/") != 0) {
-        swoole_sys_warning("chdir() failed");
+        openswoole_sys_warning("chdir() failed");
         return -1;
     }
 
     if (!noclose) {
         int fd = open("/dev/null", O_RDWR);
         if (fd < 0) {
-            swoole_sys_warning("open() failed");
+            openswoole_sys_warning("open() failed");
             return -1;
         }
 
         if (dup2(fd, 0) < 0 || dup2(fd, 1) < 0 || dup2(fd, 2) < 0) {
             close(fd);
-            swoole_sys_warning("dup2() failed");
+            openswoole_sys_warning("dup2() failed");
             return -1;
         }
 
         close(fd);
     }
 
-    pid = swoole_fork(SW_FORK_DAEMON);
+    pid = openswoole_fork(OSW_FORK_DAEMON);
     if (pid < 0) {
-        swoole_sys_warning("fork() failed");
+        openswoole_sys_warning("fork() failed");
         return -1;
     }
     if (pid > 0) {
         _exit(0);
     }
     if (setsid() < 0) {
-        swoole_sys_warning("setsid() failed");
+        openswoole_sys_warning("setsid() failed");
         return -1;
     }
     return 0;
 }
 #else
-int swoole_daemon(int nochdir, int noclose) {
-    if (swoole_fork(SW_FORK_PRECHECK) < 0) {
+int openswoole_daemon(int nochdir, int noclose) {
+    if (openswoole_fork(OSW_FORK_PRECHECK) < 0) {
         return -1;
     }
     return daemon(nochdir, noclose);
@@ -71,7 +71,7 @@ int swoole_daemon(int nochdir, int noclose) {
 #endif
 
 #ifdef HAVE_CPU_AFFINITY
-int swoole_set_cpu_affinity(cpu_set_t *set) {
+int openswoole_set_cpu_affinity(cpu_set_t *set) {
 #ifdef __FreeBSD__
     return cpuset_setaffinity(CPU_LEVEL_WHICH, CPU_WHICH_PID, -1, sizeof(*set), set);
 #else
@@ -80,20 +80,20 @@ int swoole_set_cpu_affinity(cpu_set_t *set) {
 }
 #endif
 
-namespace swoole {
+namespace openswoole {
 namespace async {
 
 void handler_gethostbyname(AsyncEvent *event) {
-    char addr[SW_IP_MAX_LENGTH];
+    char addr[OSW_IP_MAX_LENGTH];
     int ret = network::gethostbyname(event->flags, (char *) event->buf, addr);
-    sw_memset_zero(event->buf, event->nbytes);
+    osw_memset_zero(event->buf, event->nbytes);
 
     if (ret < 0) {
-        event->error = SW_ERROR_DNSLOOKUP_RESOLVE_FAILED;
+        event->error = OSW_ERROR_DNSLOOKUP_RESOLVE_FAILED;
     } else {
         if (inet_ntop(event->flags, addr, (char *) event->buf, event->nbytes) == nullptr) {
             ret = -1;
-            event->error = SW_ERROR_BAD_IPV6_ADDRESS;
+            event->error = OSW_ERROR_BAD_IPV6_ADDRESS;
         } else {
             event->error = 0;
             ret = 0;
@@ -109,4 +109,4 @@ void handler_getaddrinfo(AsyncEvent *event) {
 }
 
 }  // namespace async
-}  // namespace swoole
+}  // namespace openswoole

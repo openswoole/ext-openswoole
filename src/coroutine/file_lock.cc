@@ -1,6 +1,6 @@
 /*
   +----------------------------------------------------------------------+
-  | Open Swoole                                                          |
+  | OpenSwoole                                                          |
   +----------------------------------------------------------------------+
   | This source file is subject to version 2.0 of the Apache license,    |
   | that is bundled with this package in the file LICENSE, and is        |
@@ -18,10 +18,10 @@
 
 #include <queue>
 
-#include "swoole_coroutine.h"
-#include "swoole_coroutine_c_api.h"
+#include "openswoole_coroutine.h"
+#include "openswoole_coroutine_c_api.h"
 
-using swoole::Coroutine;
+using openswoole::Coroutine;
 
 class LockManager {
   public:
@@ -53,7 +53,7 @@ static inline int lock_ex(const char *filename, int fd) {
         co->yield();
     }
     lm->lock_ex = true;
-    if (swoole_coroutine_flock(fd, LOCK_EX) < 0) {
+    if (openswoole_coroutine_flock(fd, LOCK_EX) < 0) {
         lm->lock_ex = false;
         return -1;
     } else {
@@ -69,7 +69,7 @@ static inline int lock_sh(const char *filename, int fd) {
         co->yield();
     }
     lm->lock_sh = true;
-    if (swoole_coroutine_flock(fd, LOCK_SH) < 0) {
+    if (openswoole_coroutine_flock(fd, LOCK_SH) < 0) {
         lm->lock_sh = false;
         return -1;
     } else {
@@ -81,17 +81,17 @@ static inline int lock_release(const char *filename, int fd) {
     std::string key(filename);
     auto i = lock_pool.find(key);
     if (i == lock_pool.end()) {
-        return swoole_coroutine_flock(fd, LOCK_UN);
+        return openswoole_coroutine_flock(fd, LOCK_UN);
     }
     LockManager *lm = i->second;
     if (lm->queue_.empty()) {
         delete lm;
         lock_pool.erase(i);
-        return swoole_coroutine_flock(fd, LOCK_UN);
+        return openswoole_coroutine_flock(fd, LOCK_UN);
     } else {
         Coroutine *co = lm->queue_.front();
         lm->queue_.pop();
-        int retval = swoole_coroutine_flock(fd, LOCK_UN);
+        int retval = openswoole_coroutine_flock(fd, LOCK_UN);
         co->resume();
         return retval;
     }
@@ -123,16 +123,16 @@ static inline int lock_nb(const char *filename, int fd, int operation) {
 }
 #endif
 
-int swoole_coroutine_flock_ex(const char *filename, int fd, int operation) {
+int openswoole_coroutine_flock_ex(const char *filename, int fd, int operation) {
     Coroutine *co = Coroutine::get_current();
-    if (sw_unlikely(SwooleTG.reactor == nullptr || !co)) {
+    if (osw_unlikely(OpenSwooleTG.reactor == nullptr || !co)) {
         return ::flock(fd, operation);
     }
 
-    const char *real = realpath(filename, sw_tg_buffer()->str);
+    const char *real = realpath(filename, osw_tg_buffer()->str);
     if (real == nullptr) {
         errno = ENOENT;
-        swoole_set_last_error(ENOENT);
+        openswoole_set_last_error(ENOENT);
         return -1;
     }
 
