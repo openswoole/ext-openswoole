@@ -31,7 +31,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
         Assert::assert($data === "ok");
 
         // Wait briefly so the lag timer fires after the blocking sleep
-        co::usleep(100);
+        co::usleep(100000);
 
         // Second request: read stats after the lag timer has measured the delay
         $client->send("stats");

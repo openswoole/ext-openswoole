@@ -62,6 +62,10 @@ You can find how to fix [Common Installation Errors](https://openswoole.com/docs
 
 After compiling and installing the openswoole extension, you have to add a new line `extension=openswoole.so` at the end of `php.ini` or create a ini file at `conf.d` folder to enable OpenSwoole. It is recommended to be added after all the other extensions because openswoole may depend on extensions: sockets, mysqlnd, curl etc.
 
+## Examples
+
+Learn OpenSwoole by exploring the examples: <https://github.com/openswoole/openswoole/tree/master/example>
+
 ## Fiber Context and Xdebug Support
 
 OpenSwoole supports using PHP's native Fiber API as the coroutine context backend. This enables compatibility with debugging and profiling tools like Xdebug that rely on PHP's fiber infrastructure to trace execution across coroutines.

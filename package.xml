@@ -13,7 +13,7 @@
         <active>yes</active>
     </lead>
     <date>2026-02-28</date>
-    <time>02:00:00</time>
+    <time>15:00:00</time>
     <version>
         <release>26.2.0</release>
         <api>26.0</api>
@@ -120,6 +120,8 @@
             <file role="src" name="core-tests/src/server/buffer.cpp" />
             <file role="src" name="core-tests/src/server/http.cpp" />
             <file role="src" name="core-tests/src/server/server.cpp" />
+            <file role="doc" name="examples/eventloop_lag.php" />
+            <file role="doc" name="examples/use_fiber_context.php" />
             <file role="src" name="ext-src/openswoole_atomic.cc" />
             <file role="src" name="ext-src/openswoole_atomic.stub.php" />
             <file role="src" name="ext-src/openswoole_atomic_arginfo.h" />
@@ -1315,6 +1317,9 @@
             <file role="test" name="tests/openswoole_server/event/shutdown.phpt" />
             <file role="test" name="tests/openswoole_server/event/start.phpt" />
             <file role="test" name="tests/openswoole_server/event/worker_exit.phpt" />
+            <file role="test" name="tests/openswoole_server/event_loop_lag.phpt" />
+            <file role="test" name="tests/openswoole_server/event_loop_lag_base.phpt" />
+            <file role="test" name="tests/openswoole_server/event_loop_lag_blocking.phpt" />
             <file role="test" name="tests/openswoole_server/exist.phpt" />
             <file role="test" name="tests/openswoole_server/force_reload.phpt" />
             <file role="test" name="tests/openswoole_server/force_reload2.phpt" />
