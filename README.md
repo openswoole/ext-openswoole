@@ -66,12 +66,18 @@ After compiling and installing the openswoole extension, you have to add a new l
 
 OpenSwoole supports using PHP's native Fiber API as the coroutine context backend. This enables compatibility with debugging and profiling tools like Xdebug that rely on PHP's fiber infrastructure to trace execution across coroutines.
 
-### Enable Fiber Context
+### Enable PHP's Fiber Context
 
 Add the following INI setting to your `php.ini`:
 
 ```ini
 openswoole.use_fiber_context=On
+```
+
+Or enable in your code:
+
+```php
+Co::set(['use_fiber_context' => true]);
 ```
 
 When enabled, OpenSwoole uses PHP fibers internally to switch between coroutines instead of the default boost ASM context. This allows tools like Xdebug to properly trace and debug coroutine execution, including step debugging, stack traces, and profiling across coroutine boundaries.
@@ -98,6 +104,21 @@ xdebug.client_port=9003
 3. Run your OpenSwoole application and connect your IDE debugger. Xdebug will be able to trace execution across coroutine switches.
 
 > **Note:** Fiber context mode requires PHP 8.3 or later. There is a minor performance overhead compared to the default ASM context, so it is recommended to use this mode only during development and debugging.
+
+4. Xdebug trace log example:
+
+```bash
+php -d xdebug.mode=trace \
+  -d xdebug.start_with_request=yes \
+  -d xdebug.output_dir=/tmp \
+  -d xdebug.trace_output_name=openswoole_trace \
+  -d xdebug.trace_format=0 \
+  -d xdebug.collect_return=1 \
+  -d xdebug.use_compression=false \
+  examples/helloworld.php
+
+tail -f /tmp/openswoole_trace.xt
+```
 
 ## Reactor Settings
 

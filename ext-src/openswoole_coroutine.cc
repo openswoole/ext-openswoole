@@ -219,7 +219,7 @@ static int coro_exit_handler(zend_execute_data *execute_data) {
             exit_status = &_exit_status;
             ZVAL_NULL(exit_status);
         }
-        obj = zend_throw_exception(openswoole_exit_exception_ce, "swoole exit", 0);
+        obj = zend_throw_exception(openswoole_exit_exception_ce, "openswoole exit", 0);
         ZVAL_OBJ(&ex, obj);
         zend_update_property_long(openswoole_exit_exception_ce, OSW_Z8_OBJ_P(&ex), ZEND_STRL("flags"), flags);
         Z_TRY_ADDREF_P(exit_status);
@@ -251,7 +251,7 @@ PHP_FUNCTION(openswoole_exit) {
     if (flags) {
         zval ex;
         zend_object *obj = zend_throw_exception(openswoole_exit_exception_ce,
-            (message ? ZSTR_VAL(message) : "swoole exit"), 0);
+            (message ? ZSTR_VAL(message) : "openswoole exit"), 0);
         ZVAL_OBJ(&ex, obj);
         zend_update_property_long(openswoole_exit_exception_ce, OSW_Z8_OBJ_P(&ex), ZEND_STRL("flags"), flags);
         if (message) {
