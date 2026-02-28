@@ -8,7 +8,7 @@ $source_list = swoole_source_list(['h' => false]);
 
 // config.m4
 $output = space(8) . implode(" \\\n" . space(8), $source_list);
-$output = preg_replace('/(swoole_source_file=[^\n]+\n)[^"]+"/', "$1{$output}\"", $config_m4_content, 1, $count);
+$output = preg_replace('/(openswoole_source_file=[^\n]+\n)[^"]+"/', "$1{$output}\"", $config_m4_content, 1, $count);
 if ($count !== 1) {
     swoole_error('Update source files in config.m4 error!');
 }

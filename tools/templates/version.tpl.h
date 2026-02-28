@@ -9,19 +9,19 @@
   +----------------------------------------------------------------------+
 */
 
-#ifndef SWOOLE_VERSION_H_
-#define SWOOLE_VERSION_H_
+#ifndef OPENSWOOLE_VERSION_H_
+#define OPENSWOOLE_VERSION_H_
 
-#define SWOOLE_MAJOR_VERSION <?=$next->major."\n" ?>
-#define SWOOLE_MINOR_VERSION <?=$next->minor."\n" ?>
-#define SWOOLE_RELEASE_VERSION <?=$next->release."\n" ?>
-#define SWOOLE_EXTRA_VERSION "<?=$next->extra ?>"
-#define SWOOLE_VERSION "<?=$next->getVersion() ?>"
-#define SWOOLE_VERSION_ID <?=$next->getVersionId()."\n" ?>
-#define SWOOLE_API_VERSION_ID 0x202012a
+#define OPENSWOOLE_MAJOR_VERSION <?=$next->major."\n" ?>
+#define OPENSWOOLE_MINOR_VERSION <?=$next->minor."\n" ?>
+#define OPENSWOOLE_RELEASE_VERSION <?=$next->release."\n" ?>
+#define OPENSWOOLE_EXTRA_VERSION "<?=$next->extra ?>"
+#define OPENSWOOLE_VERSION "<?=$next->getVersion() ?>"
+#define OPENSWOOLE_VERSION_ID <?=$next->getVersionId()."\n" ?>
+#define OPENSWOOLE_API_VERSION_ID 0x202012a
 
-#define SWOOLE_BUG_REPORT                                                                                              \
-    "A bug occurred in OpenSwoole-v" SWOOLE_VERSION ", please report it.\n"                                            \
+#define OPENSWOOLE_BUG_REPORT                                                                                          \
+    "A bug occurred in OpenSwoole-v" OPENSWOOLE_VERSION ", please report it.\n"                                        \
     "Please submit bug report at:\n"                                                                                   \
-    ">> https://github.com/openswoole/swoole-src/issues \n"
+    ">> https://github.com/openswoole/ext-openswoole/issues \n"
 #endif

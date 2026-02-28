@@ -119,7 +119,7 @@ function fix_tests_in_this_dir(string $dir, string $root = '')
 
 $root = realpath(ROOT_DIR . '/tests');
 $dirs = scan_dir($root, function (string $file) {
-    return strpos(pathinfo($file, PATHINFO_FILENAME), 'swoole_') === 0;
+    return strpos(pathinfo($file, PATHINFO_FILENAME), 'openswoole_') === 0;
 });
 foreach ($dirs as $dir) {
     fix_tests_in_this_dir($dir, $root);

@@ -27,8 +27,8 @@ foreach ($matches as $option) {
 }
 
 $event_file = [
-    "{$root_dir}/ext-src/swoole_server.cc",
-    "{$root_dir}/ext-src/swoole_server_port.cc"
+    "{$root_dir}/ext-src/openswoole_server.cc",
+    "{$root_dir}/ext-src/openswoole_server_port.cc"
 ];
 
 $server_event_content = '';

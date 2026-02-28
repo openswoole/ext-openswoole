@@ -616,8 +616,6 @@ if test "$PHP_OPENSWOOLE" != "no"; then
     fi
 
     openswoole_source_file=" \
-        ext-src/php_openswoole.cc \
-        ext-src/php_openswoole_cxx.cc \
         ext-src/openswoole_atomic.cc \
         ext-src/openswoole_channel_coro.cc \
         ext-src/openswoole_client.cc \
@@ -645,6 +643,8 @@ if test "$PHP_OPENSWOOLE" != "no"; then
         ext-src/openswoole_timer.cc \
         ext-src/openswoole_util.cc \
         ext-src/openswoole_websocket_server.cc \
+        ext-src/php_openswoole.cc \
+        ext-src/php_openswoole_cxx.cc \
         src/core/base.cc \
         src/core/channel.cc \
         src/core/crc32.cc \
@@ -702,9 +702,9 @@ if test "$PHP_OPENSWOOLE" != "no"; then
         src/protocol/websocket.cc \
         src/reactor/base.cc \
         src/reactor/epoll.cc \
+        src/reactor/io_uring.cc \
         src/reactor/kqueue.cc \
         src/reactor/poll.cc \
-        src/reactor/io_uring.cc \
         src/reactor/select.cc \
         src/server/base.cc \
         src/server/manager.cc \

@@ -8,10 +8,10 @@ class Version
     public $release;
     public $extra;
 
-    const REGX_MAJOR = '#define\s+SWOOLE_MAJOR_VERSION\s+(\d+)#';
-    const REGX_MINOR = '#define\s+SWOOLE_MINOR_VERSION\s+(\d+)#';
-    const REGX_RELEASE = '#define\s+SWOOLE_RELEASE_VERSION\s+(\d+)#';
-    const REGX_EXTRA = '#define\s+SWOOLE_EXTRA_VERSION\s+"(\w*)"#';
+    const REGX_MAJOR = '#define\s+OPENSWOOLE_MAJOR_VERSION\s+(\d+)#';
+    const REGX_MINOR = '#define\s+OPENSWOOLE_MINOR_VERSION\s+(\d+)#';
+    const REGX_RELEASE = '#define\s+OPENSWOOLE_RELEASE_VERSION\s+(\d+)#';
+    const REGX_EXTRA = '#define\s+OPENSWOOLE_EXTRA_VERSION\s+"(\w*)"#';
 
     function getVersion()
     {
@@ -29,7 +29,7 @@ class Version
 }
 
 $type = empty($argv[1]) ? 'release' : trim($argv[1]);
-$kernel_version_file = dirname(__DIR__) . '/include/swoole_version.h';
+$kernel_version_file = dirname(__DIR__) . '/include/openswoole_version.h';
 $cmake_file = dirname(__DIR__) . '/CMakeLists.txt';
 $package_file = dirname(__DIR__) . '/package.xml';
 
@@ -83,5 +83,5 @@ include __DIR__ . '/templates/version.tpl.h';
 file_put_contents($kernel_version_file, ob_get_clean());
 
 file_put_contents($cmake_file,
-    preg_replace('#set\(SWOOLE_VERSION\s+[0-9\.\-a-z]+\)#i', 'set(SWOOLE_VERSION ' . $next->getVersion() . ')',
+    preg_replace('#set\(OPENSWOOLE_VERSION\s+[0-9\.\-a-z]+\)#i', 'set(OPENSWOOLE_VERSION ' . $next->getVersion() . ')',
         file_get_contents($cmake_file)));
