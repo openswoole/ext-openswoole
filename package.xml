@@ -13,7 +13,7 @@
         <active>yes</active>
     </lead>
     <date>2026-02-28</date>
-    <time>15:00:00</time>
+    <time>16:00:00</time>
     <version>
         <release>26.2.0</release>
         <api>26.0</api>
@@ -120,8 +120,6 @@
             <file role="src" name="core-tests/src/server/buffer.cpp" />
             <file role="src" name="core-tests/src/server/http.cpp" />
             <file role="src" name="core-tests/src/server/server.cpp" />
-            <file role="doc" name="examples/eventloop_lag.php" />
-            <file role="doc" name="examples/use_fiber_context.php" />
             <file role="src" name="ext-src/openswoole_atomic.cc" />
             <file role="src" name="ext-src/openswoole_atomic.stub.php" />
             <file role="src" name="ext-src/openswoole_atomic_arginfo.h" />
