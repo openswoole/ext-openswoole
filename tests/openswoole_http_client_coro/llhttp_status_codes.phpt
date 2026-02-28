@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_client_coro: llhttp - response status code parsing (2xx, 3xx, 4xx, 5xx)
+openswoole_http_client_coro: llhttp - response status code parsing (2xx, 3xx, 4xx, 5xx)
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

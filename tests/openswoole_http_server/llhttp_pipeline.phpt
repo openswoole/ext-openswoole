@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - HTTP pipelining (multiple requests in single connection)
+openswoole_http_server: llhttp - HTTP pipelining (multiple requests in single connection)
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

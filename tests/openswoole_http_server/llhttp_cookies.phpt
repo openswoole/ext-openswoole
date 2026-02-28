@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - cookie parsing (multiple cookies, URL-encoded, quoted values)
+openswoole_http_server: llhttp - cookie parsing (multiple cookies, URL-encoded, quoted values)
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

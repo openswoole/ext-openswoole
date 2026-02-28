@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - keep-alive connection reuse and HTTP version handling
+openswoole_http_server: llhttp - keep-alive connection reuse and HTTP version handling
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

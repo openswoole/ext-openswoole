@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - query string and path parsing
+openswoole_http_server: llhttp - query string and path parsing
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

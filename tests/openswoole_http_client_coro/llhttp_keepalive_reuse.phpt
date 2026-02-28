@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_client_coro: llhttp - keep-alive connection reuse across multiple requests
+openswoole_http_client_coro: llhttp - keep-alive connection reuse across multiple requests
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

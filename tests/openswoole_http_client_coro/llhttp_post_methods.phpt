@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_client_coro: llhttp - client POST/PUT/PATCH/DELETE with body parsing
+openswoole_http_client_coro: llhttp - client POST/PUT/PATCH/DELETE with body parsing
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

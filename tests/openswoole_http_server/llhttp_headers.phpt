@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - header parsing (custom headers, case-insensitive, multi-value)
+openswoole_http_server: llhttp - header parsing (custom headers, case-insensitive, multi-value)
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

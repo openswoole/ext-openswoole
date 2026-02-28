@@ -27,7 +27,6 @@ Assert::assert(class_exists('swoole_websocket_frame'));
 Assert::assert(class_exists('swoole_websocket_closeframe'));
 Assert::assert(class_exists('swoole_server_port'));
 Assert::assert(class_exists('swoole_server_task'));
-Assert::assert(class_exists('swoole_exit_exception'));
 
 // openswoole_* snake_case class aliases
 Assert::assert(class_exists('openswoole_server'));

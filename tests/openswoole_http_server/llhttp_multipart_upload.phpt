@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - multipart form data with file upload
+openswoole_http_server: llhttp - multipart form data with file upload
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - Request::create() and parse() API
+openswoole_http_server: llhttp - Request::create() and parse() API
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

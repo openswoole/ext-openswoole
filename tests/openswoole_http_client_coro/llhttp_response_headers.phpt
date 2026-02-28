@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_client_coro: llhttp - response header parsing
+openswoole_http_client_coro: llhttp - response header parsing
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

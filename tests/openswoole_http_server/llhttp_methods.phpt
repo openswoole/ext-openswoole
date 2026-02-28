@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - various HTTP methods parsing
+openswoole_http_server: llhttp - various HTTP methods parsing
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

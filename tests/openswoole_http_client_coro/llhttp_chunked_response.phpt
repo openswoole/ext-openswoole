@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_client_coro: llhttp - chunked transfer encoding response parsing
+openswoole_http_client_coro: llhttp - chunked transfer encoding response parsing
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - chunked transfer encoding request body
+openswoole_http_server: llhttp - chunked transfer encoding request body
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

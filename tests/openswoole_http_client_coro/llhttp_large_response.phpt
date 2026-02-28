@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_client_coro: llhttp - large response body and content-length handling
+openswoole_http_client_coro: llhttp - large response body and content-length handling
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--

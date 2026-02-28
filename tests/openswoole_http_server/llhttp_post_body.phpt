@@ -1,5 +1,5 @@
 --TEST--
-swoole_http_server: llhttp - POST body with Content-Length and form-urlencoded
+openswoole_http_server: llhttp - POST body with Content-Length and form-urlencoded
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
