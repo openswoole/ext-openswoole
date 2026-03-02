@@ -1,0 +1,64 @@
+{
+    "name": "openswoole/ext-openswoole",
+    "type": "php-ext",
+    "description": "High Performance Programmatic Server for PHP with Async IO, Coroutines and Fibers",
+    "license": "Apache-2.0",
+    "homepage": "https://openswoole.com",
+    "require": {
+        "php": ">=8.3.0"
+    },
+    "php-ext": {
+        "extension-name": "openswoole",
+        "priority": 80,
+        "support-zts": true,
+        "support-nts": true,
+        "os-families-exclude": ["windows"],
+        "configure-options": [
+            {
+                "name": "enable-openssl",
+                "description": "Enable OpenSSL support",
+                "needs-value": false
+            },
+            {
+                "name": "with-openssl-dir",
+                "description": "Path to OpenSSL installation directory",
+                "needs-value": true
+            },
+            {
+                "name": "enable-sockets",
+                "description": "Enable sockets extension integration",
+                "needs-value": false
+            },
+            {
+                "name": "enable-http2",
+                "description": "Enable HTTP/2 protocol support",
+                "needs-value": false
+            },
+            {
+                "name": "enable-mysqlnd",
+                "description": "Enable MySQLnd support for $mysql->escape() method",
+                "needs-value": false
+            },
+            {
+                "name": "enable-hook-curl",
+                "description": "Enable coroutine hooks for CURL",
+                "needs-value": false
+            },
+            {
+                "name": "with-postgres",
+                "description": "Enable PostgreSQL support (optionally specify path)",
+                "needs-value": true
+            },
+            {
+                "name": "enable-cares",
+                "description": "Enable c-ares DNS support",
+                "needs-value": false
+            },
+            {
+                "name": "enable-io-uring",
+                "description": "Enable io_uring reactor backend (Linux 5.1+, requires liburing-dev)",
+                "needs-value": false
+            }
+        ]
+    }
+}

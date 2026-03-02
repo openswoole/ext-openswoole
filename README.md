@@ -21,11 +21,29 @@ Documentation for OpenSwoole can be found on the [OpenSwoole website](https://op
 
 > OpenSwoole always provides the most reliable stability and the most powerful features in **the latest released version**. Please ensure as much as possible that you are using the latest version.
 
-### 1. Install or upgrade OpenSwoole from multiple distribution channels
+### 1. Install via PIE (PHP Installer for Extensions)
+
+[PIE](https://github.com/php/pie) is the modern way to install PHP extensions. Requires PHP 8.1+ to run.
+
+```shell
+pie install openswoole/ext-openswoole
+```
+
+With optional configure flags:
+
+```shell
+pie install openswoole/ext-openswoole \
+  --enable-openssl \
+  --enable-sockets \
+  --enable-http2 \
+  --enable-hook-curl
+```
+
+### 2. Install or upgrade OpenSwoole from multiple distribution channels
 
 Please check [OpenSwoole Installation Guide](https://openswoole.com/docs/get-started/installation) about how to install OpenSwoole on Ubuntu/CentOS/Windows WSL from Docker, PECL or Binary releases channels.
 
-### 2. Compile from source
+### 3. Compile from source
 
 #### Compiling requirements
 
