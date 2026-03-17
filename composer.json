@@ -2,6 +2,7 @@
     "name": "openswoole/ext-openswoole",
     "type": "php-ext",
     "description": "High Performance Programmatic Server for PHP with Async IO, Coroutines and Fibers",
+    "keywords": ["openswoole", "ext-openswoole", "Open Swoole", "extension"],
     "license": "Apache-2.0",
     "homepage": "https://openswoole.com",
     "require": {
