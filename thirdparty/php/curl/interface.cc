@@ -823,6 +823,51 @@ static int fn_ssh_hostkeyfunction(void *clientp, int keytype, const char *key, s
 #endif
 #endif
 
+#if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
+#if PHP_VERSION_ID >= 80400
+static int fn_prereqfunction(void *clientp, char *conn_primary_ip, char *conn_local_ip,
+                              int conn_primary_port, int conn_local_port)
+{
+    php_curl *ch = (php_curl *)clientp;
+    int rval = CURL_PREREQFUNC_OK;
+
+    zval args[5];
+    zval retval;
+
+    GC_ADDREF(&ch->std);
+    ZVAL_OBJ(&args[0], &ch->std);
+    ZVAL_STRING(&args[1], conn_primary_ip ? conn_primary_ip : "");
+    ZVAL_STRING(&args[2], conn_local_ip ? conn_local_ip : "");
+    ZVAL_LONG(&args[3], conn_primary_port);
+    ZVAL_LONG(&args[4], conn_local_port);
+
+    ch->in_callback = 1;
+    zend_call_known_fcc(&ch->handlers.prereq, &retval, /* param_count */ 5, args, /* named_params */ NULL);
+    ch->in_callback = 0;
+
+    if (!Z_ISUNDEF(retval)) {
+        openswoole_curl_verify_handlers(ch, /* reporterror */ true);
+        if (Z_TYPE(retval) == IS_LONG) {
+            zend_long retval_long = Z_LVAL(retval);
+            if (retval_long == CURL_PREREQFUNC_OK || retval_long == CURL_PREREQFUNC_ABORT) {
+                rval = retval_long;
+            } else {
+                zend_throw_error(NULL, "The CURLOPT_PREREQFUNCTION callback must return either CURL_PREREQFUNC_OK or CURL_PREREQFUNC_ABORT");
+            }
+        } else {
+            zend_throw_error(NULL, "The CURLOPT_PREREQFUNCTION callback must return either CURL_PREREQFUNC_OK or CURL_PREREQFUNC_ABORT");
+        }
+    }
+
+    zval_ptr_dtor(&args[0]);
+    zval_ptr_dtor(&args[1]);
+    zval_ptr_dtor(&args[2]);
+
+    return rval;
+}
+#endif
+#endif
+
 #if LIBCURL_VERSION_NUM >= 0x072000
 #if PHP_VERSION_ID < 80400
 static size_t fn_xferinfo(void *clientp, curl_off_t dltotal, curl_off_t dlnow, curl_off_t ultotal, curl_off_t ulnow)
@@ -1149,9 +1194,9 @@ void openswoole_curl_init_handle(php_curl *ch)
 #endif
 #if PHP_VERSION_ID >= 80500
     curl_handlers(ch)->debug = empty_fcall_info_cache;
+#endif
 #if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
     curl_handlers(ch)->prereq = empty_fcall_info_cache;
-#endif
 #endif
 #if LIBCURL_VERSION_NUM >= 0x075400
      curl_handlers(ch)->sshhostkey = empty_fcall_info_cache;
@@ -1743,6 +1788,9 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
         HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_FNMATCH_, handlers.fnmatch, fn_fnmatch);
 #if LIBCURL_VERSION_NUM >= 0x075400 /* Available since 7.84.0 */
         HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_SSH_HOSTKEY, handlers.sshhostkey, fn_ssh_hostkeyfunction);
+#endif
+#if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
+        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_PREREQ, handlers.prereq, fn_prereqfunction);
 #endif
 #endif
     /* Long options */
