@@ -24,9 +24,9 @@ co::run(function () {
             'some_cookie' => 'foo',
             'other_cookie' => 'barbaz1234'
         ],
-        'httpbin.org'
+        'httpbun.com'
     );
-    $r = $client->request('GET', 'http://httpbin.org/cookies', [
+    $r = $client->request('GET', 'http://httpbun.com/cookies', [
         'cookies' => $jar
     ]);
     Assert::eq($r->getStatusCode(), 200);

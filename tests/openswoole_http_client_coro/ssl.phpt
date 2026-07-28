@@ -8,7 +8,7 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 go(function () {
-    $domain = 'httpbin.org';
+    $domain = 'httpbun.com';
     $cli = new OpenSwoole\Coroutine\Http\Client($domain, 443, true);
     $cli->set([
         'timeout' => 10,

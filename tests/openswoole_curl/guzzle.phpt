@@ -40,7 +40,7 @@ co::run(function () {
 
     go(function () use ($wg, &$result) {
         $wg->add();
-        $client = new Client(['base_uri' => 'http://httpbin.org/']);
+        $client = new Client(['base_uri' => 'http://httpbun.com/']);
         $n = N;
         $data = $promises = [];
         while ($n--) {

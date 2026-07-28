@@ -9,7 +9,7 @@ go(function () {
     $cli = new OpenSwoole\Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);
     $cli->set(['timeout' => 10]);
     $cli->setHeaders([
-        'host' => 'httpbin.org',
+        'host' => 'httpbun.com',
         'User-Agent' => 'Chrome/49.0.2587.3',
         'Accept' => 'text/html,application/xhtml+xml,application/xml',
         'Accept-Encoding' => 'gzip',

@@ -22,7 +22,7 @@ co::run(function () {
     $handler = new CurlMultiHandler();
     $responses = [];
     for ($i = 0; $i < 10; $i++) {
-        $response = $handler(new Request('GET', 'http://httpbin.org/get'), []);
+        $response = $handler(new Request('GET', 'http://httpbun.com/get'), []);
         $response->cancel();
         $responses[] = $response;
     }

@@ -20,7 +20,7 @@ Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 co::run(function () {
     $handler = new CurlMultiHandler();
-    $response = $handler(new Request('GET', 'http://httpbin.org/get'), []);
+    $response = $handler(new Request('GET', 'http://httpbun.com/get'), []);
     $response->wait();
     $response->cancel();
     Assert::true(Promise\Is::fulfilled($response));

@@ -11,7 +11,7 @@ skip_if_offline();
 require __DIR__ . '/../include/bootstrap.php';
 
 go(function () {
-    $url_info = parse_url('http://httpbin.org/status/204');
+    $url_info = parse_url('http://httpbun.com/status/204');
     $domain = $url_info['host'];
     $path = $url_info['path'];
     $cli = new OpenSwoole\Coroutine\Http\Client($domain);

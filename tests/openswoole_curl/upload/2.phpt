@@ -16,7 +16,7 @@ Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 co::run(function () {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://httpbin.org/anything");
+    curl_setopt($ch, CURLOPT_URL, "https://httpbun.com/anything");
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $file = new CurlFile(TEST_IMAGE);
     curl_setopt($ch, CURLOPT_POSTFIELDS, array("openswoole_file" => $file));

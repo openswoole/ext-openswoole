@@ -9,13 +9,13 @@ require __DIR__ . '/../include/bootstrap.php';
 use OpenSwoole\Coroutine as co;
 
 co::create(function () {
-    $http = new OpenSwoole\Coroutine\Http\Client('httpbin.org', 80, false);
+    $http = new OpenSwoole\Coroutine\Http\Client('httpbun.com', 80, false);
     $http->set([
         'timeout' => -1,
         'keep_alive' => false,
     ]);
     $http->execute('/get');
-    echo strpos($http->getHeaderOut(), 'httpbin.org') > -1;
+    echo strpos($http->getHeaderOut(), 'httpbun.com') > -1;
 });
 openswoole_event::wait();
 

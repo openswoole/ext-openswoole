@@ -20,7 +20,7 @@ Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 co::run(function () {
     $client = new Client();
-    $promise = $client->requestAsync('GET', 'http://httpbin.org/get');
+    $promise = $client->requestAsync('GET', 'http://httpbun.com/get');
     $promise->then(
         function (ResponseInterface $res) {
             echo $res->getStatusCode() .PHP_EOL;

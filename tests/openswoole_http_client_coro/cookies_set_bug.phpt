@@ -18,7 +18,7 @@ function getCookies()
 }
 
 co::run(function () {
-    $url_info = parse_url('http://httpbin.org/cookies/set/a/1');
+    $url_info = parse_url('http://httpbun.com/cookies/set/a/1');
     $domain = $url_info['host'];
     $path = $url_info['path'];
     $cli = new OpenSwoole\Coroutine\Http\Client($domain);

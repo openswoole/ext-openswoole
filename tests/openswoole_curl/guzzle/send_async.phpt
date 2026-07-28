@@ -25,7 +25,7 @@ co::run(function () {
     echo $response->getHeaderLine('content-type'), PHP_EOL; // 'application/json; charset=utf8'
 
     // Send an asynchronous request.
-    $request = new Request('GET', 'http://httpbin.org');
+    $request = new Request('GET', 'http://httpbun.com');
     $promise = $client->sendAsync($request)->then(function ($response) {
         echo 'I completed! ' . $response->getStatusCode() . PHP_EOL;
     });

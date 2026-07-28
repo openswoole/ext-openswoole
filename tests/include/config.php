@@ -93,7 +93,7 @@ if (IS_IN_TRAVIS) {
     define('HTTPBIN_SERVER_PORT', (int)getenv('HTTPBIN_SERVER_PORT'));
     define('HTTPBIN_LOCALLY', true);
 } else {
-    define('HTTPBIN_SERVER_HOST', 'httpbin.org');
+    define('HTTPBIN_SERVER_HOST', 'httpbun.com');
     define('HTTPBIN_SERVER_PORT', 80);
 }
 
