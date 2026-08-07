@@ -7,7 +7,7 @@
     }
   },
   "require": {
-    "guzzlehttp/guzzle": "7.15.1",
+    "guzzlehttp/guzzle": "^7.15.3",
     "guzzlehttp/promises": "^2.0",
     "guzzlehttp/psr7": "^2.7",
     "php-http/async-client-implementation": "^1.0",
