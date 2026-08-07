@@ -12,7 +12,7 @@ require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     go(function () use ($pm) {
-        $domain = 'mail.qq.com';
+        $domain = 'httpbun.com';
         $cli = new OpenSwoole\Coroutine\Http\Client($domain, 443, true);
         $cli->setHeaders(['Host' => $domain]);
         $cli->set([
@@ -20,9 +20,9 @@ $pm->parentFunc = function () use ($pm) {
             'http_proxy_host' => HTTP_PROXY_HOST,
             'http_proxy_port' => HTTP_PROXY_PORT
         ]);
-        $result = $cli->get('/');
+        $result = $cli->get('/html');
         Assert::assert($result);
-        Assert::assert(stripos($cli->body, 'tencent') !== false);
+        Assert::assert(stripos($cli->body, 'httpbun') !== false);
         $pm->kill();
     });
 };

@@ -8,7 +8,7 @@ skip_if_offline();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 co::run(function () {
-    $domain = 'mail.qq.com';
+    $domain = 'httpbun.com';
     $cli = new OpenSwoole\Coroutine\Http2\Client($domain, 443, true);
     $cli->set([
         'timeout' => 10,
@@ -17,14 +17,14 @@ co::run(function () {
     $cli->connect();
 
     $req = new OpenSwoole\Http2\Request;
-    $req->path = '/';
+    $req->path = '/html';
     $req->headers = 1;
     Assert::assert($cli->send($req));
     Assert::assert(is_array($req->headers)); // check array
     /**@var $response openswoole_http2_response */
     $response = $cli->recv();
     echo $response->statusCode;
-    Assert::assert(stripos($response->data, 'tencent') !== false);
+    Assert::assert(stripos($response->data, 'httpbun') !== false);
 });
 ?>
 --EXPECT--
