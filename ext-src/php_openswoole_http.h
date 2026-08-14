@@ -219,7 +219,7 @@ class Stream {
     Stream(Session *client, uint32_t _id);
     ~Stream();
 
-    bool send_header(size_t body_length, bool end_stream);
+    bool send_header(size_t body_length, bool end_stream, bool is_head = false);
     bool send_body(String *body, bool end_stream, size_t max_frame_size, off_t offset = 0, size_t length = 0);
     bool send_trailer();
 
