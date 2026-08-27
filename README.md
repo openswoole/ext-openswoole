@@ -59,7 +59,7 @@ cd ext-openswoole
 git checkout v26.2.0
 phpize && \
 ./configure && \
-make && make install
+make && sudo make install
 ```
 
 You can find how to fix [Common Installation Errors](https://openswoole.com/docs/get-started/common-install-errors) if there are errors in the installation.
