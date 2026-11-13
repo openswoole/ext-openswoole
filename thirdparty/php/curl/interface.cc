@@ -1122,8 +1122,6 @@ static size_t fn_write_header(char *data, size_t size, size_t nmemb, void *ctx) 
             openswoole_curl_verify_handlers(ch, 1);
             length = zval_get_long(&retval);
         }
-        zval_ptr_dtor(&argv[0]);
-        zval_ptr_dtor(&argv[1]);
 #else
         ch->in_callback = true;
         zend_call_known_fcc(&write_handler->fcc, &retval, /* param_count */ 2, argv, /* named_params */ NULL);
@@ -1133,6 +1131,8 @@ static size_t fn_write_header(char *data, size_t size, size_t nmemb, void *ctx) 
             length = zval_get_long(&retval);
         }
 #endif
+        zval_ptr_dtor(&argv[0]);
+        zval_ptr_dtor(&argv[1]);
         break;
     }
 
