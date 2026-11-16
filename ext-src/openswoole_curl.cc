@@ -48,6 +48,11 @@ int Multi::handle_socket(CURL *easy, curl_socket_t s, int action, void *userp, v
     case CURL_POLL_IN:
     case CURL_POLL_OUT:
     case CURL_POLL_INOUT:
+        // the multi handle may be released after the event loop has been destroyed (e.g. in a
+        // destructor at request shutdown), there is no reactor to watch the socket anymore
+        if (!openswoole_event_is_available()) {
+            break;
+        }
         multi->set_event(easy, socketp, s, action);
         break;
     case CURL_POLL_REMOVE:
