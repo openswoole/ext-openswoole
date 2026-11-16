@@ -1973,7 +1973,7 @@ static PHP_FUNCTION(openswoole_stream_socket_pair) {
 }
 
 static PHP_FUNCTION(openswoole_user_func_handler) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     fci.size = sizeof(fci);
     fci.object = nullptr;
     ZVAL_UNDEF(&fci.function_name);

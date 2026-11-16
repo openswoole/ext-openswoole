@@ -1818,7 +1818,7 @@ static void php_pgsql_fetch_hash(INTERNAL_FUNCTION_PARAMETERS, zend_long result_
 
     if (into_object) {
         zval dataset;
-        zend_fcall_info fci;
+        zend_fcall_info fci = empty_fcall_info;
         zend_fcall_info_cache fcc;
         zval retval;
 

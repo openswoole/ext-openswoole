@@ -348,7 +348,7 @@ static PHP_METHOD(openswoole_process_pool, on) {
     char *name;
     size_t l_name;
 
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
 
     ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);

@@ -860,7 +860,7 @@ static osw_inline zend_bool osw_zend_is_callable_ex(zval *zcallable,
 /* this API can work well when retval is NULL */
 static osw_inline int osw_zend_call_function_ex(
     zval *function_name, zend_fcall_info_cache *fci_cache, uint32_t param_count, zval *params, zval *retval) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zval _retval;
     int ret;
 

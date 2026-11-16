@@ -962,7 +962,7 @@ static PHP_METHOD(openswoole_exit_exception, getStatus) {
 }
 
 PHP_FUNCTION(openswoole_coroutine_create) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
 
     ZEND_PARSE_PARAMETERS_START(1, -1)
@@ -988,7 +988,7 @@ PHP_FUNCTION(openswoole_coroutine_create) {
 }
 
 PHP_FUNCTION(openswoole_coroutine_defer) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
     zend::Function *defer_fci;
 
@@ -1025,7 +1025,7 @@ static PHP_METHOD(openswoole_coroutine, stats) {
 }
 
 static PHP_METHOD(openswoole_coroutine, run) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
 
     ZEND_PARSE_PARAMETERS_START(1, -1)

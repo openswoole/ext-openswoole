@@ -524,7 +524,7 @@ static size_t fn_write(char *data, size_t size, size_t nmemb, void *ctx) {
 
 #if PHP_VERSION_ID < 80400
         int error;
-        zend_fcall_info fci;
+        zend_fcall_info fci = empty_fcall_info;
 
         fci.size = sizeof(fci);
         fci.object = NULL;
@@ -577,7 +577,7 @@ static int fn_fnmatch(void *ctx, const char *pattern, const char *string) {
         zval argv[3];
         zval retval;
         int error;
-        zend_fcall_info fci;
+        zend_fcall_info fci = empty_fcall_info;
 
         GC_ADDREF(&ch->std);
         ZVAL_OBJ(&argv[0], &ch->std);
@@ -664,7 +664,7 @@ static size_t fn_progress(void *clientp, double dltotal, double dlnow, double ul
         zval argv[5];
         zval retval;
         int error;
-        zend_fcall_info fci;
+        zend_fcall_info fci = empty_fcall_info;
 
         GC_ADDREF(&ch->std);
         ZVAL_OBJ(&argv[0], &ch->std);
@@ -746,7 +746,7 @@ static int fn_ssh_hostkeyfunction(void *clientp, int keytype, const char *key, s
     zval argv[4];
     zval retval;
     zend_result error;
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
 
     GC_ADDREF(&ch->std);
     ZVAL_OBJ(&argv[0], &ch->std);
@@ -884,7 +884,7 @@ static size_t fn_xferinfo(void *clientp, curl_off_t dltotal, curl_off_t dlnow, c
     zval argv[5];
     zval retval;
     zend_result error;
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
 
     GC_ADDREF(&ch->std);
     ZVAL_OBJ(&argv[0], &ch->std);
@@ -971,7 +971,7 @@ static size_t fn_read(char *data, size_t size, size_t nmemb, void *ctx) {
 
 #if PHP_VERSION_ID < 80400
         int error;
-        zend_fcall_info fci;
+        zend_fcall_info fci = empty_fcall_info;
         fci.size = sizeof(fci);
         ZVAL_COPY_VALUE(&fci.function_name, &read_handler->func_name);
         fci.object = NULL;
@@ -1051,7 +1051,7 @@ static size_t fn_write_header(char *data, size_t size, size_t nmemb, void *ctx) 
 
 #if PHP_VERSION_ID < 80400
         int error;
-        zend_fcall_info fci;
+        zend_fcall_info fci = empty_fcall_info;
         fci.size = sizeof(fci);
         ZVAL_COPY_VALUE(&fci.function_name, &write_handler->func_name);
         fci.object = NULL;
