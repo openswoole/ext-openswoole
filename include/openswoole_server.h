@@ -134,7 +134,7 @@ struct Connection {
 
 #ifdef OSW_USE_OPENSSL
     String *ssl_client_cert;
-    uint16_t ssl_client_cert_pid;
+    pid_t ssl_client_cert_pid;
 #endif
     osw_atomic_t lock;
 };
