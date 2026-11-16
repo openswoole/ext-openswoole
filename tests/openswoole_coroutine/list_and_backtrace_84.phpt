@@ -51,7 +51,7 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#4 (3) {
+      object(Closure)#%d (3) {
         ["name"]=>
         string(92) "{closure:{closure:/ext-openswoole/tests/openswoole_coroutine/list_and_backtrace_84.php:3}:4}"
         ["file"]=>
@@ -83,7 +83,7 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#5 (3) {
+      object(Closure)#%d (3) {
         ["name"]=>
         string(104) "{closure:{closure:{closure:/ext-openswoole/tests/openswoole_coroutine/list_and_backtrace_84.php:3}:4}:5}"
         ["file"]=>
@@ -115,7 +115,7 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#7 (4) {
+      object(Closure)#%d (4) {
         ["name"]=>
         string(117) "{closure:{closure:{closure:{closure:/ext-openswoole/tests/openswoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}"
         ["file"]=>
@@ -181,7 +181,7 @@ array(2) {
     ["args"]=>
     array(1) {
       [0]=>
-      object(Closure)#11 (4) {
+      object(Closure)#%d (4) {
         ["name"]=>
         string(130) "{closure:{closure:{closure:{closure:{closure:/ext-openswoole/tests/openswoole_coroutine/list_and_backtrace_84.php:3}:4}:5}:16}:26}"
         ["file"]=>
