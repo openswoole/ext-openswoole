@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.10)
 PROJECT(libopenswoole)
 
 ENABLE_LANGUAGE(ASM)
@@ -6,7 +7,6 @@ set(OPENSWOOLE_VERSION 26.11.0)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -g")
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall")
-cmake_minimum_required(VERSION 2.8)
 
 file(READ ./config.h OPENSWOOLE_CONFIG_FILE)
 
