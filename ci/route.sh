@@ -13,12 +13,7 @@ if [ "${CI_BRANCH}" = "alpine" ]; then
     export PHP_VERSION="${PHP_VERSION}-alpine"
 fi
 
-# PHP 8.6: use the docker-openswoole image until the official PHP 8.6 is released
-if [ "${PHP_VERSION}" = "8.6" ]; then
-    export DOCKER_IMAGE=${DOCKER_IMAGE:-"openswoole/openswoole:php8.6"}
-else
-    export DOCKER_IMAGE=${DOCKER_IMAGE:-"openswoole/php:${PHP_VERSION}"}
-fi
+export DOCKER_IMAGE=${DOCKER_IMAGE:-"openswoole/php:${PHP_VERSION}"}
 
 echo "\n🗻 With PHP version ${PHP_VERSION} on ${CI_BRANCH} branch"
 
