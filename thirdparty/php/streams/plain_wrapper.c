@@ -1051,7 +1051,13 @@ static int php_plain_files_mkdir(
     }
 
     if (!recursive) {
+        if (php_check_open_basedir(dir)) {
+            return 0;
+        }
         ret = mkdir(dir, mode);
+        if (ret < 0 && (options & REPORT_ERRORS)) {
+            php_error_docref(NULL, E_WARNING, "%s", strerror(errno));
+        }
     } else {
         /* we look for directory separator from the end of string, thus hopefuly reducing our work load */
         char *e;
@@ -1062,6 +1068,10 @@ static int php_plain_files_mkdir(
 
         if (!expand_filepath_with_mode(dir, buf, NULL, 0, CWD_EXPAND)) {
             php_error_docref(NULL, E_WARNING, "Invalid path");
+            return 0;
+        }
+
+        if (php_check_open_basedir(buf)) {
             return 0;
         }
 
@@ -1098,6 +1108,9 @@ static int php_plain_files_mkdir(
 
         if (p == buf) {
             ret = mkdir(dir, mode);
+            if (ret < 0 && (options & REPORT_ERRORS)) {
+                php_error_docref(NULL, E_WARNING, "%s", strerror(errno));
+            }
         } else if (!(ret = mkdir(buf, mode)) || EEXIST == errno) {
             if (!p) {
                 p = buf;
@@ -1119,6 +1132,8 @@ static int php_plain_files_mkdir(
                     }
                 }
             }
+        } else if (options & REPORT_ERRORS) {
+            php_error_docref(NULL, E_WARNING, "%s", strerror(errno));
         }
     }
     if (ret < 0) {
