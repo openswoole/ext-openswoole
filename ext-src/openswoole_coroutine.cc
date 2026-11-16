@@ -425,10 +425,13 @@ void PHPCoroutine::interrupt_thread_start() {
         return;
     }
     interrupt_thread_running = true;
-    interrupt_thread = std::thread([]() {
+    // resolve the executor globals in the PHP thread: under ZTS they are thread-local
+    // and can not be accessed from the interrupt thread
+    zend_atomic_bool *vm_interrupt = &EG(vm_interrupt);
+    interrupt_thread = std::thread([vm_interrupt]() {
         openswoole_signal_block_all();
         while (interrupt_thread_running) {
-            zend_atomic_bool_store_ex(&EG(vm_interrupt), true);
+            zend_atomic_bool_store_ex(vm_interrupt, true);
             std::this_thread::sleep_for(std::chrono::milliseconds(MAX_EXEC_MSEC / 2));
         }
     });
