@@ -27,7 +27,7 @@ co::run(function () {
     );
     $uid = uniqid();
     $req = Psr17FactoryDiscovery::findRequestFactory()
-        ->createRequest('POST', 'http://httpbun.com/post')
+        ->createRequest('POST', 'https://httpbun.com/post')
         ->withHeader('Content-Type', 'application/json')
         ->withBody(Psr17FactoryDiscovery::findStreamFactory()->createStream(json_encode(['key' => $uid])));
 

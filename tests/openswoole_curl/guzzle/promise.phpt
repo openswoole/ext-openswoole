@@ -18,7 +18,7 @@ use GuzzleHttp\Promise;
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 co::run(function () {
-    $client = new Client(['base_uri' => 'http://httpbun.com']);
+    $client = new Client(['base_uri' => 'https://httpbun.com']);
 
     // Initiate each request but do not block
     $promises = [

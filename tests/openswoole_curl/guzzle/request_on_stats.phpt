@@ -19,7 +19,7 @@ Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 co::run(function () {
     $client = new Client();
-    $host = 'http://httpbun.com/get';
+    $host = 'https://httpbun.com/get';
     $client->request('GET', $host, [
         'on_stats' => function (TransferStats $stats) use ($host) {
             Assert::eq($stats->getEffectiveUri(), $host);
