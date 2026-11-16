@@ -679,26 +679,26 @@ void HttpClient::apply_setting(zval *zset, const bool check_all) {
             reconnect_interval = (uint8_t) OSW_MIN(zval_get_long(ztmp), UINT8_MAX);
         }
         if (php_openswoole_array_get_value(vht, "defer", ztmp)) {
-            defer = zval_is_true(ztmp);
+            defer = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "lowercase_header", ztmp)) {
-            lowercase_header = zval_is_true(ztmp);
+            lowercase_header = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "keep_alive", ztmp)) {
-            keep_alive = zval_is_true(ztmp);
+            keep_alive = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "websocket_mask", ztmp)) {
-            websocket_mask = zval_is_true(ztmp);
+            websocket_mask = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "http_compression", ztmp)) {
-            http_compression = zval_is_true(ztmp);
+            http_compression = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "body_decompression", ztmp)) {
-            body_decompression = zval_is_true(ztmp);
+            body_decompression = zend_is_true(ztmp);
         }
 #ifdef OSW_HAVE_ZLIB
         if (php_openswoole_array_get_value(vht, "websocket_compression", ztmp)) {
-            websocket_compression = zval_is_true(ztmp);
+            websocket_compression = zend_is_true(ztmp);
         }
 #endif
     }
@@ -940,7 +940,7 @@ bool HttpClient::send() {
 
     if (ZVAL_IS_ARRAY(zheaders)) {
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zheaders), key, keylen, keytype, zvalue) {
-            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             if (OSW_STRCASEEQ(key, keylen, "Host")) {
@@ -1062,7 +1062,7 @@ bool HttpClient::send() {
         // calculate length before encode array
         if (zbody && ZVAL_IS_ARRAY(zbody)) {
             OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zbody), key, keylen, keytype, zvalue)
-            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             zend::String str_value(zvalue);
@@ -1112,7 +1112,7 @@ bool HttpClient::send() {
         // ============ form-data body ============
         if (zbody && ZVAL_IS_ARRAY(zbody)) {
             OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zbody), key, keylen, keytype, zvalue) {
-                if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || ZVAL_IS_NULL(zvalue))) {
+                if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || Z_ISNULL_P(zvalue))) {
                     continue;
                 }
                 zend::String str_value(zvalue);
@@ -1702,7 +1702,7 @@ static PHP_METHOD(openswoole_http_client_coro, __construct) {
     zend_long port = 0;
     zend_bool ssl = 0;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 3)
+    ZEND_PARSE_PARAMETERS_START(1, 3)
     Z_PARAM_STRING(host, host_len)
     Z_PARAM_OPTIONAL
     Z_PARAM_LONG(port)

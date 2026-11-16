@@ -264,7 +264,7 @@ void openswoole_native_curl_minit(int module_number) {
     
     memcpy(&openswoole_coroutine_curl_handle_handlers, &std_object_handlers, sizeof(zend_object_handlers));
 
-    openswoole_coroutine_curl_handle_handlers.offset = XtOffsetOf(php_curl, std);
+    openswoole_coroutine_curl_handle_handlers.offset = offsetof(php_curl, std);
     openswoole_coroutine_curl_handle_handlers.free_obj = openswoole_curl_free_obj;
     openswoole_coroutine_curl_handle_handlers.get_gc = openswoole_curl_get_gc;
     openswoole_coroutine_curl_handle_handlers.get_constructor = openswoole_curl_get_constructor;
@@ -1280,9 +1280,9 @@ static void _php_curl_set_default_options(php_curl *ch) {
     curl_easy_setopt(ch->cp, CURLOPT_DNS_CACHE_TIMEOUT, 120);
     curl_easy_setopt(ch->cp, CURLOPT_MAXREDIRS, 20); /* prevent infinite redirects */
 
-    cainfo = INI_STR("openssl.cafile");
+    cainfo = zend_ini_string(ZEND_STRL("openssl.cafile"), 0);
     if (!(cainfo && cainfo[0] != '\0')) {
-        cainfo = INI_STR("curl.cainfo");
+        cainfo = zend_ini_string(ZEND_STRL("curl.cainfo"), 0);
     }
     if (cainfo && cainfo[0] != '\0') {
         curl_easy_setopt(ch->cp, CURLOPT_CAINFO, cainfo);

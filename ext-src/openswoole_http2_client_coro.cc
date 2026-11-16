@@ -819,7 +819,7 @@ static PHP_METHOD(openswoole_http2_client_coro, __construct) {
     zend_long port = 80;
     zend_bool ssl = false;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 3)
+    ZEND_PARSE_PARAMETERS_START(1, 3)
     Z_PARAM_STRING(host, host_len)
     Z_PARAM_OPTIONAL
     Z_PARAM_LONG(port)
@@ -1041,7 +1041,7 @@ ssize_t Client::build_header(zval *zobject, zval *zrequest, char *buffer) {
         zval *zvalue;
 
         ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zheaders), key, zvalue) {
-            if (UNEXPECTED(!key || *ZSTR_VAL(key) == ':' || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || *ZSTR_VAL(key) == ':' || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             zend::String str_value(zvalue);
@@ -1079,7 +1079,7 @@ ssize_t Client::build_header(zval *zobject, zval *zrequest, char *buffer) {
         String *buffer = osw_tg_buffer();
 
         ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zcookies), key, zvalue) {
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             zend::String str_value(zvalue);
@@ -1182,7 +1182,7 @@ uint32_t Client::send_request(zval *zrequest) {
         osw_zend_read_property_ex(openswoole_http2_request_ce, zrequest, OSW_ZSTR_KNOWN(OSW_ZEND_STR_PIPELINE), 0);
     zval ztmp, *zuse_pipeline_read = zend_read_property_ex(
                    Z_OBJCE_P(zrequest), OSW_Z8_OBJ_P(zrequest), OSW_ZSTR_KNOWN(OSW_ZEND_STR_USE_PIPELINE_READ), 1, &ztmp);
-    bool is_data_empty = Z_TYPE_P(zdata) == IS_STRING ? Z_STRLEN_P(zdata) == 0 : !zval_is_true(zdata);
+    bool is_data_empty = Z_TYPE_P(zdata) == IS_STRING ? Z_STRLEN_P(zdata) == 0 : !zend_is_true(zdata);
 
     if (ZVAL_IS_ARRAY(zdata)) {
         add_assoc_stringl_ex(
@@ -1200,10 +1200,10 @@ uint32_t Client::send_request(zval *zrequest) {
     }
 
     uint8_t flags = 0;
-    if (zval_is_true(zpipeline)) {
+    if (zend_is_true(zpipeline)) {
         flags |= OSW_HTTP2_STREAM_PIPELINE_REQUEST;
     }
-    if (zval_is_true(zuse_pipeline_read)) {
+    if (zend_is_true(zuse_pipeline_read)) {
         flags |= OSW_HTTP2_STREAM_USE_PIPELINE_READ;
     }
 

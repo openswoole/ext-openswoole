@@ -348,7 +348,7 @@ static void http_build_header(HttpContext *ctx, String *response, size_t body_le
         zval *zvalue;
 
         auto add_header = [](openswoole::String *response, const char *key, size_t l_key, zval *value) {
-            if (ZVAL_IS_NULL(value)) {
+            if (Z_ISNULL_P(value)) {
                 return;
             }
             zend::String str_value(value);
@@ -364,7 +364,7 @@ static void http_build_header(HttpContext *ctx, String *response, size_t body_le
 
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zheader), key, keylen, type, zvalue) {
             // TODO: numeric key name neccessary?
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             if (!parse_header_flags(ctx, key, keylen, header_flags)) {
@@ -476,11 +476,11 @@ static ssize_t http_build_trailer(HttpContext *ctx, String *response) {
         zval *zvalue;
 
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(ztrailer), key, keylen, type, zvalue) {
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
 
-            if (!ZVAL_IS_NULL(zvalue)) {
+            if (!Z_ISNULL_P(zvalue)) {
                 zend::String str_value(zvalue);
                 n = osw_snprintf(
                     buf, l_buf, "%.*s: %.*s\r\n", (int) keylen, key, (int) str_value.len(), str_value.val());
@@ -1206,7 +1206,7 @@ static PHP_METHOD(openswoole_http_response, recv) {
 
     double timeout = 0;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 1)
+    ZEND_PARSE_PARAMETERS_START(0, 1)
     Z_PARAM_OPTIONAL
     Z_PARAM_DOUBLE(timeout)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);

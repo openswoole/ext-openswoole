@@ -1304,7 +1304,7 @@ struct ChannelObject {
 };
 
 static osw_inline ChannelObject *php_openswoole_channel_coro_fetch_object(zend_object *obj) {
-    return (ChannelObject *) ((char *) obj - XtOffsetOf(ChannelObject, std));
+    return (ChannelObject *) ((char *) obj - offsetof(ChannelObject, std));
 }
 
 static osw_inline Channel *php_openswoole_get_channel(zval *zobject) {

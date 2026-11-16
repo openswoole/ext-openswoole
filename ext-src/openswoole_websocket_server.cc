@@ -163,7 +163,7 @@ static osw_inline int php_openswoole_websocket_frame_pack_ex(String *buffer,
     }
 
     zend::String str_zdata;
-    if (zdata && !ZVAL_IS_NULL(zdata)) {
+    if (zdata && !Z_ISNULL_P(zdata)) {
         str_zdata = zdata;
         data = str_zdata.val();
         length = str_zdata.len();
@@ -233,7 +233,7 @@ int php_openswoole_websocket_frame_object_pack_ex(String *buffer, zval *zdata, z
     }
     if ((ztmp = osw_zend_read_property_not_null_ex(
              openswoole_websocket_frame_ce, zframe, OSW_ZSTR_KNOWN(OSW_ZEND_STR_FINISH), 0))) {
-        if (zval_is_true(ztmp)) {
+        if (zend_is_true(ztmp)) {
             flags |= WebSocket::FLAG_FIN;
         } else {
             flags &= ~WebSocket::FLAG_FIN;

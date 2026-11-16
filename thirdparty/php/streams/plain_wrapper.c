@@ -39,6 +39,12 @@
 
 #include "openswoole_file_hook.h"
 
+#if PHP_VERSION_ID >= 80600
+// php_error_docref1() and php_error_docref2() were removed in PHP 8.6
+#define php_error_docref1(docref, param1, type, ...) php_error_docref(docref, type, __VA_ARGS__)
+#define php_error_docref2(docref, param1, param2, type, ...) php_error_docref(docref, type, __VA_ARGS__)
+#endif
+
 #if !defined(WINDOWS) && !defined(NETWARE)
 extern int php_get_uid_by_name(const char *name, uid_t *uid);
 extern int php_get_gid_by_name(const char *name, gid_t *gid);

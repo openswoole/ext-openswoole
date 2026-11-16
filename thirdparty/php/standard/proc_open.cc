@@ -537,7 +537,8 @@ PHP_FUNCTION(openswoole_proc_open) {
                     case 2:
                         childend = GetStdHandle(STD_ERROR_HANDLE);
                         break;
-                        EMPTY_SWITCH_DEFAULT_CASE()
+                    default:
+                        ZEND_UNREACHABLE();
                     }
 #endif
                 }

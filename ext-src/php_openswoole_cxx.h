@@ -412,7 +412,7 @@ class ReturnValue {
         value = {};
     }
     ~ReturnValue() {
-        zval_dtor(&value);
+        zval_ptr_dtor_nogc(&value);
     }
 };
 
@@ -433,7 +433,7 @@ void known_strings_init(void);
 void known_strings_dtor(void);
 
 static inline zend_string *fetch_zend_string_by_val(void *val) {
-    return (zend_string *) ((char *) val - XtOffsetOf(zend_string, val));
+    return (zend_string *) ((char *) val - offsetof(zend_string, val));
 }
 
 static inline void assign_zend_string_by_val(zval *zdata, char *addr, size_t length) {

@@ -254,7 +254,7 @@ void php_openswoole_set_global_option(HashTable *vht) {
     zval *ztmp;
 
 #ifdef OSW_DEBUG
-    if (php_openswoole_array_get_value(vht, "debug_mode", ztmp) && zval_is_true(ztmp)) {
+    if (php_openswoole_array_get_value(vht, "debug_mode", ztmp) && zend_is_true(ztmp)) {
         osw_logger()->set_level(0);
     }
 #endif
@@ -271,13 +271,13 @@ void php_openswoole_set_global_option(HashTable *vht) {
         osw_logger()->set_date_format(zend::String(ztmp).val());
     }
     if (php_openswoole_array_get_value(vht, "log_date_with_microseconds", ztmp)) {
-        osw_logger()->set_date_with_microseconds(zval_is_true(ztmp));
+        osw_logger()->set_date_with_microseconds(zend_is_true(ztmp));
     }
     if (php_openswoole_array_get_value(vht, "log_rotation", ztmp)) {
         osw_logger()->set_rotation(zval_get_long(ztmp));
     }
     if (php_openswoole_array_get_value(vht, "display_errors", ztmp)) {
-        OPENSWOOLE_G(display_errors) = zval_is_true(ztmp);
+        OPENSWOOLE_G(display_errors) = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "dns_server", ztmp)) {
         openswoole_set_dns_server(zend::String(ztmp).to_std_string());
@@ -315,8 +315,8 @@ void php_openswoole_set_global_option(HashTable *vht) {
     if (php_openswoole_array_get_value(vht, "max_concurrency", ztmp)) {
         OpenSwooleG.max_concurrency = (uint32_t) OSW_MAX(0, zval_get_long(ztmp));
     }
-    if (php_openswoole_array_get_value(vht, "enable_server_token", ztmp) && zval_is_true(ztmp)) {
-        OpenSwooleG.enable_server_token = zval_is_true(ztmp);
+    if (php_openswoole_array_get_value(vht, "enable_server_token", ztmp) && zend_is_true(ztmp)) {
+        OpenSwooleG.enable_server_token = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "reactor_type", ztmp)) {
         int reactor_type = (int) zval_get_long(ztmp);

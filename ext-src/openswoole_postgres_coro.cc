@@ -898,7 +898,7 @@ static void set_error_diag(const PGObject *object, const PGresult *pgsql_result)
     }
 
     zend_update_property(openswoole_postgresql_coro_ce, OSW_Z8_OBJ_P(object->object), ZEND_STRL("resultDiag"), &result_diag);
-    zval_dtor(&result_diag);
+    zval_ptr_dtor_nogc(&result_diag);
 }
 
 static int query_result_parse(PGObject *object) {
@@ -1346,7 +1346,7 @@ static PHP_METHOD(openswoole_postgresql_coro_statement, fetchAll) {
 
     array_init(return_value);
     if (openswoole_pgsql_result2array(statement->result, return_value, result_type) == FAILURE) {
-        zval_dtor(return_value);
+        zval_ptr_dtor_nogc(return_value);
         RETURN_FALSE;
     }
 }
@@ -1390,7 +1390,10 @@ static PHP_METHOD(openswoole_postgresql_coro_statement, fetchRow) {
 /* {{{ proto array fetchAssoc([, int row])
    Fetch a row as an assoc array */
 static PHP_METHOD(openswoole_postgresql_coro_statement, fetchAssoc) {
-    if (ZEND_NUM_ARGS() > 1) WRONG_PARAM_COUNT;
+    if (ZEND_NUM_ARGS() > 1) {
+        zend_wrong_param_count();
+        RETURN_THROWS();
+    }
     php_pgsql_fetch_hash(INTERNAL_FUNCTION_PARAM_PASSTHRU, PGSQL_ASSOC, 0);
 }
 /* }}} */

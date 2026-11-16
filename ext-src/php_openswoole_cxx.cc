@@ -88,7 +88,7 @@ ReturnValue call(const std::string &func_name, int argc, zval *argv) {
     if (call_user_function(EG(function_table), NULL, &function_name, &retval.value, argc, argv) != SUCCESS) {
         ZVAL_NULL(&retval.value);
     }
-    zval_dtor(&function_name);
+    zval_ptr_dtor_nogc(&function_name);
     /* we have no chance to return to ZendVM to check the exception  */
     if (UNEXPECTED(EG(exception))) {
         zend_exception_error(EG(exception), E_ERROR);

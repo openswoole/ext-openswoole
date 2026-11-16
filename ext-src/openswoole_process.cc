@@ -260,7 +260,7 @@ static PHP_METHOD(openswoole_process, __construct) {
     zend_long pipe_type = zend::PIPE_TYPE_DGRAM;
     zend_bool enable_coroutine = false;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 4)
+    ZEND_PARSE_PARAMETERS_START(1, 4)
     Z_PARAM_FUNC(func.fci, func.fci_cache);
     Z_PARAM_OPTIONAL
     Z_PARAM_BOOL(redirect_stdin_and_stdout)
@@ -900,7 +900,7 @@ static PHP_METHOD(openswoole_process, daemon) {
 
     if (zpipes) {
         ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zpipes), elem) {
-            if (!ZVAL_IS_NULL(elem)) {
+            if (!Z_ISNULL_P(elem)) {
                 int new_fd = php_openswoole_convert_to_fd(elem);
                 if (new_fd >= 0) {
                     if (dup2(new_fd, fd) < 0) {
@@ -1026,7 +1026,7 @@ static PHP_METHOD(openswoole_process, set) {
     zend::Process *proc = (zend::Process *) process->ptr2;
 
     if (php_openswoole_array_get_value(vht, "enable_coroutine", ztmp)) {
-        proc->enable_coroutine = zval_is_true(ztmp);
+        proc->enable_coroutine = zend_is_true(ztmp);
     }
 }
 

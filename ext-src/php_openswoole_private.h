@@ -284,54 +284,6 @@ zend_bool php_openswoole_signal_isset_handler(int signo);
 /* PHP 7 compatibility patches */
 #define osw_zend_bailout() zend_bailout()
 
-// Fixed in php-7.2.3RC1 (https://github.com/php/php-src/commit/e88e83d3e5c33fcd76f08b23e1a2e4e8dc98ce41)
-#if PHP_MAJOR_VERSION == 7 && ((PHP_MINOR_VERSION == 2 && PHP_RELEASE_VERSION < 3))
-// See https://github.com/php/php-src/commit/0495bf5650995cd8f18d6a9909eb4c5dcefde669
-// Then https://github.com/php/php-src/commit/2dcfd8d16f5fa69582015cbd882aff833075a34c
-// See https://github.com/php/php-src/commit/52db03b3e52bfc886896925d050af79bc4dc1ba3
-#if PHP_MINOR_VERSION == 2
-#define OSW_ZEND_WRONG_PARAMETERS_COUNT_ERROR                                                                           \
-    zend_wrong_parameters_count_error(_flags &ZEND_PARSE_PARAMS_THROW, _num_args, _min_num_args, _max_num_args)
-#else
-#define OSW_ZEND_WRONG_PARAMETERS_COUNT_ERROR zend_wrong_parameters_count_error(_num_args, _min_num_args, _max_num_args)
-#endif
-
-#undef ZEND_PARSE_PARAMETERS_START_EX
-
-#define ZEND_PARSE_PARAMETERS_START_EX(flags, min_num_args, max_num_args)                                              \
-    do {                                                                                                               \
-        const int _flags = (flags);                                                                                    \
-        int _min_num_args = (min_num_args);                                                                            \
-        int _max_num_args = (max_num_args);                                                                            \
-        int _num_args = EX_NUM_ARGS();                                                                                 \
-        int _i;                                                                                                        \
-        zval *_real_arg, *_arg = NULL;                                                                                 \
-        zend_expected_type _expected_type = Z_EXPECTED_LONG;                                                           \
-        char *_error = NULL;                                                                                           \
-        zend_bool _dummy;                                                                                              \
-        zend_bool _optional = 0;                                                                                       \
-        int error_code = ZPP_ERROR_OK;                                                                                 \
-        ((void) _i);                                                                                                   \
-        ((void) _real_arg);                                                                                            \
-        ((void) _arg);                                                                                                 \
-        ((void) _expected_type);                                                                                       \
-        ((void) _error);                                                                                               \
-        ((void) _dummy);                                                                                               \
-        ((void) _optional);                                                                                            \
-                                                                                                                       \
-        do {                                                                                                           \
-            if (UNEXPECTED(_num_args < _min_num_args) ||                                                               \
-                (UNEXPECTED(_num_args > _max_num_args) && EXPECTED(_max_num_args >= 0))) {                             \
-                if (!(_flags & ZEND_PARSE_PARAMS_QUIET)) {                                                             \
-                    OSW_ZEND_WRONG_PARAMETERS_COUNT_ERROR;                                                              \
-                }                                                                                                      \
-                error_code = ZPP_ERROR_FAILURE;                                                                        \
-                break;                                                                                                 \
-            }                                                                                                          \
-            _i = 0;                                                                                                    \
-            _real_arg = ZEND_CALL_ARG(execute_data, 0);
-#endif
-
 /* PHP 7.3 compatibility macro {{{*/
 
 #ifndef GC_ADDREF
@@ -551,8 +503,8 @@ static osw_inline zend_string *osw_zend_string_recycle(zend_string *s, size_t al
 //----------------------------------Array API------------------------------------
 
 #define php_openswoole_array_length(zarray) zend_hash_num_elements(Z_ARRVAL_P(zarray))
-#define php_openswoole_array_get_value(ht, str, v) ((v = zend_hash_str_find(ht, str, sizeof(str) - 1)) && !ZVAL_IS_NULL(v))
-#define php_openswoole_array_get_value_ex(ht, str, v) ((v = zend_hash_str_find(ht, str, strlen(str))) && !ZVAL_IS_NULL(v))
+#define php_openswoole_array_get_value(ht, str, v) ((v = zend_hash_str_find(ht, str, sizeof(str) - 1)) && !Z_ISNULL_P(v))
+#define php_openswoole_array_get_value_ex(ht, str, v) ((v = zend_hash_str_find(ht, str, strlen(str))) && !Z_ISNULL_P(v))
 
 static osw_inline int php_openswoole_array_length_safe(zval *zarray) {
     if (zarray && ZVAL_IS_ARRAY(zarray)) {
@@ -710,7 +662,7 @@ static osw_inline void osw_register_swoole_snake_compat_alias(const char *snake_
 
 #define OSW_SET_CLASS_CUSTOM_OBJECT(module, _create_object, _free_obj, _struct, _std)                                   \
     OSW_SET_CLASS_CREATE_AND_FREE(module, _create_object, _free_obj);                                                   \
-    module##_handlers.offset = XtOffsetOf(_struct, _std)
+    module##_handlers.offset = offsetof(_struct, _std)
 
 #define OSW_PREVENT_USER_DESTRUCT()                                                                                     \
     do {                                                                                                               \

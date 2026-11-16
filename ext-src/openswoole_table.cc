@@ -202,7 +202,7 @@ PHP_METHOD(openswoole_table, __construct) {
     zend_long table_size;
     double conflict_proportion = OSW_TABLE_CONFLICT_PROPORTION;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 2)
+    ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_LONG(table_size)
     Z_PARAM_OPTIONAL
     Z_PARAM_DOUBLE(conflict_proportion)
@@ -270,7 +270,7 @@ static PHP_METHOD(openswoole_table, set) {
     char *key;
     size_t keylen;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+    ZEND_PARSE_PARAMETERS_START(2, 2)
     Z_PARAM_STRING(key, keylen)
     Z_PARAM_ARRAY(array)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
@@ -300,7 +300,7 @@ static PHP_METHOD(openswoole_table, set) {
         for (auto i = table->column_list->begin(); i != table->column_list->end(); i++) {
             TableColumn *col = *i;
             zval *zv = zend_hash_str_find(ht, col->name.c_str(), col->name.length());
-            if (zv == nullptr || ZVAL_IS_NULL(zv)) {
+            if (zv == nullptr || Z_ISNULL_P(zv)) {
                 col->clear(row);
             } else {
                 if (col->type == TableColumn::TYPE_STRING) {
@@ -534,7 +534,7 @@ static PHP_METHOD(openswoole_table, get) {
     char *column = nullptr;
     size_t column_len = 0;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 2)
+    ZEND_PARSE_PARAMETERS_START(1, 2)
     Z_PARAM_STRING(key, keylen)
     Z_PARAM_OPTIONAL
     Z_PARAM_STRING(column, column_len)
@@ -568,7 +568,7 @@ static PHP_METHOD(openswoole_table, del) {
     char *key;
     size_t keylen;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_STRING(key, keylen)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
