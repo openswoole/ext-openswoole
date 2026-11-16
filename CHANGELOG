@@ -1,3 +1,21 @@
+# 26.11.0
+
+## New Features
+
+ . PHP 8.6 support
+ . CURLOPT_SEEKFUNCTION support in the native curl hook on PHP 8.6
+ . CURLOPT_PREREQFUNCTION support in the native curl hook on PHP 8.4+ (Guzzle 7.12+)
+ . PIE (PHP Installer for Extensions) support
+
+## Bug Fixes
+
+ . Fix stream_socket_enable_crypto with tls (#401)
+ . Fix io_uring build on Alpine Linux (#400)
+ . Fix SSL client certificate lost in getClientInfo() when the worker pid is greater than 65535
+ . Fix curl_copy_handle() not keeping the CURLOPT_STDERR stream and callback data in the native curl hook
+ . Fix preemptive scheduler crash on ZTS builds
+ . Fix crash in the native curl hook when a curl multi handle is released after the event loop is destroyed
+
 # 26.2.0
 
 ## New Features
