@@ -127,13 +127,28 @@ static const zend_function_entry openswoole_runtime_methods[] =
 static php_stream_wrapper ori_php_plain_files_wrapper;
 static php_stream_ops ori_php_stream_stdio_ops;
 
+#if PHP_VERSION_ID >= 80600
+// zend_function.arg_info is always a zend_arg_info* since PHP 8.6
+typedef zend_arg_info osw_func_arg_info;
+// php_stream_xport_register() returns void since PHP 8.6
+static inline zend_result osw_stream_xport_register(const char *protocol, php_stream_transport_factory factory) {
+    php_stream_xport_register(protocol, factory);
+    return SUCCESS;
+}
+#else
+typedef zend_internal_arg_info osw_func_arg_info;
+static inline zend_result osw_stream_xport_register(const char *protocol, php_stream_transport_factory factory) {
+    return (zend_result) php_stream_xport_register(protocol, factory);
+}
+#endif
+
 static void hook_func(const char *name,
                       size_t l_name,
                       zif_handler handler = nullptr,
-                      zend_internal_arg_info *arg_info = nullptr);
+                      osw_func_arg_info *arg_info = nullptr);
 static void unhook_func(const char *name, size_t l_name);
 
-static zend_internal_arg_info *get_arginfo(const char *name, size_t l_name) {
+static osw_func_arg_info *get_arginfo(const char *name, size_t l_name) {
     zend_function *zf = (zend_function *) zend_hash_str_find_ptr(EG(function_table), name, l_name);
     if (zf == nullptr) {
         return nullptr;
@@ -207,7 +222,7 @@ void php_openswoole_runtime_minit(int module_number) {
 struct real_func {
     zend_function *function;
     zif_handler ori_handler;
-    zend_internal_arg_info *ori_arg_info;
+    osw_func_arg_info *ori_arg_info;
     uint32_t ori_fn_flags;
     uint32_t ori_num_args;
     zend_fcall_info_cache *fci_cache;
@@ -1200,58 +1215,58 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
     // php_stream
     if (flags & PHPCoroutine::HOOK_TCP) {
         if (!(runtime_hook_flags & PHPCoroutine::HOOK_TCP)) {
-            if (php_stream_xport_register("tcp", socket_create) != SUCCESS) {
+            if (osw_stream_xport_register("tcp", socket_create) != SUCCESS) {
                 flags ^= PHPCoroutine::HOOK_TCP;
             }
         }
     } else {
         if (runtime_hook_flags & PHPCoroutine::HOOK_TCP) {
-            php_stream_xport_register("tcp", ori_factory.tcp);
+            osw_stream_xport_register("tcp", ori_factory.tcp);
         }
     }
     if (flags & PHPCoroutine::HOOK_UDP) {
         if (!(runtime_hook_flags & PHPCoroutine::HOOK_UDP)) {
-            if (php_stream_xport_register("udp", socket_create) != SUCCESS) {
+            if (osw_stream_xport_register("udp", socket_create) != SUCCESS) {
                 flags ^= PHPCoroutine::HOOK_UDP;
             }
         }
     } else {
         if (runtime_hook_flags & PHPCoroutine::HOOK_UDP) {
-            php_stream_xport_register("udp", ori_factory.udp);
+            osw_stream_xport_register("udp", ori_factory.udp);
         }
     }
     if (flags & PHPCoroutine::HOOK_UNIX) {
         if (!(runtime_hook_flags & PHPCoroutine::HOOK_UNIX)) {
-            if (php_stream_xport_register("unix", socket_create) != SUCCESS) {
+            if (osw_stream_xport_register("unix", socket_create) != SUCCESS) {
                 flags ^= PHPCoroutine::HOOK_UNIX;
             }
         }
     } else {
         if (runtime_hook_flags & PHPCoroutine::HOOK_UNIX) {
-            php_stream_xport_register("unix", ori_factory._unix);
+            osw_stream_xport_register("unix", ori_factory._unix);
         }
     }
     if (flags & PHPCoroutine::HOOK_UDG) {
         if (!(runtime_hook_flags & PHPCoroutine::HOOK_UDG)) {
-            if (php_stream_xport_register("udg", socket_create) != SUCCESS) {
+            if (osw_stream_xport_register("udg", socket_create) != SUCCESS) {
                 flags ^= PHPCoroutine::HOOK_UDG;
             }
         }
     } else {
         if (runtime_hook_flags & PHPCoroutine::HOOK_UDG) {
-            php_stream_xport_register("udg", ori_factory.udg);
+            osw_stream_xport_register("udg", ori_factory.udg);
         }
     }
     if (flags & PHPCoroutine::HOOK_SSL) {
         if (!(runtime_hook_flags & PHPCoroutine::HOOK_SSL)) {
-            if (php_stream_xport_register("ssl", socket_create) != SUCCESS) {
+            if (osw_stream_xport_register("ssl", socket_create) != SUCCESS) {
                 flags ^= PHPCoroutine::HOOK_SSL;
             }
         }
     } else {
         if (runtime_hook_flags & PHPCoroutine::HOOK_SSL) {
             if (ori_factory.ssl != nullptr) {
-                php_stream_xport_register("ssl", ori_factory.ssl);
+                osw_stream_xport_register("ssl", ori_factory.ssl);
             } else {
                 php_stream_xport_unregister("ssl");
             }
@@ -1259,14 +1274,14 @@ bool PHPCoroutine::enable_hook(uint32_t flags) {
     }
     if (flags & PHPCoroutine::HOOK_TLS) {
         if (!(runtime_hook_flags & PHPCoroutine::HOOK_TLS)) {
-            if (php_stream_xport_register("tls", socket_create) != SUCCESS) {
+            if (osw_stream_xport_register("tls", socket_create) != SUCCESS) {
                 flags ^= PHPCoroutine::HOOK_TLS;
             }
         }
     } else {
         if (runtime_hook_flags & PHPCoroutine::HOOK_TLS) {
             if (ori_factory.tls != nullptr) {
-                php_stream_xport_register("tls", ori_factory.tls);
+                osw_stream_xport_register("tls", ori_factory.tls);
             } else {
                 php_stream_xport_unregister("tls");
             }
@@ -1847,7 +1862,7 @@ static PHP_FUNCTION(openswoole_stream_select) {
     RETURN_LONG(retval);
 }
 
-static void hook_func(const char *name, size_t l_name, zif_handler handler, zend_internal_arg_info *arg_info) {
+static void hook_func(const char *name, size_t l_name, zif_handler handler, osw_func_arg_info *arg_info) {
     real_func *rf = (real_func *) zend_hash_str_find_ptr(tmp_function_table, name, l_name);
     bool use_php_func = false;
     /**
