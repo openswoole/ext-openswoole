@@ -108,7 +108,8 @@ bool StaticHandler::hit() {
     l_filename = http_server::url_decode(task.filename, p - task.filename);
     task.filename[l_filename] = '\0';
 
-    if (openswoole_strnpos(url, n, OSW_STRL("..")) == -1) {
+    // check the decoded path, "%2e%2e" must not bypass the document_root check
+    if (openswoole_strnpos(task.filename, l_filename, OSW_STRL("..")) == -1) {
         goto _detect_mime_type;
     }
 
@@ -122,11 +123,8 @@ bool StaticHandler::hit() {
         }
     }
 
-    if (real_path[document_root.length()] != '/') {
-        return false;
-    }
-
-    if (openswoole_streq(real_path, strlen(real_path), document_root.c_str(), document_root.length()) != 0) {
+    if (strncmp(real_path, document_root.c_str(), document_root.length()) != 0 ||
+        real_path[document_root.length()] != '/') {
         return false;
     }
 
