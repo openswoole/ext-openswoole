@@ -122,7 +122,11 @@ void php_openswoole_websocket_frame_unpack_ex(String *data, zval *zframe, uchar 
         return;
     }
 
-    WebSocket::decode(&frame, data);
+    if (!WebSocket::decode(&frame, data)) {
+        openswoole_set_last_error(OSW_ERROR_PROTOCOL_ERROR);
+        ZVAL_FALSE(zframe);
+        return;
+    }
     flags = WebSocket::get_flags(&frame);
 #ifdef OSW_HAVE_ZLIB
     if (uncompress && frame.header.RSV1) {
