@@ -47,7 +47,7 @@ $pm->childFunc = function () use ($pm) {
     $server->on(
         'task',
         function ($server, $task_id, $worker_id, string $fd) {
-            $n = 200;
+            $n = 5000;
             while ($n--) {
                 if (!$server->finish(str_repeat('A', 8000))) {
                     break;
