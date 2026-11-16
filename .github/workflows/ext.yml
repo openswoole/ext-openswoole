@@ -77,8 +77,9 @@ jobs:
             alpine-version: '3.21'
           - php-version: '8.5.0'
             alpine-version: '3.23'
-          - php-version: '8.6.0'
+          - php-version: '8.6-rc'
             alpine-version: '3.24'
+            image-php: 1
       max-parallel: 8
       fail-fast: false
     steps:
@@ -86,4 +87,4 @@ jobs:
       - name: build
         run: |
           cp .github/workflows/alpine.Dockerfile alpine.Dockerfile
-          docker build -t openswoole . -f alpine.Dockerfile --build-arg PHP_VERSION=${{ matrix.php-version }} --build-arg ALPINE_VERSION=${{ matrix.alpine-version }}
+          docker build -t openswoole . -f alpine.Dockerfile --build-arg PHP_VERSION=${{ matrix.php-version }} --build-arg ALPINE_VERSION=${{ matrix.alpine-version }} --build-arg IMAGE_PHP=${{ matrix.image-php || 0 }}
