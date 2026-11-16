@@ -152,6 +152,7 @@ AC_DEFUN([AC_OPENSWOOLE_HAVE_REUSEPORT],
 [
     AC_MSG_CHECKING([for socket REUSEPORT])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #define _GNU_SOURCE
         #include <sys/socket.h>
     ]], [[
         int val = 1;
