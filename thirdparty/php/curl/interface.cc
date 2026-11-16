@@ -1390,8 +1390,11 @@ static void php_curl_copy_fcc_with_option(php_curl *ch, CURLoption option, zend_
 {
     if (ZEND_FCC_INITIALIZED(*source_fcc)) {
         zend_fcc_dup(target_fcc, source_fcc);
-        curl_easy_setopt(ch->cp, option, (void *) ch);
     }
+
+    /* The callback data (i.e. pointer to the curl handle) stays even if a user callback
+     * is reset to NULL. Ensure the data pointer always points to the new handle. */
+    curl_easy_setopt(ch->cp, option, (void *) ch);
 }
 #endif
 void openswoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source) {
@@ -1410,6 +1413,10 @@ void openswoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source) {
         Z_ADDREF(curl_handlers(source)->write_header->stream);
     }
     curl_handlers(ch)->write_header->stream = curl_handlers(source)->write_header->stream;
+    if (!Z_ISUNDEF(curl_handlers(source)->std_err)) {
+        Z_ADDREF(curl_handlers(source)->std_err);
+    }
+    curl_handlers(ch)->std_err = curl_handlers(source)->std_err;
 
     curl_handlers(ch)->write->fp = curl_handlers(source)->write->fp;
     curl_handlers(ch)->write_header->fp = curl_handlers(source)->write_header->fp;
