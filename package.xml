@@ -34,6 +34,7 @@
          . Fix curl_copy_handle() not keeping the CURLOPT_STDERR stream and callback data in the native curl hook
          . Fix preemptive scheduler crash on ZTS builds
          . Fix crash in the native curl hook when a curl multi handle is released after the event loop is destroyed
+         . Fix enable_reuse_port having no effect on Linux because SO_REUSEPORT was not detected at configure time
     </notes>
     <contents>
         <dir name="/">
