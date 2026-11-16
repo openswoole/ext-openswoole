@@ -12,7 +12,7 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2026-11-16</date>
+    <date>2026-11-20</date>
     <time>17:00:00</time>
     <version>
         <release>26.11.0</release>
@@ -35,6 +35,7 @@
          . Fix preemptive scheduler crash on ZTS builds
          . Fix crash in the native curl hook when a curl multi handle is released after the event loop is destroyed
          . Fix enable_reuse_port having no effect on Linux because SO_REUSEPORT was not detected at configure time
+         . Fix mkdir() ignoring open_basedir and not reporting errors when the file hook is enabled
     </notes>
     <contents>
         <dir name="/">
@@ -1210,6 +1211,7 @@
             <file role="test" name="tests/openswoole_runtime/file_hook/lock_nb_1.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/lock_nb_2.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/lock_sh.phpt" />
+            <file role="test" name="tests/openswoole_runtime/file_hook/mkdir_open_basedir.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/read.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_lock/file_lock_1.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_lock/lock_nb.phpt" />
