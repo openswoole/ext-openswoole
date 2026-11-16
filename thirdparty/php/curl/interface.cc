@@ -427,6 +427,12 @@ static HashTable *openswoole_curl_get_gc(zend_object *object, zval **table, int 
         zend_get_gc_buffer_add_zval(gc_buffer, &curl_handlers(curl)->write_header->stream);
     }
 
+#if PHP_VERSION_ID >= 80600
+    if (ZEND_FCC_INITIALIZED(curl->handlers.seek)) {
+        zend_get_gc_buffer_add_fcc(gc_buffer, &curl->handlers.seek);
+    }
+#endif
+
     if (ZEND_FCC_INITIALIZED(curl->handlers.progress)) {
         if (ZEND_FCC_INITIALIZED(curl->handlers.progress)) {
             zend_get_gc_buffer_add_fcc(gc_buffer, &curl->handlers.progress);
@@ -823,6 +829,52 @@ static int fn_ssh_hostkeyfunction(void *clientp, int keytype, const char *key, s
 #endif
 #endif
 
+#if PHP_VERSION_ID >= 80600
+/* {{{ fn_seek, CURLOPT_SEEKFUNCTION is available since PHP 8.6 */
+static int fn_seek(void *clientp, curl_off_t offset, int origin) {
+    php_curl *ch = (php_curl *) clientp;
+    int rval = CURL_SEEKFUNC_CANTSEEK; /* safe default if unset or the callback misbehaves */
+
+    if (!ZEND_FCC_INITIALIZED(ch->handlers.seek)) {
+        return rval;
+    }
+
+    zval args[3];
+    zval retval;
+
+    GC_ADDREF(&ch->std);
+    ZVAL_OBJ(&args[0], &ch->std);
+    ZVAL_LONG(&args[1], offset);
+    ZVAL_LONG(&args[2], origin);
+
+    ch->in_callback = true;
+    zend_call_known_fcc(&ch->handlers.seek, &retval, /* param_count */ 3, args, /* named_params */ NULL);
+    ch->in_callback = false;
+
+    if (!Z_ISUNDEF(retval)) {
+        openswoole_curl_verify_handlers(ch, /* reporterror */ true);
+        if (Z_TYPE(retval) == IS_LONG) {
+            zend_long retval_long = Z_LVAL(retval);
+            if (retval_long == CURL_SEEKFUNC_OK || retval_long == CURL_SEEKFUNC_FAIL ||
+                retval_long == CURL_SEEKFUNC_CANTSEEK) {
+                rval = retval_long;
+            } else {
+                zend_value_error("The CURLOPT_SEEKFUNCTION callback must return one of CURL_SEEKFUNC_OK, "
+                                 "CURL_SEEKFUNC_FAIL or CURL_SEEKFUNC_CANTSEEK");
+            }
+        } else {
+            zend_type_error("The CURLOPT_SEEKFUNCTION callback must return one of CURL_SEEKFUNC_OK, "
+                            "CURL_SEEKFUNC_FAIL or CURL_SEEKFUNC_CANTSEEK");
+        }
+        zval_ptr_dtor(&retval);
+    }
+
+    zval_ptr_dtor(&args[0]);
+    return rval;
+}
+/* }}} */
+#endif
+
 #if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
 #if PHP_VERSION_ID >= 80400
 static int fn_prereqfunction(void *clientp, char *conn_primary_ip, char *conn_local_ip,
@@ -1185,6 +1237,9 @@ void openswoole_curl_init_handle(php_curl *ch)
      curl_handlers(ch)->sshhostkey = NULL;
 #endif
 #else // PHP_VERSION_ID
+#if PHP_VERSION_ID >= 80600
+    curl_handlers(ch)->seek = empty_fcall_info_cache;
+#endif
     curl_handlers(ch)->progress = empty_fcall_info_cache;
 #if LIBCURL_VERSION_NUM >= 0x072000
     curl_handlers(ch)->xferinfo = empty_fcall_info_cache;
@@ -1430,6 +1485,9 @@ void openswoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source) {
 #endif
 
 #else
+#if PHP_VERSION_ID >= 80600
+    php_curl_copy_fcc_with_option(ch, CURLOPT_SEEKDATA, &ch->handlers.seek, &source->handlers.seek);
+#endif
     php_curl_copy_fcc_with_option(ch, CURLOPT_PROGRESSDATA, &ch->handlers.progress, &source->handlers.progress);
     php_curl_copy_fcc_with_option(ch, CURLOPT_XFERINFODATA, &ch->handlers.xferinfo, &source->handlers.xferinfo);
     php_curl_copy_fcc_with_option(ch, CURLOPT_FNMATCH_DATA, &ch->handlers.fnmatch, &source->handlers.fnmatch);
@@ -1783,6 +1841,9 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
         HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_WRITE, write);
         HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_HEADER, write_header);
         HANDLE_CURL_OPTION_CALLABLE_PHP_CURL_USER(ch, CURLOPT_READ, read);
+#if PHP_VERSION_ID >= 80600
+        HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_SEEK, handlers.seek, fn_seek);
+#endif
         HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_PROGRESS, handlers.progress, fn_progress);
         HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_XFERINFO, handlers.xferinfo, fn_xferinfo);
         HANDLE_CURL_OPTION_CALLABLE(ch, CURLOPT_FNMATCH_, handlers.fnmatch, fn_fnmatch);
@@ -3198,6 +3259,11 @@ static void _php_curl_free(php_curl *ch) {
     if (ZEND_FCC_INITIALIZED(ch->handlers.debug)) {
         zend_fcc_dtor(&ch->handlers.debug);
     }
+#if PHP_VERSION_ID >= 80600
+    if (ZEND_FCC_INITIALIZED(ch->handlers.seek)) {
+        zend_fcc_dtor(&ch->handlers.seek);
+    }
+#endif
 #if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
     if (ZEND_FCC_INITIALIZED(ch->handlers.prereq)) {
         zend_fcc_dtor(&ch->handlers.prereq);
@@ -3336,6 +3402,11 @@ static void _php_curl_reset_handlers(php_curl *ch)
     if (ZEND_FCC_INITIALIZED(ch->handlers.debug)) {
         zend_fcc_dtor(&ch->handlers.debug);
     }
+#if PHP_VERSION_ID >= 80600
+    if (ZEND_FCC_INITIALIZED(ch->handlers.seek)) {
+        zend_fcc_dtor(&ch->handlers.seek);
+    }
+#endif
 #if LIBCURL_VERSION_NUM >= 0x075000 /* Available since 7.80.0 */
     if (ZEND_FCC_INITIALIZED(ch->handlers.prereq)) {
         zend_fcc_dtor(&ch->handlers.prereq);

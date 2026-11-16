@@ -95,6 +95,9 @@ typedef struct {
 	php_curl_fnsshhostkey  *sshhostkey;
 #endif
 #else
+#if PHP_VERSION_ID >= 80600
+	zend_fcall_info_cache seek;
+#endif
 	zend_fcall_info_cache progress;
 	zend_fcall_info_cache xferinfo;
 	zend_fcall_info_cache fnmatch;
