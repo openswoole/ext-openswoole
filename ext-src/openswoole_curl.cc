@@ -24,6 +24,11 @@ namespace curl {
 
 static int execute_callback(Event *event, int bitmask) {
     Handle *handle = (Handle *) event->socket->object;
+    // the easy handle was removed while curl kept the connection
+    if (!handle || !handle->multi) {
+        openswoole_event_del(event->socket);
+        return 0;
+    }
     handle->event_bitmask |= bitmask;
     handle->event_fd = event->fd;
     handle->multi->callback(handle, bitmask);
@@ -77,6 +82,7 @@ Socket *Multi::create_socket(CURL *cp, curl_socket_t sockfd) {
     socket->removed = 1;
     socket->fd_type = (FdType) PHP_OPENSWOOLE_FD_CO_CURL;
     curl_multi_assign(multi_handle_, sockfd, (void *) socket);
+    sockets_.insert(socket);
 
     Handle *handle = get_handle(cp);
     if (handle) {
@@ -94,6 +100,12 @@ void Multi::del_event(CURL *cp, void *socket_ptr, curl_socket_t sockfd) {
     if (socket->events && openswoole_event_is_available() && openswoole_event_del(socket) == OSW_OK) {
         event_count_--;
     }
+    // the owner may be another easy handle than the one curl reports
+    Handle *owner = (Handle *) socket->object;
+    if (owner && owner->socket == socket) {
+        owner->socket = nullptr;
+    }
+    sockets_.erase(socket);
     socket->fd = -1;
     socket->free();
     curl_multi_assign(multi_handle_, sockfd, NULL);
@@ -126,6 +138,9 @@ void Multi::set_event(CURL *cp, void *socket_ptr, curl_socket_t sockfd, int acti
     }
     Handle *handle = get_handle(cp);
     if (handle) {
+        // the easy handle curl reports owns the connection now
+        socket->object = handle;
+        handle->socket = socket;
         handle->action = action;
     }
 
@@ -152,6 +167,19 @@ CURLMcode Multi::remove_handle(CURL *cp) {
     if (retval == CURLM_OK) {
         auto handle = get_handle(cp);
         if (handle) {
+            // curl may keep the connection: detach it, the Handle can be freed after this
+            for (auto socket : sockets_) {
+                if (socket->object == handle) {
+                    if (socket->events && openswoole_event_is_available() && openswoole_event_del(socket) == OSW_OK) {
+                        event_count_--;
+                    }
+                    socket->object = nullptr;
+                }
+            }
+            if (selector.get()) {
+                selector->active_handles.erase(handle);
+            }
+            handle->socket = nullptr;
             handle->multi = nullptr;
         }
     }
@@ -167,7 +195,7 @@ CURLcode Multi::exec(php_curl *ch) {
     bool is_canceled = false;
 
     OSW_LOOP {
-        if (handle->socket && handle->socket->removed && handle->socket->fd > 0) {
+        if (socket_of(handle) && handle->socket->removed && handle->socket->fd > 0) {
             if (openswoole_event_add(handle->socket, get_event(handle->action)) == OSW_OK) {
                 event_count_++;
             }
@@ -188,7 +216,7 @@ CURLcode Multi::exec(php_curl *ch) {
         int bitmask = 0;
         if (sockfd >= 0) {
             bitmask = handle->event_bitmask;
-            if (handle->socket && !handle->socket->removed && openswoole_event_del(handle->socket) == OSW_OK) {
+            if (socket_of(handle) && !handle->socket->removed && openswoole_event_del(handle->socket) == OSW_OK) {
                 event_count_--;
             }
         }
@@ -205,12 +233,12 @@ CURLcode Multi::exec(php_curl *ch) {
             break;
         }
         set_timer();
-        if (sockfd >= 0 && handle->socket && handle->socket->removed && handle->socket->fd > 0) {
+        if (sockfd >= 0 && socket_of(handle) && handle->socket->removed && handle->socket->fd > 0) {
             if (openswoole_event_add(handle->socket, get_event(handle->action)) == OSW_OK) {
                 event_count_++;
             }
         }
-        if (!timer && handle->socket && handle->socket->removed) {
+        if (!timer && socket_of(handle) && handle->socket->removed) {
             break;
         }
     }
@@ -273,7 +301,7 @@ long Multi::select(php_curlm *mh, double timeout) {
             continue;
         }
         Handle *handle = get_handle(ch->cp);
-        if (handle && handle->socket && handle->socket->removed && handle->socket->fd > 0) {
+        if (handle && socket_of(handle) && handle->socket->removed && handle->socket->fd > 0) {
             if (openswoole_event_add(handle->socket, get_event(handle->action)) == OSW_OK) {
                 event_count_++;
             }
@@ -301,7 +329,7 @@ long Multi::select(php_curlm *mh, double timeout) {
             continue;
         }
         Handle *handle = get_handle(ch->cp);
-        if (handle && handle->socket && !handle->socket->removed && openswoole_event_del(handle->socket) == OSW_OK) {
+        if (handle && socket_of(handle) && !handle->socket->removed && openswoole_event_del(handle->socket) == OSW_OK) {
             openswoole_trace_log(
                 OSW_TRACE_CO_CURL, "suspend, handle=%p, curl=%p, fd=%d", handle, ch->cp, handle->socket->get_fd());
             event_count_--;
@@ -340,7 +368,7 @@ void Multi::callback(Handle *handle, int event_bitmask) {
     }
     if (!co) {
         if (handle) {
-            if (openswoole_event_del(handle->socket) == OSW_OK) {
+            if (socket_of(handle) && openswoole_event_del(handle->socket) == OSW_OK) {
                 event_count_--;
             }
         } else {

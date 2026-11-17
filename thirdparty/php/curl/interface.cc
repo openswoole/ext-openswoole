@@ -1398,6 +1398,9 @@ static void php_curl_copy_fcc_with_option(php_curl *ch, CURLoption option, zend_
 }
 #endif
 void openswoole_setup_easy_copy_handlers(php_curl *ch, php_curl *source) {
+    // curl_easy_duphandle() copies CURLOPT_PRIVATE: the copy must not share the source's Handle,
+    // it holds the socket and state of one transfer
+    curl_easy_setopt(ch->cp, CURLOPT_PRIVATE, nullptr);
     if (!Z_ISUNDEF(curl_handlers(source)->write->stream)) {
         Z_ADDREF(curl_handlers(source)->write->stream);
     }
@@ -3144,7 +3147,7 @@ static void _php_curl_free(php_curl *ch) {
         handle = nullptr;
     }
 #else
-    if (curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle) && handle) {
+    if (curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle) == CURLE_OK && handle) {
         if (handle->multi) {
             handle->multi->remove_handle(ch);
         }
@@ -3152,6 +3155,11 @@ static void _php_curl_free(php_curl *ch) {
         handle = nullptr;
     }
 #endif
+    // each easy handle owns its Handle: a copy gets its own (see openswoole_setup_easy_copy_handlers)
+    if (handle) {
+        curl_easy_setopt(ch->cp, CURLOPT_PRIVATE, nullptr);
+        delete handle;
+    }
 
     if(!ch->clone) {
         return;
@@ -3178,13 +3186,6 @@ static void _php_curl_free(php_curl *ch) {
 #endif
         efree(ch->to_free);
         efree(ch->clone);
-
-        if (handle) {
-            delete handle;
-        }
-#if PHP_VERSION_ID < 80500
-        curl_easy_setopt(ch->cp, CURLOPT_PRIVATE, nullptr);
-#endif
     }
 
 #if PHP_VERSION_ID < 80500
@@ -3446,7 +3447,13 @@ PHP_FUNCTION(openswoole_native_curl_reset) {
         return;
     }
 
+    // curl_easy_reset() also clears CURLOPT_PRIVATE, keep the coroutine Handle
+    openswoole::curl::Handle *handle = nullptr;
+    curl_easy_getinfo(ch->cp, CURLINFO_PRIVATE, &handle);
     curl_easy_reset(ch->cp);
+    if (handle) {
+        curl_easy_setopt(ch->cp, CURLOPT_PRIVATE, handle);
+    }
     _php_curl_reset_handlers(ch);
     _php_curl_set_default_options(ch);
 }

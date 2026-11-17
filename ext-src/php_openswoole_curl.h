@@ -18,6 +18,8 @@
 
 #include "php_openswoole_cxx.h"
 
+#include <unordered_set>
+
 #ifdef OSW_USE_CURL
 #include "openswoole_util.h"
 
@@ -58,6 +60,16 @@ class Multi {
     int last_sockfd;
     int event_count_ = 0;
     bool defer_callback = false;
+    // sockets created by this multi and not removed yet: curl moves a connection between
+    // easy handles, so a Handle's socket pointer is only used while the socket is still here
+    std::unordered_set<Socket *> sockets_;
+
+    Socket *socket_of(Handle *handle) {
+        if (handle && handle->socket && sockets_.find(handle->socket) == sockets_.end()) {
+            handle->socket = nullptr;
+        }
+        return handle ? handle->socket : nullptr;
+    }
     std::unique_ptr<Selector> selector;
 
     CURLcode read_info();
