@@ -16,40 +16,26 @@
  . Fix preemptive scheduler crash on ZTS builds
  . Fix crash in the native curl hook when a curl multi handle is released after the event loop is destroyed
  . Fix enable_reuse_port having no effect on Linux because SO_REUSEPORT was not detected at configure time
- . Fix mkdir() ignoring open_basedir and not reporting errors when the file hook is enabled
- . Hooked ssl:// and tls:// clients verify the peer certificate and name by default, like native PHP; set verify_peer to false for self-signed servers
- . Fix the static file handler serving files outside document_root
- . Fix a crash on WebSocket frames with an invalid length
- . Fix chunked request bodies with an oversized chunk length
- . Fix HTTP/2 HEADERS frames with short PRIORITY or PADDED fields
- . Fix HTTP/2 request body size and concurrent streams not being limited
- . Fix HTTP/2 control frames with an invalid length
  . Fix the http2_* server settings being ignored
- . Fix CR/LF injection in response status, cookies, trailers and coroutine HTTP client requests
- . Fix WebSocket permessage-deflate messages not being limited by package_max_length
- . Fix the http_autoindex page overflowing on large directories and not escaping file names
  . Fix max_idle_time closing active connections and ignoring fractions of a second
- . Fix memory corruption when a coroutine is canceled during file I/O
+ . Fix a crash when a coroutine is canceled during file I/O
  . Fix stream_select() closing regular files
  . Fix closing a unix datagram socket removing the peer's socket file
- . Fix Process::read() with a size of 0 or less, and process pipes never being closed
+ . Fix process pipes never being closed
  . Fix Lock::lockwait() truncating the timeout
  . Fix process pool reload stalling, getProcess() ids and a connection leak
+ . Fix process pool warnings about workers that already exited or detached
  . Fix the signal listener count with wait_signal
+ . Fix a second Coroutine\System::waitSignal() on the same signal leaving the first waiting forever
  . Fix Coroutine::select() with push channels and array keys
  . Fix Table keys longer than 63 bytes, iteration with an empty key, and incr()/decr() on a bad column
- . Fix stream_socket_accept() returning uninitialized memory as the peer name
- . Fix a second Coroutine\System::waitSignal() on the same signal leaving the first waiting forever
- . Fix HTTP request framing with conflicting Content-Length or Transfer-Encoding headers
  . Fix the Table row lock being taken over from a live holder
  . Fix an HTTP/2 RST_STREAM leaving a send_yield coroutine waiting forever
  . Fix the open_redis_protocol parser failing on commands split across reads and on pipelined commands
- . Fix a send error busy looping the reactor
  . Fix hooked time_nanosleep() accepting nanoseconds out of range
- . Fix unchecked DTLS session lookups and reads
- . Fix a use-after-free in the native curl hook with curl_copy_handle() or connection reuse in curl_multi
+ . Fix a crash in the native curl hook with curl_copy_handle() or connection reuse in curl_multi
  . Fix curl_reset() losing the coroutine state of a native curl handle
- . Fix process pool warnings about workers that already exited or detached
+ . Various stability fixes
 
 # 26.2.0
 
