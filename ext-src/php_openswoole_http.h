@@ -121,6 +121,8 @@ struct Response {
 
 struct Context {
     SessionId fd;
+    // max_request_execution_time, deleted with the context
+    openswoole::TimerNode *timeout_timer = nullptr;
     uchar completed : 1;
     uchar end_ : 1;
     uchar send_header_ : 1;

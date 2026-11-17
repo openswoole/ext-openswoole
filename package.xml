@@ -1090,6 +1090,7 @@
             <file role="test" name="tests/openswoole_http_server/error_413.phpt" />
             <file role="test" name="tests/openswoole_http_server/form_data_with_charset.phpt" />
             <file role="test" name="tests/openswoole_http_server/head_method.phpt" />
+            <file role="test" name="tests/openswoole_http_server/max_request_execution_time.phpt" />
             <file role="test" name="tests/openswoole_http_server/header_validation.phpt" />
             <file role="test" name="tests/openswoole_http_server/headers_sent.phpt" />
             <file role="test" name="tests/openswoole_http_server/headers_sent_coroutine.phpt" />
