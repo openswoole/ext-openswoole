@@ -29,7 +29,7 @@ TEST(coroutine_async, usleep) {
 
 TEST(coroutine_async, gethostbyname) {
     coroutine::run([](void *arg) {
-        string domain("www.baidu.com"), ip;
+        string domain("localhost"), ip;
 
         bool retval = swoole::coroutine::async([&]() {
             char buf[128];

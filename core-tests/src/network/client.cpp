@@ -1,6 +1,7 @@
 #include "test_core.h"
 #include "test_server.h"
 #include "test_process.h"
+#include "test_local_server.h"
 
 #define GREETER "Hello Swoole"
 #define GREETER_SIZE sizeof(GREETER)
@@ -162,9 +163,10 @@ TEST(client, connect_timeout) {
 
 TEST(client, shutdown_write) {
     signal(SIGPIPE, SIG_IGN);
+    swoole::test::LocalHttpServer server;
     int ret;
     Client cli(OSW_SOCK_TCP, false);
-    ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
+    ret = cli.connect(&cli, "localhost", server.port(), -1, 0);
     ASSERT_EQ(ret, 0);
     cli.shutdown(SHUT_WR);
     ssize_t retval = cli.send(&cli, OSW_STRL("hello world"), 0);
@@ -174,9 +176,10 @@ TEST(client, shutdown_write) {
 
 TEST(client, shutdown_read) {
     signal(SIGPIPE, SIG_IGN);
+    swoole::test::LocalHttpServer server;
     int ret;
     Client cli(OSW_SOCK_TCP, false);
-    ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
+    ret = cli.connect(&cli, "localhost", server.port(), -1, 0);
     ASSERT_EQ(ret, 0);
 
     cli.shutdown(SHUT_RD);
@@ -190,9 +193,10 @@ TEST(client, shutdown_read) {
 
 TEST(client, shutdown_all) {
     signal(SIGPIPE, SIG_IGN);
+    swoole::test::LocalHttpServer server;
     int ret;
     Client cli(OSW_SOCK_TCP, false);
-    ret = cli.connect(&cli, "www.baidu.com", 80, -1, 0);
+    ret = cli.connect(&cli, "localhost", server.port(), -1, 0);
     ASSERT_EQ(ret, 0);
 
     cli.shutdown(SHUT_RDWR);
@@ -208,6 +212,7 @@ TEST(client, shutdown_all) {
 
 #ifdef OSW_USE_OPENSSL
 TEST(client, ssl_1) {
+    swoole::test::LocalHttpServer server(true);
     int ret;
 
     bool connected = false;
@@ -222,7 +227,7 @@ TEST(client, ssl_1) {
         connected = true;
         cli->send(cli,
                   OSW_STRL("GET / HTTP/1.1\r\n"
-                          "Host: www.baidu.com\r\n"
+                          "Host: localhost\r\n"
                           "Connection: close\r\n"
                           "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/51.0.2704.106 Safari/537.36"
@@ -233,14 +238,14 @@ TEST(client, ssl_1) {
     client.onError = [](Client *cli) {};
     client.onClose = [&closed](Client *cli) { closed = true; };
     client.onReceive = [&buf](Client *cli, const char *data, size_t length) { buf.append(data, length); };
-    ret = client.connect(&client, "www.baidu.com", 443, -1, 0);
+    ret = client.connect(&client, "127.0.0.1", server.port(), -1, 0);
     ASSERT_EQ(ret, 0);
 
     openswoole_event_wait();
 
     ASSERT_TRUE(connected);
     ASSERT_TRUE(closed);
-    ASSERT_TRUE(buf.contains("Baidu"));
+    ASSERT_TRUE(buf.contains("OpenSwoole test page"));
 }
 
 TEST(client, http_proxy) {
@@ -249,6 +254,7 @@ TEST(client, http_proxy) {
         return;
     }
 
+    swoole::test::LocalHttpServer server(true);
     int ret;
 
     bool connected = false;
@@ -265,7 +271,7 @@ TEST(client, http_proxy) {
         connected = true;
         cli->send(cli,
                   OSW_STRL("GET / HTTP/1.1\r\n"
-                          "Host: www.baidu.com\r\n"
+                          "Host: localhost\r\n"
                           "Connection: close\r\n"
                           "User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) "
                           "Chrome/51.0.2704.106 Safari/537.36"
@@ -276,13 +282,13 @@ TEST(client, http_proxy) {
     client.onError = [](Client *cli) {};
     client.onClose = [&closed](Client *cli) { closed = true; };
     client.onReceive = [&buf](Client *cli, const char *data, size_t length) { buf.append(data, length); };
-    ret = client.connect(&client, "www.baidu.com", 443, -1, 0);
+    ret = client.connect(&client, "127.0.0.1", server.port(), -1, 0);
     ASSERT_EQ(ret, 0);
 
     openswoole_event_wait();
 
     ASSERT_TRUE(connected);
     ASSERT_TRUE(closed);
-    ASSERT_TRUE(buf.contains("Baidu"));
+    ASSERT_TRUE(buf.contains("OpenSwoole test page"));
 }
 #endif

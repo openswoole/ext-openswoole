@@ -15,6 +15,7 @@
 */
 
 #include "test_coroutine.h"
+#include "test_local_server.h"
 
 #include "openswoole_socket.h"
 
@@ -28,21 +29,29 @@ using namespace std;
 
 TEST(dns, lookup1) {
     test::coroutine::run([](void *arg) {
-        auto list = swoole::coroutine::dns_lookup("www.baidu.com", AF_INET, 10);
+        LocalDnsServer dns;
+        DnsServerScope scope(dns.address());
+        auto list = swoole::coroutine::dns_lookup("www.openswoole.test", AF_INET, 10);
         ASSERT_GE(list.size(), 1);
+        ASSERT_EQ(list[0], "127.0.0.1");
     });
 }
 
 TEST(dns, lookup_ipv6) {
     test::coroutine::run([](void *arg) {
-        auto list = swoole::coroutine::dns_lookup("www.google.com", AF_INET6, 2);
+        LocalDnsServer dns;
+        DnsServerScope scope(dns.address());
+        auto list = swoole::coroutine::dns_lookup("www.openswoole.test", AF_INET6, 2);
         ASSERT_GE(list.size(), 1);
+        ASSERT_NE(list[0].find(":"), list[0].npos);
     });
 }
 
 TEST(dns, domain_not_found) {
     test::coroutine::run([](void *arg) {
-        auto list = swoole::coroutine::dns_lookup("www.baidu.com-not-found", AF_INET, 2);
+        LocalDnsServer dns;
+        DnsServerScope scope(dns.address());
+        auto list = swoole::coroutine::dns_lookup("www.not-found.test", AF_INET, 2);
         ASSERT_EQ(list.size(), 0);
         ASSERT_EQ(openswoole_get_last_error(), OSW_ERROR_DNSLOOKUP_RESOLVE_FAILED);
     });
@@ -50,7 +59,9 @@ TEST(dns, domain_not_found) {
 
 TEST(dns, bad_family) {
     test::coroutine::run([](void *arg) {
-        auto list = swoole::coroutine::dns_lookup("www.google.com", 9999, 2);
+        LocalDnsServer dns;
+        DnsServerScope scope(dns.address());
+        auto list = swoole::coroutine::dns_lookup("www.openswoole.test", 9999, 2);
         ASSERT_GE(list.size(), 1);
     });
 }
@@ -58,13 +69,16 @@ TEST(dns, bad_family) {
 TEST(dns, cancel) {
     // openswoole_set_trace_flags(OSW_TRACE_CARES);
     // openswoole_set_log_level(OSW_LOG_TRACE);
+    // the server never answers, the lookup waits until it is canceled
+    LocalDnsServer dns(true);
+    DnsServerScope scope(dns.address());
     test::coroutine::run([](void *arg) {
         auto co = Coroutine::get_current_safe();
         Coroutine::create([co](void *) {
             System::sleep(0.002);
             co->cancel();
         });
-        auto list1 = swoole::coroutine::dns_lookup("www.baidu-not-found-for-cancel.com", AF_INET, 2);
+        auto list1 = swoole::coroutine::dns_lookup("www.openswoole.test", AF_INET, 2);
         ASSERT_EQ(list1.size(), 0);
         ASSERT_EQ(openswoole_get_last_error(), OSW_ERROR_CO_CANCELED);
     });
@@ -73,7 +87,7 @@ TEST(dns, cancel) {
 TEST(dns, getaddrinfo) {
     char buf[1024] = {};
     swoole::network::GetaddrinfoRequest req = {};
-    req.hostname = "www.baidu.com";
+    req.hostname = "localhost";
     req.family = AF_INET;
     req.socktype = SOCK_STREAM;
     req.protocol = 0;

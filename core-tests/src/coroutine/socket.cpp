@@ -17,6 +17,7 @@
 #include "test_process.h"
 #include "test_coroutine.h"
 #include "test_server.h"
+#include "test_local_server.h"
 
 using namespace openswoole::test;
 
@@ -46,9 +47,10 @@ TEST(coroutine_socket, connect_timeout) {
 }
 
 TEST(coroutine_socket, connect_with_dns) {
-    coroutine::run([](void *arg) {
+    LocalHttpServer server;
+    coroutine::run([&](void *arg) {
         Socket sock(OSW_SOCK_TCP);
-        bool retval = sock.connect("www.baidu.com", 80);
+        bool retval = sock.connect("localhost", server.port());
         ASSERT_EQ(retval, true);
         ASSERT_EQ(sock.errCode, 0);
     });
