@@ -606,19 +606,19 @@ int Socket::handle_send() {
     ssize_t ret = send(chunk->value.ptr + chunk->offset, sendn, 0);
     if (ret < 0) {
         switch (catch_error(errno)) {
-        case OSW_ERROR:
-            openswoole_sys_warning("send to fd[%d] failed", fd);
-            break;
-        case OSW_CLOSE:
-            close_wait = 1;
-            return OSW_ERR;
         case OSW_WAIT:
             send_wait = 1;
             return OSW_ERR;
+        case OSW_ERROR:
+        case OSW_INVALID:
+            openswoole_sys_warning("send to fd[%d] failed", fd);
+            // the chunk is still in the buffer: returning OSW_OK would make the caller retry it forever
+            close_wait = 1;
+            return OSW_ERR;
         default:
-            break;
+            close_wait = 1;
+            return OSW_ERR;
         }
-        return OSW_OK;
     }
     // chunk full send
     else if (ret == sendn || sendn == 0) {
