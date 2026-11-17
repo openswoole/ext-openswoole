@@ -196,7 +196,7 @@ static PHP_METHOD(openswoole_lock, lockwait) {
         zend_throw_exception(openswoole_exception_ce, "wrong lock type", -3);
         RETURN_FALSE;
     }
-    OSW_LOCK_CHECK_RETURN(mutex->lock_wait((int) timeout * 1000));
+    OSW_LOCK_CHECK_RETURN(mutex->lock_wait((int) (timeout * 1000)));
 }
 
 static PHP_METHOD(openswoole_lock, unlock) {
