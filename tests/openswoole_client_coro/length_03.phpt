@@ -65,7 +65,7 @@ $pm->childFunc = function () use ($pm)
       'package_max_length' => 1024 * 1024 * 2, //2M
       'socket_buffer_size' => 256 * 1024 * 1024,
       "worker_num" => 1,
-      'log_file' => '/tmp/swoole.log',
+      'log_file' => '/tmp/length_03_swoole.log',
     ));
     $serv->on("WorkerStart", function (Server $serv)  use ($pm)
     {

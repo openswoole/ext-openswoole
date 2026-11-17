@@ -5,9 +5,12 @@ openswoole_client_coro: close in other coroutine
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$cid = go(function () {
+
+// fixed ports collide when tests run in parallel
+$port = get_one_free_port();
+$cid = go(function () use ($port) {
     $sock = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    Assert::assert($sock->bind('127.0.0.1', 9601));
+    Assert::assert($sock->bind('127.0.0.1', $port));
     Assert::assert($sock->listen(512));
     $conn = $sock->accept();
     Assert::assert($conn);
@@ -17,14 +20,14 @@ $cid = go(function () {
 
 $client = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
 
-go(function () use ($client) {
-    $client->connect('127.0.0.1', 9601);
+go(function () use ($port, $client) {
+    $client->connect('127.0.0.1', $port);
     $data = @$client->recv();
     //socket is closed
     Assert::assert(!$data && $client->errCode === SOCKET_ECONNRESET);
 });
 
-go(function () use ($client, $cid) {
+go(function () use ($port, $client, $cid) {
     co::usleep(10000);
     $client->close();
     co::usleep(10000);

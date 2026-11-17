@@ -11,7 +11,7 @@ use OpenSwoole\Server;
 $pm = new SwooleTest\ProcessManager;
 
 const SIZE = 8192* 5;
-const FILE = __DIR__.'/tmp_resule.txt';
+const FILE = __DIR__.'/manager_start_tmp_resule.txt';
 
 $pm->parentFunc = function ($pid) use ($pm)
 {

@@ -6,7 +6,7 @@ openswoole_http_server: send empty file
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-const TMP_FILE = '/tmp/sendfile.txt';
+const TMP_FILE = '/tmp/send_empty_file_sendfile.txt';
 
 $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {

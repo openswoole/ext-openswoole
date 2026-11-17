@@ -16,7 +16,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 swoole\runtime::enableCoroutine();
 
-const FILE = __DIR__ . '/test.data';
+const FILE = __DIR__ . '/lock_nb_1_test.data';
 
 OpenSwoole\Runtime::enableCoroutine();
 

@@ -13,7 +13,7 @@ if ($r !== false) die("skip: LOCK_NB not supported in this environment");
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
-const FILE = __DIR__ . '/test.data';
+const FILE = __DIR__ . '/lock_nb_test.data';
 \OpenSwoole\Runtime::enableCoroutine();
 go(function () {
     $fp = fopen(FILE, 'w+');

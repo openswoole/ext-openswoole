@@ -11,11 +11,13 @@ skip_if_no_ssl();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
+$port = 0;
+
 swoole\runtime::enableCoroutine();
 
 $ready = new Chan;
 
-go(function () use ($ready) {
+go(function () use (&$port, $ready) {
     $context = stream_context_create();
     stream_context_set_option($context, 'ssl', 'allow_self_signed', true);
     stream_context_set_option($context, 'ssl', 'verify_peer', true);
@@ -23,7 +25,8 @@ go(function () use ($ready) {
     stream_context_set_option($context, 'ssl', 'local_pk', SSL_FILE_DIR.'/server.key');
     stream_context_set_option($context, 'ssl', 'cafile', SSL_FILE_DIR.'/ca.crt');
 
-    $socket = stream_socket_server("ssl://0.0.0.0:8000", $errno, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, $context);
+    $socket = stream_socket_server("ssl://127.0.0.1:0", $errno, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, $context);
+    $port = $socket ? (int) explode(':', stream_socket_get_name($socket, false))[1] : 0;
     if (!$socket) {
         echo "$errstr ($errno)<br />\n";
     } else {
@@ -36,7 +39,7 @@ go(function () use ($ready) {
     }
 });
 
-go(function () use ($ready) {
+go(function () use (&$port, $ready) {
     $ready->pop();
 
     $context = stream_context_create();
@@ -44,7 +47,7 @@ go(function () use ($ready) {
     stream_context_set_option($context, 'ssl', 'local_pk', SSL_FILE_DIR . '/client.key');
     stream_context_set_option($context, 'ssl', 'verify_peer', false);
 
-    $fp = stream_socket_client("ssl://127.0.0.1:8000", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $context);
+    $fp = stream_socket_client("ssl://127.0.0.1:{$port}", $errno, $errstr, 30, STREAM_CLIENT_CONNECT, $context);
     if (!$fp) {
         echo "$errstr ($errno)<br />\n";
     } else {

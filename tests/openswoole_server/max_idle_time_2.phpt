@@ -12,7 +12,7 @@ use OpenSwoole\Server;
 use OpenSwoole\Atomic;
 use OpenSwoole\Client;
 use OpenSwoole\Constant;
-define('SOCK_FILE', __DIR__.'/server.sock');
+define('SOCK_FILE', __DIR__.'/max_idle_time_2_server.sock');
 $pm = new SwooleTest\ProcessManager;
 
 $time1 = new Atomic(0);

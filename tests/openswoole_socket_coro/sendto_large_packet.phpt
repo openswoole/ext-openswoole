@@ -6,11 +6,14 @@ openswoole_socket_coro: send large packet
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+// fixed ports collide when tests run in parallel
+$port = get_one_free_port();
+
 const N = 5;
 //Server
-go(function () {
+go(function () use ($port) {
     $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
-    $socket->bind('127.0.0.1', 9601);
+    $socket->bind('127.0.0.1', $port);
     for ($i = 0; $i < N; $i++)
     {
         $peer = null;
@@ -22,11 +25,11 @@ go(function () {
 });
 
 //Client
-go(function () {
+go(function () use ($port) {
     $socket = new  OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
     for ($i = 0; $i < N; $i++)
     {
-        $socket->sendto('127.0.0.1', 9601, str_repeat('A', rand(30000, 65000)));
+        $socket->sendto('127.0.0.1', $port, str_repeat('A', rand(30000, 65000)));
         $peer = null;
         $data = $socket->recvfrom($peer);
         Assert::assert(is_array($peer));

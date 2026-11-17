@@ -6,10 +6,13 @@ openswoole_socket_coro: cancel
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+// fixed ports collide when tests run in parallel
+$port = get_one_free_port();
+
 $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
-$socket->bind('127.0.0.1', 9601);
+$socket->bind('127.0.0.1', $port);
 //Server
-go(function () use ($socket) {
+go(function () use ($port, $socket) {
     while (true) {
         $peer = null;
         $data = $socket->recvfrom($peer);
@@ -21,7 +24,7 @@ go(function () use ($socket) {
 });
 
 //Client
-go(function () use ($socket) {
+go(function () use ($port, $socket) {
     co::usleep(100000);
     $socket->cancel();
 });

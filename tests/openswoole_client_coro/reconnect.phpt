@@ -15,7 +15,7 @@ $pm->parentFunc = function () use ($pm) {
         $flag = 0;
         $client = new Client(SWOOLE_SOCK_TCP);
         reconnect:
-        if (!$client->connect('127.0.0.1', 9501)) {
+        if (!$client->connect('127.0.0.1', $pm->getFreePort())) {
             /**
             * if we want to reconnect server, we should call $client->close() first
             */
@@ -36,11 +36,14 @@ $pm->parentFunc = function () use ($pm) {
     });
 };
 $pm->childFunc = function () use ($pm) {
-    $serv = new Server('127.0.0.1', 9501);
+    $serv = new Server('127.0.0.1', $pm->getFreePort());
     $serv->set([
         'log_file' => '/dev/null',
     ]);
 
+    $serv->on('workerStart', function () use ($pm) {
+        $pm->wakeup();
+    });
     $serv->on('Receive', function () {
     });
 

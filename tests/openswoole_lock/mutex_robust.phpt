@@ -11,7 +11,7 @@ skip("no supports");
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$file = __DIR__.'/tmp.log';
+$file = __DIR__.'/mutex_robust_tmp.log';
 $fp = fopen($file, 'w+');
 $pm = new SwooleTest\ProcessManager;
 

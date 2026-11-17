@@ -9,7 +9,7 @@ skip_if_function_not_exist('msg_get_queue');
 require __DIR__ . '/../../include/bootstrap.php';
 const MSGQ_KEY = 0x70001001;
 
-$file = __DIR__.'/tmp.log';
+$file = __DIR__.'/invalid_packet_tmp.log';
 use OpenSwoole\Server;
 
 $result = new OpenSwoole\Atomic(0);

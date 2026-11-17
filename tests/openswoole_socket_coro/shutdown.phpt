@@ -5,13 +5,16 @@ openswoole_socket_coro: shutdown
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
+
+// fixed ports collide when tests run in parallel
+$port = get_one_free_port();
 for ($n = 2; $n--;) {
     $randoms[] = get_safe_random();
 }
-co::run(function() use ($randoms) {
-go(function () use ($randoms) {
+co::run(function() use ($port, $randoms) {
+go(function () use ($port, $randoms) {
     $server = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    Assert::true($server->bind('127.0.0.1', 9601));
+    Assert::true($server->bind('127.0.0.1', $port));
     Assert::true($server->listen(512));
     $conn = $server->accept();
     Assert::isInstanceOf($conn, OpenSwoole\Coroutine\Socket::class);
@@ -20,9 +23,9 @@ go(function () use ($randoms) {
     $conn->close();
     $server->close();
 });
-go(function () use ($randoms) {
+go(function () use ($port, $randoms) {
     $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    Assert::true($socket->connect('127.0.0.1', 9601));
+    Assert::true($socket->connect('127.0.0.1', $port));
     Assert::greaterThan($socket->send((string)array_shift($randoms)), 0);
     Assert::same($socket->recv(), array_shift($randoms));
     Assert::true($socket->shutdown(STREAM_SHUT_WR));

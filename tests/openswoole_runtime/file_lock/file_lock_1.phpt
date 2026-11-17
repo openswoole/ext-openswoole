@@ -9,7 +9,7 @@ die("skip not support");
 require __DIR__ . '/../../include/bootstrap.php';
 
 \OpenSwoole\Runtime::enableCoroutine();
-const FILE = __DIR__ . '/test.data';
+const FILE = __DIR__ . '/file_lock_1_test.data';
 $startTime = microtime(true);
 go(function () use ($startTime) {
     $f = fopen(FILE, 'w+');
