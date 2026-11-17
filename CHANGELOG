@@ -43,6 +43,8 @@
  . Fix co::run() not returning for minutes after curl_multi requests in the native curl hook
  . Fix io_uring warnings logged on every file operation when io_uring is not available, for example in Docker containers with the default seccomp profile
  . Fix the server master process being killed by SIGALRM when a timer was created before Server::start()
+ . Fix the static handler sending the file body for HEAD requests
+ . Fix the HTTP/2 client reply to PING frames and its handling of GOAWAY and padded frames
  . Various stability fixes
 
 # 26.2.0
