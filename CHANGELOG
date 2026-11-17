@@ -41,6 +41,12 @@
  . Fix stream_socket_accept() returning uninitialized memory as the peer name
  . Fix a second Coroutine\System::waitSignal() on the same signal leaving the first waiting forever
  . Fix HTTP request framing with conflicting Content-Length or Transfer-Encoding headers
+ . Fix the Table row lock being taken over from a live holder
+ . Fix an HTTP/2 RST_STREAM leaving a send_yield coroutine waiting forever
+ . Fix the open_redis_protocol parser failing on commands split across reads and on pipelined commands
+ . Fix a send error busy looping the reactor
+ . Fix hooked time_nanosleep() accepting nanoseconds out of range
+ . Fix unchecked DTLS session lookups and reads
 
 # 26.2.0
 

@@ -60,6 +60,12 @@
          . Fix stream_socket_accept() returning uninitialized memory as the peer name
          . Fix a second Coroutine\System::waitSignal() on the same signal leaving the first waiting forever
          . Fix HTTP request framing with conflicting Content-Length or Transfer-Encoding headers
+         . Fix the Table row lock being taken over from a live holder
+         . Fix an HTTP/2 RST_STREAM leaving a send_yield coroutine waiting forever
+         . Fix the open_redis_protocol parser failing on commands split across reads and on pipelined commands
+         . Fix a send error busy looping the reactor
+         . Fix hooked time_nanosleep() accepting nanoseconds out of range
+         . Fix unchecked DTLS session lookups and reads
     </notes>
     <contents>
         <dir name="/">
@@ -964,6 +970,7 @@
             <file role="test" name="tests/openswoole_http2_server/nghttp2_big_data.phpt" />
             <file role="test" name="tests/openswoole_http2_server/no_compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/ping.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/rst_stream_send_yield.phpt" />
             <file role="test" name="tests/openswoole_http2_server/sendfile.phpt" />
             <file role="test" name="tests/openswoole_http2_server/static_handler.phpt" />
             <file role="test" name="tests/openswoole_http2_server/trailer.phpt" />
@@ -1312,6 +1319,7 @@
             <file role="test" name="tests/openswoole_runtime/stream_socket_pair.phpt" />
             <file role="test" name="tests/openswoole_runtime/tcp-c10k.phpt" />
             <file role="test" name="tests/openswoole_runtime/tcp.phpt" />
+            <file role="test" name="tests/openswoole_runtime/time_nanosleep_range.phpt" />
             <file role="test" name="tests/openswoole_runtime/udg.phpt" />
             <file role="test" name="tests/openswoole_runtime/udp-c10k.phpt" />
             <file role="test" name="tests/openswoole_runtime/udp.phpt" />
@@ -1428,6 +1436,7 @@
             <file role="test" name="tests/openswoole_server/pid_file.phpt" />
             <file role="test" name="tests/openswoole_server/protect.phpt" />
             <file role="test" name="tests/openswoole_server/protect_false.phpt" />
+            <file role="test" name="tests/openswoole_server/redis_protocol_split.phpt" />
             <file role="test" name="tests/openswoole_server/reload.phpt" />
             <file role="test" name="tests/openswoole_server/reload_async.phpt" />
             <file role="test" name="tests/openswoole_server/reload_base.phpt" />
@@ -1586,6 +1595,7 @@
             <file role="test" name="tests/openswoole_table/get_before_create.phpt" />
             <file role="test" name="tests/openswoole_table/incr_after_del.phpt" />
             <file role="test" name="tests/openswoole_table/incr_bad_column.phpt" />
+            <file role="test" name="tests/openswoole_table/incr_concurrent.phpt" />
             <file role="test" name="tests/openswoole_table/int.phpt" />
             <file role="test" name="tests/openswoole_table/key_value.phpt" />
             <file role="test" name="tests/openswoole_table/long_key.phpt" />
