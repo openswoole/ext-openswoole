@@ -55,6 +55,7 @@
          . Fix hooked time_nanosleep() accepting nanoseconds out of range
          . Fix a crash in the native curl hook with curl_copy_handle() or connection reuse in curl_multi
          . Fix curl_reset() losing the coroutine state of a native curl handle
+         . Fix co::run() not returning for minutes after curl_multi requests in the native curl hook
          . Various stability fixes
     </notes>
     <contents>
