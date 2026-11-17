@@ -947,7 +947,7 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
         RETURN_FALSE;
     }
 
-    size_t cookie_size = name_len /* + value_len */ + path_len + domain_len + samesite_len + priority_len + 100;
+    size_t cookie_size = name_len /* + value_len */ + path_len + domain_len + samesite_len + priority_len + 140;
     char *cookie = nullptr, *date = nullptr;
 
     if (name_len > 0 && strpbrk(name, "=,; \t\r\n\013\014") != nullptr) {
@@ -967,7 +967,7 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
     if (value_len == 0) {
         cookie = (char *) emalloc(cookie_size);
         date = php_openswoole_format_date((char *) ZEND_STRL("D, d-M-Y H:i:s T"), 1, 0);
-        snprintf(cookie, cookie_size, "%s=deleted; expires=%s", name, date);
+        snprintf(cookie, cookie_size, "%s=deleted; expires=%s; Max-Age=0", name, date);
         efree(date);
     } else {
         if (url_encode) {
@@ -995,6 +995,11 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
             }
             strlcat(cookie, date, cookie_size);
             efree(date);
+            // like PHP's setcookie(): the seconds left, for clients that prefer Max-Age to expires
+            zend_long max_age = expires - (zend_long) time(nullptr);
+            char max_age_buf[48];
+            snprintf(max_age_buf, sizeof(max_age_buf), "; Max-Age=" ZEND_LONG_FMT, max_age > 0 ? max_age : 0);
+            strlcat(cookie, max_age_buf, cookie_size);
         }
     }
     if (path_len > 0) {
