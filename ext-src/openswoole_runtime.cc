@@ -90,6 +90,8 @@ struct php_openswoole_netstream_data_t {
     php_netstream_data_t stream;
     Socket *socket;
     bool blocking;
+    // PHP allocated orig_path as persistent, though the stream itself is not
+    bool persistent_orig_path;
 };
 
 static bool runtime_hook_init = false;
@@ -412,6 +414,11 @@ static int socket_close(php_stream *stream, int close_handle) {
      */
     sock->close();
     delete sock;
+    // the stream is freed as non-persistent, so orig_path must be freed here with the right allocator
+    if (abstract->persistent_orig_path && stream->orig_path) {
+        pefree(stream->orig_path, 1);
+        stream->orig_path = nullptr;
+    }
     efree(abstract);
     return SUCCESS;
 }
@@ -1146,6 +1153,8 @@ static php_stream *socket_create(const char *proto,
     abstract->stream.socket = sock->get_fd();
     abstract->blocking = true;
 
+    // php_stream_xport_create() still allocates orig_path as persistent when an id was given
+    abstract->persistent_orig_path = persistent_id != nullptr;
     persistent_id = nullptr;  // prevent stream api in user level using pconnect to persist the socket
     stream = php_stream_alloc_rel(&socket_ops, abstract, persistent_id, "r+");
 

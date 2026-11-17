@@ -1276,6 +1276,8 @@
             <file role="test" name="tests/openswoole_runtime/hook_enable_coroutine.phpt" />
             <file role="test" name="tests/openswoole_runtime/hook_set_flags.phpt" />
             <file role="test" name="tests/openswoole_runtime/nonblock.phpt" />
+            <file role="test" name="tests/openswoole_runtime/mysqli_real_connect.phpt" />
+            <file role="test" name="tests/openswoole_runtime/persistent_stream.phpt" />
             <file role="test" name="tests/openswoole_runtime/pdo.phpt" />
             <file role="test" name="tests/openswoole_runtime/proc/1.phpt" />
             <file role="test" name="tests/openswoole_runtime/proc/2.phpt" />
