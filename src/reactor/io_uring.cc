@@ -20,6 +20,8 @@
 #include <liburing.h>
 #include <poll.h>
 
+#include <unordered_set>
+
 namespace openswoole {
 
 using network::Socket;
@@ -63,6 +65,9 @@ class ReactorIoUring : public ReactorImpl {
     bool ring_initialized_ = false;
     bool use_multishot_ = false;
     struct io_uring_cqe **cqes_ = nullptr;
+    // sockets armed again by add()/set() in an event handler, so the loop must not re-arm them too
+    bool dispatching_ = false;
+    std::unordered_set<Socket *> armed_in_handler_;
 
   public:
     ReactorIoUring(Reactor *_reactor, int max_events);
@@ -108,17 +113,10 @@ ReactorIoUring::ReactorIoUring(Reactor *_reactor, int max_events) : ReactorImpl(
     }
     ring_initialized_ = true;
 
-    // Detect multishot poll support (kernel 5.13+)
-#ifdef IORING_POLL_ADD_MULTI
-    {
-        struct io_uring_probe *probe = io_uring_get_probe_ring(&ring_);
-        if (probe) {
-            if (io_uring_opcode_supported(probe, IORING_OP_POLL_ADD)) {
-                use_multishot_ = true;
-            }
-            io_uring_free_probe(probe);
-        }
-    }
+    // Multishot poll needs kernel 5.13+, an older kernel fails the poll with EINVAL.
+    // There is no feature flag for it: IORING_FEAT_RSRC_TAGS came with the same release.
+#if defined(IORING_POLL_ADD_MULTI) && defined(IORING_FEAT_RSRC_TAGS)
+    use_multishot_ = (params.features & IORING_FEAT_RSRC_TAGS) != 0;
 #endif
 
     cqes_ = new struct io_uring_cqe *[max_events];
@@ -138,6 +136,9 @@ ReactorIoUring::~ReactorIoUring() {
 }
 
 int ReactorIoUring::submit_poll_add(Socket *socket, int events) {
+    if (dispatching_) {
+        armed_in_handler_.insert(socket);
+    }
     struct io_uring_sqe *sqe = io_uring_get_sqe(&ring_);
     if (!sqe) {
         openswoole_sys_warning("io_uring_get_sqe failed (SQ full), fd=%d", socket->fd);
@@ -293,6 +294,7 @@ int ReactorIoUring::wait(struct timeval *timeo) {
         }
 
         need_submit = false;
+        dispatching_ = true;
 
         for (i = 0; i < n; i++) {
             struct io_uring_cqe *completion = cqes_[i];
@@ -369,8 +371,8 @@ int ReactorIoUring::wait(struct timeval *timeo) {
             if (!socket->removed && (socket->events & OSW_EVENT_ONCE)) {
                 reactor_->_del(socket);
             }
-            // Re-arm poll if needed
-            else if (!socket->removed) {
+            // Re-arm poll if needed, unless the handler already did with add() or set()
+            else if (!socket->removed && !armed_in_handler_.count(socket)) {
                 bool needs_rearm;
                 if (use_multishot_) {
 #ifdef IORING_CQE_F_MORE
@@ -390,6 +392,8 @@ int ReactorIoUring::wait(struct timeval *timeo) {
             }
         }
 
+        dispatching_ = false;
+        armed_in_handler_.clear();
         io_uring_cq_advance(&ring_, n);
 
         // Batch submit any re-armed polls
