@@ -522,6 +522,13 @@ _parse:
                          request->content_length_,
                          request->keep_alive,
                          request->chunked);
+        if (request->excepted) {
+            openswoole_error_log(OSW_LOG_TRACE,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "Bad Request: ambiguous Content-Length or Transfer-Encoding" CLIENT_INFO_FMT,
+                             CLIENT_INFO_ARGS);
+            goto _bad_request;
+        }
     }
 
     // content length (equal to 0) or (field not found but not chunked)

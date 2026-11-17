@@ -508,6 +508,8 @@ int Request::get_protocol() {
             break;
         }
     }
+    // the data ends before the http version: wait for more, do not read past the end
+    return OSW_ERR;
 _end:
     p += sizeof("HTTP/1.x") - 1;
     request_line_length_ = buffer_->offset = p - buffer_->str;
@@ -522,6 +524,7 @@ void Request::parse_header_info() {
     char *p = buffer_->str + request_line_length_ + (sizeof("\r\n") - 1);
     // point-end: start + strlen(all-header) without strlen("\r\n\r\n")
     char *pe = buffer_->str + header_length_ - (sizeof("\r\n\r\n") - 1);
+    bool has_transfer_encoding = false;
 
     for (; p < pe; p++) {
         if (*(p - 1) == '\n' && *(p - 2) == '\r') {
@@ -534,6 +537,10 @@ void Request::parse_header_info() {
                     p++;
                 }
                 content_length = strtoull(p, nullptr, 10);
+                // two different lengths: the worker may frame the request differently (request smuggling)
+                if (known_length && content_length_ != OSW_MIN(content_length, UINT32_MAX)) {
+                    excepted = 1;
+                }
                 content_length_ = OSW_MIN(content_length, UINT32_MAX);
                 known_length = 1;
             } else if (OSW_STRCASECT(p, pe - p, "Connection:")) {
@@ -553,11 +560,32 @@ void Request::parse_header_info() {
                 while (*p == ' ') {
                     p++;
                 }
-                if (OSW_STRCASECT(p, pe - p, "chunked")) {
-                    chunked = 1;
+                // the last transfer coding decides the framing: "gzip, chunked" is chunked
+                char *eol = (char *) memchr(p, '\r', pe - p);
+                char *end = eol ? eol : pe;
+                while (end > p && (end[-1] == ' ' || end[-1] == '\t')) {
+                    end--;
                 }
+                char *last = end;
+                while (last > p && last[-1] != ',') {
+                    last--;
+                }
+                while (last < end && (*last == ' ' || *last == '\t')) {
+                    last++;
+                }
+                if (OSW_STRCASEEQ(last, end - last, "chunked")) {
+                    chunked = 1;
+                } else {
+                    // a request body is framed by chunked or not at all
+                    excepted = 1;
+                }
+                has_transfer_encoding = true;
             }
         }
+    }
+    // Transfer-Encoding with a Content-Length is ambiguous, "Content-Length: 0" is allowed for nobody_chunked
+    if (has_transfer_encoding && known_length && content_length_ != 0) {
+        excepted = 1;
     }
 
     header_parsed = 1;
