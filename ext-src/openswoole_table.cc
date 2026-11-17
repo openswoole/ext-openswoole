@@ -418,6 +418,17 @@ static PHP_METHOD(openswoole_table, incr) {
         RETURN_FALSE;
     }
 
+    // check the column before set(), which creates the row
+    TableColumn *column = table->get_column(std::string(col, col_len));
+    if (column == nullptr) {
+        php_openswoole_fatal_error(E_WARNING, "column[%s] does not exist", col);
+        RETURN_FALSE;
+    }
+    if (column->type == TableColumn::TYPE_STRING) {
+        php_openswoole_fatal_error(E_WARNING, "can't execute 'incr' on a string type column");
+        RETURN_FALSE;
+    }
+
     int out_flags;
     TableRow *_rowlock = nullptr;
     TableRow *row = table->set(key, key_len, &_rowlock, &out_flags);
@@ -427,22 +438,11 @@ static PHP_METHOD(openswoole_table, incr) {
         RETURN_FALSE;
     }
 
-    TableColumn *column = table->get_column(std::string(col, col_len));
-    if (column == nullptr) {
-        _rowlock->unlock();
-        php_openswoole_fatal_error(E_WARNING, "column[%s] does not exist", col);
-        RETURN_FALSE;
-    }
-
     if (out_flags & OSW_TABLE_FLAG_NEW_ROW) {
         table->clear_row(row);
     }
 
-    if (column->type == TableColumn::TYPE_STRING) {
-        _rowlock->unlock();
-        php_openswoole_fatal_error(E_WARNING, "can't execute 'incr' on a string type column");
-        RETURN_FALSE;
-    } else if (column->type == TableColumn::TYPE_FLOAT) {
+    if (column->type == TableColumn::TYPE_FLOAT) {
         double set_value = 0;
         memcpy(&set_value, row->data + column->index, sizeof(set_value));
         if (incrby) {
@@ -478,6 +478,17 @@ static PHP_METHOD(openswoole_table, decr) {
         RETURN_FALSE;
     }
 
+    // check the column before set(), which creates the row
+    TableColumn *column = table->get_column(std::string(col, col_len));
+    if (column == nullptr) {
+        php_openswoole_fatal_error(E_WARNING, "column[%s] does not exist", col);
+        RETURN_FALSE;
+    }
+    if (column->type == TableColumn::TYPE_STRING) {
+        php_openswoole_fatal_error(E_WARNING, "can't execute 'decr' on a string type column");
+        RETURN_FALSE;
+    }
+
     int out_flags;
     TableRow *_rowlock = nullptr;
     TableRow *row = table->set(key, key_len, &_rowlock, &out_flags);
@@ -487,22 +498,11 @@ static PHP_METHOD(openswoole_table, decr) {
         RETURN_FALSE;
     }
 
-    TableColumn *column = table->get_column(std::string(col, col_len));
-    if (column == nullptr) {
-        _rowlock->unlock();
-        php_openswoole_fatal_error(E_WARNING, "column[%s] does not exist", col);
-        RETURN_FALSE;
-    }
-
     if (out_flags & OSW_TABLE_FLAG_NEW_ROW) {
         table->clear_row(row);
     }
 
-    if (column->type == TableColumn::TYPE_STRING) {
-        _rowlock->unlock();
-        php_openswoole_fatal_error(E_WARNING, "can't execute 'decr' on a string type column");
-        RETURN_FALSE;
-    } else if (column->type == TableColumn::TYPE_FLOAT) {
+    if (column->type == TableColumn::TYPE_FLOAT) {
         double set_value = 0;
         memcpy(&set_value, row->data + column->index, sizeof(set_value));
         if (decrby) {
