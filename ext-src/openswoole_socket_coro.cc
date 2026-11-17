@@ -1376,8 +1376,7 @@ static void openswoole_socket_coro_read_vector(INTERNAL_FUNCTION_PARAMETERS, con
         RETURN_FALSE;
     }
 
-    std::unique_ptr<iovec[]> iov(new iovec[iovcnt]);
-
+    // validate every item before allocating, a throw would leak the buffers already allocated
     OSW_HASHTABLE_FOREACH_START(vht, zelement) {
         if (!ZVAL_IS_LONG(zelement)) {
             zend_throw_exception_ex(openswoole_socket_coro_exception_ce,
@@ -1392,6 +1391,14 @@ static void openswoole_socket_coro_read_vector(INTERNAL_FUNCTION_PARAMETERS, con
                 openswoole_socket_coro_exception_ce, EINVAL, "Item #[%d] must be greater than 0", iov_index);
             RETURN_FALSE;
         }
+        iov_index++;
+    }
+    OSW_HASHTABLE_FOREACH_END();
+    iov_index = 0;
+
+    std::unique_ptr<iovec[]> iov(new iovec[iovcnt]);
+
+    OSW_HASHTABLE_FOREACH_START(vht, zelement) {
         size_t iov_len = Z_LVAL_P(zelement);
 
         iov[iov_index].iov_base = zend_string_alloc(iov_len, 0)->val;
