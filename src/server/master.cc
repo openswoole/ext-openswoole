@@ -39,7 +39,7 @@ TimerCallback Server::get_timeout_callback(ListenPort *port, Reactor *reactor, C
         // the timestamps are in milliseconds, max_idle_time is in seconds;
         // the connection is idle only when nothing was received or sent
         long ms = time<std::chrono::milliseconds>(true);
-        long max_idle_ms = (long) port->max_idle_time * 1000;
+        long max_idle_ms = (long) (port->max_idle_time * 1000);
         if (ms - conn->socket->last_received_time < max_idle_ms ||
             ms - conn->socket->last_sent_time < max_idle_ms) {
             return;
@@ -175,7 +175,7 @@ int Server::connection_incoming(Reactor *reactor, Connection *conn) {
     if (port->max_idle_time > 0) {
         auto timeout_callback = get_timeout_callback(port, reactor, conn);
         conn->socket->recv_timeout_ = port->max_idle_time;
-        conn->socket->recv_timer = openswoole_timer_add(port->max_idle_time * 1000, true, timeout_callback);
+        conn->socket->recv_timer = openswoole_timer_add((long) (port->max_idle_time * 1000), true, timeout_callback);
     }
 #ifdef OSW_USE_OPENSSL
     if (conn->socket->ssl) {
@@ -1198,7 +1198,7 @@ int Server::send_to_connection(SendData *_send) {
         auto timeout_callback = get_timeout_callback(port, reactor, conn);
         _socket->send_timeout_ = port->max_idle_time;
         _socket->last_sent_time = time<std::chrono::milliseconds>(true);
-        _socket->send_timer = openswoole_timer_add(port->max_idle_time * 1000, true, timeout_callback);
+        _socket->send_timer = openswoole_timer_add((long) (port->max_idle_time * 1000), true, timeout_callback);
     }
 
     if (!_socket->isset_writable_event()) {

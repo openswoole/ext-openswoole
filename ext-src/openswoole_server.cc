@@ -2128,7 +2128,7 @@ static PHP_METHOD(openswoole_server, set) {
         serv->heartbeat_check_interval = OSW_MAX(0, OSW_MIN(v, UINT16_MAX));
     } else if (php_openswoole_array_get_value(vht, "heartbeat_idle_time", ztmp)) {
         zend_long v = zval_get_long(ztmp);
-        serv->heartbeat_check_interval = v > 2 ? v / 2 : 1;
+        serv->heartbeat_check_interval = v > 2 ? OSW_MIN(v / 2, UINT16_MAX) : 1;
     }
     // max_request
     if (php_openswoole_array_get_value(vht, "max_request", ztmp)) {
