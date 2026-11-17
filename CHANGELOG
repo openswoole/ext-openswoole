@@ -10,6 +10,7 @@
 ## Changes
 
  . Hooked ssl:// and tls:// client streams use the same peer verification defaults as native PHP; set verify_peer to false to connect to servers with a self-signed certificate
+ . OpenSwoole 27.2 will require PHP 8.4 or later; 26.11 is the last release series to support PHP 8.3
 
 ## Bug Fixes
 
