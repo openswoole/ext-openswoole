@@ -565,6 +565,13 @@ struct EventWaiter {
 
 static inline void event_waiter_callback(Reactor *reactor, EventWaiter *waiter, EventType event) {
     if (waiter->revents == 0) {
+        // the deferred resume must be the only one: a timeout or cancel in the same loop
+        // would resume the coroutine first and the deferred call would use a dead waiter
+        if (waiter->timer) {
+            openswoole_timer_del(waiter->timer);
+            waiter->timer = nullptr;
+        }
+        waiter->co->set_cancel_fn(nullptr);
         reactor->defer([waiter](void *data) { waiter->co->resume(); });
     }
     waiter->revents |= event;
