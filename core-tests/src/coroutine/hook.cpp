@@ -179,10 +179,12 @@ TEST(coroutine_hook, rename) {
 
 TEST(coroutine_hook, flock) {
     long start_time = swoole::time<std::chrono::milliseconds>();
+    bool locked = false;
     coroutine::run([&](void *arg) {
         swoole::Coroutine::create([&](void *arg) {
             int fd = openswoole_coroutine_open(TEST_TMP_FILE, O_WRONLY, 0);
             ASSERT_EQ(openswoole_coroutine_flock(fd, LOCK_EX), 0);
+            locked = true;
             System::sleep(0.1);
             ASSERT_EQ(openswoole_coroutine_flock(fd, LOCK_UN), 0);
 
@@ -192,6 +194,10 @@ TEST(coroutine_hook, flock) {
             openswoole_coroutine_close(fd);
         });
         swoole::Coroutine::create([&](void *arg) {
+            // the locks run in the thread pool: ask only after the first coroutine holds LOCK_EX
+            while (!locked) {
+                System::sleep(0.001);
+            }
             int fd = openswoole_coroutine_open(TEST_TMP_FILE, O_WRONLY, 0);
             ASSERT_EQ(openswoole_coroutine_flock(fd, LOCK_SH), 0);
             System::sleep(2);
