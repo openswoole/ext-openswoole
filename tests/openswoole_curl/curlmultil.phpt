@@ -10,8 +10,10 @@ require __DIR__ . '/../include/bootstrap.php';
 
 Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
-co::run(function () {
-    $nodes = array('https://www.google.com', 'https://www.php.net', 'https://openswoole.com');
+$server = SwooleTest\LocalServer::start();
+
+co::run(function () use ($server) {
+    $nodes = array($server->url('/'), $server->url('/', true), $server->url('/?n=3'));
     $node_count = count($nodes);
 
     $curl_arr = array();
@@ -22,6 +24,8 @@ co::run(function () {
         $url =$nodes[$i];
         $curl_arr[$i] = curl_init($url);
         curl_setopt($curl_arr[$i], CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl_arr[$i], CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl_arr[$i], CURLOPT_SSL_VERIFYHOST, 0);
         curl_multi_add_handle($master, $curl_arr[$i]);
     }
 

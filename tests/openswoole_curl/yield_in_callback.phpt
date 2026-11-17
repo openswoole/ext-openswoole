@@ -14,12 +14,13 @@ use OpenSwoole\Runtime;
 
 
 $pm = new SwooleTest\ProcessManager;
+$server = SwooleTest\LocalServer::start();
 
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-co::run(function () use ($pm) {
+co::run(function () use ($pm, $server) {
     $ch = curl_init();
     $code = uniqid('openswoole_');
-    $url = "http://www.baidu.com/?code=".urlencode($code);
+    $url = $server->url('/?code=' . urlencode($code));
 
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
@@ -36,7 +37,7 @@ co::run(function () use ($pm) {
 
     echo "exec\n";
     $output = curl_exec($ch);
-    Assert::contains($output, "baidu.com");
+    Assert::contains($output, 'OpenSwoole test page');
     if ($output === false) {
         echo "CURL Error:" . curl_error($ch);
     }

@@ -2,7 +2,6 @@
 openswoole_http_client_coro: get twice
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -10,12 +9,13 @@ require __DIR__ . '/../include/bootstrap.php';
 use OpenSwoole\Coroutine\Http\Client;
 const N = 2;
 
-co::run(function () {
-    $client = new Client('www.baidu.com', 443, true);
+$server = SwooleTest\LocalServer::start();
+co::run(function () use ($server) {
+    $client = new Client($server->host, $server->httpsPort, true);
     $client->set(['timeout' => 5,]);
     for ($i = 0; $i < N; $i++) {
         $rand = mt_rand(100000, 999999999);
-        $path = "/index.php?email=" . $rand . "@" . substr(md5((string)microtime(true)), 0, 8) . ".com";
+        $path = "/get?email=" . $rand . "@" . substr(md5((string)microtime(true)), 0, 8) . ".com";
         $result = $client->get($path);
         if (!$result) {
             var_dump("ERROR: ".$client->getStatusCode());

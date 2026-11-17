@@ -11,12 +11,20 @@ require __DIR__ . '/../include/bootstrap.php';
 use OpenSwoole\Coroutine\Http2\Client;
 use OpenSwoole\Http2\Request;
 
-co::run(function () {
-    $domain = 'cloudflare.com';
-    $c = new Client($domain, 443, true);
+// the proxy tunnels to an HTTP/2 server it can reach:
+// the h2demo container in CI, the local test server otherwise
+if (IS_IN_TRAVIS) {
+    [$host, $port, $keyword] = ['h2demo', 4430, 'Go + HTTP/2'];
+} else {
+    $server = SwooleTest\LocalServer::start();
+    [$host, $port, $keyword] = [$server->host, $server->httpsPort, 'OpenSwoole test page'];
+}
+
+co::run(function () use ($host, $port, $keyword) {
+    $c = new Client($host, $port, true);
     $c->set([
         'timeout' => 10,
-        'ssl_host_name' => $domain,
+        'ssl_host_name' => $host,
         'http_proxy_host' => HTTP_PROXY_HOST,
         'http_proxy_port' => HTTP_PROXY_PORT,
     ]);
@@ -25,13 +33,13 @@ co::run(function () {
     $r->method = 'GET';
     $r->path = '/';
     $r->headers = [
-        'host' => $domain,
+        'host' => $host,
     ];
     $c->send($r);
     $response = $c->recv();
     Assert::notEmpty($response);
-    Assert::eq($response->statusCode, 301);
-    Assert::eq($response->headers['location'], 'https://www.cloudflare.com/');
+    Assert::eq($response->statusCode, 200);
+    Assert::contains($response->data, $keyword);
 });
 ?>
 --EXPECT--

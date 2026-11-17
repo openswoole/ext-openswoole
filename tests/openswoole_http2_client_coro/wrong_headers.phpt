@@ -1,30 +1,27 @@
 --TEST--
 openswoole_http2_client_coro: http2 with wrong headers
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-co::run(function () {
-    $domain = 'httpbun.com';
-    $cli = new OpenSwoole\Coroutine\Http2\Client($domain, 443, true);
+$server = SwooleTest\LocalServer::start();
+co::run(function () use ($server) {
+    $cli = new OpenSwoole\Coroutine\Http2\Client($server->host, $server->httpsPort, true);
     $cli->set([
         'timeout' => 10,
-        'ssl_host_name' => $domain
     ]);
     $cli->connect();
 
     $req = new OpenSwoole\Http2\Request;
-    $req->path = '/html';
+    $req->path = '/';
     $req->headers = 1;
     Assert::assert($cli->send($req));
     Assert::assert(is_array($req->headers)); // check array
     /**@var $response openswoole_http2_response */
     $response = $cli->recv();
     echo $response->statusCode;
-    Assert::assert(stripos($response->data, 'httpbun') !== false);
+    Assert::assert(stripos($response->data, 'OpenSwoole test page') !== false);
 });
 ?>
 --EXPECT--

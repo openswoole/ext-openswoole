@@ -5,19 +5,18 @@ openswoole_http2_client_coro: http2 response cookies
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
-    $domain = 'www.bing.com';
-    $cli = new OpenSwoole\Coroutine\Http2\Client($domain, 443, true);
+$server = SwooleTest\LocalServer::start();
+go(function () use ($server) {
+    $cli = new OpenSwoole\Coroutine\Http2\Client($server->host, $server->httpsPort, true);
     $cli->set([
         'timeout' => 10,
-        'ssl_host_name' => $domain
     ]);
     $cli->connect();
 
     $req = new OpenSwoole\Http2\Request;
-    $req->path = '/';
+    $req->path = '/cookies/set?a=1&b=2&c=3';
     $req->headers = [
-        'Host' => $domain,
+        'Host' => $server->host,
         "User-Agent" => 'Chrome/49.0.2587.3',
         'Accept' => 'text/html,application/xhtml+xml,application/xml',
         'Accept-encoding' => 'gzip',

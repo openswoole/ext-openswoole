@@ -12,11 +12,14 @@ use OpenSwoole\Runtime;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
+co::run(function () use ($server) {
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://httpbun.com/anything");
+    curl_setopt($ch, CURLOPT_URL, $server->url('/post', true));
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
     $file = new CurlFile(TEST_IMAGE);
     curl_setopt($ch, CURLOPT_POSTFIELDS, array("openswoole_file" => $file));
@@ -25,16 +28,11 @@ co::run(function () {
     $json = json_decode($result);
     Assert::notEmpty($json);
     Assert::notEmpty($json->files->openswoole_file);
-    // httpbun.com returns files as object {content, filename, headers, size}
-    // content is base64-encoded (without data: URI prefix)
-    $fileContent = is_object($json->files->openswoole_file)
-        ? $json->files->openswoole_file->content
-        : $json->files->openswoole_file;
-    // Strip data URI prefix if present (httpbin format)
+    // binary files come back as a base64 data URI (httpbin format)
     $prefix = 'data:application/octet-stream;base64,';
-    if (is_string($fileContent) && str_starts_with($fileContent, $prefix)) {
-        $fileContent = substr($fileContent, strlen($prefix));
-    }
+    $fileContent = $json->files->openswoole_file;
+    Assert::true(str_starts_with($fileContent, $prefix));
+    $fileContent = substr($fileContent, strlen($prefix));
     Assert::eq(md5(base64_decode($fileContent)), md5_file(TEST_IMAGE));
 });
 ?>

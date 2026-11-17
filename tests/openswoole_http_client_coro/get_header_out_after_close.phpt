@@ -8,14 +8,15 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use OpenSwoole\Coroutine as co;
 
-co::create(function () {
-    $http = new OpenSwoole\Coroutine\Http\Client('httpbun.com', 80, false);
+$server = SwooleTest\LocalServer::start();
+co::create(function () use ($server) {
+    $http = new OpenSwoole\Coroutine\Http\Client($server->host, $server->httpPort, false);
     $http->set([
         'timeout' => -1,
         'keep_alive' => false,
     ]);
     $http->execute('/get');
-    echo strpos($http->getHeaderOut(), 'httpbun.com') > -1;
+    echo strpos($http->getHeaderOut(), $server->host) > -1;
 });
 openswoole_event::wait();
 

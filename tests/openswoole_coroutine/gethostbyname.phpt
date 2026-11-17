@@ -3,7 +3,6 @@ openswoole_coroutine: gethostbyname and dns cache
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -14,9 +13,7 @@ use  OpenSwoole\Coroutine;
 
 Co::run(function () {
     $map = [
-        'www.google.com' => null,
-        'www.youtube.com' => null,
-        'www.facebook.com' => null,
+        'localhost' => null,
     ];
 
     $first_time = microtime(true);

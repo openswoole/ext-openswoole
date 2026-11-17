@@ -3,18 +3,15 @@ openswoole_http_client_coro: http 204 no content
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
-skip_if_in_travis('travis network');
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
-    $url_info = parse_url('http://httpbun.com/status/204');
-    $domain = $url_info['host'];
-    $path = $url_info['path'];
-    $cli = new OpenSwoole\Coroutine\Http\Client($domain);
+$server = SwooleTest\LocalServer::start();
+go(function () use ($server) {
+    $domain = $server->host;
+    $cli = new OpenSwoole\Coroutine\Http\Client($domain, $server->httpPort);
     $cli->set(['timeout' => 5]);
     $cli->setHeaders([
         'Host' => $domain,
@@ -22,7 +19,7 @@ go(function () {
         'Accept' => 'text/html,application/xhtml+xml,application/xml',
         'Accept-Encoding' => 'gzip'
     ]);
-    Assert::assert($cli->post($path, []));
+    Assert::assert($cli->post('/status/204', []));
     Assert::same($cli->statusCode, 204);
     Assert::assert(empty($cli->body));
 });

@@ -15,11 +15,12 @@ use GuzzleHttp\TransferStats;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
-    $client = new Client();
-    $host = 'https://httpbun.com/get';
+co::run(function () use ($server) {
+    $client = new Client(['verify' => false]);
+    $host = $server->url('/get', true);
     $client->request('GET', $host, [
         'on_stats' => function (TransferStats $stats) use ($host) {
             Assert::eq($stats->getEffectiveUri(), $host);

@@ -10,8 +10,8 @@ use OpenSwoole\Coroutine\Http2\Client;
 use OpenSwoole\Http2\Request;
 
 co::run(function () {
-    $domain = 'cloudflare.com';
-    $c = new Client($domain, 443, true);
+    // only the local settings are read, the client does not connect
+    $c = new Client('127.0.0.1', 443, true);
     $c->set([
         'http2_header_table_size' => 4095,
         'http2_initial_window_size' => 65534,

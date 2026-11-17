@@ -2,7 +2,6 @@
 openswoole_coroutine: \OpenSwoole\Coroutine::dnsLookup
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -12,8 +11,8 @@ use OpenSwoole\Coroutine\System;
 
 
 Co::run(function () {
-    $host = System::dnsLookup('www.baidu.com');
-    Assert::assert(filter_var($host, FILTER_VALIDATE_IP) !== false);
+    $host = System::dnsLookup('localhost');
+    Assert::same($host, '127.0.0.1');
 });
 ?>
 --EXPECT--

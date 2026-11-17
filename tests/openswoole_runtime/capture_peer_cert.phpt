@@ -4,23 +4,22 @@ openswoole_runtime: ssl capture_peer_cert
 <?php
 require __DIR__ . '/../include/skipif.inc';
 skip_if_no_ssl();
-skip_if_offline();
-skip("TODOv22");
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-function capture_peer_cert($domain)
+function capture_peer_cert($host, $port)
 {
     $g = stream_context_create([
         "ssl" => [
             "capture_peer_cert" => true,
             'capture_peer_cert_chain' => true,
-            'verify_peer' => false
+            'verify_peer' => false,
+            'verify_peer_name' => false,
         ]
     ]);
-    $r = stream_socket_client("ssl://{$domain}:443", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $g);
+    $r = stream_socket_client("ssl://{$host}:{$port}", $errno, $errstr, 5, STREAM_CLIENT_CONNECT, $g);
     if (!$r) {
         return false;
     }
@@ -31,13 +30,21 @@ function capture_peer_cert($domain)
     return $cont;
 }
 
+$server = SwooleTest\LocalServer::start();
+
 OpenSwoole\Runtime::setHookFlags(SWOOLE_HOOK_ALL);
 
-co::run(function ()  {
-    $result = capture_peer_cert('www.google.com');
+co::run(function () use ($server) {
+    $result = capture_peer_cert($server->host, $server->httpsPort);
+    Assert::isArray($result);
     $info1 = openssl_x509_parse($result["options"]["ssl"]["peer_certificate"]);
     Assert::isArray($info1);
-    Assert::contains($info1['name'], 'google.com');
+    Assert::contains($info1['name'], 'CN=127.0.0.1');
+    Assert::same($info1['subject']['CN'], '127.0.0.1');
+    $chain = $result['options']['ssl']['peer_certificate_chain'];
+    Assert::isArray($chain);
+    Assert::greaterThanEq(count($chain), 1);
+    Assert::same(openssl_x509_parse($chain[0])['subject']['CN'], '127.0.0.1');
 });
 ?>
 --EXPECT--

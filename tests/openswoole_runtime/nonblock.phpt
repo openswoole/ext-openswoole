@@ -8,9 +8,11 @@ require __DIR__ . '/../include/skipif.inc';
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-co::run(function () {
+$server = SwooleTest\LocalServer::start();
+
+co::run(function () use ($server) {
     $socket = stream_socket_client(
-        'tcp://www.baidu.com:80',
+        "tcp://{$server->host}:{$server->httpPort}",
         $errorCode,
         $errorMessage,
         1,

@@ -3,27 +3,28 @@ openswoole_runtime: stream_socket_sendto
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+$server = SwooleTest\LocalServer::start();
+
 swoole\runtime::enableCoroutine();
 
-go(function () {
-    $fp = stream_socket_client("tcp://www.baidu.com:80", $errno, $errstr, 30);
+go(function () use ($server) {
+    $fp = stream_socket_client("tcp://{$server->host}:{$server->httpPort}", $errno, $errstr, 30);
     if (!$fp) {
         echo "$errstr ($errno)<br />\n";
     } else {
-        $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: www.baidu.com\r\nConnection: Close\r\n\r\n";
+        $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: {$server->host}\r\nConnection: Close\r\n\r\n";
         stream_socket_sendto($fp, $http);
         $content = '';
         while (!feof($fp)) {
             $content .= fread($fp, 1024);
         }
         fclose($fp);
-        Assert::assert(strpos($content,'map.baidu.com') !== false);
+        Assert::assert(strpos($content,'OpenSwoole test page') !== false);
     }
 });
 openswoole_event_wait();

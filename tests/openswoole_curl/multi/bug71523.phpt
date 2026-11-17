@@ -14,9 +14,10 @@ use OpenSwoole\Runtime;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
-co::run(function () {
-    $base = curl_init('http://www.baidu.com/');
+co::run(function () use ($server) {
+    $base = curl_init($server->url('/'));
     curl_setopt($base, CURLOPT_RETURNTRANSFER, true);
     $mh = curl_multi_init();
 

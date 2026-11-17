@@ -16,7 +16,7 @@ function test($port) {
     } else {
         //200ms
         stream_set_timeout($fp, 0, 200000);
-        $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: www.baidu.com\r\nConnection: Close\r\n\r\n";
+        $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: 127.0.0.1\r\nConnection: Close\r\n\r\n";
         fwrite($fp, $http);
         $content = fread($fp, 1024);
         Assert::isEmpty($content);

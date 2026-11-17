@@ -1,16 +1,15 @@
 --TEST--
 openswoole_http_client_coro: http client with HEAD method
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-OpenSwoole\Coroutine::create(function ()
+$server = SwooleTest\LocalServer::start();
+OpenSwoole\Coroutine::create(function () use ($server)
 {
-    $cli = new \OpenSwoole\Coroutine\Http\Client('www.baidu.com', 80);
+    $cli = new \OpenSwoole\Coroutine\Http\Client($server->host, $server->httpPort);
     $cli->set(['timeout' => 10]);
     $cli->setMethod('HEAD');
     $cli->get('/');

@@ -2,7 +2,6 @@
 openswoole_http_client_coro/websocket: client & server
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc';
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -49,7 +48,7 @@ $pm->childFunc = function () use ($pm)
     });
 
     $ws->on('open', function ($serv, openswoole_http_request $request) {
-        $ip = co::gethostbyname('www.baidu.com');
+        $ip = co::gethostbyname('localhost');
         if ($ip)
         {
             $serv->push($request->fd, "start\n");

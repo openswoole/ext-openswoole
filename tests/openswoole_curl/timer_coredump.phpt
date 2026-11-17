@@ -12,12 +12,14 @@ use OpenSwoole\Runtime;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 function test()
 {
+    global $server;
     $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, 'https://httpbun.com/');
+    curl_setopt($curl, CURLOPT_URL, $server->url('/', true));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);

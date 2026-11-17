@@ -2,7 +2,6 @@
 openswoole_coroutine_system: gethostbyname
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -34,7 +33,7 @@ $sch->add(function () {
 });
 $sch->parallel(OpenSwoole\Util::getCPUNum() * [4, 16, 32, 64][PRESSURE_LEVEL], function () {
     System::usleep(mt_rand(1, 5) * 1000);
-    $result = OpenSwoole\Coroutine\System::getaddrinfo('www.baidu.com');
+    $result = OpenSwoole\Coroutine\System::getaddrinfo('localhost');
     Assert::notEmpty($result);
 });
 $sch->start();

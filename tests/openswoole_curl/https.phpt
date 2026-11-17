@@ -12,20 +12,23 @@ use OpenSwoole\Runtime;
 
 const N = 8;
 
+$server = SwooleTest\LocalServer::start();
+
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 $s = microtime(true);
-co::run(function () {
+co::run(function () use ($server) {
     $n = N;
     while($n--) {
-        go(function() {
+        go(function() use ($server) {
             $ch = curl_init();
             $code = uniqid('openswoole_');
-                $domain = 'www.google.com';
-            $url = "https://{$domain}/?code=".urlencode($code);
+            $url = $server->url('/bytes/16384?code=' . urlencode($code), true);
 
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
             curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
             curl_setopt($ch, CURLOPT_CONNECTTIMEOUT , 2);
             curl_setopt($ch, CURLOPT_TIMEOUT, 5);
             curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $strHeader) {

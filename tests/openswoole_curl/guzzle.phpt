@@ -19,41 +19,43 @@ Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
 const N = 4;
 
-co::run(function () {
+$server = SwooleTest\LocalServer::start();
+
+co::run(function () use ($server) {
     $wg = new WaitGroup();
     $result = [];
-    go(function () use ($wg, &$result) {
+    go(function () use ($wg, &$result, $server) {
         $wg->add();
-        $client = new Client();
+        $client = new Client(['verify' => false]);
         $promises = [
-            'baidu' => $client->getAsync('http://www.baidu.com/'),
-            'qq' => $client->getAsync('https://www.qq.com/'),
-            'gov' => $client->getAsync('http://www.gov.cn/')
+            'a' => $client->getAsync($server->url('/')),
+            'b' => $client->getAsync($server->url('/', true)),
+            'c' => $client->getAsync($server->url('/?n=3'))
         ];
         $responses = Promise\Utils::unwrap($promises);
-        Assert::contains($responses['baidu']->getBody(), '百度');
-        Assert::contains(iconv('gbk', 'utf-8', (string)$responses['qq']->getBody()), '腾讯');
-        Assert::contains($responses['gov']->getBody(), '中华人民共和国');
+        Assert::contains((string)$responses['a']->getBody(), 'OpenSwoole test page');
+        Assert::contains((string)$responses['b']->getBody(), 'OpenSwoole test page');
+        Assert::contains((string)$responses['c']->getBody(), 'OpenSwoole test page');
         $result['task_1'] = 'OK';
         $wg->done();
     });
 
-    go(function () use ($wg, &$result) {
+    go(function () use ($wg, &$result, $server) {
         $wg->add();
-        $client = new Client(['base_uri' => 'http://httpbun.com/']);
+        $client = new Client(['base_uri' => $server->url('/')]);
         $n = N;
         $data = $promises = [];
         while ($n--) {
             $key = 'req_' . $n;
             $data[$key] = uniqid('openswoole_test');
-            $promises[$key] = $client->getAsync('/base64/' . base64_encode($data[$key]));
+            $promises[$key] = $client->getAsync('/get', ['query' => ['data' => $data[$key]]]);
         }
         $responses = Promise\Utils::unwrap($promises);
 
         $n = N;
         while ($n--) {
             $key = 'req_' . $n;
-            Assert::eq($responses[$key]->getBody(), $data[$key]);
+            Assert::eq(json_decode((string)$responses[$key]->getBody(), true)['args']['data'], $data[$key]);
         }
         $result['task_2'] = 'OK';
         $wg->done();

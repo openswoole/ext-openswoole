@@ -5,10 +5,12 @@ openswoole_runtime/stream_select: timeout
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
+$server = SwooleTest\LocalServer::start();
+
 OpenSwoole\Runtime::enableCoroutine();
-co::run(function () {
+co::run(function () use ($server) {
     OpenSwoole\Runtime::enableCoroutine();
-    $fp1 = stream_socket_client("tcp://www.google.com:80", $errno, $errstr, 30);
+    $fp1 = stream_socket_client("tcp://{$server->host}:{$server->httpPort}", $errno, $errstr, 30);
     if (!$fp1) {
         echo "$errstr ($errno)<br />\n";
     } else {

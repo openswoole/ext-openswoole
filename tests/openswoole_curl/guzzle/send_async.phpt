@@ -15,17 +15,18 @@ use GuzzleHttp\Psr7\Request;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
-    $client = new Client();
-    $response = $client->request('GET', 'https://httpbun.com/get');
+co::run(function () use ($server) {
+    $client = new Client(['verify' => false]);
+    $response = $client->request('GET', $server->url('/get', true));
 
     echo $response->getStatusCode(), PHP_EOL; // 200
     echo $response->getHeaderLine('content-type'), PHP_EOL; // 'application/json'
 
     // Send an asynchronous request.
-    $request = new Request('GET', 'https://httpbun.com');
+    $request = new Request('GET', $server->url('/', true));
     $promise = $client->sendAsync($request)->then(function ($response) {
         echo 'I completed! ' . $response->getStatusCode() . PHP_EOL;
     });

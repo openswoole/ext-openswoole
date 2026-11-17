@@ -1,14 +1,14 @@
 --TEST--
 openswoole_event: openswoole_event_set
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$fp = stream_socket_client("tcp://www.qq.com:80", $errno, $errstr, 30);
+$server = SwooleTest\LocalServer::start();
+
+$fp = stream_socket_client("tcp://{$server->host}:{$server->httpPort}", $errno, $errstr, 30);
 
 function write_callback($fp) {
     $resp = fread($fp, 8192);
@@ -33,7 +33,7 @@ openswoole_event_add($fp, function($fp) {
 #设置写事件回调函数，这会替换掉原有的写事件回调函数
 openswoole_event_set($fp, null, 'write_callback', SWOOLE_EVENT_WRITE);
 
-openswoole_event_write($fp, "GET / HTTP/1.1\r\nHost: www.qq.com\r\n\r\n");
+openswoole_event_write($fp, "GET / HTTP/1.1\r\nHost: {$server->host}\r\n\r\n");
 echo "Finish\n";
 openswoole_event_wait();
 ?>

@@ -11,7 +11,9 @@ require __DIR__ . '/../include/bootstrap.php';
 Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
 
 co::run(function () {
-    $nodes = array('https://www.googlenoop.com', 'https://www.phpnoop.net', 'https://openswoolenoop.com');
+    // hosts that cannot resolve: a DNS label longer than 63 bytes is never queried
+    $label = str_repeat('x', 64);
+    $nodes = array("https://www.{$label}googlenoop.com", "https://www.{$label}phpnoop.net", "https://{$label}openswoolenoop.com");
     $node_count = count($nodes);
 
     $curl_arr = array();

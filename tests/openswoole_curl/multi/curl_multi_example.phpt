@@ -9,16 +9,20 @@ if (!extension_loaded('curl')) { print("skip"); }
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
+$server = SwooleTest\LocalServer::start();
+
 OpenSwoole\Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function() {
+co::run(function() use ($server) {
   $multiCurl = array();
   $result = array();
   $mh = curl_multi_init();
-  $urls = ['https://openswoole.com','https://www.php.net/'];
+  $urls = [$server->url('/', true), $server->url('/get')];
   foreach ($urls as $i => $url) {
     $multiCurl[$i] = curl_init();
     curl_setopt($multiCurl[$i], CURLOPT_URL,$url);
+    // the local HTTPS server has a self-signed certificate
+    curl_setopt($multiCurl[$i], CURLOPT_SSL_VERIFYPEER, false);
     curl_setopt($multiCurl[$i], CURLOPT_HEADER,0);
     curl_setopt($multiCurl[$i], CURLOPT_RETURNTRANSFER,1);
     curl_multi_add_handle($mh, $multiCurl[$i]);
@@ -29,6 +33,7 @@ co::run(function() {
   } while($index > 0);
   foreach($multiCurl as $k => $ch) {
     $result[$k] = strlen(curl_multi_getcontent($ch));
+    Assert::greaterThan($result[$k], 0);
     curl_multi_remove_handle($mh, $ch);
   }
   // close

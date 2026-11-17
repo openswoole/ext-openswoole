@@ -15,18 +15,19 @@ use GuzzleHttp\Cookie\CookieJar;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
+co::run(function () use ($server) {
     $client = new Client();
     $jar = CookieJar::fromArray(
         [
             'some_cookie' => 'foo',
             'other_cookie' => 'barbaz1234'
         ],
-        'httpbun.com'
+        $server->host
     );
-    $r = $client->request('GET', 'http://httpbun.com/cookies', [
+    $r = $client->request('GET', $server->url('/cookies'), [
         'cookies' => $jar
     ]);
     Assert::eq($r->getStatusCode(), 200);
