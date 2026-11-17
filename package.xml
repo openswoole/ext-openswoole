@@ -61,6 +61,10 @@
          . Fix the server master process being killed by SIGALRM when a timer was created before Server::start()
          . Fix the static handler sending the file body for HEAD requests
          . Fix the HTTP/2 client reply to PING frames and its handling of GOAWAY and padded frames
+         . Fix CurlHandle objects never being freed with CURLOPT_HEADERFUNCTION in the native curl hook on PHP 8.4+ (#391)
+         . Fix HTTP/2 server responses to HEAD requests sending a body
+         . Fix bundled hiredis symbols colliding with other extensions that link hiredis (#394)
+         . Fix the build on FreeBSD 14 and 15 (#389)
          . Various stability fixes
     </notes>
     <contents>
@@ -803,6 +807,7 @@
             <file role="test" name="tests/openswoole_coroutine_wait_group/logic.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/1.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/10.phpt" />
+            <file role="test" name="tests/openswoole_curl/header_function_leak.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/11.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/13.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/15.phpt" />
@@ -958,6 +963,7 @@
             <file role="test" name="tests/openswoole_http2_server/big_data.phpt" />
             <file role="test" name="tests/openswoole_http2_server/compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/control_frames.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/head_response.phpt" />
             <file role="test" name="tests/openswoole_http2_server/goaway.phpt" />
             <file role="test" name="tests/openswoole_http2_server/h2_settings.phpt" />
             <file role="test" name="tests/openswoole_http2_server/headers_frame.phpt" />

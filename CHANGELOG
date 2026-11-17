@@ -45,6 +45,10 @@
  . Fix the server master process being killed by SIGALRM when a timer was created before Server::start()
  . Fix the static handler sending the file body for HEAD requests
  . Fix the HTTP/2 client reply to PING frames and its handling of GOAWAY and padded frames
+ . Fix CurlHandle objects never being freed with CURLOPT_HEADERFUNCTION in the native curl hook on PHP 8.4+ (#391)
+ . Fix HTTP/2 server responses to HEAD requests sending a body
+ . Fix bundled hiredis symbols colliding with other extensions that link hiredis (#394)
+ . Fix the build on FreeBSD 14 and 15 (#389)
  . Various stability fixes
 
 # 26.2.0
