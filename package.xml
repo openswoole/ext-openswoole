@@ -76,6 +76,8 @@
          . Fix configure not finding libpq in lib64 without pg_config (#245)
          . Fix task workers logging a warning for SIGPIPE
          . Fix Xdebug not seeing the request callback with use_fiber_context, which crashed the worker when variables were inspected (#404)
+         . Fix the io_uring reactor not answering requests in SWOOLE_PROCESS mode (#405)
+         . Fix the io_uring reactor on kernels before 5.13, where multishot poll is not available
          . Various stability fixes
     </notes>
     <contents>
