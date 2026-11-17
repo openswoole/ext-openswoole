@@ -13,7 +13,7 @@ $proc = new Process(function(Process $process) {
     OpenSwoole\Util::setAio(['wait_signal' => true]);
     Process::signal(SIGINT, function () {
         echo "SIGINT\n";
-        // Process::signal(SIGINT, null);
+        Process::signal(SIGINT, null);
     });
     echo "START\n";
     Event::wait();

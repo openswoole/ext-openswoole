@@ -570,7 +570,6 @@ static void php_openswoole_onSignal(int signo) {
                 E_WARNING, "%s: signal [%d] handler error", ZSTR_VAL(openswoole_process_ce->name), signo);
         }
     }
-    OpenSwooleTG.signal_listener_num--;
 }
 
 zend_bool php_openswoole_signal_isset_handler(int signo) {
