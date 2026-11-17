@@ -53,6 +53,7 @@ static std::unordered_map<std::string, bool> server_options_map({
     { "log_rotation", true },
     { "display_errors", true },
     { "dns_server", true },
+    { "reactor_type", true },
     { "socket_dns_timeout", true },
     { "socket_connect_timeout", true },
     { "socket_write_timeout", true },

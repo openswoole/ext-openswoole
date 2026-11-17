@@ -99,8 +99,10 @@ ReactorIoUring::ReactorIoUring(Reactor *_reactor, int max_events) : ReactorImpl(
     struct io_uring_params params;
     memset(&params, 0, sizeof(params));
 
-    if (io_uring_queue_init_params(max_events, &ring_, &params) < 0) {
-        openswoole_sys_warning("io_uring_queue_init_params failed");
+    int ret = io_uring_queue_init_params(max_events, &ring_, &params);
+    if (ret < 0) {
+        // the error is returned, errno is not set
+        openswoole_debug("io_uring_queue_init_params failed: %s", strerror(-ret));
         return;
     }
     ring_initialized_ = true;

@@ -81,6 +81,19 @@ Reactor::Reactor(int max_event, Type _type) {
 #ifdef HAVE_IO_URING
     case TYPE_IO_URING:
         impl = make_reactor_io_uring(this, max_event);
+#ifdef HAVE_EPOLL
+        // io_uring can be blocked, e.g. by the default Docker seccomp profile: use epoll instead
+        if (!impl->ready()) {
+            static bool warned = false;
+            if (!warned) {
+                warned = true;
+                openswoole_warning("io_uring is not available, using epoll");
+            }
+            delete impl;
+            type_ = TYPE_EPOLL;
+            impl = make_reactor_epoll(this, max_event);
+        }
+#endif
         break;
 #endif
 #ifdef HAVE_EPOLL
