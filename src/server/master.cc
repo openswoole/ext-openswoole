@@ -36,9 +36,12 @@ TimerCallback Server::get_timeout_callback(ListenPort *port, Reactor *reactor, C
         if (conn->protect) {
             return;
         }
+        // the timestamps are in milliseconds, max_idle_time is in seconds;
+        // the connection is idle only when nothing was received or sent
         long ms = time<std::chrono::milliseconds>(true);
-        if (ms - conn->socket->last_received_time < port->max_idle_time &&
-            ms - conn->socket->last_sent_time < port->max_idle_time) {
+        long max_idle_ms = (long) port->max_idle_time * 1000;
+        if (ms - conn->socket->last_received_time < max_idle_ms ||
+            ms - conn->socket->last_sent_time < max_idle_ms) {
             return;
         }
         if (disable_notify || conn->closed || conn->close_force) {
