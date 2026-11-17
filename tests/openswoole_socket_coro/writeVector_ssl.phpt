@@ -38,8 +38,13 @@ $pm->childFunc = function () use ($pm) {
     $serv->on("workerStart", function ($serv) use ($pm) {
         $pm->wakeup();
     });
-    $serv->on('receive', function ($serv, $fd, $tid, $data) {
-        Assert::eq($data, 'helloworld');
+    // each iov item can arrive in its own TLS record, collect the stream
+    $received = '';
+    $serv->on('receive', function ($serv, $fd, $tid, $data) use (&$received) {
+        $received .= $data;
+        if (strlen($received) >= strlen('helloworld')) {
+            Assert::eq($received, 'helloworld');
+        }
     });
     $serv->start();
 };
