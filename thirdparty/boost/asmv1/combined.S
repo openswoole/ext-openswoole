@@ -14,7 +14,7 @@
     #elif defined(__arm__)
         #include "make_arm_aapcs_elf_gas.S"
         #include "jump_arm_aapcs_elf_gas.S"
-    #elif defined(__arm64__)
+    #elif defined(__arm64__) || defined(__aarch64__)
         #include "make_arm64_aapcs_elf_gas.S"
         #include "jump_arm64_aapcs_elf_gas.S"
     #else
