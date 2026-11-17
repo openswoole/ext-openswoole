@@ -53,6 +53,8 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
     SendData response;
     response.info.fd = conn->session_id;
     response.info.type = OSW_SERVER_EVENT_RECV_DATA;
+    // a HEAD response has the GET headers, Content-Length included, but no body
+    bool is_head = request->method == OSW_HTTP_HEAD;
 
     if (handler.status_code == OSW_HTTP_NOT_FOUND) {
         response.info.len = osw_snprintf(header_buffer,
@@ -63,7 +65,7 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
                                         "\r\n%s",
                                         http_server::get_status_message(OSW_HTTP_NOT_FOUND),
                                         sizeof(OSW_HTTP_PAGE_404) - 1,
-                                        OSW_HTTP_PAGE_404);
+                                        is_head ? "" : OSW_HTTP_PAGE_404);
         response.data = header_buffer;
         send_to_connection(&response);
 
@@ -138,9 +140,11 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
         response.data = header_buffer;
         send_to_connection(&response);
 
-        response.info.len = body_length;
-        response.data = body.c_str();
-        send_to_connection(&response);
+        if (!is_head) {
+            response.info.len = body_length;
+            response.data = body.c_str();
+            send_to_connection(&response);
+        }
         return true;
     }
 
@@ -169,7 +173,7 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
     send_to_connection(&response);
 
     // Send HTTP body
-    if (task->length != 0) {
+    if (task->length != 0 && !is_head) {
         response.info.type = OSW_SERVER_EVENT_SEND_FILE;
         response.info.len = sizeof(*task) + task->length + 1;
         response.data = (char *) task;

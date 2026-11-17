@@ -107,6 +107,10 @@ bool StaticHandler::hit() {
 
     l_filename = http_server::url_decode(task.filename, p - task.filename);
     task.filename[l_filename] = '\0';
+    // a decoded NUL would cut the file name short
+    if (memchr(task.filename, '\0', l_filename)) {
+        return false;
+    }
 
     // check the decoded path against document_root
     if (openswoole_strnpos(task.filename, l_filename, OSW_STRL("..")) == -1) {

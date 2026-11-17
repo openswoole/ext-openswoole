@@ -20,7 +20,7 @@ $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     co::run(function () use ($pm) {
         foreach (['/index.txt', '/sub/../index.txt', '/sub/%2e%2e/index.txt', '/%2e%2e/other/file.txt',
-                     '/%2E%2E/other/file.txt', '/../other/file.txt', '/../abc/f.txt'] as $path) {
+                     '/%2E%2E/other/file.txt', '/../other/file.txt', '/../abc/f.txt', '/index.txt%00.png'] as $path) {
             $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             Assert::true($cli->connect('127.0.0.1', $pm->getFreePort()));
             $cli->send("GET {$path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n");
@@ -59,3 +59,4 @@ $pm->run();
 /%2E%2E/other/file.txt DYNAMIC
 /../other/file.txt DYNAMIC
 /../abc/f.txt DYNAMIC
+/index.txt%00.png DYNAMIC
