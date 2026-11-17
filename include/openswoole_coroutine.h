@@ -258,7 +258,7 @@ class Coroutine {
 //-------------------------------------------------------------------------------
 namespace coroutine {
 bool async(async::Handler handler, AsyncEvent &event, double timeout = -1);
-bool async(const std::function<void(void)> &fn, double timeout = -1);
+bool async(const std::function<void(void)> &fn);
 bool run(const CoroutineFunc &fn, void *arg = nullptr);
 }  // namespace coroutine
 //-------------------------------------------------------------------------------

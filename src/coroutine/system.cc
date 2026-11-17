@@ -162,6 +162,8 @@ std::string gethostbyname_impl_with_async(const std::string &hostname, int domai
     ev.flags = domain;
     ev.retval = 1;
 
+    ev.destroy = [](AsyncEvent *event) { osw_free(event->buf); };
+
     coroutine::async(async::handler_gethostbyname, ev, timeout);
 
     if (ev.retval == -1) {
@@ -169,6 +171,10 @@ std::string gethostbyname_impl_with_async(const std::string &hostname, int domai
             ev.error = OSW_ERROR_DNSLOOKUP_RESOLVE_TIMEOUT;
         }
         openswoole_set_last_error(ev.error);
+        // when the wait was canceled the thread may still write to buf, destroy() frees it later
+        if (!ev.canceled) {
+            osw_free(ev.buf);
+        }
         return "";
     } else {
         std::string addr((char *) ev.buf);
@@ -220,31 +226,41 @@ std::vector<std::string> System::getaddrinfo(
     assert(!hostname.empty());
     assert(family == AF_INET || family == AF_INET6);
 
+    // on the heap: when the wait times out the thread still writes to it, destroy() frees it later
+    struct Context {
+        std::string hostname;
+        std::string service;
+        network::GetaddrinfoRequest req;
+        struct sockaddr_in6 result_buffer[OSW_DNS_HOST_BUFFER_SIZE];
+    };
+    Context *ctx = new Context{hostname, service, {}, {}};
+
     AsyncEvent ev{};
-    network::GetaddrinfoRequest req{};
+    ev.req = &ctx->req;
+    ev.buf = ctx;
+    ev.destroy = [](AsyncEvent *event) { delete (Context *) event->buf; };
 
-    ev.req = &req;
-
-    struct sockaddr_in6 result_buffer[OSW_DNS_HOST_BUFFER_SIZE];
-
-    req.hostname = hostname.c_str();
-    req.family = family;
-    req.socktype = socktype;
-    req.protocol = protocol;
-    req.service = service.empty() ? nullptr : service.c_str();
-    req.result = result_buffer;
+    ctx->req.hostname = ctx->hostname.c_str();
+    ctx->req.family = family;
+    ctx->req.socktype = socktype;
+    ctx->req.protocol = protocol;
+    ctx->req.service = ctx->service.empty() ? nullptr : ctx->service.c_str();
+    ctx->req.result = ctx->result_buffer;
 
     coroutine::async(async::handler_getaddrinfo, ev, timeout);
 
     std::vector<std::string> retval;
 
-    if (ev.retval == -1 || req.error != 0) {
+    if (ev.retval == -1 || ctx->req.error != 0) {
         if (ev.error == OSW_ERROR_AIO_TIMEOUT) {
             ev.error = OSW_ERROR_DNSLOOKUP_RESOLVE_TIMEOUT;
         }
         openswoole_set_last_error(ev.error);
     } else {
-        req.parse_result(retval);
+        ctx->req.parse_result(retval);
+    }
+    if (!ev.canceled) {
+        delete ctx;
     }
 
     return retval;
@@ -684,7 +700,9 @@ static void async_lambda_callback(AsyncEvent *event) {
     task->co->resume();
 }
 
-bool async(const std::function<void(void)> &fn, double timeout) {
+// fn usually captures the caller's stack by reference, so the coroutine can not leave
+// before the task has finished: it is neither cancelable nor has a timeout
+bool async(const std::function<void(void)> &fn) {
     AsyncEvent event{};
     AsyncLambdaTask task{Coroutine::get_current_safe(), fn};
 
@@ -697,14 +715,9 @@ bool async(const std::function<void(void)> &fn, double timeout) {
         return false;
     }
 
-    if (!task.co->yield_ex(timeout)) {
-        _ev->canceled = true;
-        errno = openswoole_get_last_error();
-        return false;
-    } else {
-        errno = _ev->error;
-        return true;
-    }
+    task.co->yield();
+    errno = _ev->error;
+    return true;
 }
 
 }  // namespace coroutine

@@ -60,6 +60,8 @@ struct AsyncEvent {
     void *object;
     void (*handler)(AsyncEvent *event);
     void (*callback)(AsyncEvent *event);
+    // frees buf/req when the waiting coroutine gave up (timeout or cancel) before the task finished
+    void (*destroy)(AsyncEvent *event);
 
     bool catch_error() {
         return (error == OSW_ERROR_AIO_TIMEOUT || error == OSW_ERROR_AIO_CANCELED);

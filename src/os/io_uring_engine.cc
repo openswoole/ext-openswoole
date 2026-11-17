@@ -214,13 +214,9 @@ int IoUringEngine::submit_and_yield(IoUringRequest *req) {
     Coroutine *co = Coroutine::get_current();
     req->coroutine = co;
 
-    if (!co->yield_ex(30.0)) {
-        // Timeout or cancellation — mark request as abandoned so process_completions() cleans it up
-        req->abandoned = true;
-        pending_count_--;
-        errno = co->is_timedout() ? ETIMEDOUT : ECANCELED;
-        return -1;
-    }
+    // the kernel writes to the caller's buffer until the request completes,
+    // so the coroutine can not leave early: no timeout and not cancelable
+    co->yield();
 
     pending_count_--;
 
@@ -249,11 +245,6 @@ void IoUringEngine::process_completions() {
         }
         auto *req = static_cast<IoUringRequest *>(io_uring_cqe_get_data(cqe));
         if (!req) {
-            continue;
-        }
-
-        if (req->abandoned) {
-            delete req;
             continue;
         }
 
@@ -369,12 +360,7 @@ int IoUringEngine::fstat(int fd, struct stat *statbuf) {
     Coroutine *co = Coroutine::get_current();
     req->coroutine = co;
 
-    if (!co->yield_ex(30.0)) {
-        req->abandoned = true;
-        pending_count_--;
-        errno = co->is_timedout() ? ETIMEDOUT : ECANCELED;
-        return -1;
-    }
+    co->yield();
 
     pending_count_--;
 
