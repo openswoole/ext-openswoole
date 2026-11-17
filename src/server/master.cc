@@ -1157,7 +1157,7 @@ int Server::send_to_connection(SendData *_send) {
     else if (_send->info.type == OSW_SERVER_EVENT_SEND_FILE) {
         SendfileTask *task = (SendfileTask *) _send_data;
         if (conn->socket->sendfile(task->filename, task->offset, task->length) < 0) {
-            return false;
+            return OSW_ERR;
         }
     }
     // send data
@@ -1166,7 +1166,7 @@ int Server::send_to_connection(SendData *_send) {
         if (conn->peer_closed) {
             openswoole_error_log(
                 OSW_LOG_NOTICE, OSW_ERROR_SESSION_CLOSED_BY_CLIENT, "Server::send(): socket#%d is closed by client", fd);
-            return false;
+            return OSW_ERR;
         }
         // connection output buffer overflow
         if (_socket->out_buffer->length() >= _socket->buffer_size) {
