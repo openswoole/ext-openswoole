@@ -284,6 +284,10 @@ static int http_request_on_header_field(llhttp_t *parser, const char *at, size_t
 }
 
 bool HttpContext::parse_form_data(const char *boundary_str, int boundary_len) {
+    // a request can repeat the Content-Type header
+    if (mt_parser) {
+        multipart_parser_free(mt_parser);
+    }
     mt_parser = multipart_parser_init(boundary_str, boundary_len, &mt_parser_settings);
     if (!mt_parser) {
         php_openswoole_fatal_error(E_WARNING, "multipart_parser_init() failed");
@@ -459,6 +463,7 @@ static int http_request_on_header_value(llhttp_t *parser, const char *at, size_t
             }
             if (boundary_len <= 0) {
                 openswoole_warning("invalid multipart/form-data body fd:%ld", ctx->fd);
+                efree(header_name);
                 return -1;
             }
             // trim '"'
