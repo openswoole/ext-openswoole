@@ -25,7 +25,7 @@
 
 using openswoole::coroutine::Channel;
 
-static zend_class_entry *openswoole_channel_coro_ce;
+zend_class_entry *openswoole_channel_coro_ce;
 static zend_object_handlers openswoole_channel_coro_handlers;
 
 struct ChannelObject {

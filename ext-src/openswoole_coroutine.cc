@@ -1315,6 +1315,53 @@ static osw_inline Channel *php_openswoole_get_channel(zval *zobject) {
     return chan;
 }
 
+extern zend_class_entry *openswoole_channel_coro_ce;
+
+// collects the channels of a select() argument, false when an element is not a channel
+static bool php_openswoole_select_channels(zval *zchans, std::vector<Channel *> &chans) {
+    zval *val;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zchans), val) {
+        ZVAL_DEREF(val);
+        if (Z_TYPE_P(val) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(val), openswoole_channel_coro_ce)) {
+            zend_type_error("Coroutine::select() expects arrays of %s", ZSTR_VAL(openswoole_channel_coro_ce->name));
+            return false;
+        }
+        chans.push_back(php_openswoole_get_channel(val));
+    }
+    ZEND_HASH_FOREACH_END();
+    return true;
+}
+
+// keeps the elements whose position is in ready, the array keys may be strings or not sequential
+static void php_openswoole_select_filter(zval *zchans, const std::vector<int> &ready) {
+    HashTable *ht = Z_ARRVAL_P(zchans);
+    std::vector<zval> keys;
+    zend_ulong num_idx;
+    zend_string *key;
+    int position = 0;
+    ZEND_HASH_FOREACH_KEY(ht, num_idx, key) {
+        if (std::find(ready.begin(), ready.end(), position) == ready.end()) {
+            zval zkey;
+            if (key) {
+                ZVAL_STR_COPY(&zkey, key);
+            } else {
+                ZVAL_LONG(&zkey, num_idx);
+            }
+            keys.push_back(zkey);
+        }
+        position++;
+    }
+    ZEND_HASH_FOREACH_END();
+    for (auto &zkey : keys) {
+        if (Z_TYPE(zkey) == IS_STRING) {
+            zend_hash_del(ht, Z_STR(zkey));
+            zval_ptr_dtor(&zkey);
+        } else {
+            zend_hash_index_del(ht, Z_LVAL(zkey));
+        }
+    }
+}
+
 static PHP_METHOD(openswoole_coroutine, select) {
     zval *pull_chans = nullptr;
     zval *push_chans = nullptr;
@@ -1334,49 +1381,19 @@ static PHP_METHOD(openswoole_coroutine, select) {
         timeout = INT_MAX;
     }
 
-    zend_ulong num_idx;
-    zend_string *key;
-    zval *val;
-    (void) key;
-
     std::vector<Channel *> pull_chans_vector;
     std::vector<Channel *> push_chans_vector;
-
-    ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(pull_chans), num_idx, key, val) {
-        ZVAL_DEREF(val);
-        Channel *chan = php_openswoole_get_channel(val);
-        pull_chans_vector.push_back(chan);
+    if (!php_openswoole_select_channels(pull_chans, pull_chans_vector) ||
+        !php_openswoole_select_channels(push_chans, push_chans_vector)) {
+        RETURN_THROWS();
     }
-    ZEND_HASH_FOREACH_END();
-
-    ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(push_chans), num_idx, key, val) {
-        ZVAL_DEREF(val);
-        Channel *chan = php_openswoole_get_channel(val);
-        push_chans_vector.push_back(chan);
-    }
-    ZEND_HASH_FOREACH_END();
 
     Selector selector;
     std::pair<std::vector<int>, std::vector<int>> ready =
         selector.select(pull_chans_vector, push_chans_vector, timeout);
 
-    HashTable *h1 = Z_ARRVAL_P(pull_chans);
-    ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(pull_chans), num_idx, key) {
-        ZVAL_DEREF(val);
-        if (std::find(ready.first.begin(), ready.first.end(), num_idx) == ready.first.end()) {
-            zend_hash_index_del(h1, num_idx);
-        }
-    }
-    ZEND_HASH_FOREACH_END();
-
-    HashTable *h2 = Z_ARRVAL_P(push_chans);
-    ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(push_chans), num_idx, key) {
-        ZVAL_DEREF(val);
-        if (std::find(ready.second.begin(), ready.second.end(), num_idx) == ready.second.end()) {
-            zend_hash_index_del(h2, num_idx);
-        }
-    }
-    ZEND_HASH_FOREACH_END();
+    php_openswoole_select_filter(pull_chans, ready.first);
+    php_openswoole_select_filter(push_chans, ready.second);
 
     array_init(return_value);
     add_assoc_zval_ex(return_value, ZEND_STRL("read"), pull_chans);
