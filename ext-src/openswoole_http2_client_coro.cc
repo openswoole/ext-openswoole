@@ -1140,7 +1140,7 @@ ssize_t Client::build_header(zval *zobject, zval *zrequest, char *buffer) {
             buffer->clear();
             buffer->append(ZSTR_VAL(key), ZSTR_LEN(key));
             buffer->append("=", 1);
-            encoded_value = php_openswoole_url_encode(str_value.val(), str_value.len(), &encoded_value_len);
+            encoded_value = php_openswoole_cookie_value_encode(str_value.val(), str_value.len(), &encoded_value_len);
             if (encoded_value) {
                 buffer->append(encoded_value, encoded_value_len);
                 efree(encoded_value);

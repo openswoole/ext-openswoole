@@ -30,6 +30,7 @@
          . PIE (PHP Installer for Extensions) support
          . Response::cookie() also sends Max-Age when an expiry time is set, like setcookie() (#310)
          . Hooked ssl:// and tls:// client streams use the same peer verification defaults as native PHP; set verify_peer to false to connect to servers with a self-signed certificate
+         . Cookie values are encoded and decoded like PHP does: a "+" is kept and a space is %20, in the server and the HTTP clients; cookies with spaces set by earlier versions read back with "+" until they are set again (#311)
          . OpenSwoole 27.2 will require PHP 8.4 or later; 26.11 is the last release series to support PHP 8.3
          . Fix stream_socket_enable_crypto with tls (#401)
          . Fix io_uring build on Alpine Linux (#400)
@@ -1090,6 +1091,7 @@
             <file role="test" name="tests/openswoole_http_server/compression_min_length.phpt" />
             <file role="test" name="tests/openswoole_http_server/content_length_bug.phpt" />
             <file role="test" name="tests/openswoole_http_server/cookie_delete.phpt" />
+            <file role="test" name="tests/openswoole_http_server/cookie_encoding.phpt" />
             <file role="test" name="tests/openswoole_http_server/cookie_max_age.phpt" />
             <file role="test" name="tests/openswoole_http_server/cookie_samesite.phpt" />
             <file role="test" name="tests/openswoole_http_server/cookie_vs_rawcookie.phpt" />

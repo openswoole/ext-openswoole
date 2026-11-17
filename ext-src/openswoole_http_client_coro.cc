@@ -364,7 +364,7 @@ void http_parse_set_cookies(const char *at, size_t length, zval *zcookies, zval 
     value_len = eof - p;
     if (value_len != 0) {
         ZVAL_STRINGL(&zvalue, p, value_len);
-        Z_STRLEN(zvalue) = php_url_decode(Z_STRVAL(zvalue), value_len);
+        Z_STRLEN(zvalue) = php_raw_url_decode(Z_STRVAL(zvalue), value_len);
     } else {
         ZVAL_EMPTY_STRING(&zvalue);
     }
@@ -1066,7 +1066,7 @@ bool HttpClient::send() {
             buffer->append("=", 1);
 
             int encoded_value_len;
-            encoded_value = php_openswoole_url_encode(str_value.val(), str_value.len(), &encoded_value_len);
+            encoded_value = php_openswoole_cookie_value_encode(str_value.val(), str_value.len(), &encoded_value_len);
             if (encoded_value) {
                 buffer->append(encoded_value, encoded_value_len);
                 efree(encoded_value);

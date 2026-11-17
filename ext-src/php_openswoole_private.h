@@ -982,8 +982,9 @@ static osw_inline char *php_openswoole_format_date(char *format, size_t format_l
     return return_str;
 }
 
-static osw_inline char *php_openswoole_url_encode(const char *value, size_t value_len, int *exten) {
-    zend_string *str = php_url_encode(value, value_len);
+// cookie values are raw url encoded like PHP's setcookie(): a space is %20, not +
+static osw_inline char *php_openswoole_cookie_value_encode(const char *value, size_t value_len, int *exten) {
+    zend_string *str = php_raw_url_encode(value, value_len);
     *exten = ZSTR_LEN(str);
     char *return_str = estrndup(ZSTR_VAL(str), ZSTR_LEN(str));
     zend_string_release(str);

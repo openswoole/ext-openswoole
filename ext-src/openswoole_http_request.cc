@@ -358,7 +358,10 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
             memcpy(valbuf, (char *) at + j, vlen);
             valbuf[vlen] = 0;
             _value = http_trim_double_quote(valbuf, &vlen);
-            vlen = php_url_decode(_value, vlen);
+            // like PHP: cookie values are raw url decoded, a "+" stays a "+"
+            if (url_decode) {
+                vlen = php_raw_url_decode(_value, vlen);
+            }
             if (klen > 1) {
                 add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);
             }
@@ -398,7 +401,7 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
         valbuf[vlen] = 0;
         _value = http_trim_double_quote(valbuf, &vlen);
         if (url_decode) {
-            vlen = php_url_decode(_value, vlen);
+            vlen = php_raw_url_decode(_value, vlen);
         }
         if (klen > 1) {
             add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);

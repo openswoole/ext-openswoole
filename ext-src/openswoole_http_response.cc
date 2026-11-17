@@ -973,7 +973,7 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
         if (url_encode) {
             char *encoded_value;
             int encoded_value_len;
-            encoded_value = php_openswoole_url_encode(value, value_len, &encoded_value_len);
+            encoded_value = php_openswoole_cookie_value_encode(value, value_len, &encoded_value_len);
             cookie_size += encoded_value_len;
             cookie = (char *) emalloc(cookie_size);
             osw_snprintf(cookie, cookie_size, "%s=%s", name, encoded_value);
