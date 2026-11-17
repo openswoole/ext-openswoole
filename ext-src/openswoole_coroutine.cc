@@ -23,6 +23,7 @@
 #include "openswoole_signal.h"
 
 #include "zend_builtin_functions.h"
+#include "zend_observer.h"
 #include "ext/spl/spl_array.h"
 
 #include "openswoole_coroutine_arginfo.h"
@@ -770,13 +771,17 @@ void PHPCoroutine::main_func(void *arg) {
             // TODO: enhancement it, separate execute data is necessary, but we lose the backtrace
             EG(current_execute_data) = nullptr;
             zend_init_func_execute_data(call, &func->op_array, retval);
+            // like zend_call_function(): observers such as Xdebug see the entry function, the VM ends it
+            ZEND_OBSERVER_FCALL_BEGIN(call);
             zend_execute_ex(EG(current_execute_data));
         } else /* ZEND_INTERNAL_FUNCTION */
         {
             ZVAL_NULL(retval);
             call->prev_execute_data = nullptr;
             call->return_value = nullptr; /* this is not a constructor call */
+            ZEND_OBSERVER_FCALL_BEGIN(call);
             execute_internal(call, retval);
+            ZEND_OBSERVER_FCALL_END(call, retval);
             zend_vm_stack_free_args(call);
         }
 
