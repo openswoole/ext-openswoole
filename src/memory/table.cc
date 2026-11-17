@@ -31,8 +31,8 @@ Table *Table::make(uint32_t rows_size, float conflict_proportion) {
 
     if (conflict_proportion > 1.0) {
         conflict_proportion = 1.0;
-    } else if (conflict_proportion < OSW_TABLE_CONFLICT_PROPORTION) {
-        conflict_proportion = OSW_TABLE_CONFLICT_PROPORTION;
+    } else if (conflict_proportion < OSW_TABLE_CONFLICT_PROPORTION_MIN) {
+        conflict_proportion = OSW_TABLE_CONFLICT_PROPORTION_MIN;
     }
 
     Table *table = (Table *) osw_mem_pool()->alloc(sizeof(*table));
