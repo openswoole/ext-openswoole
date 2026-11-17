@@ -472,7 +472,14 @@ bool Client::connect() {
         close();
         return false;
     }
-    ret = nghttp2_hd_deflate_new2(&deflater, local_settings.header_table_size, php_nghttp2_mem());
+    // HPACK: our decoder accepts the table size we advertise, our encoder follows the server's
+    ret = nghttp2_hd_inflate_change_table_size(inflater, local_settings.header_table_size);
+    if (ret != 0) {
+        nghttp2_error(ret, "nghttp2_hd_inflate_change_table_size() failed");
+        close();
+        return false;
+    }
+    ret = nghttp2_hd_deflate_new2(&deflater, remote_settings.header_table_size, php_nghttp2_mem());
     if (ret != 0) {
         nghttp2_error(ret, "nghttp2_hd_deflate_new2() failed");
         close();

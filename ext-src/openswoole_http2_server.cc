@@ -393,7 +393,8 @@ static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_l
     Http2Session *client = http2_sessions[ctx->fd];
     nghttp2_hd_deflater *deflater = client->deflater;
     if (!deflater) {
-        ret = nghttp2_hd_deflate_new2(&deflater, client->local_settings.header_table_size, php_nghttp2_mem());
+        // HPACK: the encoder follows the table size of the peer's decoder, not ours
+        ret = nghttp2_hd_deflate_new2(&deflater, client->remote_settings.header_table_size, php_nghttp2_mem());
         if (ret != 0) {
             openswoole_warning("nghttp2_hd_deflate_new2() failed with error: %s", nghttp2_strerror(ret));
             return -1;
@@ -760,6 +761,28 @@ static bool http2_context_sendfile(HttpContext *ctx, const char *file, uint32_t 
     return true;
 }
 
+// RFC 7540 6.2: [pad length] [priority] header block fragment [padding]
+static bool http2_header_fragment(int flags, const char **in, size_t *inlen) {
+    if (flags & OSW_HTTP2_FLAG_PADDED) {
+        if (*inlen < 1 || (uint8_t) (*in)[0] > *inlen - 1) {
+            openswoole_warning("http2 HEADERS frame with invalid padding");
+            return false;
+        }
+        size_t pad_length = (uint8_t) (*in)[0];
+        *in += 1;
+        *inlen -= 1 + pad_length;
+    }
+    if (flags & OSW_HTTP2_FLAG_PRIORITY) {
+        if (*inlen < 5) {
+            openswoole_warning("http2 HEADERS frame is too short for the priority fields");
+            return false;
+        }
+        *in += 5;
+        *inlen -= 5;
+    }
+    return true;
+}
+
 static int http2_parse_header(Http2Session *client, HttpContext *ctx, int flags, const char *in, size_t inlen) {
     nghttp2_hd_inflater *inflater = client->inflater;
 
@@ -769,28 +792,18 @@ static int http2_parse_header(Http2Session *client, HttpContext *ctx, int flags,
             openswoole_warning("nghttp2_hd_inflate_new2() failed, Error: %s[%d]", nghttp2_strerror(ret), ret);
             return OSW_ERR;
         }
+        // the peer's encoder may use the table size we advertised in SETTINGS
+        ret = nghttp2_hd_inflate_change_table_size(inflater, client->local_settings.header_table_size);
+        if (ret != 0) {
+            openswoole_warning("nghttp2_hd_inflate_change_table_size() failed, Error: %s[%d]", nghttp2_strerror(ret), ret);
+            nghttp2_hd_inflate_del(inflater);
+            return OSW_ERR;
+        }
         client->inflater = inflater;
     }
 
-    // RFC 7540 6.2: [pad length] [priority] header block fragment [padding]
-    if (flags & OSW_HTTP2_FLAG_PADDED) {
-        if (inlen < 1 || (uint8_t) in[0] > inlen - 1) {
-            openswoole_warning("http2 HEADERS frame with invalid padding");
-            return OSW_ERR;
-        }
-        size_t pad_length = (uint8_t) in[0];
-        in += 1;
-        inlen -= 1 + pad_length;
-    }
-    if (flags & OSW_HTTP2_FLAG_PRIORITY) {
-        if (inlen < 5) {
-            openswoole_warning("http2 HEADERS frame is too short for the priority fields");
-            return OSW_ERR;
-        }
-        // int stream_deps = ntohl(*(int *) (in));
-        // uint8_t weight = in[4];
-        in += 5;
-        inlen -= 5;
+    if (!http2_header_fragment(flags, &in, &inlen)) {
+        return OSW_ERR;
     }
 
     zval *zheader = ctx->request.zheader;
@@ -945,6 +958,18 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         return OSW_ERR;
     }
 
+    // RFC 7540 6.10: a header block is only continued by CONTINUATION frames of the same stream
+    bool pending_block = client->header_block_stream_id != 0;
+    if (pending_block != (type == OSW_HTTP2_TYPE_CONTINUATION) ||
+        (pending_block && stream_id != client->header_block_stream_id)) {
+        openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "http2 frame type=%d on stream#%d breaks a header block",
+                             type,
+                             stream_id);
+        return OSW_ERR;
+    }
+
     switch (type) {
     case OSW_HTTP2_TYPE_SETTINGS: {
         if (flags & OSW_HTTP2_FLAG_ACK) {
@@ -1031,14 +1056,55 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         } else {
             ctx = stream->ctx;
         }
+        if (!(flags & OSW_HTTP2_FLAG_END_HEADERS)) {
+            // the header block continues in CONTINUATION frames
+            const char *in = buf;
+            size_t inlen = length;
+            if (!http2_header_fragment(flags, &in, &inlen)) {
+                return OSW_ERR;
+            }
+            client->header_block_stream_id = stream_id;
+            client->header_block_flags = flags & ~(OSW_HTTP2_FLAG_PADDED | OSW_HTTP2_FLAG_PRIORITY);
+            client->header_block.assign(in, inlen);
+            break;
+        }
         if (http2_parse_header(client, ctx, flags, buf, length) < 0) {
             return OSW_ERR;
         }
 
         if (flags & OSW_HTTP2_FLAG_END_STREAM) {
             client->handle(client, stream);
-        } else {
-            // need continue frame
+        }
+        break;
+    }
+    case OSW_HTTP2_TYPE_CONTINUATION: {
+        if (client->header_block.size() + length > OSW_HTTP2_MAX_HEADER_BLOCK_SIZE) {
+            openswoole_error_log(OSW_LOG_WARNING,
+                                 OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                 "http2 stream#%d header block is too large",
+                                 stream_id);
+            return OSW_ERR;
+        }
+        client->header_block.append(buf, length);
+        if (!(flags & OSW_HTTP2_FLAG_END_HEADERS)) {
+            break;
+        }
+        int block_flags = client->header_block_flags;
+        std::string block;
+        block.swap(client->header_block);
+        client->header_block_stream_id = 0;
+
+        auto stream_iterator = client->streams.find(stream_id);
+        if (stream_iterator == client->streams.end()) {
+            openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_HTTP2_STREAM_NOT_FOUND, "http2 stream#%d not found", stream_id);
+            return OSW_ERR;
+        }
+        stream = stream_iterator->second;
+        if (http2_parse_header(client, stream->ctx, block_flags, block.data(), block.size()) < 0) {
+            return OSW_ERR;
+        }
+        if (block_flags & OSW_HTTP2_FLAG_END_STREAM) {
+            client->handle(client, stream);
         }
         break;
     }

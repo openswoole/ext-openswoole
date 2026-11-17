@@ -240,6 +240,11 @@ class Session {
     http2::Settings local_settings = {};
     http2::Settings remote_settings = {};
 
+    // a header block split over HEADERS and CONTINUATION frames
+    uint32_t header_block_stream_id = 0;
+    int header_block_flags = 0;
+    std::string header_block;
+
     uint32_t last_stream_id;
     bool shutting_down;
     bool is_coro;
