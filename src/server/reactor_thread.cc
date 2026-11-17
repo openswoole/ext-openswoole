@@ -227,9 +227,11 @@ int Server::close_connection(Reactor *reactor, Socket *socket) {
     }
 #ifdef OSW_SUPPORT_DTLS
     if (socket->dtls) {
-        dtls::Session *session = port->dtls_sessions->find(socket->fd)->second;
-        port->dtls_sessions->erase(socket->fd);
-        delete session;
+        auto iter = port->dtls_sessions->find(socket->fd);
+        if (iter != port->dtls_sessions->end()) {
+            delete iter->second;
+            port->dtls_sessions->erase(iter);
+        }
     }
 #endif
 #endif
@@ -569,9 +571,23 @@ static int ReactorThread_onRead(Reactor *reactor, Event *event) {
 #ifdef OSW_USE_OPENSSL
 #ifdef OSW_SUPPORT_DTLS
     if (port->is_dtls()) {
+        auto iter = port->dtls_sessions->find(event->fd);
+        if (iter == port->dtls_sessions->end()) {
+            Server::close_connection(reactor, event->socket);
+            return OSW_OK;
+        }
         dtls::Buffer *buffer = (dtls::Buffer *) osw_malloc(sizeof(*buffer) + OSW_BUFFER_SIZE_UDP);
-        buffer->length = event->socket->read(buffer->data, OSW_BUFFER_SIZE_UDP);
-        dtls::Session *session = port->dtls_sessions->find(event->fd)->second;
+        if (!buffer) {
+            return OSW_OK;
+        }
+        ssize_t n = event->socket->read(buffer->data, OSW_BUFFER_SIZE_UDP);
+        if (n <= 0) {
+            // EAGAIN, or the datagram was dropped: a negative length must not be appended
+            osw_free(buffer);
+            return OSW_OK;
+        }
+        buffer->length = n;
+        dtls::Session *session = iter->second;
         session->append(buffer);
         if (!session->listened && !session->listen()) {
             Server::close_connection(reactor, event->socket);
