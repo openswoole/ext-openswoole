@@ -215,6 +215,9 @@ class Stream {
     uint32_t remote_window_size;
     uint32_t local_window_size;
     Coroutine *waiting_coroutine = nullptr;
+    // RST_STREAM or connection closed while a coroutine waits for the window
+    bool canceled = false;
+    bool session_closed = false;
 
     Stream(Session *client, uint32_t _id);
     ~Stream();

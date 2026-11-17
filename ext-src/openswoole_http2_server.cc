@@ -99,6 +99,14 @@ void Http2Session::apply_setting(Server *serv) {
 }
 
 Http2Session::~Session() {
+    // a coroutine waiting for the window would never be resumed
+    for (auto iter = streams.begin(); iter != streams.end(); iter++) {
+        Http2Stream *stream = iter->second;
+        if (stream && stream->waiting_coroutine) {
+            stream->session_closed = true;
+            stream->waiting_coroutine->resume();
+        }
+    }
     for (auto iter = streams.begin(); iter != streams.end(); iter++) {
         delete iter->second;
     }
@@ -609,6 +617,16 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
                 stream->waiting_coroutine = Coroutine::get_current();
                 stream->waiting_coroutine->yield();
                 stream->waiting_coroutine = nullptr;
+                if (stream->session_closed) {
+                    // the session deletes the stream
+                    return false;
+                }
+                if (stream->canceled) {
+                    // the client canceled the stream, drop the rest of the body
+                    client->streams.erase(stream->id);
+                    delete stream;
+                    return false;
+                }
                 continue;
             }
 
@@ -1119,8 +1137,14 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
             // TODO: i onRequest and use request->recv
             // stream exist
             stream = client->streams[stream_id];
-            client->streams.erase(stream_id);
-            delete stream;
+            if (stream->waiting_coroutine) {
+                // the waiting coroutine deletes the stream
+                stream->canceled = true;
+                stream->waiting_coroutine->resume();
+            } else {
+                client->streams.erase(stream_id);
+                delete stream;
+            }
         }
         break;
     }
