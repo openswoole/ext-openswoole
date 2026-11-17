@@ -6,6 +6,7 @@
  . CURLOPT_SEEKFUNCTION support in the native curl hook on PHP 8.6
  . CURLOPT_PREREQFUNCTION support in the native curl hook on PHP 8.4+ (Guzzle 7.12+)
  . PIE (PHP Installer for Extensions) support
+ . Response::cookie() also sends Max-Age when an expiry time is set, like setcookie() (#310)
 
 ## Changes
 
@@ -58,6 +59,7 @@
  . Fix the deprecation warning for on('handshake') (#303)
  . Fix configure not finding libpq in lib64 without pg_config (#245)
  . Fix task workers logging a warning for SIGPIPE
+ . Fix Xdebug not seeing the request callback with use_fiber_context, which crashed the worker when variables were inspected (#404)
  . Various stability fixes
 
 # 26.2.0
