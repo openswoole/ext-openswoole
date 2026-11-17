@@ -1651,6 +1651,11 @@ static PHP_FUNCTION(openswoole_time_nanosleep) {
         php_error_docref(nullptr, E_WARNING, "The nanoseconds value must be greater than 0");
         RETURN_FALSE;
     }
+    // same check as the native function
+    if (tv_nsec > 999999999) {
+        zend_value_error("Nanoseconds was not in the range 0 to 999 999 999 or seconds was negative");
+        RETURN_THROWS();
+    }
     double _time = (double) tv_sec + (double) tv_nsec / 1000000000.00;
     if (Coroutine::get_current()) {
         System::sleep(_time);
