@@ -45,6 +45,7 @@ go(function () use ($ready) {
         stream_context_set_option($fp, ["ssl" => [
             "local_cert" => SSL_FILE_DIR . '/client.crt',
             "local_pk" => SSL_FILE_DIR . '/client.key',
+            "verify_peer" => false,
         ]]);
         // Enable SSL encryption after the connection is established
         Assert::assert(stream_socket_enable_crypto($fp, true, STREAM_CRYPTO_METHOD_TLS_CLIENT));

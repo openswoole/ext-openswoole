@@ -67,6 +67,9 @@ static int socket_close(php_stream *stream, int close_handle);
 static int socket_stat(php_stream *stream, php_stream_statbuf *ssb);
 static int socket_cast(php_stream *stream, int castas, void **ret);
 static bool socket_ssl_set_options(Socket *sock, php_stream_context *context);
+#ifdef OSW_USE_OPENSSL
+static void socket_ssl_set_client_defaults(Socket *sock, const std::string &host);
+#endif
 // clang-format off
 
 static zend_class_entry *openswoole_runtime_ce;
@@ -770,6 +773,9 @@ static int socket_enable_crypto(php_stream *stream, Socket *sock, php_stream_xpo
     php_stream_context *context = PHP_STREAM_CONTEXT(stream);
     if (cparam->inputs.activate && !sock->ssl_is_available()) {
         sock->enable_ssl_encrypt();
+        if (!sock->is_ssl_server()) {
+            socket_ssl_set_client_defaults(sock, sock->get_ssl_host_name());
+        }
         if (!socket_ssl_set_options(sock, context)) {
             return -1;
         }
@@ -1016,6 +1022,27 @@ static int socket_set_option(php_stream *stream, int option, int value, void *pt
     return PHP_STREAM_OPTION_RETURN_OK;
 }
 
+#ifdef OSW_USE_OPENSSL
+// "host:port" or "[ipv6]:port" -> host
+static std::string socket_get_host(const char *resourcename, size_t resourcenamelen) {
+    std::string name(resourcename, resourcenamelen);
+    if (!name.empty() && name[0] == '[') {
+        size_t end = name.find(']');
+        return end == std::string::npos ? std::string() : name.substr(1, end - 1);
+    }
+    size_t colon = name.rfind(':');
+    return colon == std::string::npos ? name : name.substr(0, colon);
+}
+
+// same defaults as the native ssl:// client: verify the certificate and the peer name
+static void socket_ssl_set_client_defaults(Socket *sock, const std::string &host) {
+    openswoole::SSLContext *ctx = sock->get_ssl_context();
+    ctx->verify_peer = 1;
+    ctx->allow_self_signed = 0;
+    ctx->tls_host_name = host;
+}
+#endif
+
 static bool socket_ssl_set_options(Socket *sock, php_stream_context *context) {
     if (context && ZVAL_IS_ARRAY(&context->options)) {
 #ifdef OSW_USE_OPENSSL
@@ -1048,6 +1075,10 @@ static bool socket_ssl_set_options(Socket *sock, php_stream_context *context) {
 
             bool ret = php_openswoole_socket_set_ssl(sock, &zalias);
             zval_ptr_dtor_nogc(&zalias);
+            if ((ztmp = zend_hash_str_find(options, ZEND_STRL("verify_peer_name"))) && !zend_is_true(ztmp)) {
+                // keep the host name for SNI only
+                sock->get_ssl_context()->tls_host_name.clear();
+            }
             return ret;
         }
 #endif
@@ -1078,6 +1109,9 @@ static php_stream *socket_create(const char *proto,
 #ifdef OSW_USE_OPENSSL
         sock = new Socket(resourcename[0] == '[' ? OSW_SOCK_TCP6 : OSW_SOCK_TCP);
         sock->enable_ssl_encrypt();
+        if (!(flags & STREAM_XPORT_SERVER)) {
+            socket_ssl_set_client_defaults(sock, socket_get_host(resourcename, resourcenamelen));
+        }
 #else
         php_openswoole_error(E_WARNING,
                          "you must configure with `--enable-openssl` to support ssl connection when compiling Swoole");

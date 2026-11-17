@@ -860,6 +860,15 @@ bool Socket::ssl_check_host(const char *tls_host_name) {
     }
 #ifdef X509_CHECK_FLAG_ALWAYS_CHECK_SUBJECT
     /* X509_check_host() is only available in OpenSSL 1.0.2+ */
+    unsigned char ip_buf[sizeof(struct in6_addr)];
+    if (inet_pton(AF_INET, tls_host_name, ip_buf) == 1 || inet_pton(AF_INET6, tls_host_name, ip_buf) == 1) {
+        // an IP address matches the IP SAN entries, not the DNS names
+        if (X509_check_ip_asc(cert, tls_host_name, 0) != 1) {
+            openswoole_warning("X509_check_ip_asc(): no match");
+            goto _failed;
+        }
+        goto _found;
+    }
     if (X509_check_host(cert, tls_host_name, strlen(tls_host_name), 0, nullptr) != 1) {
         openswoole_warning("X509_check_host(): no match");
         goto _failed;
