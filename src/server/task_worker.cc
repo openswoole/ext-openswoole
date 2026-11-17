@@ -239,7 +239,7 @@ int Server::reply_task_result(const char *data, size_t data_len, int flags, Even
         return OSW_ERR;
     }
     if (OSW_TASK_TYPE(current_task) & OSW_TASK_NOREPLY) {
-        openswoole_warning("Server::finish() can only be used in the worker process");
+        openswoole_warning("Server::finish() has no worker to reply to: the task was sent from a task worker or a user process");
         return OSW_ERR;
     }
 
