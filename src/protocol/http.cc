@@ -649,9 +649,14 @@ int Request::get_chunked_body_length() {
             return OSW_ERR;
         }
         char *head = p;
-        size_t n_parsed;
-        size_t chunk_length = openswoole_hex2dec(head, &n_parsed);
-        head += n_parsed;
+        size_t n_parsed = 0;
+        size_t chunk_length = 0;
+        // parse the hex size within the received data, hex2dec would read past the end
+        while (head < pe && isxdigit((unsigned char) *head) && n_parsed < 16) {
+            chunk_length = chunk_length * 16 + (isdigit((unsigned char) *head) ? *head - '0' : (tolower(*head) - 'a' + 10));
+            head++;
+            n_parsed++;
+        }
         if (head >= pe) {
             /* need the rest of the chunk size line */
             return OSW_ERR;
