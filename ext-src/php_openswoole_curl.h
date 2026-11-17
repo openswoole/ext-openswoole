@@ -122,6 +122,8 @@ class Multi {
 
     ~Multi() {
         curl_multi_cleanup(multi_handle_);
+        // a pending timer would keep the event loop alive and then call back into a freed Multi
+        del_timer();
     }
 
     CURLM *get_multi_handle() {
@@ -139,8 +141,12 @@ class Multi {
     CURLMcode add_handle(CURL *cp);
     CURLMcode remove_handle(CURL *cp);
 
+    // the timer only wakes a coroutine waiting in select() or exec(), both set it again before
+    // they wait; left behind it would keep the event loop, and so co::run(), alive
     CURLMcode perform() {
-        return curl_multi_perform(multi_handle_, &running_handles_);
+        CURLMcode retval = curl_multi_perform(multi_handle_, &running_handles_);
+        del_timer();
+        return retval;
     }
 
     int get_event(int action) {

@@ -245,6 +245,8 @@ CURLcode Multi::exec(php_curl *ch) {
 
     CURLcode retval = read_info();
     remove_handle(ch->cp);
+    // see perform()
+    del_timer();
     return is_canceled ? CURLE_ABORTED_BY_CALLBACK : retval;
 }
 
@@ -350,6 +352,8 @@ long Multi::select(php_curlm *mh, double timeout) {
     }
 
     selector->active_handles.clear();
+    // see perform()
+    del_timer();
 
     return count;
 }
