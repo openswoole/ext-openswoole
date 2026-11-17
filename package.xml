@@ -57,6 +57,9 @@
          . Fix the signal listener count with wait_signal
          . Fix Coroutine::select() with push channels and array keys
          . Fix Table keys longer than 63 bytes, iteration with an empty key, and incr()/decr() on a bad column
+         . Fix stream_socket_accept() returning uninitialized memory as the peer name
+         . Fix a second Coroutine\System::waitSignal() on the same signal leaving the first waiting forever
+         . Fix HTTP request framing with conflicting Content-Length or Transfer-Encoding headers
     </notes>
     <contents>
         <dir name="/">
@@ -783,6 +786,7 @@
             <file role="test" name="tests/openswoole_coroutine_system/waitEvent.phpt" />
             <file role="test" name="tests/openswoole_coroutine_system/waitPid.phpt" />
             <file role="test" name="tests/openswoole_coroutine_system/waitSignal.phpt" />
+            <file role="test" name="tests/openswoole_coroutine_system/waitSignal_busy.phpt" />
             <file role="test" name="tests/openswoole_coroutine_system/writefile.phpt" />
             <file role="test" name="tests/openswoole_coroutine_system/writefile_append.phpt" />
             <file role="test" name="tests/openswoole_coroutine_util/dns_lookup.phpt" />
@@ -1033,6 +1037,7 @@
             <file role="test" name="tests/openswoole_http_client_coro/websocket/ssl_2.phpt" />
             <file role="test" name="tests/openswoole_http_client_coro/websocket/timeout.phpt" />
             <file role="test" name="tests/openswoole_http_server/0.phpt" />
+            <file role="test" name="tests/openswoole_http_server/request_framing.phpt" />
             <file role="test" name="tests/openswoole_http_server/buffer_output_size.phpt" />
             <file role="test" name="tests/openswoole_http_server/bug_2368.phpt" />
             <file role="test" name="tests/openswoole_http_server/bug_2444.phpt" />
@@ -1303,6 +1308,7 @@
             <file role="test" name="tests/openswoole_runtime/stream_select/stream_set_blocking.phpt" />
             <file role="test" name="tests/openswoole_runtime/stream_select/timeout.phpt" />
             <file role="test" name="tests/openswoole_runtime/stream_select_regular_file.phpt" />
+            <file role="test" name="tests/openswoole_runtime/stream_socket_accept_peer.phpt" />
             <file role="test" name="tests/openswoole_runtime/stream_socket_pair.phpt" />
             <file role="test" name="tests/openswoole_runtime/tcp-c10k.phpt" />
             <file role="test" name="tests/openswoole_runtime/tcp.phpt" />
