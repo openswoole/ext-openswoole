@@ -468,6 +468,11 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
             openswoole_warning("bad task packet, The received data-length[%ld] is inconsistent with the packet-length[%ld]",
                            n,
                            out.buf.info.len + sizeof(out.buf.info));
+            // the next accept() replaces last_connection
+            if (pool->use_socket && pool->stream_info_->last_connection) {
+                pool->stream_info_->last_connection->free();
+                pool->stream_info_->last_connection = nullptr;
+            }
             continue;
         }
 
