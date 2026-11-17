@@ -6,7 +6,6 @@ openswoole_coroutine: file_get_content
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new SwooleTest\ProcessManager;
-$pm->useConstantPorts = true;
 $pm->initFreePorts();
 
 use OpenSwoole\Constant;
@@ -41,6 +40,9 @@ $pm->childFunc = function () use ($pm) {
 	  'backlog' => 100000,
 	  'reload_async' => false,
 	]);
+	$Server->on('WorkerStart', function () use ($pm) {
+	  $pm->wakeup();
+	});
 	$Server->on('Request', static function (Request $Request, Response $Response): void {
 	  file_put_contents('FILENAME', 'CONTENTS');
 	  $Response->end(file_get_contents('FILENAME'));
