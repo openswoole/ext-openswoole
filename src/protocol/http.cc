@@ -623,18 +623,25 @@ int Request::get_chunked_body_length() {
         size_t n_parsed;
         size_t chunk_length = openswoole_hex2dec(head, &n_parsed);
         head += n_parsed;
-        if (*head != '\r') {
+        if (head >= pe) {
+            /* need the rest of the chunk size line */
+            return OSW_ERR;
+        }
+        // a chunk size above UINT32_MAX can not fit in content_length_
+        if (*head != '\r' || n_parsed == 0 || chunk_length > UINT32_MAX) {
             excepted = 1;
             return OSW_ERR;
         }
-        p = head + (sizeof("\r\n") - 1) + chunk_length + (sizeof("\r\n") - 1);
+        // compute the end as an offset, a pointer would wrap around with a huge chunk size
+        size_t chunk_end = (head - buffer_->str) + (sizeof("\r\n") - 1) + chunk_length + (sizeof("\r\n") - 1);
         /* used to check package_max_length */
-        content_length_ = p - (buffer_->str + header_length_);
-        if (p > pe) {
+        content_length_ = OSW_MIN(chunk_end - header_length_, (size_t) UINT32_MAX);
+        if (chunk_end > buffer_->length) {
             /* need recv chunk body again */
             return OSW_ERR;
         }
-        buffer_->offset = p - buffer_->str;
+        p = buffer_->str + chunk_end;
+        buffer_->offset = chunk_end;
         if (chunk_length == 0) {
             break;
         }
