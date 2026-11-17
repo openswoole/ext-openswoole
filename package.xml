@@ -824,6 +824,7 @@
             <file role="test" name="tests/openswoole_curl/basic/1.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/10.phpt" />
             <file role="test" name="tests/openswoole_curl/header_function_leak.phpt" />
+            <file role="test" name="tests/openswoole_curl/curl_prereqfunction.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/11.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/13.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/15.phpt" />
@@ -1321,6 +1322,7 @@
             <file role="test" name="tests/openswoole_runtime/sockets/udp.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl/local_cert.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl/context_defaults.phpt" />
+            <file role="test" name="tests/openswoole_runtime/ssl/enable_crypto.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl/without_key.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl_client.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl_server.phpt" />
