@@ -642,6 +642,8 @@
             <file role="test" name="tests/openswoole_client_sync/udg_send_timeout.phpt" />
             <file role="test" name="tests/openswoole_client_sync/udp_client_sendto.phpt" />
             <file role="test" name="tests/openswoole_coroutine/after_start_server_1.phpt" />
+            <file role="test" name="tests/openswoole_coroutine/preload/coroutine.phpt" />
+            <file role="test" name="tests/openswoole_coroutine/preload/empty.inc" />
             <file role="test" name="tests/openswoole_coroutine/all_asleep.phpt" />
             <file role="test" name="tests/openswoole_coroutine/all_asleep_81.phpt" />
             <file role="test" name="tests/openswoole_coroutine/array_walk.phpt" />

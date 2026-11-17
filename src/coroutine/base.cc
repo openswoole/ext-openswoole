@@ -43,6 +43,8 @@ void Coroutine::activate() {
 #ifdef OSW_USE_THREAD_CONTEXT
     coroutine::thread_context_init();
 #endif
+    // an earlier request (e.g. opcache.preload) may have left the bailout state set
+    on_bailout = nullptr;
     activated = true;
 }
 
