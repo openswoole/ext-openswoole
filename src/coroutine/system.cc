@@ -284,6 +284,11 @@ bool System::wait_signal(int signo, double timeout) {
         openswoole_set_last_error(EINVAL);
         return false;
     }
+    // one waiter per signal, a second one would replace the first and leave it waiting forever
+    if (listeners[signo]) {
+        openswoole_set_last_error(EBUSY);
+        return false;
+    }
 
     /* resgiter signal */
     listeners[signo] = co;
