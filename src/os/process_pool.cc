@@ -729,7 +729,7 @@ int ProcessPool::wait() {
             reload_worker_pid = reload_workers[reload_worker_i].pid;
             ret = openswoole_kill(reload_worker_pid, SIGTERM);
             if (ret < 0) {
-                if (errno == ECHILD) {
+                if (errno == ECHILD || errno == ESRCH) {
                     reload_worker_i++;
                     goto _kill_worker;
                 }
