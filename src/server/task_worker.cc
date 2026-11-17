@@ -120,7 +120,7 @@ static void TaskWorker_signal_init(ProcessPool *pool) {
     OpenSwooleG.use_signalfd = OpenSwooleG.enable_signalfd;
 
     openswoole_signal_set(SIGHUP, nullptr);
-    openswoole_signal_set(SIGPIPE, nullptr);
+    openswoole_signal_set(SIGPIPE, SIG_IGN);
     openswoole_signal_set(SIGUSR1, Server::worker_signal_handler);
     openswoole_signal_set(SIGUSR2, nullptr);
     openswoole_signal_set(SIGTERM, Server::worker_signal_handler);

@@ -154,7 +154,7 @@ Reactor::Reactor(int max_event, Type _type) {
         }
     });
 
-    openswoole_signal_set(SIGPIPE, nullptr);
+    openswoole_signal_set(SIGPIPE, SIG_IGN);
 
     set_end_callback(PRIORITY_SIGNAL_CALLBACK, [](Reactor *reactor) {
         if (osw_unlikely(reactor->singal_no)) {

@@ -1504,6 +1504,7 @@
             <file role="test" name="tests/openswoole_server/task/callback_is_null.phpt" />
             <file role="test" name="tests/openswoole_server/task/enable_coroutine.phpt" />
             <file role="test" name="tests/openswoole_server/task/finish_timeout.phpt" />
+            <file role="test" name="tests/openswoole_server/task/sigpipe.phpt" />
             <file role="test" name="tests/openswoole_server/task/huge_data.phpt" />
             <file role="test" name="tests/openswoole_server/task/idle_worker_num.phpt" />
             <file role="test" name="tests/openswoole_server/task/invalid_packet.phpt" />

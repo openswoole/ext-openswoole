@@ -1321,7 +1321,7 @@ bool Server::close(SessionId session_id, bool reset) {
 }
 
 void Server::init_signal_handler() {
-    openswoole_signal_set(SIGPIPE, nullptr);
+    openswoole_signal_set(SIGPIPE, SIG_IGN);
     openswoole_signal_set(SIGHUP, nullptr);
     if (is_process_mode()) {
         openswoole_signal_set(SIGCHLD, Server_signal_handler);
