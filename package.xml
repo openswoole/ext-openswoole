@@ -36,6 +36,27 @@
          . Fix crash in the native curl hook when a curl multi handle is released after the event loop is destroyed
          . Fix enable_reuse_port having no effect on Linux because SO_REUSEPORT was not detected at configure time
          . Fix mkdir() ignoring open_basedir and not reporting errors when the file hook is enabled
+         . Hooked ssl:// and tls:// clients verify the peer certificate and name by default, like native PHP; set verify_peer to false for self-signed servers
+         . Fix the static file handler serving files outside document_root
+         . Fix a crash on WebSocket frames with an invalid length
+         . Fix chunked request bodies with an oversized chunk length
+         . Fix HTTP/2 HEADERS frames with short PRIORITY or PADDED fields
+         . Fix HTTP/2 request body size and concurrent streams not being limited
+         . Fix HTTP/2 control frames with an invalid length
+         . Fix the http2_* server settings being ignored
+         . Fix CR/LF injection in response status, cookies, trailers and coroutine HTTP client requests
+         . Fix WebSocket permessage-deflate messages not being limited by package_max_length
+         . Fix the http_autoindex page overflowing on large directories and not escaping file names
+         . Fix max_idle_time closing active connections and ignoring fractions of a second
+         . Fix memory corruption when a coroutine is canceled during file I/O
+         . Fix stream_select() closing regular files
+         . Fix closing a unix datagram socket removing the peer's socket file
+         . Fix Process::read() with a size of 0 or less, and process pipes never being closed
+         . Fix Lock::lockwait() truncating the timeout
+         . Fix process pool reload stalling, getProcess() ids and a connection leak
+         . Fix the signal listener count with wait_signal
+         . Fix Coroutine::select() with push channels and array keys
+         . Fix Table keys longer than 63 bytes, iteration with an empty key, and incr()/decr() on a bad column
     </notes>
     <contents>
         <dir name="/">
@@ -705,6 +726,7 @@
             <file role="test" name="tests/openswoole_coroutine/private_access.phpt" />
             <file role="test" name="tests/openswoole_coroutine/resume_loop.phpt" />
             <file role="test" name="tests/openswoole_coroutine/scheduler.phpt" />
+            <file role="test" name="tests/openswoole_coroutine/select_push_and_keys.phpt" />
             <file role="test" name="tests/openswoole_coroutine/signal_listener.phpt" />
             <file role="test" name="tests/openswoole_coroutine/stats.phpt" />
             <file role="test" name="tests/openswoole_coroutine/use_process.phpt" />
@@ -927,11 +949,14 @@
             <file role="test" name="tests/openswoole_http2_client_coro/wrong_headers.phpt" />
             <file role="test" name="tests/openswoole_http2_server/big_data.phpt" />
             <file role="test" name="tests/openswoole_http2_server/compression.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/control_frame_length.phpt" />
             <file role="test" name="tests/openswoole_http2_server/goaway.phpt" />
             <file role="test" name="tests/openswoole_http2_server/h2_settings.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/headers_frame.phpt" />
             <file role="test" name="tests/openswoole_http2_server/http2_headers.phpt" />
             <file role="test" name="tests/openswoole_http2_server/index_file.phpt" />
             <file role="test" name="tests/openswoole_http2_server/issue_4365.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/limits.phpt" />
             <file role="test" name="tests/openswoole_http2_server/nghttp2_big_data.phpt" />
             <file role="test" name="tests/openswoole_http2_server/no_compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/ping.phpt" />
@@ -1027,6 +1052,7 @@
             <file role="test" name="tests/openswoole_http_server/callback_with_protected.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunk.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunked_pipeline_request.phpt" />
+            <file role="test" name="tests/openswoole_http_server/chunked_size.phpt" />
             <file role="test" name="tests/openswoole_http_server/co_switching.phpt" />
             <file role="test" name="tests/openswoole_http_server/compression.phpt" />
             <file role="test" name="tests/openswoole_http_server/compression_min_length.phpt" />
@@ -1045,9 +1071,11 @@
             <file role="test" name="tests/openswoole_http_server/error_413.phpt" />
             <file role="test" name="tests/openswoole_http_server/form_data_with_charset.phpt" />
             <file role="test" name="tests/openswoole_http_server/head_method.phpt" />
+            <file role="test" name="tests/openswoole_http_server/header_validation.phpt" />
             <file role="test" name="tests/openswoole_http_server/headers_sent.phpt" />
             <file role="test" name="tests/openswoole_http_server/headers_sent_coroutine.phpt" />
             <file role="test" name="tests/openswoole_http_server/http_autoindex.phpt" />
+            <file role="test" name="tests/openswoole_http_server/http_autoindex_large.phpt" />
             <file role="test" name="tests/openswoole_http_server/http_index_files.phpt" />
             <file role="test" name="tests/openswoole_http_server/http_index_files_autoindex.phpt" />
             <file role="test" name="tests/openswoole_http_server/https.phpt" />
@@ -1085,6 +1113,7 @@
             <file role="test" name="tests/openswoole_http_server/sni/server.phpt" />
             <file role="test" name="tests/openswoole_http_server/static_handler.phpt" />
             <file role="test" name="tests/openswoole_http_server/static_handler/locations.phpt" />
+            <file role="test" name="tests/openswoole_http_server/static_handler/dot_segments.phpt" />
             <file role="test" name="tests/openswoole_http_server/static_handler/read_link_file.phpt" />
             <file role="test" name="tests/openswoole_http_server/static_handler/relative_path.phpt" />
             <file role="test" name="tests/openswoole_http_server/static_handler/urldecode.phpt" />
@@ -1127,6 +1156,7 @@
             <file role="test" name="tests/openswoole_io_uring/reactor_type_validation.phpt" />
             <file role="test" name="tests/openswoole_io_uring/set_in_handler.phpt" />
             <file role="test" name="tests/openswoole_io_uring/timer.phpt" />
+            <file role="test" name="tests/openswoole_lock/lockwait_fraction.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_twice.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex_robust.phpt" />
@@ -1162,17 +1192,20 @@
             <file role="test" name="tests/openswoole_process/openswoole_process_useQueue.phpt" />
             <file role="test" name="tests/openswoole_process/openswoole_process_wait.phpt" />
             <file role="test" name="tests/openswoole_process/openswoole_process_write.phpt" />
+            <file role="test" name="tests/openswoole_process/pipe_fd_leak.phpt" />
             <file role="test" name="tests/openswoole_process/priority.phpt" />
             <file role="test" name="tests/openswoole_process/process_exec.phpt" />
             <file role="test" name="tests/openswoole_process/process_msgqueue.phpt" />
             <file role="test" name="tests/openswoole_process/process_push.phpt" />
             <file role="test" name="tests/openswoole_process/process_select.phpt" />
+            <file role="test" name="tests/openswoole_process/read_invalid_size.phpt" />
             <file role="test" name="tests/openswoole_process/signal.phpt" />
             <file role="test" name="tests/openswoole_process/signal_in_manager.phpt" />
             <file role="test" name="tests/openswoole_process/signal_in_task_worker.phpt" />
             <file role="test" name="tests/openswoole_process/signal_twice.phpt" />
             <file role="test" name="tests/openswoole_process/timeout.phpt" />
             <file role="test" name="tests/openswoole_process/wait_signal.phpt" />
+            <file role="test" name="tests/openswoole_process/wait_signal_twice.phpt" />
             <file role="test" name="tests/openswoole_process/write_in_worker.phpt" />
             <file role="test" name="tests/openswoole_process_pool/bug_2652.phpt" />
             <file role="test" name="tests/openswoole_process_pool/create_websocket_server.phpt" />
@@ -1204,6 +1237,7 @@
             <file role="test" name="tests/openswoole_runtime/file_hook/bug_4327.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/bug_ftell_2g.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/bug_scandir.phpt" />
+            <file role="test" name="tests/openswoole_runtime/file_hook/cancel_blocking_io.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/flock.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/include.phpt" />
             <file role="test" name="tests/openswoole_runtime/file_hook/include_2.phpt" />
@@ -1245,6 +1279,7 @@
             <file role="test" name="tests/openswoole_runtime/sockets/timeout.phpt" />
             <file role="test" name="tests/openswoole_runtime/sockets/udp.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl/local_cert.phpt" />
+            <file role="test" name="tests/openswoole_runtime/ssl/verify_peer_default.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl/without_key.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl_client.phpt" />
             <file role="test" name="tests/openswoole_runtime/ssl_server.phpt" />
@@ -1267,6 +1302,7 @@
             <file role="test" name="tests/openswoole_runtime/stream_select/rw_events.phpt" />
             <file role="test" name="tests/openswoole_runtime/stream_select/stream_set_blocking.phpt" />
             <file role="test" name="tests/openswoole_runtime/stream_select/timeout.phpt" />
+            <file role="test" name="tests/openswoole_runtime/stream_select_regular_file.phpt" />
             <file role="test" name="tests/openswoole_runtime/stream_socket_pair.phpt" />
             <file role="test" name="tests/openswoole_runtime/tcp-c10k.phpt" />
             <file role="test" name="tests/openswoole_runtime/tcp.phpt" />
@@ -1361,6 +1397,8 @@
             <file role="test" name="tests/openswoole_server/max_concurrency.phpt" />
             <file role="test" name="tests/openswoole_server/max_idle_time_1.phpt" />
             <file role="test" name="tests/openswoole_server/max_idle_time_2.phpt" />
+            <file role="test" name="tests/openswoole_server/max_idle_time_active.phpt" />
+            <file role="test" name="tests/openswoole_server/max_idle_time_fraction.phpt" />
             <file role="test" name="tests/openswoole_server/max_queued_bytes.phpt" />
             <file role="test" name="tests/openswoole_server/max_request.phpt" />
             <file role="test" name="tests/openswoole_server/max_request_grace_disabled.phpt" />
@@ -1524,6 +1562,7 @@
             <file role="test" name="tests/openswoole_socket_coro/tcp-c10k.phpt" />
             <file role="test" name="tests/openswoole_socket_coro/ulimit.phpt" />
             <file role="test" name="tests/openswoole_socket_coro/unix_dgram.phpt" />
+            <file role="test" name="tests/openswoole_socket_coro/unix_dgram_unlink.phpt" />
             <file role="test" name="tests/openswoole_socket_coro/writeVectorAll.phpt" />
             <file role="test" name="tests/openswoole_socket_coro/writeVectorAll_ssl.phpt" />
             <file role="test" name="tests/openswoole_socket_coro/writeVector_ssl.phpt" />
@@ -1534,13 +1573,16 @@
             <file role="test" name="tests/openswoole_table/bug_2290.phpt" />
             <file role="test" name="tests/openswoole_table/create_10k_object.phpt" />
             <file role="test" name="tests/openswoole_table/del.phpt" />
+            <file role="test" name="tests/openswoole_table/empty_key_iterate.phpt" />
             <file role="test" name="tests/openswoole_table/force_unlock.phpt" />
             <file role="test" name="tests/openswoole_table/foreach.phpt" />
             <file role="test" name="tests/openswoole_table/get_after_destroy.phpt" />
             <file role="test" name="tests/openswoole_table/get_before_create.phpt" />
             <file role="test" name="tests/openswoole_table/incr_after_del.phpt" />
+            <file role="test" name="tests/openswoole_table/incr_bad_column.phpt" />
             <file role="test" name="tests/openswoole_table/int.phpt" />
             <file role="test" name="tests/openswoole_table/key_value.phpt" />
+            <file role="test" name="tests/openswoole_table/long_key.phpt" />
             <file role="test" name="tests/openswoole_table/negative.phpt" />
             <file role="test" name="tests/openswoole_table/random_bytes.phpt" />
             <file role="test" name="tests/openswoole_table/set_after_del.phpt" />
@@ -1568,9 +1610,11 @@
             <file role="test" name="tests/openswoole_timer/task_worker.phpt" />
             <file role="test" name="tests/openswoole_timer/task_worker_tick_1k.phpt" />
             <file role="test" name="tests/openswoole_timer/verify.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/frame_length.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/close_frame_flag.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/close_frame_full.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/compression.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/compression_limit.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/disconnect.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/disconnect_with_code.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/empty_message.phpt" />
