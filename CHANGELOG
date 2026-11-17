@@ -49,6 +49,8 @@
  . Fix HTTP/2 server responses to HEAD requests sending a body
  . Fix bundled hiredis symbols colliding with other extensions that link hiredis (#394)
  . Fix the build on FreeBSD 14 and 15 (#389)
+ . Fix OpenSwoole\Table ignoring a conflictProportion below 1 (#362)
+ . Fix the io_uring reactor failing to start when io_uring is not available; it now falls back to epoll, and reactor_type is accepted by Server::set() (#408)
  . Various stability fixes
 
 # 26.2.0
