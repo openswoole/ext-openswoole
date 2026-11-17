@@ -466,7 +466,10 @@ bool System::socket_poll(std::unordered_map<int, PollSocket> &fds, double timeou
     for (auto i = fds.begin(); i != fds.end(); i++) {
         i->second.socket = openswoole::make_socket(i->first, OSW_FD_CORO_POLL);
         if (openswoole_event_add(i->second.socket, i->second.events) < 0) {
+            // temporary socket: the fd belongs to the caller, do not close it
+            i->second.socket->fd = -1;
             i->second.socket->free();
+            i->second.socket = nullptr;
             continue;
         }
         i->second.socket->object = &task;
