@@ -139,7 +139,7 @@ int php_openswoole_websocket_frame_object_pack_ex(openswoole::String *buffer,
                                               zend_bool mask,
                                               zend_bool allow_compress);
 void php_openswoole_websocket_frame_unpack(openswoole::String *data, zval *zframe);
-void php_openswoole_websocket_frame_unpack_ex(openswoole::String *data, zval *zframe, uchar allow_uncompress);
+void php_openswoole_websocket_frame_unpack_ex(openswoole::String *data, zval *zframe, uchar allow_uncompress, size_t max_length);
 
 openswoole::TaskId php_openswoole_task_pack(openswoole::EventData *task, zval *data);
 zval *php_openswoole_task_unpack(openswoole::EventData *task_result);

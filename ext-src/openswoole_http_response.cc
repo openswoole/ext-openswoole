@@ -1248,7 +1248,8 @@ static PHP_METHOD(openswoole_http_response, recv) {
         _tmp.length = retval;
 
 #ifdef OSW_HAVE_ZLIB
-        php_openswoole_websocket_frame_unpack_ex(&_tmp, return_value, ctx->websocket_compression);
+        php_openswoole_websocket_frame_unpack_ex(
+            &_tmp, return_value, ctx->websocket_compression, sock->protocol.package_max_length);
 #else
         php_openswoole_websocket_frame_unpack(&_tmp, return_value);
 #endif

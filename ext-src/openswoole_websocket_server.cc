@@ -77,7 +77,7 @@ const zend_function_entry openswoole_websocket_frame_methods[] =
 
 #ifdef OSW_HAVE_ZLIB
 static bool websocket_message_compress(String *buffer, const char *data, size_t length, int level);
-static bool websocket_message_uncompress(String *buffer, const char *in, size_t in_len);
+static bool websocket_message_uncompress(String *buffer, const char *in, size_t in_len, size_t max_length);
 #endif
 
 static void php_openswoole_websocket_construct_frame(zval *zframe, zend_long opcode, zval *zpayload, uint8_t flags) {
@@ -111,7 +111,7 @@ static void php_openswoole_websocket_construct_frame(zval *zframe, zend_long opc
         openswoole_websocket_frame_ce, OSW_Z8_OBJ_P(zframe), ZEND_STRL("finish"), flags & WebSocket::FLAG_FIN);
 }
 
-void php_openswoole_websocket_frame_unpack_ex(String *data, zval *zframe, uchar uncompress) {
+void php_openswoole_websocket_frame_unpack_ex(String *data, zval *zframe, uchar uncompress, size_t max_length) {
     WebSocket::Frame frame;
     zval zpayload;
     uint8_t flags;
@@ -131,7 +131,7 @@ void php_openswoole_websocket_frame_unpack_ex(String *data, zval *zframe, uchar 
 #ifdef OSW_HAVE_ZLIB
     if (uncompress && frame.header.RSV1) {
         openswoole_zlib_buffer->clear();
-        if (!websocket_message_uncompress(openswoole_zlib_buffer, frame.payload, frame.payload_length)) {
+        if (!websocket_message_uncompress(openswoole_zlib_buffer, frame.payload, frame.payload_length, max_length)) {
             openswoole_set_last_error(OSW_ERROR_PROTOCOL_ERROR);
             ZVAL_FALSE(zframe);
             return;
@@ -148,7 +148,7 @@ void php_openswoole_websocket_frame_unpack_ex(String *data, zval *zframe, uchar 
 }
 
 void php_openswoole_websocket_frame_unpack(String *data, zval *zframe) {
-    return php_openswoole_websocket_frame_unpack_ex(data, zframe, 0);
+    return php_openswoole_websocket_frame_unpack_ex(data, zframe, 0, 0);
 }
 
 static osw_inline int php_openswoole_websocket_frame_pack_ex(String *buffer,
@@ -390,7 +390,8 @@ bool openswoole_websocket_handshake(HttpContext *ctx) {
 }
 
 #ifdef OSW_HAVE_ZLIB
-static bool websocket_message_uncompress(String *buffer, const char *in, size_t in_len) {
+// max_length bounds the inflated size, a small compressed frame can expand to gigabytes
+static bool websocket_message_uncompress(String *buffer, const char *in, size_t in_len, size_t max_length) {
     z_stream zstream;
     int status;
     bool ret = false;
@@ -415,6 +416,11 @@ static bool websocket_message_uncompress(String *buffer, const char *in, size_t 
         status = inflate(&zstream, Z_SYNC_FLUSH);
         if (status >= 0) {
             buffer->length = zstream.total_out;
+        }
+        if (buffer->length > max_length) {
+            openswoole_warning("inflated websocket message is greater than the package_max_length(%zu)", max_length);
+            status = Z_BUF_ERROR;
+            break;
         }
         if (status == Z_STREAM_END || (status == Z_OK && zstream.avail_in == 0)) {
             ret = true;
@@ -553,7 +559,8 @@ int openswoole_websocket_onMessage(Server *serv, RecvData *req) {
      */
     if (serv->websocket_compression && (flags & WebSocket::FLAG_RSV1)) {
         openswoole_zlib_buffer->clear();
-        if (!websocket_message_uncompress(openswoole_zlib_buffer, Z_STRVAL(zdata), Z_STRLEN(zdata))) {
+        if (!websocket_message_uncompress(
+                openswoole_zlib_buffer, Z_STRVAL(zdata), Z_STRLEN(zdata), port->protocol.package_max_length)) {
             zval_ptr_dtor(&zdata);
             return OSW_OK;
         }

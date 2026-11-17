@@ -1407,7 +1407,7 @@ void HttpClient::recv(zval *zframe, double timeout) {
         msg.length = retval;
         msg.str = socket->get_read_buffer()->str;
 #ifdef OSW_HAVE_ZLIB
-        php_openswoole_websocket_frame_unpack_ex(&msg, zframe, websocket_compression);
+        php_openswoole_websocket_frame_unpack_ex(&msg, zframe, websocket_compression, socket->protocol.package_max_length);
 #else
         php_openswoole_websocket_frame_unpack(&msg, zframe);
 #endif
