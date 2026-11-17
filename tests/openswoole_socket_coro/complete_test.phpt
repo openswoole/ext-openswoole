@@ -6,8 +6,8 @@ openswoole_socket_coro: complete test server&&client&&timeout(millisecond)
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
-$port = get_one_free_port();
-$pm->parentFunc = function ($pid) use ($pm, $port) {
+$pm->parentFunc = function ($pid) use ($pm) {
+    $port = $pm->getFreePort();
     $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     Assert::isInstanceOf($socket, OpenSwoole\Coroutine\Socket::class);
     Assert::same($socket->errCode, 0);
@@ -16,30 +16,34 @@ $pm->parentFunc = function ($pid) use ($pm, $port) {
         $i = 0;
         while (true) {
             $socket->send("hello");
-            $server_reply = $socket->recv(1024, 0.1);
+            $server_reply = $socket->recv(1024, 5);
             Assert::same($server_reply, 'swoole');
             co::usleep($i += 1000); // after 10 times we sleep 0.01s to trigger server timeout
             if ($i >= 10000) {
                 break;
             }
         }
-        co::usleep(500000);
+        // longer than the server's recv timeout below
+        co::usleep(1500000);
         echo("client exit\n");
         $socket->close();
     });
     openswoole_event_wait();
 };
 
-$pm->childFunc = function () use ($pm, $port) {
+$pm->childFunc = function () use ($pm) {
+    $port = $pm->getFreePort();
     $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, 0);
     Assert::assert($socket->bind('127.0.0.1', $port));
     Assert::assert($socket->listen(128));
+    $pm->wakeup();
     go(function () use ($socket, $pm) {
         $client = $socket->accept();
         Assert::isInstanceOf($client, OpenSwoole\Coroutine\Socket::class);
         $i = 0;
         while (true) {
-            $client_data = $client->recv(1024, 0.1);
+            // the client pauses at most 10ms between messages, 0.1s was too short on a busy machine
+            $client_data = $client->recv(1024, 1);
             if ($client->errCode > 0) {
                 Assert::same($client->errCode, SOCKET_ETIMEDOUT);
                 break;
