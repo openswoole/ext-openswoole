@@ -532,6 +532,37 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
 
     char frame[OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE];
 
+    // RFC 7540: control frames have a fixed size, a wrong size is a FRAME_SIZE_ERROR
+    bool bad_length = false;
+    switch (type) {
+    case OSW_HTTP2_TYPE_SETTINGS:
+        bad_length = length % 6 != 0 || ((flags & OSW_HTTP2_FLAG_ACK) && length != 0);
+        break;
+    case OSW_HTTP2_TYPE_PING:
+        bad_length = length != OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE;
+        break;
+    case OSW_HTTP2_TYPE_WINDOW_UPDATE:
+    case OSW_HTTP2_TYPE_RST_STREAM:
+        bad_length = length != 4;
+        break;
+    case OSW_HTTP2_TYPE_GOAWAY:
+        bad_length = length < OSW_HTTP2_GOAWAY_SIZE;
+        break;
+    case OSW_HTTP2_TYPE_PUSH_PROMISE:
+        bad_length = length < 4;
+        break;
+    default:
+        break;
+    }
+    if (bad_length) {
+        openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "http2 frame type=%d has an invalid length %zd",
+                             type,
+                             length);
+        return OSW_ERROR;
+    }
+
     if (stream_id > last_stream_id) {
         last_stream_id = stream_id;
     }
@@ -621,8 +652,7 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
         if (!(flags & OSW_HTTP2_FLAG_ACK)) {
             Http2::set_frame_header(
                 frame, OSW_HTTP2_TYPE_PING, OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE, OSW_HTTP2_FLAG_ACK, stream_id);
-            memcpy(
-                frame + OSW_HTTP2_FRAME_HEADER_SIZE, buf + OSW_HTTP2_FRAME_HEADER_SIZE, OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE);
+            memcpy(frame + OSW_HTTP2_FRAME_HEADER_SIZE, buf, OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE);
             if (!send(frame, OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE)) {
                 return OSW_ERROR;
             }
@@ -683,6 +713,23 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
         openswoole_notice("http2 stream#%d belongs to an unknown type or it never registered", stream_id);
         return OSW_CONTINUE;
     }
+    // padding counts for flow control (RFC 7540 6.1), but is not content
+    ssize_t flow_length = length;
+    if ((type == OSW_HTTP2_TYPE_HEADERS || type == OSW_HTTP2_TYPE_DATA) && (flags & OSW_HTTP2_FLAG_PADDED)) {
+        if (length < 1 || (uint8_t) buf[0] >= length) {
+            openswoole_error_log(
+                OSW_LOG_WARNING, OSW_ERROR_HTTP_INVALID_PROTOCOL, "http2 frame type=%d has invalid padding", type);
+            return OSW_ERROR;
+        }
+        uint8_t pad_length = buf[0];
+        buf += 1;
+        length -= 1 + pad_length;
+    }
+    if (type == OSW_HTTP2_TYPE_HEADERS && (flags & OSW_HTTP2_FLAG_PRIORITY) && length < 5) {
+        openswoole_error_log(
+            OSW_LOG_WARNING, OSW_ERROR_HTTP_INVALID_PROTOCOL, "http2 HEADERS frame is too short for its priority");
+        return OSW_ERROR;
+    }
     if (type == OSW_HTTP2_TYPE_HEADERS) {
         parse_header(stream, flags, buf, length);
     } else if (type == OSW_HTTP2_TYPE_DATA) {
@@ -708,8 +755,8 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
 
             // now we control the connection flow only (not stream)
             // our window size is unlimited, so we don't worry about subtraction overflow
-            local_settings.window_size -= length;
-            stream->local_window_size -= length;
+            local_settings.window_size -= flow_length;
+            stream->local_window_size -= flow_length;
             if (local_settings.window_size < (OSW_HTTP2_MAX_WINDOW_SIZE / 4)) {
                 if (!send_window_update(0, OSW_HTTP2_MAX_WINDOW_SIZE - local_settings.window_size)) {
                     return OSW_ERROR;
