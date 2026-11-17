@@ -108,7 +108,7 @@ bool StaticHandler::hit() {
     l_filename = http_server::url_decode(task.filename, p - task.filename);
     task.filename[l_filename] = '\0';
 
-    // check the decoded path, "%2e%2e" must not bypass the document_root check
+    // check the decoded path against document_root
     if (openswoole_strnpos(task.filename, l_filename, OSW_STRL("..")) == -1) {
         goto _detect_mime_type;
     }

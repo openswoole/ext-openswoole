@@ -1,5 +1,5 @@
 --TEST--
-openswoole_http_server/static_handler: dot segments in request paths
+openswoole_http_server/static_handler: relative request paths
 --SKIPIF--
 <?php require __DIR__ . '/../../include/skipif.inc'; ?>
 --FILE--
@@ -8,19 +8,19 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 use OpenSwoole\Http\Server;
 
-$base = sys_get_temp_dir() . '/openswoole_static_traversal';
+$base = sys_get_temp_dir() . '/openswoole_static_paths';
 @mkdir("$base/www/sub", 0777, true);
-@mkdir("$base/secret", 0777, true);
+@mkdir("$base/other", 0777, true);
 @mkdir("$base/abc", 0777, true);
 file_put_contents("$base/www/index.txt", 'PUBLIC');
-file_put_contents("$base/secret/key.txt", 'SECRET');
+file_put_contents("$base/other/file.txt", 'OTHER');
 file_put_contents("$base/abc/f.txt", 'SIBLING');
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     co::run(function () use ($pm) {
-        foreach (['/index.txt', '/sub/../index.txt', '/sub/%2e%2e/index.txt', '/%2e%2e/secret/key.txt',
-                     '/%2E%2E/secret/key.txt', '/../secret/key.txt', '/../abc/f.txt'] as $path) {
+        foreach (['/index.txt', '/sub/../index.txt', '/sub/%2e%2e/index.txt', '/%2e%2e/other/file.txt',
+                     '/%2E%2E/other/file.txt', '/../other/file.txt', '/../abc/f.txt'] as $path) {
             $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
             Assert::true($cli->connect('127.0.0.1', $pm->getFreePort()));
             $cli->send("GET {$path} HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n");
@@ -55,7 +55,7 @@ $pm->run();
 /index.txt PUBLIC
 /sub/../index.txt PUBLIC
 /sub/%2e%2e/index.txt PUBLIC
-/%2e%2e/secret/key.txt DYNAMIC
-/%2E%2E/secret/key.txt DYNAMIC
-/../secret/key.txt DYNAMIC
+/%2e%2e/other/file.txt DYNAMIC
+/%2E%2E/other/file.txt DYNAMIC
+/../other/file.txt DYNAMIC
 /../abc/f.txt DYNAMIC

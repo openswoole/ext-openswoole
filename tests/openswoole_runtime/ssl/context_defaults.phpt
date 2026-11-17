@@ -1,5 +1,5 @@
 --TEST--
-openswoole_runtime/ssl: ssl:// clients verify the peer certificate and name by default
+openswoole_runtime/ssl: ssl:// client context defaults
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
@@ -9,7 +9,7 @@ skip_if_extension_not_exist('openssl');
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-$dir = sys_get_temp_dir() . '/openswoole_verify_peer_default';
+$dir = sys_get_temp_dir() . '/openswoole_ssl_context_defaults';
 @mkdir($dir);
 $key = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => OPENSSL_KEYTYPE_RSA]);
 $csr = openssl_csr_new(['commonName' => 'localhost'], $key, ['digest_alg' => 'sha256']);

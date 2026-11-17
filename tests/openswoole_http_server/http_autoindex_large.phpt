@@ -10,11 +10,11 @@ use OpenSwoole\Http\Server;
 
 $dir = sys_get_temp_dir() . '/openswoole_autoindex_large';
 @mkdir("$dir/www/list", 0777, true);
-// about 200KB of names, the page used to be written to a 64KB buffer
+// about 200KB of names
 for ($i = 0; $i < 2000; $i++) {
     touch(sprintf('%s/www/list/%s-%04d.txt', $dir, str_repeat('n', 80), $i));
 }
-touch("$dir/www/list/<script>alert(1)<\\script>.txt");
+touch("$dir/www/list/<b>name<\\b>.txt");
 
 $pm = new SwooleTest\ProcessManager;
 $pm->parentFunc = function () use ($pm) {
@@ -22,8 +22,8 @@ $pm->parentFunc = function () use ($pm) {
         $res = httpRequest("http://127.0.0.1:{$pm->getFreePort()}/list/");
         echo $res['statusCode'], "\n";
         echo substr_count($res['body'], '<li>'), "\n";
-        echo strpos($res['body'], '<script>') === false ? 'escaped' : 'raw', "\n";
-        echo strpos($res['body'], '&lt;script&gt;alert(1)&lt;\\script&gt;.txt') !== false ? 'listed' : 'missing', "\n";
+        echo strpos($res['body'], '<b>') === false ? 'escaped' : 'raw', "\n";
+        echo strpos($res['body'], '&lt;b&gt;name&lt;\\b&gt;.txt') !== false ? 'listed' : 'missing', "\n";
     });
     $pm->kill();
 };

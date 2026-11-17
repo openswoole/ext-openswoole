@@ -537,7 +537,7 @@ void Request::parse_header_info() {
                     p++;
                 }
                 content_length = strtoull(p, nullptr, 10);
-                // two different lengths: the worker may frame the request differently (request smuggling)
+                // two different lengths: the worker may frame the request differently
                 if (known_length && content_length_ != OSW_MIN(content_length, UINT32_MAX)) {
                     excepted = 1;
                 }

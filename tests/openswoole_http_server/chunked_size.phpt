@@ -18,9 +18,9 @@ $pm->parentFunc = function () use ($pm) {
             $data = $cli->recv(3);
             return $data ? strtok($data, "\r\n") : 'closed';
         };
-        // the end pointer wraps around to the start of the chunk
+        // a chunk size past the end of the body
         echo $request("FFFFFFFFFFFFFFEC\r\nAAAA\r\n"), "\n";
-        // 2^32 truncates to 0 in a 32-bit length
+        // a chunk size of 2^32
         echo $request("100000000\r\nAAAA\r\n"), "\n";
         // not a hex digit
         echo $request("1G\r\nAAAA\r\n"), "\n";

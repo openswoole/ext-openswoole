@@ -1,5 +1,5 @@
 --TEST--
-openswoole_runtime/file_hook: mkdir respects open_basedir and reports errors
+openswoole_runtime/file_hook: mkdir error handling
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
@@ -8,7 +8,7 @@ require __DIR__ . '/../../include/skipif.inc';
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
-$base = sys_get_temp_dir() . '/openswoole_mkdir_open_basedir';
+$base = sys_get_temp_dir() . '/openswoole_mkdir_errors';
 @rmdir("$base/denied/a/b");
 @rmdir("$base/denied/a");
 @rmdir("$base/denied");

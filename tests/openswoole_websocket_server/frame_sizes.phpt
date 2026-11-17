@@ -15,7 +15,7 @@ $pm->parentFunc = function () use ($pm) {
         $handshake = "GET / HTTP/1.1\r\nHost: localhost\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n" .
             "Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==\r\nSec-WebSocket-Version: 13\r\n\r\n";
 
-        // 64-bit payload length 2^64-8: header_length + payload_length wraps around to 6
+        // a 64-bit payload length close to 2^64
         $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
         Assert::true($cli->connect('127.0.0.1', $pm->getFreePort()));
         $cli->send($handshake);

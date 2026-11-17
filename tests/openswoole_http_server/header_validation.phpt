@@ -20,13 +20,13 @@ $pm->parentFunc = function () use ($pm) {
         }
         $head = explode("\r\n\r\n", $data, 2)[0];
         echo 'status line: ', strtok($head, "\r\n"), "\n";
-        echo 'injected in response: ', stripos($data, 'Injected') !== false ? 'yes' : 'no', "\n";
+        echo 'extra header in response: ', stripos($data, 'X-Extra') !== false ? 'yes' : 'no', "\n";
 
         foreach ([
-            'path' => function ($c) { return $c->get("/x HTTP/1.1\r\nInjected: 1\r\n\r\nGET /y"); },
-            'header value' => function ($c) { $c->setHeaders(['X-A' => "a\r\nInjected: 1"]); return $c->get('/'); },
-            'header key' => function ($c) { $c->setHeaders(["X-A\r\nInjected" => 'a']); return $c->get('/'); },
-            'method' => function ($c) { $c->setMethod("GET /x HTTP/1.1\r\nInjected: 1\r\n\r\nGET"); return $c->execute('/'); },
+            'path' => function ($c) { return $c->get("/x HTTP/1.1\r\nX-Extra: 1\r\n\r\nGET /y"); },
+            'header value' => function ($c) { $c->setHeaders(['X-A' => "a\r\nX-Extra: 1"]); return $c->get('/'); },
+            'header key' => function ($c) { $c->setHeaders(["X-A\r\nX-Extra" => 'a']); return $c->get('/'); },
+            'method' => function ($c) { $c->setMethod("GET /x HTTP/1.1\r\nX-Extra: 1\r\n\r\nGET"); return $c->execute('/'); },
         ] as $name => $request) {
             $c = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
             $ok = @$request($c);
@@ -44,14 +44,14 @@ $pm->childFunc = function () use ($pm) {
     $http->on('request', function ($request, $response) {
         if ($request->server['request_uri'] !== '/response') {
             // the client side: echo what arrived
-            $response->end(isset($request->header['injected']) ? 'injected' : 'clean');
+            $response->end(isset($request->header['x-extra']) ? 'extra' : 'clean');
             return;
         }
-        Assert::false(@$response->status(200, "OK\r\nInjected: 1"));
-        Assert::false(@$response->cookie('a', 'b', 0, "/\r\nInjected: 1"));
-        Assert::false(@$response->trailer("X-T\r\nInjected", 'v'));
-        Assert::false(@$response->trailer('X-T', "v\r\nInjected: 1"));
-        $response->header = ["X-H\r\nInjected" => 'v', 'X-Ok' => 'v'];
+        Assert::false(@$response->status(200, "OK\r\nX-Extra: 1"));
+        Assert::false(@$response->cookie('a', 'b', 0, "/\r\nX-Extra: 1"));
+        Assert::false(@$response->trailer("X-T\r\nX-Extra", 'v'));
+        Assert::false(@$response->trailer('X-T', "v\r\nX-Extra: 1"));
+        $response->header = ["X-H\r\nX-Extra" => 'v', 'X-Ok' => 'v'];
         @$response->end('body');
     });
     $http->start();
@@ -61,7 +61,7 @@ $pm->run();
 ?>
 --EXPECT--
 status line: HTTP/1.1 200 OK
-injected in response: no
+extra header in response: no
 client path: rejected
 client header value: rejected
 client header key: rejected
