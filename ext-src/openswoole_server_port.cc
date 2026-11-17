@@ -313,7 +313,7 @@ void php_openswoole_server_port_minit(int module_number) {
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onBufferFull"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onBufferEmpty"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onRequest"), ZEND_ACC_PRIVATE);
-    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onHandShake"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onHandshake"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onOpen"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onMessage"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onDisconnect"), ZEND_ACC_PRIVATE);
