@@ -741,7 +741,21 @@ static int http2_parse_header(Http2Session *client, HttpContext *ctx, int flags,
         client->inflater = inflater;
     }
 
+    // RFC 7540 6.2: [pad length] [priority] header block fragment [padding]
+    if (flags & OSW_HTTP2_FLAG_PADDED) {
+        if (inlen < 1 || (uint8_t) in[0] > inlen - 1) {
+            openswoole_warning("http2 HEADERS frame with invalid padding");
+            return OSW_ERR;
+        }
+        size_t pad_length = (uint8_t) in[0];
+        in += 1;
+        inlen -= 1 + pad_length;
+    }
     if (flags & OSW_HTTP2_FLAG_PRIORITY) {
+        if (inlen < 5) {
+            openswoole_warning("http2 HEADERS frame is too short for the priority fields");
+            return OSW_ERR;
+        }
         // int stream_deps = ntohl(*(int *) (in));
         // uint8_t weight = in[4];
         in += 5;
