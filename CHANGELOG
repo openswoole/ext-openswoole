@@ -51,6 +51,13 @@
  . Fix the build on FreeBSD 14 and 15 (#389)
  . Fix OpenSwoole\Table ignoring a conflictProportion below 1 (#362)
  . Fix the io_uring reactor failing to start when io_uring is not available; it now falls back to epoll, and reactor_type is accepted by Server::set() (#408)
+ . Fix HTTP/2 requests with headers split into CONTINUATION frames, and HPACK errors when http2_header_table_size is set (#388)
+ . Fix heap corruption when closing a mysqli connection opened with mysqli_init() and real_connect() in a coroutine (#409, #378)
+ . Fix max_request_execution_time ending later requests early and crashing workers (#315, #358)
+ . Fix coroutines crashing when opcache.preload is enabled (#343)
+ . Fix the deprecation warning for on('handshake') (#303)
+ . Fix configure not finding libpq in lib64 without pg_config (#245)
+ . Fix task workers logging a warning for SIGPIPE
  . Various stability fixes
 
 # 26.2.0
