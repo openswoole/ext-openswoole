@@ -13,16 +13,21 @@ $pool = new OpenSwoole\Process\Pool(1, SWOOLE_IPC_NONE, 0, true);
 $counter = new OpenSwoole\Atomic(0);
 
 $pool->on('workerStart', function (OpenSwoole\Process\Pool $pool, int $workerId) use ($counter) {
-    if ($counter->get() <= 5) {
-        co::usleep(50000);
-        $counter->add(1);
-        echo "hello world\n";
+    $n = $counter->add(1);
+    // the manager may start another worker while the shutdown is in progress
+    if ($n > 6) {
+        return;
     }
+    co::usleep(50000);
+    echo "hello world\n";
 });
 
 $pool->on("workerStop", function ($pool, $data) use ($counter) {
-    echo "worker stop\n";
-    if ($counter->get() > 5) {
+    $n = $counter->get();
+    if ($n <= 6) {
+        echo "worker stop\n";
+    }
+    if ($n >= 6) {
         $pool->shutdown();
     }
 });
