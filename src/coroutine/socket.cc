@@ -1135,6 +1135,10 @@ bool Socket::bind(std::string address, int port) {
         set_err(errno);
         return false;
     }
+    // remember our own path, it is removed when the socket is closed
+    if (sock_domain == AF_UNIX) {
+        bind_address_info.assign(type, address, 0);
+    }
 
     return true;
 }
@@ -1767,12 +1771,10 @@ Socket::~Socket() {
 #ifdef OSW_USE_OPENSSL
     ssl_shutdown();
 #endif
+    // only the path we bound, info.addr of a datagram socket is the peer's address
     if (sock_domain == AF_UNIX && !bind_address.empty()) {
         ::unlink(bind_address_info.addr.un.sun_path);
         bind_address_info = {};
-    }
-    if (socket->socket_type == OSW_SOCK_UNIX_DGRAM) {
-        ::unlink(socket->info.addr.un.sun_path);
     }
     socket->free();
 }
