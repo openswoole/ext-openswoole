@@ -2204,6 +2204,22 @@ static PHP_METHOD(openswoole_server, set) {
     if (php_openswoole_array_get_value(vht, "http_parse_files", ztmp)) {
         serv->http_parse_files = zend_is_true(ztmp);
     }
+    // http2 SETTINGS sent to clients
+    if (php_openswoole_array_get_value(vht, "http2_header_table_size", ztmp)) {
+        serv->http2_header_table_size = OSW_MAX(0, OSW_MIN(zval_get_long(ztmp), UINT32_MAX));
+    }
+    if (php_openswoole_array_get_value(vht, "http2_initial_window_size", ztmp)) {
+        serv->http2_initial_window_size = OSW_MAX(0, OSW_MIN(zval_get_long(ztmp), UINT32_MAX));
+    }
+    if (php_openswoole_array_get_value(vht, "http2_max_concurrent_streams", ztmp)) {
+        serv->http2_max_concurrent_streams = OSW_MAX(0, OSW_MIN(zval_get_long(ztmp), UINT32_MAX));
+    }
+    if (php_openswoole_array_get_value(vht, "http2_max_frame_size", ztmp)) {
+        serv->http2_max_frame_size = OSW_MAX(0, OSW_MIN(zval_get_long(ztmp), UINT32_MAX));
+    }
+    if (php_openswoole_array_get_value(vht, "http2_max_header_list_size", ztmp)) {
+        serv->http2_max_header_list_size = OSW_MAX(0, OSW_MIN(zval_get_long(ztmp), UINT32_MAX));
+    }
 #ifdef OSW_HAVE_COMPRESSION
     // http content compression
     if (php_openswoole_array_get_value(vht, "http_compression", ztmp)) {
