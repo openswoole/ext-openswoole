@@ -75,9 +75,12 @@ int System::usleep(long microseconds) {
         }
     }
     Coroutine::CancelFunc cancel_fn = [canceled, tnode](Coroutine *co) {
-        *canceled = true;
         if (tnode) {
+            // the timer callback will not run to free it
             openswoole_timer_del(tnode);
+            delete canceled;
+        } else {
+            *canceled = true;
         }
         co->resume();
         return true;
