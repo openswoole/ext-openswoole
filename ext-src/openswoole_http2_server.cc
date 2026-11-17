@@ -945,10 +945,20 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         break;
     }
     case OSW_HTTP2_TYPE_HEADERS: {
-        stream = client->streams[stream_id];
+        auto stream_iterator = client->streams.find(stream_id);
+        stream = stream_iterator == client->streams.end() ? nullptr : stream_iterator->second;
         swHttp2FrameTraceLog(recv, "%s", (stream ? "exist stream" : "new stream"));
         HttpContext *ctx;
         if (!stream) {
+            // the limit we advertised in SETTINGS_MAX_CONCURRENT_STREAMS
+            if (client->streams.size() >= client->local_settings.max_concurrent_streams) {
+                openswoole_error_log(OSW_LOG_WARNING,
+                                     OSW_ERROR_HTTP2_STREAM_IGNORE,
+                                     "http2 stream#%d exceeds max_concurrent_streams(%u)",
+                                     stream_id,
+                                     client->local_settings.max_concurrent_streams);
+                return OSW_ERR;
+            }
             stream = new Http2Stream(client, stream_id);
             if (osw_unlikely(!stream->ctx)) {
                 openswoole_error_log(
@@ -990,6 +1000,19 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         if (!buffer) {
             buffer = new String(OSW_HTTP2_DATA_BUFFER_SIZE);
             ctx->request.h2_data_buffer = buffer;
+        }
+        // flow control does not bound the body, the window is refilled below
+        if (!ctx->co_socket) {
+            Server *serv = (Server *) ctx->private_data;
+            ListenPort *port = serv->get_port_by_session_id(ctx->fd);
+            if (port && buffer->length + length > port->protocol.package_max_length) {
+                openswoole_error_log(OSW_LOG_WARNING,
+                                     OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                     "http2 stream#%d body is greater than the package_max_length(%u)",
+                                     stream_id,
+                                     port->protocol.package_max_length);
+                return OSW_ERR;
+            }
         }
         buffer->append(buf, length);
 
