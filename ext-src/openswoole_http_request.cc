@@ -298,6 +298,13 @@ bool HttpContext::parse_form_data(const char *boundary_str, int boundary_len) {
     return true;
 }
 
+// like PHP: the first cookie of a name wins, browsers send the one with the more specific path first
+static inline void http_cookie_add(zval *zarray, const char *key, size_t key_len, const char *value, size_t value_len) {
+    if (!zend_symtable_str_exists(Z_ARRVAL_P(zarray), key, key_len)) {
+        add_assoc_stringl_ex(zarray, key, key_len, value, value_len);
+    }
+}
+
 void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, bool url_decode) {
     char keybuf[OSW_HTTP_COOKIE_KEYLEN];
     char valbuf[OSW_HTTP_COOKIE_VALLEN];
@@ -339,7 +346,7 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
             keybuf[klen - 1] = 0;
 
             if (klen > 1) {
-                add_assoc_stringl_ex(zarray, keybuf, klen - 1, ZEND_STRL(""));
+                http_cookie_add(zarray, keybuf, klen - 1, ZEND_STRL(""));
             }
 
             j = i + 1;
@@ -363,7 +370,7 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
                 vlen = php_raw_url_decode(_value, vlen);
             }
             if (klen > 1) {
-                add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);
+                http_cookie_add(zarray, keybuf, klen - 1, _value, vlen);
             }
             j = i + 1;
             state = -1;
@@ -404,7 +411,7 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
             vlen = php_raw_url_decode(_value, vlen);
         }
         if (klen > 1) {
-            add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);
+            http_cookie_add(zarray, keybuf, klen - 1, _value, vlen);
         }
     }
 }
