@@ -177,13 +177,14 @@ void Table::destroy() {
 
 void TableRow::lock() {
     osw_atomic_t *lock = &lock_;
-    uint32_t i, n;
+    // the lock word is the holder's pid, so a waiter always knows who holds it
+    osw_atomic_t self = (osw_atomic_t) OpenSwooleG.pid;
+    osw_atomic_t watched_holder = 0;
     long t = 0;
+    uint32_t i, n;
 
     while (1) {
-        if (*lock == 0 && osw_atomic_cmp_set(lock, 0, 1)) {
-        _success:
-            lock_pid = OpenSwooleG.pid;
+        if (*lock == 0 && osw_atomic_cmp_set(lock, 0, self)) {
             return;
         }
         if (OSW_CPU_NUM > 1) {
@@ -191,36 +192,39 @@ void TableRow::lock() {
                 for (i = 0; i < n; i++) {
                     osw_atomic_cpu_pause();
                 }
-                if (*lock == 0 && osw_atomic_cmp_set(lock, 0, 1)) {
-                    goto _success;
+                if (*lock == 0 && osw_atomic_cmp_set(lock, 0, self)) {
+                    return;
                 }
             }
         }
-        /**
-         * The process occupied by the resource no longer exists,
-         * indicating that OOM occurred during the locking process,
-         * forced to unlock
-         */
-        if (kill(lock_pid, 0) < 0 && errno == ESRCH) {
-            *lock = 1;
-            openswoole_warning("lock process[%d] not exists, force unlock", lock_pid);
-            goto _success;
+        osw_atomic_t holder = *lock;
+        if (holder == 0) {
+            continue;
         }
         /**
-         * Mark time
+         * The process holding the lock no longer exists (killed by OOM while holding it).
+         * Take it over only from that holder: another process may have taken it meanwhile.
          */
-        if (t == 0) {
-            t = openswoole::time<std::chrono::milliseconds>(true);
+        if (kill((pid_t) holder, 0) < 0 && errno == ESRCH) {
+            if (osw_atomic_cmp_set(lock, holder, self)) {
+                openswoole_warning("lock process[%d] not exists, force unlock", (int) holder);
+                return;
+            }
+            continue;
         }
         /**
-         * The deadlock time exceeds 2 seconds (OSW_TABLE_FORCE_UNLOCK_TIME),
-         * indicating that the lock process has OOM,
-         * and the PID has been reused, forcing the unlock
+         * The same holder for more than OSW_TABLE_FORCE_UNLOCK_TIME: it died and its pid was reused
          */
-        else if ((openswoole::time<std::chrono::milliseconds>(true) - t) > OSW_TABLE_FORCE_UNLOCK_TIME) {
-            *lock = 1;
-            openswoole_warning("timeout, force unlock");
-            goto _success;
+        long now = openswoole::time<std::chrono::milliseconds>(true);
+        if (holder != watched_holder) {
+            watched_holder = holder;
+            t = now;
+        } else if (now - t > OSW_TABLE_FORCE_UNLOCK_TIME) {
+            if (osw_atomic_cmp_set(lock, holder, self)) {
+                openswoole_warning("timeout, force unlock");
+                return;
+            }
+            watched_holder = 0;
         }
         osw_yield();
     }
