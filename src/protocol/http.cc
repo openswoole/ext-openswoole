@@ -118,7 +118,8 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
         if (dir_files.empty()) {
             handler.get_dir_files(dir_files);
         }
-        size_t body_length = handler.get_index_page(dir_files, osw_tg_buffer()->str, osw_tg_buffer()->size);
+        std::string body = handler.get_index_page(dir_files);
+        size_t body_length = body.length();
 
         response.info.len = osw_snprintf(header_buffer,
                                         sizeof(header_buffer),
@@ -138,7 +139,7 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
         send_to_connection(&response);
 
         response.info.len = body_length;
-        response.data = osw_tg_buffer()->str;
+        response.data = body.c_str();
         send_to_connection(&response);
         return true;
     }
