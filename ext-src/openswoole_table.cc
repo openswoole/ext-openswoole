@@ -213,9 +213,8 @@ PHP_METHOD(openswoole_table, __construct) {
         zend_throw_exception(openswoole_exception_ce, "global memory allocation failure", OSW_ERROR_MALLOC_FAIL);
         RETURN_FALSE;
     }
-    table->set_hash_func([](const char *key, size_t len) -> uint64_t {
-        return zend_string_hash_val(zend::fetch_zend_string_by_val((void *) key));
-    });
+    // hash the stored bytes: keys longer than the key size are truncated before they are hashed
+    table->set_hash_func([](const char *key, size_t len) -> uint64_t { return zend_inline_hash_func(key, len); });
     php_openswoole_table_set_ptr(ZEND_THIS, table);
 }
 
@@ -621,14 +620,14 @@ static PHP_METHOD(openswoole_table, rewind) {
 
 static PHP_METHOD(openswoole_table, valid) {
     Table *table = php_openswoole_table_get_and_check_ptr2(ZEND_THIS);
-    auto key = table->current();
-    RETURN_BOOL(key->key_len != 0);
+    // the row is zeroed at the end, an empty key is a valid key
+    RETURN_BOOL(table->current()->active);
 }
 
 static PHP_METHOD(openswoole_table, current) {
     Table *table = php_openswoole_table_get_and_check_ptr2(ZEND_THIS);
     auto row = table->current();
-    if (row->key_len == 0) {
+    if (!row->active) {
         RETURN_NULL();
     }
     php_openswoole_table_row2array(table, row, return_value);
@@ -637,7 +636,7 @@ static PHP_METHOD(openswoole_table, current) {
 static PHP_METHOD(openswoole_table, key) {
     Table *table = php_openswoole_table_get_and_check_ptr2(ZEND_THIS);
     auto row = table->current();
-    if (row->key_len == 0) {
+    if (!row->active) {
         RETURN_NULL();
     }
     RETVAL_STRINGL(row->key, row->key_len);

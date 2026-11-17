@@ -234,6 +234,11 @@ void Table::forward() {
             continue;
         }
         row->lock();
+        // deleted by another process between the check and the lock
+        if (!row->active) {
+            row->unlock();
+            continue;
+        }
         if (row->next == nullptr) {
             iterator->absolute_index++;
             memcpy(iterator->current_, row, iterator->row_memory_size_);
