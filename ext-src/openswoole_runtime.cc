@@ -582,8 +582,6 @@ static inline int socket_accept(php_stream *stream, Socket *sock, php_stream_xpo
     int *error_code = &xparam->outputs.error_code;
 
     int error = 0;
-    php_sockaddr_storage sa;
-    socklen_t sl = sizeof(sa);
 
     if (timeout) {
         sock->set_timeout(timeout, Socket::TIMEOUT_READ);
@@ -611,7 +609,10 @@ static inline int socket_accept(php_stream *stream, Socket *sock, php_stream_xpo
         }
         return FAILURE;
     } else {
-        php_network_populate_name_from_sockaddr((struct sockaddr *) &sa, sl, textaddr, addr, addrlen);
+        // the peer address that accept() stored in the socket
+        openswoole::network::Socket *peer = clisock->get_socket();
+        php_network_populate_name_from_sockaddr(
+            (struct sockaddr *) &peer->info.addr, peer->info.len, textaddr, addr, addrlen);
 #ifdef TCP_NODELAY
         if (tcp_nodelay) {
             clisock->get_socket()->set_tcp_nodelay(tcp_nodelay);
