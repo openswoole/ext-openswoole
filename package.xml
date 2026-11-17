@@ -1180,6 +1180,7 @@
             <file role="test" name="tests/openswoole_io_uring/file_mkdir_rmdir_rename.phpt" />
             <file role="test" name="tests/openswoole_io_uring/file_put_get.phpt" />
             <file role="test" name="tests/openswoole_io_uring/http_server.phpt" />
+            <file role="test" name="tests/openswoole_io_uring/http_server_process.phpt" />
             <file role="test" name="tests/openswoole_io_uring/http_server_file_io.phpt" />
             <file role="test" name="tests/openswoole_io_uring/multiple_events_same_fd.phpt" />
             <file role="test" name="tests/openswoole_io_uring/multiple_fds.phpt" />

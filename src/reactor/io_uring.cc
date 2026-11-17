@@ -35,13 +35,14 @@ enum IoUringOpType {
 
 /**
  * Tagged pointer encoding: Socket* + op type in 64-bit user_data.
- * Socket* is 8-byte aligned, so low 4 bits are always zero and
- * available for storing the operation tag.
+ * Socket* is only 8-byte aligned (e.g. the pipe sockets of a reactor thread are elements
+ * of one array, sizeof(Socket) is not a multiple of 16), so only the low 3 bits are free.
  */
 // liburing internal sentinel for timeout CQEs (not in public API)
 static const uint64_t OPENSWOOLE_IO_URING_UDATA_TIMEOUT = (uint64_t) -1;
 
-static const uint64_t IO_URING_TAG_BITS = 4;
+static const uint64_t IO_URING_TAG_BITS = 3;
+static_assert(alignof(Socket) >= (1 << IO_URING_TAG_BITS), "the socket tag needs aligned pointers");
 static const uint64_t IO_URING_TAG_MASK = (1ULL << IO_URING_TAG_BITS) - 1;
 
 static inline uint64_t encode_user_data(Socket *socket, IoUringOpType op) {
