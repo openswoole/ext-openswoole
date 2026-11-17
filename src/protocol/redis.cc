@@ -96,24 +96,32 @@ _recv_data:
             goto _recv_data;
         }
 
+    _parse:
+        // parse from the start every time: a command can arrive in several reads,
+        // and several commands can arrive in one read (pipelining)
         p = buffer->str;
         pe = p + buffer->length;
+        osw_memset_zero(request, sizeof(Request));
 
-        do {
+        while (p < pe) {
+            // a complete line is needed before a number can be read
+            if (request->state != STATE_RECEIVE_STRING && !memchr(p, '\n', pe - p)) {
+                goto _need_more;
+            }
             switch (request->state) {
             case STATE_RECEIVE_TOTAL_LINE:
-                if (*p == '*' && (p = get_number(p, &ret))) {
-                    request->n_lines_total = ret;
-                    request->state = STATE_RECEIVE_LENGTH;
-                    break;
-                }
-                if (p == nullptr) {
+                if (*p != '*' || !(p = get_number(p, &ret))) {
                     goto _failed;
                 }
-                /* no break */
+                request->n_lines_total = ret;
+                request->state = STATE_RECEIVE_LENGTH;
+                break;
 
             case STATE_RECEIVE_LENGTH:
-                if (*p == '$' && (p = get_number(p, &ret))) {
+                if (*p == '$') {
+                    if (!(p = get_number(p, &ret))) {
+                        goto _failed;
+                    }
                     if (ret < 0) {
                         break;
                     }
@@ -125,43 +133,60 @@ _recv_data:
                     break;
                 }
                 // integer
-                else if (*p == ':' && (p = get_number(p, &ret))) {
+                if (*p == ':') {
+                    if (!(p = get_number(p, &ret))) {
+                        goto _failed;
+                    }
                     break;
                 }
-                if (p == nullptr) {
-                    goto _failed;
-                }
-                /* no break */
+                goto _failed;
 
             case STATE_RECEIVE_STRING:
-                if (pe - p < request->n_bytes_total - request->n_bytes_received) {
-                    request->n_bytes_received += pe - p;
-                    return OSW_OK;
-                } else {
-                    p += request->n_bytes_total + OSW_CRLF_LEN;
-                    request->n_bytes_total = 0;
-                    request->n_lines_received++;
-                    request->state = STATE_RECEIVE_LENGTH;
-                    buffer->offset = buffer->length;
+                if ((size_t) (pe - p) < (size_t) request->n_bytes_total + OSW_CRLF_LEN) {
+                    goto _need_more;
+                }
+                p += request->n_bytes_total + OSW_CRLF_LEN;
+                request->n_bytes_total = 0;
+                request->n_lines_received++;
+                request->state = STATE_RECEIVE_LENGTH;
 
-                    if (request->n_lines_received == request->n_lines_total) {
-                        if (protocol->onPackage(protocol, socket, buffer->str, buffer->length) < 0) {
-                            return OSW_ERR;
-                        }
-                        if (socket->removed) {
-                            return OSW_OK;
-                        }
-                        buffer->clear();
+                if (request->n_lines_received == request->n_lines_total) {
+                    // only this command, the next pipelined one stays in the buffer
+                    size_t length = p - buffer->str;
+                    if (protocol->onPackage(protocol, socket, buffer->str, length) < 0) {
+                        return OSW_ERR;
+                    }
+                    if (socket->removed) {
+                        return OSW_OK;
+                    }
+                    buffer->reduce(length);
+                    if (buffer->length == 0) {
                         osw_memset_zero(request, sizeof(Request));
                         return OSW_OK;
                     }
+                    goto _parse;
                 }
                 break;
 
             default:
                 goto _failed;
             }
-        } while (p < pe);
+        }
+
+    _need_more:
+        if (buffer->length == buffer->size) {
+            if (buffer->size >= protocol->package_max_length) {
+                goto _package_too_big;
+            }
+            uint32_t extend_size = openswoole_size_align(buffer->size * 2, OpenSwooleG.pagesize);
+            if (extend_size > protocol->package_max_length) {
+                extend_size = protocol->package_max_length;
+            }
+            if (!buffer->extend(extend_size)) {
+                return OSW_ERR;
+            }
+        }
+        goto _recv_data;
     }
 _failed:
     openswoole_warning("redis protocol error");
