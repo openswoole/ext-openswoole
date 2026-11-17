@@ -47,8 +47,9 @@ $pm->parentFunc = function ($pid) use ($pm, $table) {
 
     $array = array_column(iterator_to_array($table), 'count');
     $standard_deviation = sqrt(openswoole_get_variance(openswoole_get_average($array), $array));
+    // a random quarter of the connects sleep, so the spread varies; all on one worker would be about 43
     Assert::greaterThan($standard_deviation, 1);
-    Assert::lessThan($standard_deviation, 5);
+    Assert::lessThan($standard_deviation, 10);
     echo 'DONE' . PHP_EOL;
 };
 
