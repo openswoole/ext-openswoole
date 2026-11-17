@@ -28,6 +28,7 @@
          . CURLOPT_SEEKFUNCTION support in the native curl hook on PHP 8.6
          . CURLOPT_PREREQFUNCTION support in the native curl hook on PHP 8.4+ (Guzzle 7.12+)
          . PIE (PHP Installer for Extensions) support
+         . Hooked ssl:// and tls:// client streams use the same peer verification defaults as native PHP; set verify_peer to false to connect to servers with a self-signed certificate
          . Fix stream_socket_enable_crypto with tls (#401)
          . Fix io_uring build on Alpine Linux (#400)
          . Fix SSL client certificate lost in getClientInfo() when the worker pid is greater than 65535
