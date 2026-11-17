@@ -11,9 +11,11 @@ $pm->initFreePorts();
 $pm->parentFunc = function (int $pid) use ($pm) {
     go(function() use ($pm) {
         $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $pm->getFreePort());
+        // fail instead of waiting for the process timeout
+        $cli->set(['timeout' => 5]);
         $connected = $cli->upgrade('/?test=a&b=hello');
         Assert::assert($connected);
-        $response = $cli->recv();
+        $response = $cli->recv(5);
         Assert::assert($response);
         $json = json_decode($response->data, true);
         Assert::assert(is_array($json));
