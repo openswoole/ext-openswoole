@@ -42,7 +42,8 @@ IoUringEngine::IoUringEngine() : event_fd_(-1), event_socket_(nullptr), caps_{},
     struct io_uring_params params = {};
     int ret = io_uring_queue_init_params(IO_URING_ENTRIES, &ring_, &params);
     if (ret < 0) {
-        openswoole_warning("io_uring_queue_init_params() failed: %s", strerror(-ret));
+        // e.g. blocked by the default Docker seccomp profile; the caller falls back to the thread pool
+        openswoole_debug("io_uring_queue_init_params() failed: %s", strerror(-ret));
         throw openswoole::Exception(OSW_ERROR_SYSTEM_CALL_FAIL);
     }
 
@@ -505,14 +506,17 @@ IoUringEngine *get_or_create_io_uring_engine() {
         return OpenSwooleTG.io_uring_engine;
     }
 
-    if (!OpenSwooleTG.reactor) {
+    // remember a failure, so each file operation does not try to set up io_uring again
+    static thread_local bool unavailable = false;
+    if (!OpenSwooleTG.reactor || unavailable) {
         return nullptr;
     }
 
     try {
         return new IoUringEngine();
     } catch (...) {
-        openswoole_warning("failed to create io_uring file I/O engine, falling back to thread pool");
+        unavailable = true;
+        openswoole_debug("io_uring file I/O engine not available, using the thread pool");
         return nullptr;
     }
 }

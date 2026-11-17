@@ -56,6 +56,7 @@
          . Fix a crash in the native curl hook with curl_copy_handle() or connection reuse in curl_multi
          . Fix curl_reset() losing the coroutine state of a native curl handle
          . Fix co::run() not returning for minutes after curl_multi requests in the native curl hook
+         . Fix io_uring warnings logged on every file operation when io_uring is not available, for example in Docker containers with the default seccomp profile
          . Various stability fixes
     </notes>
     <contents>
