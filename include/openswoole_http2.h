@@ -146,7 +146,7 @@ static osw_inline ssize_t get_length(const char *buf) {
 }
 
 ssize_t get_frame_length(Protocol *protocol, network::Socket *conn, const char *buf, uint32_t length);
-int send_setting_frame(Protocol *protocol, network::Socket *conn);
+int send_setting_frame(Protocol *protocol, network::Socket *conn, const Settings *settings, bool send_max_header_list_size);
 const char *get_type(int type);
 int get_type_color(int type);
 

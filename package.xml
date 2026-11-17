@@ -39,7 +39,7 @@
          . Fix preemptive scheduler crash on ZTS builds
          . Fix crash in the native curl hook when a curl multi handle is released after the event loop is destroyed
          . Fix enable_reuse_port having no effect on Linux because SO_REUSEPORT was not detected at configure time
-         . Fix the http2_* server settings being ignored
+         . Fix the http2_* server settings being ignored and not sent to clients in the SETTINGS frame
          . Fix max_idle_time closing active connections and ignoring fractions of a second
          . Fix a crash when a coroutine is canceled during file I/O
          . Fix stream_select() closing regular files
@@ -981,6 +981,7 @@
             <file role="test" name="tests/openswoole_http2_server/control_frames.phpt" />
             <file role="test" name="tests/openswoole_http2_server/head_response.phpt" />
             <file role="test" name="tests/openswoole_http2_server/header_block.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/settings_frame.phpt" />
             <file role="test" name="tests/openswoole_http2_server/goaway.phpt" />
             <file role="test" name="tests/openswoole_http2_server/h2_settings.phpt" />
             <file role="test" name="tests/openswoole_http2_server/headers_frame.phpt" />

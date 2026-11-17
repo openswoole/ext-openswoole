@@ -27,33 +27,30 @@ using openswoole::network::Socket;
 namespace openswoole {
 namespace http2 {
 
-int send_setting_frame(Protocol *protocol, Socket *_socket) {
-    char setting_frame[OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_SETTING_OPTION_SIZE * 3];
-    char *p = setting_frame;
-    uint16_t id;
-    uint32_t value;
+// advertises the settings the server applies to the connection
+int send_setting_frame(Protocol *protocol, Socket *_socket, const Settings *settings, bool send_max_header_list_size) {
+    char setting_frame[OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_SETTING_OPTION_SIZE * 5];
+    char *p = setting_frame + OSW_HTTP2_FRAME_HEADER_SIZE;
 
-    set_frame_header(p, OSW_HTTP2_TYPE_SETTINGS, OSW_HTTP2_SETTING_OPTION_SIZE * 3, 0, 0);
-    p += OSW_HTTP2_FRAME_HEADER_SIZE;
+    auto add = [&p](uint16_t id, uint32_t value) {
+        id = htons(id);
+        value = htonl(value);
+        memcpy(p, &id, sizeof(id));
+        memcpy(p + 2, &value, sizeof(value));
+        p += OSW_HTTP2_SETTING_OPTION_SIZE;
+    };
+    add(OSW_HTTP2_SETTING_HEADER_TABLE_SIZE, settings->header_table_size);
+    add(OSW_HTTP2_SETTINGS_MAX_CONCURRENT_STREAMS, settings->max_concurrent_streams);
+    add(OSW_HTTP2_SETTINGS_INIT_WINDOW_SIZE, settings->window_size);
+    add(OSW_HTTP2_SETTINGS_MAX_FRAME_SIZE, settings->max_frame_size);
+    // the default is no limit, it is only sent when it is configured
+    if (send_max_header_list_size) {
+        add(OSW_HTTP2_SETTINGS_MAX_HEADER_LIST_SIZE, settings->max_header_list_size);
+    }
 
-    id = htons(OSW_HTTP2_SETTINGS_MAX_CONCURRENT_STREAMS);
-    memcpy(p, &id, sizeof(id));
-    value = htonl(OSW_HTTP2_MAX_MAX_CONCURRENT_STREAMS);
-    memcpy(p + 2, &value, sizeof(value));
-    p += OSW_HTTP2_SETTING_OPTION_SIZE;
-
-    id = htons(OSW_HTTP2_SETTINGS_INIT_WINDOW_SIZE);
-    memcpy(p, &id, sizeof(id));
-    value = htonl(OSW_HTTP2_DEFAULT_WINDOW_SIZE);
-    memcpy(p + 2, &value, sizeof(value));
-    p += OSW_HTTP2_SETTING_OPTION_SIZE;
-
-    id = htons(OSW_HTTP2_SETTINGS_MAX_FRAME_SIZE);
-    memcpy(p, &id, sizeof(id));
-    value = htonl(OSW_HTTP2_MAX_MAX_FRAME_SIZE);
-    memcpy(p + 2, &value, sizeof(value));
-
-    return _socket->send(setting_frame, sizeof(setting_frame), 0);
+    size_t length = p - setting_frame - OSW_HTTP2_FRAME_HEADER_SIZE;
+    set_frame_header(setting_frame, OSW_HTTP2_TYPE_SETTINGS, length, 0, 0);
+    return _socket->send(setting_frame, OSW_HTTP2_FRAME_HEADER_SIZE + length, 0);
 }
 
 /**
