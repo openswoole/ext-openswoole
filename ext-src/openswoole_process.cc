@@ -686,6 +686,10 @@ static PHP_METHOD(openswoole_process, read) {
         RETURN_FALSE;
     }
 
+    if (buf_size <= 0) {
+        php_openswoole_fatal_error(E_WARNING, "the buffer size must be greater than 0");
+        RETURN_FALSE;
+    }
     if (buf_size > 65536) {
         buf_size = 65536;
     }
