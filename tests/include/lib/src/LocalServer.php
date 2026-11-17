@@ -41,12 +41,22 @@ class LocalServer
     public static function start(): self
     {
         $server = new self();
-        $server->httpPort = get_one_free_port();
-        $server->httpsPort = get_one_free_port();
-        $server->process = new Process(function () use ($server) {
-            $server->serve();
-        }, false, 0);
+        // the child listens on port 0 and sends the ports back, so no other test can take them first
+        $server->process = new Process(function (Process $process) use ($server) {
+            $server->serve($process);
+        }, false, SOCK_STREAM);
         $server->process->start();
+        $hookFlags = \OpenSwoole\Runtime::getHookFlags();
+        \OpenSwoole\Runtime::enableCoroutine(false);
+        try {
+            $ports = explode(' ', trim((string) $server->process->read()));
+        } finally {
+            \OpenSwoole\Runtime::enableCoroutine($hookFlags);
+        }
+        if (count($ports) !== 2) {
+            throw new RuntimeException('LocalServer did not start');
+        }
+        [$server->httpPort, $server->httpsPort] = array_map('intval', $ports);
         $server->waitUntilReady();
         register_shutdown_function(function () use ($server) {
             $server->stop();
@@ -89,16 +99,16 @@ class LocalServer
         }
     }
 
-    protected function serve(): void
+    protected function serve(Process $process): void
     {
-        $http = new Server($this->host, $this->httpPort, SWOOLE_BASE);
+        $http = new Server($this->host, 0, SWOOLE_BASE);
         $http->set([
             'log_file' => '/dev/null',
             'worker_num' => 1,
             'open_http2_protocol' => true,
             'http_compression' => false,
         ]);
-        $https = $http->listen($this->host, $this->httpsPort, SWOOLE_SOCK_TCP | SWOOLE_SSL);
+        $https = $http->listen($this->host, 0, SWOOLE_SOCK_TCP | SWOOLE_SSL);
         $https->set([
             'ssl_cert_file' => SSL_FILE_DIR . '/server.crt',
             'ssl_key_file' => SSL_FILE_DIR . '/server.key',
@@ -108,6 +118,7 @@ class LocalServer
         $http->on('request', function (Request $request, Response $response) {
             static::handle($request, $response);
         });
+        $process->write("{$http->port} {$https->port}\n");
         $http->start();
     }
 

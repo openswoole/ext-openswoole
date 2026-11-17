@@ -1,15 +1,24 @@
 <?php
+// started before co::run(), which the tests call this from
+$GLOBALS['curl_multi_server'] = $GLOBALS['curl_multi_server'] ?? SwooleTest\LocalServer::start();
+
 function openswoole_test_curl_multi($options = []) {
+    $server = $GLOBALS['curl_multi_server'];
     $ch1 = curl_init();
     $ch2 = curl_init();
 
-    curl_setopt($ch1, CURLOPT_URL, "https://www.google.com/");
+    // a slower request, so the transfers are still running while the test selects
+    curl_setopt($ch1, CURLOPT_URL, $server->url('/delay/0.1', true));
     curl_setopt($ch1, CURLOPT_HEADER, 0);
     curl_setopt($ch1, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch1, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch1, CURLOPT_SSL_VERIFYHOST, 0);
 
-    curl_setopt($ch2, CURLOPT_URL, "https://openswoole.com/");
+    curl_setopt($ch2, CURLOPT_URL, $server->url('/', true));
     curl_setopt($ch2, CURLOPT_HEADER, 0);
     curl_setopt($ch2, CURLOPT_RETURNTRANSFER, 1);
+    curl_setopt($ch2, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch2, CURLOPT_SSL_VERIFYHOST, 0);
 
     $mh = curl_multi_init();
 
@@ -52,8 +61,8 @@ function openswoole_test_curl_multi($options = []) {
     Assert::eq($info2['msg'], CURLMSG_DONE);
     Assert::eq($info3, false);
 
-    Assert::contains(curl_multi_getcontent($ch1), 'google');
-    Assert::contains(curl_multi_getcontent($ch2), 'OpenSwoole');
+    Assert::contains(curl_multi_getcontent($ch1), '/delay/0.1');
+    Assert::contains(curl_multi_getcontent($ch2), 'OpenSwoole test page');
 
     curl_multi_remove_handle($mh, $ch1);
     curl_multi_remove_handle($mh, $ch2);
