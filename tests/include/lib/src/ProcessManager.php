@@ -101,7 +101,36 @@ class ProcessManager
         if ($this->alone || $this->waitTimeout == 0) {
             return false;
         }
-        return $this->atomic->wait($this->waitTimeout);
+        $ret = $this->atomic->wait($this->waitTimeout);
+        // the child did not call wakeup(): wait until its server listens instead of
+        // starting the parent after a fixed delay, which is too short on a busy machine
+        if (!$ret && !$this->parentFirst && !empty($this->freePorts)) {
+            $this->waitForListen($this->freePorts[0], 3);
+        }
+        return $ret;
+    }
+
+    // reads /proc/net, connecting to the port would add a connection the test does not expect
+    private function waitForListen(int $port, float $timeout): void
+    {
+        if (!is_readable('/proc/net/tcp')) {
+            return;
+        }
+        $hex = sprintf(':%04X', $port);
+        $deadline = microtime(true) + $timeout;
+        while (microtime(true) < $deadline) {
+            foreach (['tcp', 'tcp6', 'udp', 'udp6'] as $proto) {
+                $lines = @file("/proc/net/{$proto}") ?: [];
+                foreach ($lines as $line) {
+                    $cols = preg_split('/\s+/', trim($line));
+                    // tcp: state 0A is LISTEN; udp: bound is enough
+                    if (isset($cols[3]) && str_ends_with($cols[1], $hex) && ($proto[0] === 'u' || $cols[3] === '0A')) {
+                        return;
+                    }
+                }
+            }
+            usleep(20000);
+        }
     }
 
     //唤醒等待的进程
@@ -309,7 +338,10 @@ class ProcessManager
         }
         $this->runParentFunc($this->childPid = $this->childProcess->pid);
         Event::wait();
-        $waitInfo = Process::wait(true);
+        // reap our child only, the test may have started other processes (e.g. LocalServer)
+        do {
+            $waitInfo = Process::wait(true);
+        } while ($waitInfo && $waitInfo['pid'] != $this->childProcess->pid);
         $this->childStatus = $waitInfo['code'];
         if (!in_array($waitInfo['signal'], $this->expectExitSignal)) {
             throw new RuntimeException("Unexpected exit code {$waitInfo['signal']}");
