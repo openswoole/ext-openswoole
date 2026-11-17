@@ -886,6 +886,34 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
     uint16_t id = 0;
     uint32_t value = 0;
 
+    // RFC 7540: control frames have a fixed size, a wrong size is a FRAME_SIZE_ERROR
+    bool bad_length = false;
+    switch (type) {
+    case OSW_HTTP2_TYPE_SETTINGS:
+        bad_length = length % 6 != 0 || ((flags & OSW_HTTP2_FLAG_ACK) && length != 0);
+        break;
+    case OSW_HTTP2_TYPE_PING:
+        bad_length = length != OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE;
+        break;
+    case OSW_HTTP2_TYPE_WINDOW_UPDATE:
+    case OSW_HTTP2_TYPE_RST_STREAM:
+        bad_length = length != 4;
+        break;
+    case OSW_HTTP2_TYPE_GOAWAY:
+        bad_length = length < OSW_HTTP2_GOAWAY_SIZE;
+        break;
+    default:
+        break;
+    }
+    if (bad_length) {
+        openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "http2 frame type=%d has an invalid length %zd",
+                             type,
+                             length);
+        return OSW_ERR;
+    }
+
     switch (type) {
     case OSW_HTTP2_TYPE_SETTINGS: {
         if (flags & OSW_HTTP2_FLAG_ACK) {
