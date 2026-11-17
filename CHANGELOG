@@ -47,6 +47,9 @@
  . Fix a send error busy looping the reactor
  . Fix hooked time_nanosleep() accepting nanoseconds out of range
  . Fix unchecked DTLS session lookups and reads
+ . Fix a use-after-free in the native curl hook with curl_copy_handle() or connection reuse in curl_multi
+ . Fix curl_reset() losing the coroutine state of a native curl handle
+ . Fix process pool warnings about workers that already exited or detached
 
 # 26.2.0
 
