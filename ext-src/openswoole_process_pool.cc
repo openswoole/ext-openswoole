@@ -573,7 +573,7 @@ static PHP_METHOD(openswoole_process_pool, getProcess) {
         *worker = current_pool->workers[worker_id];
 
         object_init_ex(zprocess, openswoole_process_ce);
-        zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("id"), OpenSwooleG.process_id);
+        zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("id"), worker_id);
         zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("pid"), worker->pid);
         if (current_pool->ipc_mode == OSW_IPC_UNIXSOCK) {
             // current process
