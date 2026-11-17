@@ -461,6 +461,7 @@
             <file role="test" name="tests/include/lib/src/CoServer.php" />
             <file role="test" name="tests/include/lib/src/CurlManager.php" />
             <file role="test" name="tests/include/lib/src/LengthServer.php" />
+            <file role="test" name="tests/include/lib/src/LocalServer.php" />
             <file role="test" name="tests/include/lib/src/MQTT/Helper.php" />
             <file role="test" name="tests/include/lib/src/ProcessManager.php" />
             <file role="test" name="tests/include/lib/src/RandStr.php" />
