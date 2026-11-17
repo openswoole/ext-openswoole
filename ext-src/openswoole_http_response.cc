@@ -351,6 +351,10 @@ static void http_build_header(HttpContext *ctx, String *response, size_t body_le
             if (Z_ISNULL_P(value)) {
                 return;
             }
+            // keys written to $response->header directly skip set_header()
+            if (openswoole_http_has_crlf(key, l_key)) {
+                return;
+            }
             zend::String str_value(value);
             str_value.rtrim();
             if (openswoole_http_has_crlf(str_value.val(), str_value.len())) {
@@ -482,6 +486,10 @@ static ssize_t http_build_trailer(HttpContext *ctx, String *response) {
 
             if (!Z_ISNULL_P(zvalue)) {
                 zend::String str_value(zvalue);
+                if (openswoole_http_has_crlf(key, keylen) ||
+                    openswoole_http_has_crlf(str_value.val(), str_value.len())) {
+                    continue;
+                }
                 n = osw_snprintf(
                     buf, l_buf, "%.*s: %.*s\r\n", (int) keylen, key, (int) str_value.len(), str_value.val());
                 response->append(buf, n);
@@ -939,7 +947,7 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
         RETURN_FALSE;
     }
 
-    size_t cookie_size = name_len /* + value_len */ + path_len + domain_len + 100;
+    size_t cookie_size = name_len /* + value_len */ + path_len + domain_len + samesite_len + priority_len + 100;
     char *cookie = nullptr, *date = nullptr;
 
     if (name_len > 0 && strpbrk(name, "=,; \t\r\n\013\014") != nullptr) {
@@ -948,6 +956,11 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
     }
 
     if (!url_encode && openswoole_http_has_crlf(value, value_len)) {
+        RETURN_FALSE;
+    }
+
+    if (openswoole_http_has_crlf(path, path_len) || openswoole_http_has_crlf(domain, domain_len) ||
+        openswoole_http_has_crlf(samesite, samesite_len) || openswoole_http_has_crlf(priority, priority_len)) {
         RETURN_FALSE;
     }
 
@@ -1039,7 +1052,14 @@ static PHP_METHOD(openswoole_http_response, status) {
         RETURN_FALSE;
     }
 
+    if (openswoole_http_has_crlf(reason, reason_len)) {
+        RETURN_FALSE;
+    }
+
     ctx->response.status = http_status;
+    if (ctx->response.reason) {
+        efree(ctx->response.reason);
+    }
     ctx->response.reason = reason_len > 0 ? estrndup(reason, reason_len) : nullptr;
     RETURN_TRUE;
 }
@@ -1082,6 +1102,9 @@ static PHP_METHOD(openswoole_http_response, trailer) {
     }
     if (UNEXPECTED(klen > OSW_HTTP_HEADER_KEY_SIZE - 1)) {
         php_openswoole_error(E_WARNING, "trailer key is too long");
+        RETURN_FALSE;
+    }
+    if (openswoole_http_has_crlf(k, klen) || (v && openswoole_http_has_crlf(v, vlen))) {
         RETURN_FALSE;
     }
     zval *ztrailer = openswoole_http_init_and_read_property(

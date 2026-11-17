@@ -844,6 +844,46 @@ bool HttpClient::send() {
     z_download_file = osw_zend_read_property_not_null_ex(
         openswoole_http_client_coro_ce, zobject, OSW_ZSTR_KNOWN(OSW_ZEND_STR_DOWNLOAD_FILE), 0);
 
+    // a CR or LF in the request line, a header or a cookie name would start a new header or request
+    {
+        bool has_crlf = openswoole_http_has_crlf(path.c_str(), path.length());
+        if (!has_crlf && zmethod) {
+            zend::String str_method(zmethod);
+            has_crlf = openswoole_http_has_crlf(str_method.val(), str_method.len());
+        }
+        zend_string *key;
+        zval *zv;
+        if (!has_crlf && ZVAL_IS_ARRAY(zheaders)) {
+            ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zheaders), key, zv) {
+                if (key && openswoole_http_has_crlf(ZSTR_VAL(key), ZSTR_LEN(key))) {
+                    has_crlf = true;
+                    break;
+                }
+                if (!Z_ISNULL_P(zv)) {
+                    zend::String str_value(zv);
+                    if (openswoole_http_has_crlf(str_value.val(), str_value.len())) {
+                        has_crlf = true;
+                        break;
+                    }
+                }
+            }
+            ZEND_HASH_FOREACH_END();
+        }
+        if (!has_crlf && ZVAL_IS_ARRAY(zcookies)) {
+            ZEND_HASH_FOREACH_STR_KEY(Z_ARRVAL_P(zcookies), key) {
+                if (key && openswoole_http_has_crlf(ZSTR_VAL(key), ZSTR_LEN(key))) {
+                    has_crlf = true;
+                    break;
+                }
+            }
+            ZEND_HASH_FOREACH_END();
+        }
+        if (has_crlf) {
+            set_error(EINVAL, "request contains a CR or LF character", HTTP_CLIENT_ESTATUS_SEND_FAILED);
+            return false;
+        }
+    }
+
     // ============   host   ============
     zend::String str_host;
 
