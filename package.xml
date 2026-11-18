@@ -1809,6 +1809,7 @@
             <file role="src" name="thirdparty/hiredis/sds.h" />
             <file role="src" name="thirdparty/hiredis/sdsalloc.h" />
             <file role="doc" name="thirdparty/llhttp/LICENSE" />
+            <file role="doc" name="thirdparty/llhttp/LICENSE-MIT" />
             <file role="src" name="thirdparty/llhttp/api.c" />
             <file role="src" name="thirdparty/llhttp/http.c" />
             <file role="src" name="thirdparty/llhttp/llhttp.c" />

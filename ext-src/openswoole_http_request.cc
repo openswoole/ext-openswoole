@@ -129,16 +129,31 @@ static osw_inline const char *http_get_method_name(uint8_t method) {
 // clang-format off
 static const llhttp_settings_t http_parser_settings =
 {
-    nullptr,                          // on_message_begin
-    http_request_on_url,             // on_url
-    nullptr,                          // on_status
-    http_request_on_header_field,    // on_header_field
-    http_request_on_header_value,    // on_header_value
-    http_request_on_headers_complete,// on_headers_complete
-    http_request_on_body,            // on_body
-    http_request_message_complete,   // on_message_complete
-    nullptr,                          // on_chunk_header
-    nullptr,                          // on_chunk_complete
+    nullptr,                           // on_message_begin
+    nullptr,                           // on_protocol
+    http_request_on_url,               // on_url
+    nullptr,                           // on_status
+    nullptr,                           // on_method
+    nullptr,                           // on_version
+    http_request_on_header_field,      // on_header_field
+    http_request_on_header_value,      // on_header_value
+    nullptr,                           // on_chunk_extension_name
+    nullptr,                           // on_chunk_extension_value
+    http_request_on_headers_complete,  // on_headers_complete
+    http_request_on_body,              // on_body
+    http_request_message_complete,     // on_message_complete
+    nullptr,                           // on_protocol_complete
+    nullptr,                           // on_url_complete
+    nullptr,                           // on_status_complete
+    nullptr,                           // on_method_complete
+    nullptr,                           // on_version_complete
+    nullptr,                           // on_header_field_complete
+    nullptr,                           // on_header_value_complete
+    nullptr,                           // on_chunk_extension_name_complete
+    nullptr,                           // on_chunk_extension_value_complete
+    nullptr,                           // on_chunk_header
+    nullptr,                           // on_chunk_complete
+    nullptr,                           // on_reset
 };
 
 static const multipart_parser_settings mt_parser_settings =
