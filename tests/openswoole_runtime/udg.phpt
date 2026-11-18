@@ -13,7 +13,7 @@ const N = 5;
 
 go(function () {
     $socket = new OpenSwoole\Coroutine\Socket(AF_UNIX, SOCK_DGRAM, 0);
-    $socket->bind(__DIR__ . '/test.sock');
+    $socket->bind(__DIR__ . '/udg_test.sock');
 
     for ($i = 0; $i < N; $i++)
     {
@@ -24,7 +24,7 @@ go(function () {
 });
 
 go(function () {
-    $fp = stream_socket_client("udg://".__DIR__."/test.sock", $errno, $errstr, 30);
+    $fp = stream_socket_client("udg://".__DIR__."/udg_test.sock", $errno, $errstr, 30);
     if (!$fp) {
         echo "$errstr ($errno)<br />\n";
     } else {

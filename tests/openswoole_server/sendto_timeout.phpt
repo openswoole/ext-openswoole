@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 const N = 65507;
 
-define('SOCK_FILE', __DIR__.'/server.sock');
+define('SOCK_FILE', __DIR__.'/sendto_timeout_server.sock');
 OpenSwoole\Util::setAio(['socket_send_timeout' => 0.5]);
 $pm = new SwooleTest\ProcessManager;
 

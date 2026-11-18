@@ -12,7 +12,7 @@ use OpenSwoole\Server;
 use OpenSwoole\Atomic;
 use OpenSwoole\Client;
 use OpenSwoole\Constant;
-define('SOCK_FILE', __DIR__.'/server.sock');
+define('SOCK_FILE', __DIR__.'/max_idle_time_2_server.sock');
 $pm = new SwooleTest\ProcessManager;
 
 $time1 = new Atomic(0);
@@ -25,7 +25,9 @@ $pm->parentFunc = function ($pid) use ($pm, $time1, $time2) {
     }
     sleep(1);
     usleep(200000);
-    Assert::greaterThan($time2->get() - $time1->get(), 9990);
+    // the idle time counts from the accept, which the server takes from the loop's cached clock,
+    // a few milliseconds before onConnect runs
+    Assert::greaterThan($time2->get() - $time1->get(), 9900);
     $data = $client->recv();
     Assert::isEmpty($data);
     $pm->kill();

@@ -54,7 +54,7 @@ class StaticHandler {
     }
     bool hit();
     bool is_modified(const std::string &date_if_modified_since);
-    size_t get_index_page(std::set<std::string> &index_files, char *buffer, size_t size);
+    std::string get_index_page(std::set<std::string> &index_files);
     bool get_dir_files(std::set<std::string> &index_files);
     bool set_filename(std::string &filename);
 

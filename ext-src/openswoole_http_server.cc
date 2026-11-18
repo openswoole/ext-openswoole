@@ -41,7 +41,11 @@ static bool http_context_disconnect(HttpContext *ctx);
 
 void php_openswoole_http_request_onTimeout(Timer *timer, TimerNode *tnode) {
     HttpContext *ctx = (HttpContext *) tnode->data;
-    if (!ctx || (ctx->end_ || ctx->detached) || !ctx->fd) {
+    if (!ctx) {
+        return;
+    }
+    ctx->timeout_timer = nullptr;
+    if (ctx->end_ || ctx->detached || !ctx->fd) {
         return;
     }
     ctx->send(ctx, OSW_STRL(OSW_HTTP_REQUEST_TIMEOUT_PACKET));
@@ -140,10 +144,10 @@ int php_openswoole_http_server_onReceive(Server *serv, RecvData *req) {
         }
 
         if (serv->max_request_execution_time > 0) {
-            openswoole_timer_add((long) (serv->max_request_execution_time * 1000),
-                             false,
-                             php_openswoole_http_request_onTimeout,
-                             (HttpContext *) ctx);
+            ctx->timeout_timer = openswoole_timer_add((long) (serv->max_request_execution_time * 1000),
+                                                      false,
+                                                      php_openswoole_http_request_onTimeout,
+                                                      (HttpContext *) ctx);
         }
 
         if (UNEXPECTED(!zend::function::call(fci_cache, 2, args, nullptr, serv->is_enable_coroutine()))) {
@@ -264,6 +268,12 @@ void HttpContext::free() {
         return;
     }
 #endif
+
+    // the timer must not fire on a freed context
+    if (timeout_timer) {
+        openswoole_timer_del(timeout_timer);
+        timeout_timer = nullptr;
+    }
 
     HttpRequest *req = &request;
     HttpResponse *res = &response;

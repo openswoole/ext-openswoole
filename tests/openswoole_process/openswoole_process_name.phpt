@@ -17,7 +17,7 @@ $name = "SWOOLE_PROCESS_TEST_" . rand(1, 100);
 $proc = new \openswoole_process(function ($childProc) {
     global $name;
     OpenSwoole\Util::setProcessName($name);
-    sleep(PHP_INT_MAX);
+    sleep(1000);
 });
 
 $pid = $proc->start();

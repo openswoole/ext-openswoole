@@ -1,7 +1,9 @@
 --TEST--
 openswoole_server: dispatch_func [discard]
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc'; ?>
+<?php require __DIR__ . '/../include/skipif.inc';
+skip('not support ZTS', ZEND_THREAD_SAFE);
+?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';

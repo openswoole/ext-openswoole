@@ -6,6 +6,7 @@ FROM php:${PHP_VERSION}-cli-alpine${ALPINE_VERSION}
 LABEL maintainer="OpenSwoole Group <hello@openswoole.com>" version="1.0" license="MIT"
 
 ARG PHP_VERSION
+ARG IMAGE_PHP=0
 
 COPY . /opt/www
 
@@ -16,6 +17,7 @@ ENV PHPIZE_DEPS="autoconf dpkg-dev dpkg file g++ gcc libc-dev make pkgconf re2c 
 RUN set -ex \
     && apk update \
     && apk add --no-cache libstdc++ openssl git bash \
+    && if [ "$IMAGE_PHP" = 1 ]; then apk add --no-cache $PHPIZE_DEPS linux-headers openssl-dev curl-dev; else true \
     && apk add --no-cache $PHPIZE_DEPS php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-dev php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-pear libaio-dev openssl-dev curl-dev \
     && apk add --no-cache ca-certificates \
     curl \
@@ -53,7 +55,7 @@ RUN set -ex \
     && apk add --no-cache php${PHP_VERSION:0:1}${PHP_VERSION:2:1}-opcache 2>/dev/null || true \
     && ln -sf /usr/bin/php${PHP_VERSION:0:1}${PHP_VERSION:2:1} /usr/local/bin/php \
     && ln -sf /usr/bin/phpize${PHP_VERSION:0:1}${PHP_VERSION:2:1} /usr/local/bin/phpize \
-    && ln -sf /usr/bin/php-config${PHP_VERSION:0:1}${PHP_VERSION:2:1} /usr/local/bin/php-config \
+    && ln -sf /usr/bin/php-config${PHP_VERSION:0:1}${PHP_VERSION:2:1} /usr/local/bin/php-config; fi \
     && php -v \
     && php -m \
     # ---------- clear works ----------
@@ -63,8 +65,9 @@ RUN set -ex \
     && phpize \
     && ./configure --enable-openssl --enable-http2 --enable-hook-curl \
     && make -s -j$(nproc) && make install \
+    && if [ "$IMAGE_PHP" = 1 ]; then docker-php-ext-enable openswoole; else true \
     && echo /etc/php${PHP_VERSION:0:1}${PHP_VERSION:2:1}/conf.d/50_openswoole.ini \
-    && echo "extension=openswoole.so" > /etc/php${PHP_VERSION:0:1}${PHP_VERSION:2:1}/conf.d/50_openswoole.ini \
+    && echo "extension=openswoole.so" > /etc/php${PHP_VERSION:0:1}${PHP_VERSION:2:1}/conf.d/50_openswoole.ini; fi \
     && php -v \
     && php -m \
     && php --ri openswoole \

@@ -39,6 +39,12 @@
 
 #include "openswoole_file_hook.h"
 
+#if PHP_VERSION_ID >= 80600
+// php_error_docref1() and php_error_docref2() were removed in PHP 8.6
+#define php_error_docref1(docref, param1, type, ...) php_error_docref(docref, type, __VA_ARGS__)
+#define php_error_docref2(docref, param1, param2, type, ...) php_error_docref(docref, type, __VA_ARGS__)
+#endif
+
 #if !defined(WINDOWS) && !defined(NETWARE)
 extern int php_get_uid_by_name(const char *name, uid_t *uid);
 extern int php_get_gid_by_name(const char *name, gid_t *gid);
@@ -1045,7 +1051,13 @@ static int php_plain_files_mkdir(
     }
 
     if (!recursive) {
+        if (php_check_open_basedir(dir)) {
+            return 0;
+        }
         ret = mkdir(dir, mode);
+        if (ret < 0 && (options & REPORT_ERRORS)) {
+            php_error_docref(NULL, E_WARNING, "%s", strerror(errno));
+        }
     } else {
         /* we look for directory separator from the end of string, thus hopefuly reducing our work load */
         char *e;
@@ -1056,6 +1068,10 @@ static int php_plain_files_mkdir(
 
         if (!expand_filepath_with_mode(dir, buf, NULL, 0, CWD_EXPAND)) {
             php_error_docref(NULL, E_WARNING, "Invalid path");
+            return 0;
+        }
+
+        if (php_check_open_basedir(buf)) {
             return 0;
         }
 
@@ -1092,6 +1108,9 @@ static int php_plain_files_mkdir(
 
         if (p == buf) {
             ret = mkdir(dir, mode);
+            if (ret < 0 && (options & REPORT_ERRORS)) {
+                php_error_docref(NULL, E_WARNING, "%s", strerror(errno));
+            }
         } else if (!(ret = mkdir(buf, mode)) || EEXIST == errno) {
             if (!p) {
                 p = buf;
@@ -1113,6 +1132,8 @@ static int php_plain_files_mkdir(
                     }
                 }
             }
+        } else if (options & REPORT_ERRORS) {
+            php_error_docref(NULL, E_WARNING, "%s", strerror(errno));
         }
     }
     if (ret < 0) {

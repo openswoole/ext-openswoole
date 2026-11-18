@@ -12,7 +12,6 @@ use OpenSwoole\Http\Response;
 use OpenSwoole\Http\Server;
 
 $pm = new ProcessManager;
-$pm->useConstantPorts = true;
 
 $pm->parentFunc = function () use ($pm) {
     $flags = STREAM_CLIENT_CONNECT;

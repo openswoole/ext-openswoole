@@ -23,6 +23,7 @@
 #include "openswoole_signal.h"
 
 #include "zend_builtin_functions.h"
+#include "zend_observer.h"
 #include "ext/spl/spl_array.h"
 
 #include "openswoole_coroutine_arginfo.h"
@@ -425,10 +426,13 @@ void PHPCoroutine::interrupt_thread_start() {
         return;
     }
     interrupt_thread_running = true;
-    interrupt_thread = std::thread([]() {
+    // resolve the executor globals in the PHP thread: under ZTS they are thread-local
+    // and can not be accessed from the interrupt thread
+    zend_atomic_bool *vm_interrupt = &EG(vm_interrupt);
+    interrupt_thread = std::thread([vm_interrupt]() {
         openswoole_signal_block_all();
         while (interrupt_thread_running) {
-            zend_atomic_bool_store_ex(&EG(vm_interrupt), true);
+            zend_atomic_bool_store_ex(vm_interrupt, true);
             std::this_thread::sleep_for(std::chrono::milliseconds(MAX_EXEC_MSEC / 2));
         }
     });
@@ -767,13 +771,17 @@ void PHPCoroutine::main_func(void *arg) {
             // TODO: enhancement it, separate execute data is necessary, but we lose the backtrace
             EG(current_execute_data) = nullptr;
             zend_init_func_execute_data(call, &func->op_array, retval);
+            // like zend_call_function(): observers such as Xdebug see the entry function, the VM ends it
+            ZEND_OBSERVER_FCALL_BEGIN(call);
             zend_execute_ex(EG(current_execute_data));
         } else /* ZEND_INTERNAL_FUNCTION */
         {
             ZVAL_NULL(retval);
             call->prev_execute_data = nullptr;
             call->return_value = nullptr; /* this is not a constructor call */
+            ZEND_OBSERVER_FCALL_BEGIN(call);
             execute_internal(call, retval);
+            ZEND_OBSERVER_FCALL_END(call, retval);
             zend_vm_stack_free_args(call);
         }
 
@@ -962,7 +970,7 @@ static PHP_METHOD(openswoole_exit_exception, getStatus) {
 }
 
 PHP_FUNCTION(openswoole_coroutine_create) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
 
     ZEND_PARSE_PARAMETERS_START(1, -1)
@@ -988,7 +996,7 @@ PHP_FUNCTION(openswoole_coroutine_create) {
 }
 
 PHP_FUNCTION(openswoole_coroutine_defer) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
     zend::Function *defer_fci;
 
@@ -1025,7 +1033,7 @@ static PHP_METHOD(openswoole_coroutine, stats) {
 }
 
 static PHP_METHOD(openswoole_coroutine, run) {
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
 
     ZEND_PARSE_PARAMETERS_START(1, -1)
@@ -1304,12 +1312,59 @@ struct ChannelObject {
 };
 
 static osw_inline ChannelObject *php_openswoole_channel_coro_fetch_object(zend_object *obj) {
-    return (ChannelObject *) ((char *) obj - XtOffsetOf(ChannelObject, std));
+    return (ChannelObject *) ((char *) obj - offsetof(ChannelObject, std));
 }
 
 static osw_inline Channel *php_openswoole_get_channel(zval *zobject) {
     Channel *chan = php_openswoole_channel_coro_fetch_object(Z_OBJ_P(zobject))->chan;
     return chan;
+}
+
+extern zend_class_entry *openswoole_channel_coro_ce;
+
+// collects the channels of a select() argument, false when an element is not a channel
+static bool php_openswoole_select_channels(zval *zchans, std::vector<Channel *> &chans) {
+    zval *val;
+    ZEND_HASH_FOREACH_VAL(Z_ARRVAL_P(zchans), val) {
+        ZVAL_DEREF(val);
+        if (Z_TYPE_P(val) != IS_OBJECT || !instanceof_function(Z_OBJCE_P(val), openswoole_channel_coro_ce)) {
+            zend_type_error("Coroutine::select() expects arrays of %s", ZSTR_VAL(openswoole_channel_coro_ce->name));
+            return false;
+        }
+        chans.push_back(php_openswoole_get_channel(val));
+    }
+    ZEND_HASH_FOREACH_END();
+    return true;
+}
+
+// keeps the elements whose position is in ready, the array keys may be strings or not sequential
+static void php_openswoole_select_filter(zval *zchans, const std::vector<int> &ready) {
+    HashTable *ht = Z_ARRVAL_P(zchans);
+    std::vector<zval> keys;
+    zend_ulong num_idx;
+    zend_string *key;
+    int position = 0;
+    ZEND_HASH_FOREACH_KEY(ht, num_idx, key) {
+        if (std::find(ready.begin(), ready.end(), position) == ready.end()) {
+            zval zkey;
+            if (key) {
+                ZVAL_STR_COPY(&zkey, key);
+            } else {
+                ZVAL_LONG(&zkey, num_idx);
+            }
+            keys.push_back(zkey);
+        }
+        position++;
+    }
+    ZEND_HASH_FOREACH_END();
+    for (auto &zkey : keys) {
+        if (Z_TYPE(zkey) == IS_STRING) {
+            zend_hash_del(ht, Z_STR(zkey));
+            zval_ptr_dtor(&zkey);
+        } else {
+            zend_hash_index_del(ht, Z_LVAL(zkey));
+        }
+    }
 }
 
 static PHP_METHOD(openswoole_coroutine, select) {
@@ -1331,49 +1386,19 @@ static PHP_METHOD(openswoole_coroutine, select) {
         timeout = INT_MAX;
     }
 
-    zend_ulong num_idx;
-    zend_string *key;
-    zval *val;
-    (void) key;
-
     std::vector<Channel *> pull_chans_vector;
     std::vector<Channel *> push_chans_vector;
-
-    ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(pull_chans), num_idx, key, val) {
-        ZVAL_DEREF(val);
-        Channel *chan = php_openswoole_get_channel(val);
-        pull_chans_vector.push_back(chan);
+    if (!php_openswoole_select_channels(pull_chans, pull_chans_vector) ||
+        !php_openswoole_select_channels(push_chans, push_chans_vector)) {
+        RETURN_THROWS();
     }
-    ZEND_HASH_FOREACH_END();
-
-    ZEND_HASH_FOREACH_KEY_VAL(Z_ARRVAL_P(push_chans), num_idx, key, val) {
-        ZVAL_DEREF(val);
-        Channel *chan = php_openswoole_get_channel(val);
-        push_chans_vector.push_back(chan);
-    }
-    ZEND_HASH_FOREACH_END();
 
     Selector selector;
     std::pair<std::vector<int>, std::vector<int>> ready =
         selector.select(pull_chans_vector, push_chans_vector, timeout);
 
-    HashTable *h1 = Z_ARRVAL_P(pull_chans);
-    ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(pull_chans), num_idx, key) {
-        ZVAL_DEREF(val);
-        if (std::find(ready.first.begin(), ready.first.end(), num_idx) == ready.first.end()) {
-            zend_hash_index_del(h1, num_idx);
-        }
-    }
-    ZEND_HASH_FOREACH_END();
-
-    HashTable *h2 = Z_ARRVAL_P(push_chans);
-    ZEND_HASH_FOREACH_KEY(Z_ARRVAL_P(push_chans), num_idx, key) {
-        ZVAL_DEREF(val);
-        if (std::find(ready.second.begin(), ready.second.end(), num_idx) == ready.second.end()) {
-            zend_hash_index_del(h2, num_idx);
-        }
-    }
-    ZEND_HASH_FOREACH_END();
+    php_openswoole_select_filter(pull_chans, ready.first);
+    php_openswoole_select_filter(push_chans, ready.second);
 
     array_init(return_value);
     add_assoc_zval_ex(return_value, ZEND_STRL("read"), pull_chans);

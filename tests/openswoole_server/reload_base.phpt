@@ -22,13 +22,19 @@ $pm->parentFunc = function () use ($pm) {
     }
     $pid = file_get_contents(TEST_PID_FILE);
     $random = mt_rand(1, 12);
-    usleep(100 * 1000);
-    for ($n = $random; $n--;) {
+    // wait for each reload to finish before the next one: a fixed delay was too short on a busy machine
+    $wait_workers = function (int $count) use ($counter) {
+        for ($i = 0; $i < 500 && $counter['worker']->get() < $count; $i++) {
+            usleep(10 * 1000);
+        }
+    };
+    $wait_workers($worker_num);
+    for ($n = 1; $n <= $random; $n++) {
         OpenSwoole\Process::kill((int)$pid, SIGUSR1);
-        usleep(100 * 1000);
-        // OpenSwoole\Process::kill($pid, SIGUSR2);
-        // usleep(100 * 1000);
+        $wait_workers($worker_num * ($n + 1));
     }
+    // a reload that is not asked for would start more workers
+    usleep(100 * 1000);
 
     /**@var $counter OpenSwoole\Atomic[] */
     $total = $counter['worker']->get() - $worker_num;

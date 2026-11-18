@@ -606,19 +606,19 @@ int Socket::handle_send() {
     ssize_t ret = send(chunk->value.ptr + chunk->offset, sendn, 0);
     if (ret < 0) {
         switch (catch_error(errno)) {
-        case OSW_ERROR:
-            openswoole_sys_warning("send to fd[%d] failed", fd);
-            break;
-        case OSW_CLOSE:
-            close_wait = 1;
-            return OSW_ERR;
         case OSW_WAIT:
             send_wait = 1;
             return OSW_ERR;
+        case OSW_ERROR:
+        case OSW_INVALID:
+            openswoole_sys_warning("send to fd[%d] failed", fd);
+            // the chunk is still in the buffer: returning OSW_OK would make the caller retry it forever
+            close_wait = 1;
+            return OSW_ERR;
         default:
-            break;
+            close_wait = 1;
+            return OSW_ERR;
         }
-        return OSW_OK;
     }
     // chunk full send
     else if (ret == sendn || sendn == 0) {
@@ -860,6 +860,15 @@ bool Socket::ssl_check_host(const char *tls_host_name) {
     }
 #ifdef X509_CHECK_FLAG_ALWAYS_CHECK_SUBJECT
     /* X509_check_host() is only available in OpenSSL 1.0.2+ */
+    unsigned char ip_buf[sizeof(struct in6_addr)];
+    if (inet_pton(AF_INET, tls_host_name, ip_buf) == 1 || inet_pton(AF_INET6, tls_host_name, ip_buf) == 1) {
+        // an IP address matches the IP SAN entries, not the DNS names
+        if (X509_check_ip_asc(cert, tls_host_name, 0) != 1) {
+            openswoole_warning("X509_check_ip_asc(): no match");
+            goto _failed;
+        }
+        goto _found;
+    }
     if (X509_check_host(cert, tls_host_name, strlen(tls_host_name), 0, nullptr) != 1) {
         openswoole_warning("X509_check_host(): no match");
         goto _failed;

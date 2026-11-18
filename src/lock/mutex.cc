@@ -55,8 +55,10 @@ Mutex::Mutex(int flags) : Lock() {
 #endif
     }
 
-    if (pthread_mutex_init(&impl->lock_, &impl->attr_) < 0) {
-        throw std::system_error(errno, std::generic_category(), "pthread_mutex_init() failed");
+    // returns an error number, not -1
+    int retval = pthread_mutex_init(&impl->lock_, &impl->attr_);
+    if (retval != 0) {
+        throw std::system_error(retval, std::generic_category(), "pthread_mutex_init() failed");
     }
 }
 

@@ -509,7 +509,7 @@ struct dirent *openswoole_coroutine_readdir(DIR *dirp) {
         return readdir(dirp);
     }
 
-    struct dirent *retval;
+    struct dirent *retval = nullptr;
 
     openswoole::coroutine::async([&retval, dirp]() { retval = readdir(dirp); });
 

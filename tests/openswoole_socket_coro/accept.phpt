@@ -6,10 +6,13 @@ openswoole_socket_coro: accept
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-co::run(function() {
-go(function () {
+// fixed ports collide when tests run in parallel
+$port = get_one_free_port();
+
+co::run(function() use ($port) {
+go(function () use ($port) {
     $sock = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    Assert::assert($sock->bind('127.0.0.1', 9601));
+    Assert::assert($sock->bind('127.0.0.1', $port));
     Assert::assert($sock->listen(512));
     $conn = $sock->accept();
     Assert::assert($conn);
@@ -22,9 +25,9 @@ go(function () {
     $conn->close();
 });
 
-go(function ()  {
+go(function () use ($port) {
     $conn = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-    Assert::assert($conn->connect('127.0.0.1', 9601));
+    Assert::assert($conn->connect('127.0.0.1', $port));
     $conn->send(json_encode(['data' => 'hello']));
     echo $conn->recv();
 });

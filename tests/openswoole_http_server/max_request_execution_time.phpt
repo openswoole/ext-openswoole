@@ -1,38 +1,52 @@
 --TEST--
-openswoole_http_server: max_request_execution_time
+openswoole_http_server: max_request_execution_time applies to each request on its own
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-$pm = new ProcessManager;
-$pm->initRandomData(2);
-$pm->parentFunc = function ($pid) use ($pm) {
-    switch_process();
-    go(function () use ($pm) {
-        $statusCode = httpGetStatusCode("http://127.0.0.1:{$pm->getFreePort()}", ['timeout' => 3]);
-        echo PHP_EOL . $statusCode . PHP_EOL;
-        $pm->kill();
+
+$pm = new SwooleTest\ProcessManager;
+$pm->parentFunc = function () use ($pm) {
+    co::run(function () use ($pm) {
+        $port = $pm->getFreePort();
+        $get = function (string $path) use ($port) {
+            $cli = new OpenSwoole\Coroutine\Http\Client('127.0.0.1', $port);
+            $cli->set(['timeout' => 10]);
+            $start = microtime(true);
+            $cli->get($path);
+            return [$cli->statusCode, microtime(true) - $start];
+        };
+        [$status] = $get('/fast');
+        echo "fast: {$status}\n";
+        // the timer of /fast would fire 0.5s into /slow if it outlived its request
+        co::usleep(1500000);
+        [$status, $time] = $get('/slow');
+        echo "slow: {$status}, ", $time > 1.8 ? 'after the limit' : sprintf('too early (%.2fs)', $time), "\n";
     });
+    $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    Co::set(['hook_flags' => SWOOLE_HOOK_ALL]);
-    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS);
-    $http->set(['enable_coroutine' => true, 'max_request_execution_time' => 1, 'max_wait_time' => 1]);
+    $http = new OpenSwoole\Http\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE);
+    $http->set([
+        'log_file' => '/dev/null',
+        'worker_num' => 1,
+        'max_request_execution_time' => 2,
+    ]);
     $http->on('workerStart', function () use ($pm) {
         $pm->wakeup();
     });
-    $http->on('request', function (OpenSwoole\Http\Request $request, OpenSwoole\Http\Response $response) use ($pm) {
-        sleep(20);
-        echo "never here\n";
-        $response->end($pm->getRandomData());
+    $http->on('request', function ($request, $response) {
+        if ($request->server['request_uri'] === '/slow') {
+            co::usleep(3000000);
+        }
+        $response->end('ok');
     });
     $http->start();
 };
 $pm->childFirst();
 $pm->run();
 ?>
---EXPECTF--
-408
-[%s]	INFO	Server is shutdown now
-[%s]	WARNING	%s (ERRNO 9012): worker exit timeout, forced termination
+--EXPECT--
+fast: 200
+slow: 408, after the limit

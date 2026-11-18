@@ -16,11 +16,12 @@ use GuzzleHttp\Exception\RequestException;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
+co::run(function () use ($server) {
     $client = new Client();
-    $promise = $client->requestAsync('GET', 'http://httpbun.com/get');
+    $promise = $client->requestAsync('GET', $server->url('/get'));
     $promise->then(
         function (ResponseInterface $res) {
             echo $res->getStatusCode() .PHP_EOL;

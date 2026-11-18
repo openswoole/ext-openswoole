@@ -12,7 +12,7 @@ use OpenSwoole\Atomic;
 $pm = new SwooleTest\ProcessManager;
 $pm->setWaitTimeout(5);
 
-const FILE = __DIR__ . '/tmp_result.txt';
+const FILE = __DIR__ . '/manager_stop_tmp_result.txt';
 
 $atomic = new Atomic();
 

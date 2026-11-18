@@ -284,6 +284,10 @@ static int http_request_on_header_field(llhttp_t *parser, const char *at, size_t
 }
 
 bool HttpContext::parse_form_data(const char *boundary_str, int boundary_len) {
+    // a request can repeat the Content-Type header
+    if (mt_parser) {
+        multipart_parser_free(mt_parser);
+    }
     mt_parser = multipart_parser_init(boundary_str, boundary_len, &mt_parser_settings);
     if (!mt_parser) {
         php_openswoole_fatal_error(E_WARNING, "multipart_parser_init() failed");
@@ -292,6 +296,13 @@ bool HttpContext::parse_form_data(const char *boundary_str, int boundary_len) {
 
     mt_parser->data = this;
     return true;
+}
+
+// like PHP: the first cookie of a name wins, browsers send the one with the more specific path first
+static inline void http_cookie_add(zval *zarray, const char *key, size_t key_len, const char *value, size_t value_len) {
+    if (!zend_symtable_str_exists(Z_ARRVAL_P(zarray), key, key_len)) {
+        add_assoc_stringl_ex(zarray, key, key_len, value, value_len);
+    }
 }
 
 void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, bool url_decode) {
@@ -335,7 +346,7 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
             keybuf[klen - 1] = 0;
 
             if (klen > 1) {
-                add_assoc_stringl_ex(zarray, keybuf, klen - 1, ZEND_STRL(""));
+                http_cookie_add(zarray, keybuf, klen - 1, ZEND_STRL(""));
             }
 
             j = i + 1;
@@ -354,9 +365,12 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
             memcpy(valbuf, (char *) at + j, vlen);
             valbuf[vlen] = 0;
             _value = http_trim_double_quote(valbuf, &vlen);
-            vlen = php_url_decode(_value, vlen);
+            // like PHP: cookie values are raw url decoded, a "+" stays a "+"
+            if (url_decode) {
+                vlen = php_raw_url_decode(_value, vlen);
+            }
             if (klen > 1) {
-                add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);
+                http_cookie_add(zarray, keybuf, klen - 1, _value, vlen);
             }
             j = i + 1;
             state = -1;
@@ -394,10 +408,10 @@ void openswoole_http_parse_cookie(zval *zarray, const char *at, size_t length, b
         valbuf[vlen] = 0;
         _value = http_trim_double_quote(valbuf, &vlen);
         if (url_decode) {
-            vlen = php_url_decode(_value, vlen);
+            vlen = php_raw_url_decode(_value, vlen);
         }
         if (klen > 1) {
-            add_assoc_stringl_ex(zarray, keybuf, klen - 1, _value, vlen);
+            http_cookie_add(zarray, keybuf, klen - 1, _value, vlen);
         }
     }
 }
@@ -459,6 +473,7 @@ static int http_request_on_header_value(llhttp_t *parser, const char *at, size_t
             }
             if (boundary_len <= 0) {
                 openswoole_warning("invalid multipart/form-data body fd:%ld", ctx->fd);
+                efree(header_name);
                 return -1;
             }
             // trim '"'
@@ -960,22 +975,22 @@ static PHP_METHOD(openswoole_http_request, create) {
 
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zoptions), key, keylen, keytype, zvalue) {
             if (OSW_STRCASEEQ(key, keylen, "parse_cookie")) {
-                ctx->parse_cookie = zval_is_true(zvalue);
+                ctx->parse_cookie = zend_is_true(zvalue);
             } else if (OSW_STRCASEEQ(key, keylen, "parse_body")) {
-                ctx->parse_body = zval_is_true(zvalue);
+                ctx->parse_body = zend_is_true(zvalue);
             } else if (OSW_STRCASEEQ(key, keylen, "parse_files")) {
-                ctx->parse_files = zval_is_true(zvalue);
+                ctx->parse_files = zend_is_true(zvalue);
             }
 #ifdef OSW_HAVE_COMPRESSION
             else if (OSW_STRCASEEQ(key, keylen, "enable_compression")) {
-                ctx->enable_compression = zval_is_true(zvalue);
+                ctx->enable_compression = zend_is_true(zvalue);
             } else if (OSW_STRCASEEQ(key, keylen, "compression_level")) {
                 ctx->compression_level = zval_get_long(zvalue);
             }
 #endif
 #ifdef OSW_HAVE_ZLIB
             else if (OSW_STRCASEEQ(key, keylen, "websocket_compression")) {
-                ctx->websocket_compression = zval_is_true(zvalue);
+                ctx->websocket_compression = zend_is_true(zvalue);
             }
 #endif
             else if (OSW_STRCASEEQ(key, keylen, "upload_tmp_dir")) {
@@ -1018,7 +1033,7 @@ static PHP_METHOD(openswoole_http_request, parse) {
         memcpy(new_str->val + Z_STRLEN(ctx->request.zdata), str, l_str);
         new_str->val[len] = 0;
         new_str->len = len;
-        zval_dtor(&ctx->request.zdata);
+        zval_ptr_dtor_nogc(&ctx->request.zdata);
         ZVAL_STR(&ctx->request.zdata, new_str);
     }
 

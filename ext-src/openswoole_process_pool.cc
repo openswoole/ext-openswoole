@@ -276,7 +276,7 @@ static PHP_METHOD(openswoole_process_pool, __construct) {
         RETURN_FALSE;
     }
 
-    if (zend_parse_parameters_throw(ZEND_NUM_ARGS(), "l|llb", &worker_num, &ipc_type, &msgq_key, &enable_coroutine) ==
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "l|llb", &worker_num, &ipc_type, &msgq_key, &enable_coroutine) ==
         FAILURE) {
         RETURN_FALSE;
     }
@@ -335,7 +335,7 @@ static PHP_METHOD(openswoole_process_pool, set) {
     php_openswoole_set_aio_option(vht);
 
     if (php_openswoole_array_get_value(vht, "enable_coroutine", ztmp)) {
-        pp->enable_coroutine = zval_is_true(ztmp);
+        pp->enable_coroutine = zend_is_true(ztmp);
     }
 
     ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);
@@ -348,7 +348,7 @@ static PHP_METHOD(openswoole_process_pool, on) {
     char *name;
     size_t l_name;
 
-    zend_fcall_info fci;
+    zend_fcall_info fci = empty_fcall_info;
     zend_fcall_info_cache fci_cache;
 
     ProcessPool *pool = php_openswoole_process_pool_get_and_check_pool(ZEND_THIS);
@@ -358,7 +358,7 @@ static PHP_METHOD(openswoole_process_pool, on) {
         RETURN_FALSE;
     }
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 2, 2)
+    ZEND_PARSE_PARAMETERS_START(2, 2)
     Z_PARAM_STRING(name, l_name)
     Z_PARAM_FUNC(fci, fci_cache);
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
@@ -564,7 +564,7 @@ static PHP_METHOD(openswoole_process_pool, getProcess) {
     zval *zprocess = zend_hash_index_find(Z_ARRVAL_P(zworkers), worker_id);
     zval zobject;
 
-    if (zprocess == nullptr || ZVAL_IS_NULL(zprocess)) {
+    if (zprocess == nullptr || Z_ISNULL_P(zprocess)) {
         zprocess = &zobject;
         /**
          * Separation from shared memory
@@ -573,7 +573,7 @@ static PHP_METHOD(openswoole_process_pool, getProcess) {
         *worker = current_pool->workers[worker_id];
 
         object_init_ex(zprocess, openswoole_process_ce);
-        zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("id"), OpenSwooleG.process_id);
+        zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("id"), worker_id);
         zend_update_property_long(openswoole_process_ce, OSW_Z8_OBJ_P(zprocess), ZEND_STRL("pid"), worker->pid);
         if (current_pool->ipc_mode == OSW_IPC_UNIXSOCK) {
             // current process

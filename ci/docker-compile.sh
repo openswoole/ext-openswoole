@@ -9,7 +9,14 @@ fi
 
 #-----------install build dependencies------------
 apt-get update > /dev/null 2>&1 && apt-get install -y gdb > /dev/null 2>&1 || true
-apt-get install -y liburing-dev 2>&1 || true
+apt-get install -y liburing-dev libc-ares-dev 2>&1 || true
+# PHP extensions required by the tests, missing from the docker-openswoole image
+for ext in mbstring pcntl mysqli pdo_mysql; do
+    if ! php -m | grep -qi "^${ext}$"; then
+        [ "${ext}" = "mbstring" ] && apt-get install -y libonig-dev > /dev/null 2>&1
+        docker-php-ext-install ${ext} > /dev/null 2>&1 || true
+    fi
+done
 ulimit -c unlimited
 echo "/tmp/core.%e.%p" > /proc/sys/kernel/core_pattern 2>/dev/null || true
 

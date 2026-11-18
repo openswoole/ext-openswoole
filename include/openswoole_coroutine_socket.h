@@ -140,6 +140,14 @@ class Socket {
         return ssl_context.get();
     }
 
+    bool is_ssl_server() {
+        return ssl_is_server;
+    }
+
+    const std::string &get_ssl_host_name() {
+        return ssl_host_name;
+    }
+
     bool ssl_listen();
     bool ssl_handshake();
     bool ssl_verify(bool allow_self_signed);

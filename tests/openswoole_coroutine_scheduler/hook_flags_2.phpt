@@ -1,15 +1,14 @@
 --TEST--
 openswoole_coroutine_scheduler: hook_flags
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-const URL = "http://www.gov.cn/";
-const KEYWORDS = '中国政府网';
+$server = SwooleTest\LocalServer::start();
+define('URL', $server->url('/'));
+const KEYWORDS = 'OpenSwoole test page';
 // 1
 $sch = new OpenSwoole\Coroutine\Scheduler();
 $sch->set(['hook_flags' => SWOOLE_HOOK_ALL,]);

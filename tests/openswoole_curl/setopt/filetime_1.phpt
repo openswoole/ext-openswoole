@@ -6,13 +6,17 @@ openswoole_curl/setopt: CURLOPT_FILETIME
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
 
+// the local server's page has a Last-Modified header
+$server = SwooleTest\LocalServer::start();
+
 $cm = new \SwooleTest\CurlManager();
-$cm->run(function ($host) {
+$cm->run(function ($host) use ($server) {
 
     $ch = curl_init();
 
     $options = array(
-        CURLOPT_URL => 'https://platform.twitter.com/widgets.js',
+        CURLOPT_URL => $server->url('/', true),
+        CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_RETURNTRANSFER => 1,
         CURLOPT_FILETIME => true,
         CURLOPT_NOBODY => true,

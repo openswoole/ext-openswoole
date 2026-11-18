@@ -8,18 +8,21 @@ openswoole_curl/ssl: Test SSL_VERSION option
 
 require __DIR__ . '/../../include/bootstrap.php';
 
+$server = SwooleTest\LocalServer::start();
+
 $cm = new \SwooleTest\CurlManager();
-$cm->run(function ($host) {
+$cm->run(function ($host) use ($server) {
     $ch = curl_init();
 
     curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_URL, "https://openswoole.com/");
+    // the local server's self-signed certificate is issued to 127.0.0.1
+    curl_setopt($ch, CURLOPT_URL, $server->url('/', true));
     $result = curl_exec($ch);
     Assert::assert($result);
-    Assert::contains($result, 'openswoole');
+    Assert::contains($result, 'OpenSwoole');
     curl_close($ch);
 
 }, false);

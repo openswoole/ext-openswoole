@@ -6,15 +6,15 @@ openswoole_socket_coro: getpeername
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-use OpenSwoole\Coroutine\System;
+$server = SwooleTest\LocalServer::start();
 
 co::run(
-    function () {
+    function () use ($server) {
         $conn = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
-        $conn->connect('www.baidu.com', 80);
+        Assert::true($conn->connect($server->host, $server->httpPort));
         $info = $conn->getpeername();
-        Assert::eq($info['address'], System::gethostbyname('www.baidu.com'));
-        Assert::eq($info['port'], 80);
+        Assert::eq($info['address'], '127.0.0.1');
+        Assert::eq($info['port'], $server->httpPort);
     }
 );
 ?>

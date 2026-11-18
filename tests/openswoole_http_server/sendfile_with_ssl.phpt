@@ -10,7 +10,7 @@ $pm = new ProcessManager;
 $pm->parentFunc = function ($pid) use ($pm) {
     for ($i = MAX_REQUESTS; $i--;) {
         $send_file = get_safe_random(mt_rand(0, 65535 * 10));
-        file_put_contents('/tmp/sendfile.txt', $send_file);
+        file_put_contents('/tmp/sendfile_with_ssl_sendfile.txt', $send_file);
 
         $ctxArr = [
             'verify_peer' => false,
@@ -36,7 +36,7 @@ $pm->childFunc = function () use ($pm) {
     $http->on('request', function (openswoole_http_request $request, openswoole_http_response $response) {
         $response->header('Content-Type', 'application/octet-stream');
         $response->header('Content-Disposition', 'attachment; filename=recvfile.txt');
-        $response->sendfile('/tmp/sendfile.txt');
+        $response->sendfile('/tmp/sendfile_with_ssl_sendfile.txt');
     });
     $http->start();
 };

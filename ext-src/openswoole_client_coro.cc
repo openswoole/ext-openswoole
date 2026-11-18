@@ -276,7 +276,7 @@ bool php_openswoole_client_set(Socket *cli, zval *zset) {
      */
     if (php_openswoole_array_get_value(vht, "open_tcp_nodelay", ztmp)) {
         if (cli->get_type() == OSW_SOCK_TCP || cli->get_type() != OSW_SOCK_TCP6) {
-            cli->get_socket()->set_tcp_nodelay(zval_is_true(ztmp));
+            cli->get_socket()->set_tcp_nodelay(zend_is_true(ztmp));
         }
     }
     /**
@@ -360,9 +360,9 @@ bool php_openswoole_socket_set_ssl(Socket *sock, zval *zset) {
         sock->get_ssl_context()->protocols = v;
     }
     if (php_openswoole_array_get_value(vht, "ssl_compress", ztmp)) {
-        sock->get_ssl_context()->disable_compress = !zval_is_true(ztmp);
+        sock->get_ssl_context()->disable_compress = !zend_is_true(ztmp);
     } else if (php_openswoole_array_get_value(vht, "ssl_disable_compression", ztmp)) {
-        sock->get_ssl_context()->disable_compress = !zval_is_true(ztmp);
+        sock->get_ssl_context()->disable_compress = !zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "ssl_cert_file", ztmp)) {
         zend::String str_v(ztmp);
@@ -398,10 +398,10 @@ bool php_openswoole_socket_set_ssl(Socket *sock, zval *zset) {
     }
 #endif
     if (php_openswoole_array_get_value(vht, "ssl_verify_peer", ztmp)) {
-        sock->get_ssl_context()->verify_peer = zval_is_true(ztmp);
+        sock->get_ssl_context()->verify_peer = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "ssl_allow_self_signed", ztmp)) {
-        sock->get_ssl_context()->allow_self_signed = zval_is_true(ztmp);
+        sock->get_ssl_context()->allow_self_signed = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "ssl_cafile", ztmp)) {
         sock->get_ssl_context()->cafile = zend::String(ztmp).to_std_string();
@@ -428,7 +428,7 @@ static PHP_METHOD(openswoole_client_coro, __construct) {
 
     zend_long type = 0;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 1)
+    ZEND_PARSE_PARAMETERS_START(1, 1)
     Z_PARAM_LONG(type)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
@@ -781,7 +781,7 @@ static PHP_METHOD(openswoole_client_coro, getsockname) {
 static PHP_METHOD(openswoole_client_coro, exportSocket) {
     zval rv;
     zval *zsocket = zend_read_property(openswoole_client_coro_ce, OSW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("socket"), 1, &rv);
-    if (!ZVAL_IS_NULL(zsocket)) {
+    if (!Z_ISNULL_P(zsocket)) {
         RETURN_ZVAL(zsocket, 1, 0);
     }
 

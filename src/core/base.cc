@@ -507,7 +507,7 @@ ulong_t openswoole_hex2dec(const char *hex, size_t *parsed_bytes) {
             value = value * 16 + (c - '0');
         } else {
             c = toupper(c);
-            if ((c >= 'A') && (c <= 'Z')) {
+            if ((c >= 'A') && (c <= 'F')) {
                 value = value * 16 + (c - 'A') + 10;
             } else {
                 break;

@@ -364,7 +364,7 @@ void http_parse_set_cookies(const char *at, size_t length, zval *zcookies, zval 
     value_len = eof - p;
     if (value_len != 0) {
         ZVAL_STRINGL(&zvalue, p, value_len);
-        Z_STRLEN(zvalue) = php_url_decode(Z_STRVAL(zvalue), value_len);
+        Z_STRLEN(zvalue) = php_raw_url_decode(Z_STRVAL(zvalue), value_len);
     } else {
         ZVAL_EMPTY_STRING(&zvalue);
     }
@@ -679,26 +679,26 @@ void HttpClient::apply_setting(zval *zset, const bool check_all) {
             reconnect_interval = (uint8_t) OSW_MIN(zval_get_long(ztmp), UINT8_MAX);
         }
         if (php_openswoole_array_get_value(vht, "defer", ztmp)) {
-            defer = zval_is_true(ztmp);
+            defer = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "lowercase_header", ztmp)) {
-            lowercase_header = zval_is_true(ztmp);
+            lowercase_header = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "keep_alive", ztmp)) {
-            keep_alive = zval_is_true(ztmp);
+            keep_alive = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "websocket_mask", ztmp)) {
-            websocket_mask = zval_is_true(ztmp);
+            websocket_mask = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "http_compression", ztmp)) {
-            http_compression = zval_is_true(ztmp);
+            http_compression = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "body_decompression", ztmp)) {
-            body_decompression = zval_is_true(ztmp);
+            body_decompression = zend_is_true(ztmp);
         }
 #ifdef OSW_HAVE_ZLIB
         if (php_openswoole_array_get_value(vht, "websocket_compression", ztmp)) {
-            websocket_compression = zval_is_true(ztmp);
+            websocket_compression = zend_is_true(ztmp);
         }
 #endif
     }
@@ -844,6 +844,46 @@ bool HttpClient::send() {
     z_download_file = osw_zend_read_property_not_null_ex(
         openswoole_http_client_coro_ce, zobject, OSW_ZSTR_KNOWN(OSW_ZEND_STR_DOWNLOAD_FILE), 0);
 
+    // a CR or LF in the request line, a header or a cookie name would start a new header or request
+    {
+        bool has_crlf = openswoole_http_has_crlf(path.c_str(), path.length());
+        if (!has_crlf && zmethod) {
+            zend::String str_method(zmethod);
+            has_crlf = openswoole_http_has_crlf(str_method.val(), str_method.len());
+        }
+        zend_string *key;
+        zval *zv;
+        if (!has_crlf && ZVAL_IS_ARRAY(zheaders)) {
+            ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zheaders), key, zv) {
+                if (key && openswoole_http_has_crlf(ZSTR_VAL(key), ZSTR_LEN(key))) {
+                    has_crlf = true;
+                    break;
+                }
+                if (!Z_ISNULL_P(zv)) {
+                    zend::String str_value(zv);
+                    if (openswoole_http_has_crlf(str_value.val(), str_value.len())) {
+                        has_crlf = true;
+                        break;
+                    }
+                }
+            }
+            ZEND_HASH_FOREACH_END();
+        }
+        if (!has_crlf && ZVAL_IS_ARRAY(zcookies)) {
+            ZEND_HASH_FOREACH_STR_KEY(Z_ARRVAL_P(zcookies), key) {
+                if (key && openswoole_http_has_crlf(ZSTR_VAL(key), ZSTR_LEN(key))) {
+                    has_crlf = true;
+                    break;
+                }
+            }
+            ZEND_HASH_FOREACH_END();
+        }
+        if (has_crlf) {
+            set_error(EINVAL, "request contains a CR or LF character", HTTP_CLIENT_ESTATUS_SEND_FAILED);
+            return false;
+        }
+    }
+
     // ============   host   ============
     zend::String str_host;
 
@@ -940,7 +980,7 @@ bool HttpClient::send() {
 
     if (ZVAL_IS_ARRAY(zheaders)) {
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zheaders), key, keylen, keytype, zvalue) {
-            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             if (OSW_STRCASEEQ(key, keylen, "Host")) {
@@ -1026,7 +1066,7 @@ bool HttpClient::send() {
             buffer->append("=", 1);
 
             int encoded_value_len;
-            encoded_value = php_openswoole_url_encode(str_value.val(), str_value.len(), &encoded_value_len);
+            encoded_value = php_openswoole_cookie_value_encode(str_value.val(), str_value.len(), &encoded_value_len);
             if (encoded_value) {
                 buffer->append(encoded_value, encoded_value_len);
                 efree(encoded_value);
@@ -1062,7 +1102,7 @@ bool HttpClient::send() {
         // calculate length before encode array
         if (zbody && ZVAL_IS_ARRAY(zbody)) {
             OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zbody), key, keylen, keytype, zvalue)
-            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             zend::String str_value(zvalue);
@@ -1112,7 +1152,7 @@ bool HttpClient::send() {
         // ============ form-data body ============
         if (zbody && ZVAL_IS_ARRAY(zbody)) {
             OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zbody), key, keylen, keytype, zvalue) {
-                if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || ZVAL_IS_NULL(zvalue))) {
+                if (UNEXPECTED(HASH_KEY_IS_STRING != keytype || Z_ISNULL_P(zvalue))) {
                     continue;
                 }
                 zend::String str_value(zvalue);
@@ -1367,7 +1407,7 @@ void HttpClient::recv(zval *zframe, double timeout) {
         msg.length = retval;
         msg.str = socket->get_read_buffer()->str;
 #ifdef OSW_HAVE_ZLIB
-        php_openswoole_websocket_frame_unpack_ex(&msg, zframe, websocket_compression);
+        php_openswoole_websocket_frame_unpack_ex(&msg, zframe, websocket_compression, socket->protocol.package_max_length);
 #else
         php_openswoole_websocket_frame_unpack(&msg, zframe);
 #endif
@@ -1702,7 +1742,7 @@ static PHP_METHOD(openswoole_http_client_coro, __construct) {
     zend_long port = 0;
     zend_bool ssl = 0;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 3)
+    ZEND_PARSE_PARAMETERS_START(1, 3)
     Z_PARAM_STRING(host, host_len)
     Z_PARAM_OPTIONAL
     Z_PARAM_LONG(port)

@@ -6,10 +6,12 @@ openswoole_client_coro: getsockname
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+$server = SwooleTest\LocalServer::start();
+
 Co::run(
-    function () {
+    function () use ($server) {
         $conn = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
-        $conn->connect('www.baidu.com', 80);
+        Assert::true($conn->connect($server->host, $server->httpPort));
         $info = $conn->getsockname();
         Assert::assert(filter_var($info['host'], FILTER_VALIDATE_IP));
         Assert::greaterThan($info['port'], 0);

@@ -15,6 +15,7 @@
 */
 
 #include "test_coroutine.h"
+#include "test_local_server.h"
 #include "openswoole_file.h"
 #include "openswoole_util.h"
 
@@ -23,8 +24,9 @@ using swoole::String;
 using swoole::coroutine::System;
 using swoole::test::coroutine;
 
-const char *host_1 = "www.baidu.com";
-const char *host_2 = "www.xxxxxxxxxxxxxxxxxxxxx00000xxxxxxxxx----not_found.com";
+const char *host_1 = "localhost";
+const std::string host_2_name = swoole::test::unresolvable_host();
+const char *host_2 = host_2_name.c_str();
 static const char *test_file = "/tmp/swoole-core-test";
 
 TEST(coroutine_hook, file) {
@@ -127,16 +129,17 @@ TEST(coroutine_hook, dir) {
 }
 
 TEST(coroutine_hook, socket) {
-    coroutine::run([](void *arg) {
+    swoole::test::LocalHttpServer server;
+    coroutine::run([&](void *arg) {
         int sock = openswoole_coroutine_socket(AF_INET, SOCK_STREAM, 0);
         ASSERT_GT(sock, 0);
         swoole::network::Address sa;
-        std::string ip = System::gethostbyname("www.baidu.com", AF_INET, 10);
-        sa.assign(OSW_SOCK_TCP, ip, 80);
+        std::string ip = System::gethostbyname("localhost", AF_INET, 10);
+        sa.assign(OSW_SOCK_TCP, ip, server.port());
         ASSERT_EQ(openswoole_coroutine_connect(sock, &sa.addr.ss, sa.len), 0);
         ASSERT_EQ(openswoole_coroutine_socket_wait_event(sock, OSW_EVENT_WRITE, 5), OSW_OK);
 
-        const char req[] = "GET / HTTP/1.1\r\nHost: www.baidu.com\r\nConnection: close\r\nKeepAlive: off\r\n\r\n";
+        const char req[] = "GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\nKeepAlive: off\r\n\r\n";
         ASSERT_EQ(openswoole_coroutine_send(sock, req, strlen(req), 0), strlen(req));
 
         swoole::String resp(1024);
@@ -153,7 +156,7 @@ TEST(coroutine_hook, socket) {
         }
 
         ASSERT_GT(resp.length, 100);
-        ASSERT_TRUE(resp.contains("baidu.com"));
+        ASSERT_TRUE(resp.contains("OpenSwoole test page"));
         openswoole_coroutine_close(sock);
     });
 }
@@ -179,10 +182,12 @@ TEST(coroutine_hook, rename) {
 
 TEST(coroutine_hook, flock) {
     long start_time = swoole::time<std::chrono::milliseconds>();
+    bool locked = false;
     coroutine::run([&](void *arg) {
         swoole::Coroutine::create([&](void *arg) {
             int fd = openswoole_coroutine_open(TEST_TMP_FILE, O_WRONLY, 0);
             ASSERT_EQ(openswoole_coroutine_flock(fd, LOCK_EX), 0);
+            locked = true;
             System::sleep(0.1);
             ASSERT_EQ(openswoole_coroutine_flock(fd, LOCK_UN), 0);
 
@@ -192,6 +197,10 @@ TEST(coroutine_hook, flock) {
             openswoole_coroutine_close(fd);
         });
         swoole::Coroutine::create([&](void *arg) {
+            // the locks run in the thread pool: ask only after the first coroutine holds LOCK_EX
+            while (!locked) {
+                System::sleep(0.001);
+            }
             int fd = openswoole_coroutine_open(TEST_TMP_FILE, O_WRONLY, 0);
             ASSERT_EQ(openswoole_coroutine_flock(fd, LOCK_SH), 0);
             System::sleep(2);

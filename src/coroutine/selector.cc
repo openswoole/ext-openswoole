@@ -74,8 +74,8 @@ std::pair<std::vector<int>, std::vector<int>> Selector::select(std::vector<Chann
 
     index = 0;
     for (auto &chan : push_chans) {
-        if (is_ready(chan)) {
-            pull_ready.push_back(index);
+        if (is_push_ready(chan)) {
+            push_ready.push_back(index);
         }
         index++;
     }

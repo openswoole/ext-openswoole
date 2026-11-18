@@ -21,6 +21,7 @@
 
 #include <signal.h>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "openswoole_lock.h"
 #include "openswoole_pipe.h"
@@ -244,6 +245,8 @@ struct ProcessPool {
     Worker *workers;
     std::vector<std::shared_ptr<UnixSocket>> *pipes;
     std::unordered_map<pid_t, Worker *> *map_;
+    // workers that called detach(): their exit is expected, they are no longer in map_
+    std::unordered_set<pid_t> *detached_pids_;
     Reactor *reactor;
     MsgQueue *queue;
     StreamInfo *stream_info_;

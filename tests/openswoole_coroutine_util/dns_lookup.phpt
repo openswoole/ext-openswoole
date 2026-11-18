@@ -2,7 +2,6 @@
 openswoole_coroutine_util: dns lookup
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -33,8 +32,8 @@ $pm->childFunc = function () use ($pm)
     });
     $http->on('request', function (openswoole_http_request $request, openswoole_http_response $response)
     {
-        $host = OpenSwoole\Coroutine::dnsLookup('www.baidu.com');
-        if ($host)
+        $host = OpenSwoole\Coroutine::dnsLookup('localhost');
+        if ($host === '127.0.0.1')
         {
             $response->end("OK\n");
         }

@@ -33,7 +33,7 @@ $pm->parentFunc = function () use ($pm) {
         $request =
             "GET /cookies HTTP/1.1\r\n" .
             "Host: localhost\r\n" .
-            "Cookie: data=" . urlencode('hello world') . "; path=" . urlencode('/foo/bar') . "\r\n" .
+            "Cookie: data=" . rawurlencode('hello world') . "; path=" . rawurlencode('/foo/bar') . "\r\n" .
             "Connection: Keep-Alive\r\n" .
             "\r\n";
         $socket->sendAll($request);

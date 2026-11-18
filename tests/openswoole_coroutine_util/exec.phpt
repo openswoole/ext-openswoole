@@ -9,7 +9,7 @@ skip_if_command_not_found('md5sum');
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
+co::run(function () {
     $data = co::exec('md5sum ' . TEST_IMAGE);
     Assert::same($data['code'], 0);
     Assert::same($data['signal'], 0);

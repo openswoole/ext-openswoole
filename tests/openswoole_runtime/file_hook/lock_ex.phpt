@@ -10,7 +10,7 @@ require __DIR__ . '/../../include/bootstrap.php';
 
 swoole\runtime::enableCoroutine();
 
-const FILE = __DIR__ . '/test.data';
+const FILE = __DIR__ . '/lock_ex_test.data';
 
 $n = 10;
 while ($n--) {

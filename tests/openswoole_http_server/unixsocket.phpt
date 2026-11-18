@@ -7,12 +7,14 @@ require __DIR__ . '/../include/skipif.inc';
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
+// a path of its own, the shared one is used by other tests running in parallel
+const SOCK_PATH = '/tmp/openswoole_http_unixsocket.sock';
 $pm = new ProcessManager;
 $pm->parentFunc = function () use ($pm) {
     for ($c = MAX_CONCURRENCY; $c--;) {
         go(function () use ($pm) {
             $client = new OpenSwoole\Coroutine\Client(SWOOLE_UNIX_STREAM);
-            Assert::assert($client->connect(UNIXSOCK_PATH, 0, -1));
+            Assert::assert($client->connect(SOCK_PATH, 0, -1));
             for ($n = MAX_REQUESTS; $n--;) {
                 $client->send("GET / HTTP/1.1\r\n\r\n");
                 list($headers, $body) = explode("\r\n\r\n", @$client->recv());
@@ -26,8 +28,11 @@ $pm->parentFunc = function () use ($pm) {
     $pm->kill();
 };
 $pm->childFunc = function () use ($pm) {
-    $server = new OpenSwoole\Http\Server(UNIXSOCK_PATH, 0, SERVER_MODE_RANDOM, SWOOLE_UNIX_STREAM);
+    $server = new OpenSwoole\Http\Server(SOCK_PATH, 0, SERVER_MODE_RANDOM, SWOOLE_UNIX_STREAM);
     $server->set(['log_file' => '/dev/null']);
+    $server->on('workerStart', function () use ($pm) {
+        $pm->wakeup();
+    });
     $server->on('request', function (OpenSwoole\Http\Request $request, OpenSwoole\Http\Response $response) {
         $response->end('Hello Swoole!');
     });

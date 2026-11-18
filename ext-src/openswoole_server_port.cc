@@ -53,6 +53,7 @@ static std::unordered_map<std::string, bool> server_options_map({
     { "log_rotation", true },
     { "display_errors", true },
     { "dns_server", true },
+    { "reactor_type", true },
     { "socket_dns_timeout", true },
     { "socket_connect_timeout", true },
     { "socket_write_timeout", true },
@@ -312,7 +313,7 @@ void php_openswoole_server_port_minit(int module_number) {
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onBufferFull"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onBufferEmpty"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onRequest"), ZEND_ACC_PRIVATE);
-    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onHandShake"), ZEND_ACC_PRIVATE);
+    zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onHandshake"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onOpen"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onMessage"), ZEND_ACC_PRIVATE);
     zend_declare_property_null(openswoole_server_port_ce, ZEND_STRL("onDisconnect"), ZEND_ACC_PRIVATE);
@@ -457,7 +458,7 @@ static PHP_METHOD(openswoole_server_port, set) {
     }
     // server: tcp_nodelay
     if (php_openswoole_array_get_value(vht, "open_tcp_nodelay", ztmp)) {
-        port->open_tcp_nodelay = zval_is_true(ztmp);
+        port->open_tcp_nodelay = zend_is_true(ztmp);
     } else {
         port->open_tcp_nodelay = 1;
     }
@@ -468,15 +469,15 @@ static PHP_METHOD(openswoole_server_port, set) {
     }
     // tcp_keepalive
     if (php_openswoole_array_get_value(vht, "open_tcp_keepalive", ztmp)) {
-        port->open_tcp_keepalive = zval_is_true(ztmp);
+        port->open_tcp_keepalive = zend_is_true(ztmp);
     }
     // buffer: eof check
     if (php_openswoole_array_get_value(vht, "open_eof_check", ztmp)) {
-        port->open_eof_check = zval_is_true(ztmp);
+        port->open_eof_check = zend_is_true(ztmp);
     }
     // buffer: split package with eof
     if (php_openswoole_array_get_value(vht, "open_eof_split", ztmp)) {
-        port->protocol.split_by_eof = zval_is_true(ztmp);
+        port->protocol.split_by_eof = zend_is_true(ztmp);
         if (port->protocol.split_by_eof) {
             port->open_eof_check = 1;
         }
@@ -496,11 +497,11 @@ static PHP_METHOD(openswoole_server_port, set) {
     }
     // http_protocol
     if (php_openswoole_array_get_value(vht, "open_http_protocol", ztmp)) {
-        port->open_http_protocol = zval_is_true(ztmp);
+        port->open_http_protocol = zend_is_true(ztmp);
     }
     // websocket protocol
     if (php_openswoole_array_get_value(vht, "open_websocket_protocol", ztmp)) {
-        port->open_websocket_protocol = zval_is_true(ztmp);
+        port->open_websocket_protocol = zend_is_true(ztmp);
         if (port->open_websocket_protocol) {
             port->open_http_protocol = 1;
         }
@@ -509,18 +510,18 @@ static PHP_METHOD(openswoole_server_port, set) {
         port->websocket_subprotocol = zend::String(ztmp).to_std_string();
     }
     if (php_openswoole_array_get_value(vht, "open_websocket_close_frame", ztmp)) {
-        port->open_websocket_close_frame = zval_is_true(ztmp);
+        port->open_websocket_close_frame = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "open_websocket_ping_frame", ztmp)) {
-        port->open_websocket_ping_frame = zval_is_true(ztmp);
+        port->open_websocket_ping_frame = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "open_websocket_pong_frame", ztmp)) {
-        port->open_websocket_pong_frame = zval_is_true(ztmp);
+        port->open_websocket_pong_frame = zend_is_true(ztmp);
     }
 #ifdef OSW_USE_HTTP2
     // http2 protocol
     if (php_openswoole_array_get_value(vht, "open_http2_protocol", ztmp)) {
-        port->open_http2_protocol = zval_is_true(ztmp);
+        port->open_http2_protocol = zend_is_true(ztmp);
         if (port->open_http2_protocol) {
             port->open_http_protocol = 1;
         }
@@ -528,14 +529,14 @@ static PHP_METHOD(openswoole_server_port, set) {
 #endif
     // buffer: mqtt protocol
     if (php_openswoole_array_get_value(vht, "open_mqtt_protocol", ztmp)) {
-        port->open_mqtt_protocol = zval_is_true(ztmp);
+        port->open_mqtt_protocol = zend_is_true(ztmp);
     }
     // redis protocol
     if (php_openswoole_array_get_value(vht, "open_redis_protocol", ztmp)) {
         port->open_redis_protocol = zval_get_long(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "max_idle_time", ztmp)) {
-        port->max_idle_time = zval_get_double(ztmp);
+        port->max_idle_time = OSW_MAX(0, zval_get_double(ztmp));
     }
     // tcp_keepidle
     if (php_openswoole_array_get_value(vht, "tcp_keepidle", ztmp)) {
@@ -559,11 +560,11 @@ static PHP_METHOD(openswoole_server_port, set) {
     }
     // tcp_fastopen
     if (php_openswoole_array_get_value(vht, "tcp_fastopen", ztmp)) {
-        port->tcp_fastopen = zval_is_true(ztmp);
+        port->tcp_fastopen = zend_is_true(ztmp);
     }
     // open length check
     if (php_openswoole_array_get_value(vht, "open_length_check", ztmp)) {
-        port->open_length_check = zval_is_true(ztmp);
+        port->open_length_check = zend_is_true(ztmp);
     }
     // package length size
     if (php_openswoole_array_get_value(vht, "package_length_type", ztmp)) {
@@ -643,7 +644,7 @@ static PHP_METHOD(openswoole_server_port, set) {
             RETURN_FALSE;
         }
         if (php_openswoole_array_get_value(vht, "ssl_compress", ztmp)) {
-            port->ssl_context->disable_compress = !zval_is_true(ztmp);
+            port->ssl_context->disable_compress = !zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "ssl_protocols", ztmp)) {
             zend_long v = zval_get_long(ztmp);
@@ -655,10 +656,10 @@ static PHP_METHOD(openswoole_server_port, set) {
 #endif
         }
         if (php_openswoole_array_get_value(vht, "ssl_verify_peer", ztmp)) {
-            port->ssl_context->verify_peer = zval_is_true(ztmp);
+            port->ssl_context->verify_peer = zend_is_true(ztmp);
         }
         if (php_openswoole_array_get_value(vht, "ssl_allow_self_signed", ztmp)) {
-            port->ssl_context->allow_self_signed = zval_is_true(ztmp);
+            port->ssl_context->allow_self_signed = zend_is_true(ztmp);
         }
         // verify client cert
         if (php_openswoole_array_get_value(vht, "ssl_client_cert_file", ztmp)) {
@@ -674,19 +675,19 @@ static PHP_METHOD(openswoole_server_port, set) {
             port->ssl_context->verify_depth = OSW_MAX(0, OSW_MIN(v, UINT8_MAX));
         }
         if (php_openswoole_array_get_value(vht, "ssl_prefer_server_ciphers", ztmp)) {
-            port->ssl_context->prefer_server_ciphers = zval_is_true(ztmp);
+            port->ssl_context->prefer_server_ciphers = zend_is_true(ztmp);
         }
         //    if ((v = zend_hash_str_find(vht, ZEND_STRL("ssl_session_tickets"))))
         //    {
-        //        port->ssl_context->session_tickets = zval_is_true(v);
+        //        port->ssl_context->session_tickets = zend_is_true(v);
         //    }
         //    if ((v = zend_hash_str_find(vht, ZEND_STRL("ssl_stapling"))))
         //    {
-        //        port->ssl_context->stapling = zval_is_true(v);
+        //        port->ssl_context->stapling = zend_is_true(v);
         //    }
         //    if ((v = zend_hash_str_find(vht, ZEND_STRL("ssl_stapling_verify"))))
         //    {
-        //        port->ssl_context->stapling_verify = zval_is_true(v);
+        //        port->ssl_context->stapling_verify = zend_is_true(v);
         //    }
         if (php_openswoole_array_get_value(vht, "ssl_ciphers", ztmp)) {
             port->ssl_context->ciphers = zend::String(ztmp).to_std_string();
@@ -916,7 +917,7 @@ static PHP_METHOD(openswoole_server_port, getCallback) {
         zval rv,
             *property = zend_read_property(
                 openswoole_server_port_ce, OSW_Z8_OBJ_P(ZEND_THIS), property_name.c_str(), property_name.length(), 1, &rv);
-        if (!ZVAL_IS_NULL(property)) {
+        if (!Z_ISNULL_P(property)) {
             RETURN_ZVAL(property, 1, 0);
         }
     }

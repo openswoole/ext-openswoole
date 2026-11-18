@@ -157,6 +157,9 @@ void openswoole_signal_callback(int signo) {
         return;
     }
     SignalHandler callback = signals[signo].handler;
+    if (callback == SIG_IGN) {
+        return;
+    }
     if (!callback) {
         openswoole_error_log(
             OSW_LOG_WARNING, OSW_ERROR_UNREGISTERED_SIGNAL, OSW_UNREGISTERED_SIGNAL_FMT, openswoole_signal_to_str(signo));

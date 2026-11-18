@@ -348,7 +348,11 @@ static void http_build_header(HttpContext *ctx, String *response, size_t body_le
         zval *zvalue;
 
         auto add_header = [](openswoole::String *response, const char *key, size_t l_key, zval *value) {
-            if (ZVAL_IS_NULL(value)) {
+            if (Z_ISNULL_P(value)) {
+                return;
+            }
+            // keys written to $response->header directly skip set_header()
+            if (openswoole_http_has_crlf(key, l_key)) {
                 return;
             }
             zend::String str_value(value);
@@ -364,7 +368,7 @@ static void http_build_header(HttpContext *ctx, String *response, size_t body_le
 
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zheader), key, keylen, type, zvalue) {
             // TODO: numeric key name neccessary?
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             if (!parse_header_flags(ctx, key, keylen, header_flags)) {
@@ -476,12 +480,16 @@ static ssize_t http_build_trailer(HttpContext *ctx, String *response) {
         zval *zvalue;
 
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(ztrailer), key, keylen, type, zvalue) {
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
 
-            if (!ZVAL_IS_NULL(zvalue)) {
+            if (!Z_ISNULL_P(zvalue)) {
                 zend::String str_value(zvalue);
+                if (openswoole_http_has_crlf(key, keylen) ||
+                    openswoole_http_has_crlf(str_value.val(), str_value.len())) {
+                    continue;
+                }
                 n = osw_snprintf(
                     buf, l_buf, "%.*s: %.*s\r\n", (int) keylen, key, (int) str_value.len(), str_value.val());
                 response->append(buf, n);
@@ -939,7 +947,7 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
         RETURN_FALSE;
     }
 
-    size_t cookie_size = name_len /* + value_len */ + path_len + domain_len + 100;
+    size_t cookie_size = name_len /* + value_len */ + path_len + domain_len + samesite_len + priority_len + 140;
     char *cookie = nullptr, *date = nullptr;
 
     if (name_len > 0 && strpbrk(name, "=,; \t\r\n\013\014") != nullptr) {
@@ -951,16 +959,21 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
         RETURN_FALSE;
     }
 
+    if (openswoole_http_has_crlf(path, path_len) || openswoole_http_has_crlf(domain, domain_len) ||
+        openswoole_http_has_crlf(samesite, samesite_len) || openswoole_http_has_crlf(priority, priority_len)) {
+        RETURN_FALSE;
+    }
+
     if (value_len == 0) {
         cookie = (char *) emalloc(cookie_size);
         date = php_openswoole_format_date((char *) ZEND_STRL("D, d-M-Y H:i:s T"), 1, 0);
-        snprintf(cookie, cookie_size, "%s=deleted; expires=%s", name, date);
+        snprintf(cookie, cookie_size, "%s=deleted; expires=%s; Max-Age=0", name, date);
         efree(date);
     } else {
         if (url_encode) {
             char *encoded_value;
             int encoded_value_len;
-            encoded_value = php_openswoole_url_encode(value, value_len, &encoded_value_len);
+            encoded_value = php_openswoole_cookie_value_encode(value, value_len, &encoded_value_len);
             cookie_size += encoded_value_len;
             cookie = (char *) emalloc(cookie_size);
             osw_snprintf(cookie, cookie_size, "%s=%s", name, encoded_value);
@@ -982,6 +995,11 @@ static void php_openswoole_http_response_cookie(INTERNAL_FUNCTION_PARAMETERS, co
             }
             strlcat(cookie, date, cookie_size);
             efree(date);
+            // like PHP's setcookie(): the seconds left, for clients that prefer Max-Age to expires
+            zend_long max_age = expires - (zend_long) time(nullptr);
+            char max_age_buf[48];
+            snprintf(max_age_buf, sizeof(max_age_buf), "; Max-Age=" ZEND_LONG_FMT, max_age > 0 ? max_age : 0);
+            strlcat(cookie, max_age_buf, cookie_size);
         }
     }
     if (path_len > 0) {
@@ -1039,7 +1057,14 @@ static PHP_METHOD(openswoole_http_response, status) {
         RETURN_FALSE;
     }
 
+    if (openswoole_http_has_crlf(reason, reason_len)) {
+        RETURN_FALSE;
+    }
+
     ctx->response.status = http_status;
+    if (ctx->response.reason) {
+        efree(ctx->response.reason);
+    }
     ctx->response.reason = reason_len > 0 ? estrndup(reason, reason_len) : nullptr;
     RETURN_TRUE;
 }
@@ -1082,6 +1107,9 @@ static PHP_METHOD(openswoole_http_response, trailer) {
     }
     if (UNEXPECTED(klen > OSW_HTTP_HEADER_KEY_SIZE - 1)) {
         php_openswoole_error(E_WARNING, "trailer key is too long");
+        RETURN_FALSE;
+    }
+    if (openswoole_http_has_crlf(k, klen) || (v && openswoole_http_has_crlf(v, vlen))) {
         RETURN_FALSE;
     }
     zval *ztrailer = openswoole_http_init_and_read_property(
@@ -1206,7 +1234,7 @@ static PHP_METHOD(openswoole_http_response, recv) {
 
     double timeout = 0;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 0, 1)
+    ZEND_PARSE_PARAMETERS_START(0, 1)
     Z_PARAM_OPTIONAL
     Z_PARAM_DOUBLE(timeout)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
@@ -1225,7 +1253,8 @@ static PHP_METHOD(openswoole_http_response, recv) {
         _tmp.length = retval;
 
 #ifdef OSW_HAVE_ZLIB
-        php_openswoole_websocket_frame_unpack_ex(&_tmp, return_value, ctx->websocket_compression);
+        php_openswoole_websocket_frame_unpack_ex(
+            &_tmp, return_value, ctx->websocket_compression, sock->protocol.package_max_length);
 #else
         php_openswoole_websocket_frame_unpack(&_tmp, return_value);
 #endif

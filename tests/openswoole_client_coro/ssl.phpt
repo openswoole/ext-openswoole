@@ -3,19 +3,20 @@ openswoole_client_coro: ssl client
 --SKIPIF--
 <?php require __DIR__ . '/../include/skipif.inc';
 skip_if_no_ssl();
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-co::run(function () {
+$server = SwooleTest\LocalServer::start();
+
+co::run(function () use ($server) {
     $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP | SWOOLE_SSL);
-    if (!$cli->connect('www.baidu.com', 443)) {
+    if (!$cli->connect($server->host, $server->httpsPort)) {
         echo "ERROR\n";
     }
 
-    $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: www.baidu.com\r\nConnection: Close\r\n\r\n";
+    $http = "GET / HTTP/1.0\r\nAccept: */*\r\nUser-Agent: Lowell-Agent\r\nHost: {$server->host}\r\nConnection: Close\r\n\r\n";
     if (!$cli->send($http)) {
         echo "ERROR\n";
     }
@@ -29,7 +30,7 @@ co::run(function () {
         $content .= $read;
     }
     $cli->close();
-    Assert::assert(strpos($content, 'map.baidu.com') !== false);
+    Assert::assert(strpos($content, 'OpenSwoole test page') !== false);
 });
 ?>
 --EXPECT--

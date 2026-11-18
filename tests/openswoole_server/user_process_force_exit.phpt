@@ -18,13 +18,16 @@ $pm->parentFunc = function () use ($pm) {
 };
 $pm->childFunc = function () use ($pm) {
 
-    $server = new OpenSwoole\Server('127.0.0.1', get_one_free_port(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
+    $server = new OpenSwoole\Server('127.0.0.1', $pm->getFreePort(), SWOOLE_PROCESS, SWOOLE_SOCK_UDP);
 
     $server->set([
         Constant::OPTION_LOG_FILE => '/dev/null',
         Constant::OPTION_MAX_WAIT_TIME => 1,
     ]);
 
+    $server->on('workerStart', function () use ($pm) {
+        $pm->wakeup();
+    });
     $server->on('packet', function () {
     });
     $server->addProcess(new OpenSwoole\Process(function () {

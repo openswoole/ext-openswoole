@@ -65,9 +65,11 @@ $pm->parentFunc = function ($pid) use ($pm, $table) {
     $pm->kill();
 
     $array = array_column(iterator_to_array($table), 'count');
-    $standard_deviation = sqrt(openswoole_get_variance(openswoole_get_average($array), $array));
+    $average = openswoole_get_average($array);
+    $standard_deviation = sqrt(openswoole_get_variance($average, $array));
+    // a random tenth of the requests sleep, so the spread varies; all on one worker would be about 440
     Assert::greaterThan($standard_deviation, 1);
-    Assert::lessThan($standard_deviation, 5);
+    Assert::lessThan($standard_deviation, $average / 10);
     echo 'DONE' . PHP_EOL;
 };
 

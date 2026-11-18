@@ -34,7 +34,7 @@ class MyPool
             'open_eof_split' => true, //打开EOF_SPLIT检测
             'package_eof' => "\r\n",
         ));
-        $res = $client->connect('127.0.0.1', 8000, 3);
+        $res = $client->connect('127.0.0.1', $GLOBALS['pm']->getFreePort(), 3);
         if ($res == false) {
             echo "create connect failed, errCode=".$client->errCode."\n";
             return false;
@@ -69,11 +69,14 @@ $pm->parentFunc = function ($pid) use ($pm) {
 };
 
 $pm->childFunc = function () use ($pm) {
-    $serv = new openswoole_server('0.0.0.0', 8000, SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $serv = new openswoole_server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $serv->set(array(
         'open_eof_split' => true,
         'package_eof' => "\r\n",
     ));
+    $serv->on('workerStart', function () use ($pm) {
+        $pm->wakeup();
+    });
     $serv->on('receive', function ($serv, $fd, $rid, $data) {
         $ret = "server reply {" . trim($data) . "} \r\n";
         $serv->send($fd, $ret);

@@ -95,6 +95,14 @@ ssize_t get_package_length(Protocol *protocol, Socket *conn, const char *buf, ui
         }
     }
     openswoole_trace_log(OSW_TRACE_LENGTH_PROTOCOL, "header_length=%zu, payload_length=%lu", header_length, payload_length);
+    // reject before the sum can wrap around
+    if (payload_length > protocol->package_max_length) {
+        openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_PACKAGE_LENGTH_TOO_LARGE,
+                             "websocket frame is too big, payload_length=%lu",
+                             (unsigned long) payload_length);
+        return -1;
+    }
     return header_length + payload_length;
 }
 
@@ -162,6 +170,9 @@ bool encode(String *buffer, const char *data, size_t length, char opcode, uint8_
 }
 
 bool decode(Frame *frame, char *data, size_t length) {
+    if (length < OSW_WEBSOCKET_HEADER_LEN) {
+        return false;
+    }
     memcpy(frame, data, OSW_WEBSOCKET_HEADER_LEN);
 
     // 0-125
@@ -171,13 +182,26 @@ bool decode(Frame *frame, char *data, size_t length) {
 
     // uint16_t, 2byte
     if (frame->header.LENGTH == 0x7e) {
+        if (length < header_length + sizeof(uint16_t)) {
+            return false;
+        }
         payload_length = ntohs(*((uint16_t *) buf));
         header_length += 2;
     }
     // uint64_t, 8byte
     else if (frame->header.LENGTH > 0x7e) {
+        if (length < header_length + sizeof(uint64_t)) {
+            return false;
+        }
         payload_length = openswoole_ntoh64(*((uint64_t *) buf));
         header_length += 8;
+    }
+    if (frame->header.MASK && length < (size_t) header_length + OSW_WEBSOCKET_MASK_LEN) {
+        return false;
+    }
+    // the payload must fit in the data, payload_length comes from the peer
+    if (payload_length > length - header_length - (frame->header.MASK ? (size_t) OSW_WEBSOCKET_MASK_LEN : 0)) {
+        return false;
     }
 
     openswoole_trace_log(OSW_TRACE_WEBSOCKET,
@@ -249,7 +273,10 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
     send_frame.size = sizeof(buf);
 
     Frame ws;
-    decode(&ws, const_cast<char *>(data), length);
+    if (!decode(&ws, const_cast<char *>(data), length)) {
+        openswoole_warning("bad frame. remote_addr=%s:%d", conn->info.get_ip(), conn->info.get_port());
+        return OSW_ERR;
+    }
 
     String *frame_buffer;
     int frame_length;

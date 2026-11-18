@@ -19,27 +19,25 @@ $pid = getmypid();
 $killer = new Process(function () use ($pid, $atomic) {
     $atomic->wait();
     echo "2\n";
-    switch_process();
     Process::kill($pid, SIGUSR1);
     $atomic->wait();
     echo "6\n";
-    switch_process();
-    Process::kill($pid, SIGUSR2);
+    // print before each signal or wakeup, so the other process prints after it
     echo "8\n";
+    Process::kill($pid, SIGUSR2);
 });
 $killer->start();
 
 Coroutine::run(function () use ($atomic) {
     Coroutine::usleep(1000);
-    switch_process();
-    $atomic->wakeup();
     echo "1\n";
+    $atomic->wakeup();
     Assert::true(System::waitSignal(SIGUSR1));
     echo "3\n";
     Assert::false(System::waitSignal(SIGUSR2, 0.01));
     echo "4\n";
-    $atomic->wakeup();
     echo "5\n";
+    $atomic->wakeup();
     Assert::true(System::waitSignal(SIGUSR2));
     echo "7\n";
     System::wait();

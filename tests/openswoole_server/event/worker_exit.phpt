@@ -15,7 +15,7 @@ use OpenSwoole\Timer;
 $pm = new SwooleTest\ProcessManager;
 $pm->setWaitTimeout(5);
 
-const FILE = __DIR__ . '/tmp_result.txt';
+const FILE = __DIR__ . '/worker_exit_tmp_result.txt';
 
 $atomic = new Atomic();
 
@@ -77,7 +77,12 @@ $pm->childFunc = function () use ($pm, $atomic) {
 $pm->childFirst();
 $pm->run();
 
-echo file_get_contents(FILE);
+// after the reload the old worker's "worker stop" and the new worker's "worker start"
+// are written by two processes, in either order
+$lines = file(FILE, FILE_IGNORE_NEW_LINES);
+$tail = array_slice($lines, 5);
+sort($tail);
+echo implode("\n", array_merge(array_slice($lines, 0, 5), $tail)), "\n";
 unlink(FILE);
 
 ?>
@@ -88,6 +93,6 @@ manager start
 worker start, id=0, status=2
 tick, id=0, status=2
 worker exit, id=0, status=3
-worker stop
 worker start, id=0, status=2
+worker stop
 worker stop

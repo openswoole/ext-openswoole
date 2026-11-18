@@ -15,10 +15,11 @@ use GuzzleHttp\Promise;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
-    $client = new Client(['base_uri' => 'http://httpbun.com']);
+co::run(function () use ($server) {
+    $client = new Client(['base_uri' => $server->url('/', true), 'verify' => false]);
 
     // Initiate each request but do not block
     $promises = [

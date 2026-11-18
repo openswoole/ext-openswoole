@@ -52,7 +52,8 @@ $pm->childFunc = function () use ($pm)
     });
     $serv->on('receive', function ($serv, $fd, $threadId, $data)
     {
-        $html = base64_encode(random_bytes(rand(5121, 65536)));
+        // about 8KB in 5 byte chunks, a random size up to 87KB could take longer than the client timeout
+        $html = base64_encode(random_bytes(6000));
         $len = strlen($html);
         $data = "HTTP/1.1 200 OK\r\nServer: nginx\r\nContent-Type: text/html\r\nConnection: close\r\nContent-Length: $len\r\nX-Server: swoole\r\n\r\n$html";
         $chunks = str_split($data, 5);

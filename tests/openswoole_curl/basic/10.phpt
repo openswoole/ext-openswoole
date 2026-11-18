@@ -12,7 +12,8 @@ $cm = new \SwooleTest\CurlManager();
 $cm->run(function ($host) {
     $url = "http://www.example.org";
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_PROXY, uniqid() . ":1234");
+    // a DNS label longer than 63 bytes cannot be queried, so the lookup fails without outside DNS
+    curl_setopt($ch, CURLOPT_PROXY, str_repeat('x', 64) . uniqid() . ".invalid:1234");
     curl_setopt($ch, CURLOPT_URL, $url);
 
     curl_exec($ch);

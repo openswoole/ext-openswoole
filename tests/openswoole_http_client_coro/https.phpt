@@ -1,18 +1,17 @@
 --TEST--
 openswoole_http_client_coro: https client
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-go(function () {
-    $cli = new OpenSwoole\Coroutine\Http\Client('www.baidu.com', 443, true);
+$server = SwooleTest\LocalServer::start();
+go(function () use ($server) {
+    $cli = new OpenSwoole\Coroutine\Http\Client($server->host, $server->httpsPort, true);
     $cli->set(['timeout' => 10]);
     $cli->setHeaders([
-        'Host' => 'www.baidu.com',
+        'Host' => $server->host,
         'User-Agent' => 'Chrome/49.0.2587.3',
         'Accept' => 'text/html,application/xhtml+xml,application/xml',
         'Accept-Encoding' => 'gzip',

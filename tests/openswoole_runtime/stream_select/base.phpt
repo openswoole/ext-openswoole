@@ -5,15 +5,17 @@ openswoole_runtime/stream_select: base
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
+$server = SwooleTest\LocalServer::start();
+
 OpenSwoole\Runtime::enableCoroutine();
-go(function () {
+go(function () use ($server) {
     OpenSwoole\Runtime::enableCoroutine();
-    $fp1 = stream_socket_client("tcp://www.baidu.com:80", $errno, $errstr, 30);
-    $fp2 = stream_socket_client("tcp://www.qq.com:80", $errno, $errstr, 30);
+    $fp1 = stream_socket_client("tcp://{$server->host}:{$server->httpPort}", $errno, $errstr, 30);
+    $fp2 = stream_socket_client("tcp://{$server->host}:{$server->httpPort}", $errno, $errstr, 30);
     if (!$fp1) {
         echo "$errstr ($errno)<br />\n";
     } else {
-        fwrite($fp1, "GET / HTTP/1.0\r\nHost: www.baidu.com\r\nUser-Agent: curl/7.58.0\r\nAccept: */*\r\n\r\n");
+        fwrite($fp1, "GET / HTTP/1.0\r\nHost: {$server->host}\r\nUser-Agent: curl/7.58.0\r\nAccept: */*\r\n\r\n");
         $r_array = [$fp1, $fp2];
         $w_array = $e_array = null;
         $n = stream_select($r_array, $w_array, $e_array, 10);
@@ -28,5 +30,6 @@ go(function () {
         fclose($fp1);
     }
 });
+OpenSwoole\Event::wait();
 ?>
 --EXPECT--

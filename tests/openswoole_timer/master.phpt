@@ -7,7 +7,7 @@ all
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-const RES_FILE = __DIR__ . '/result.txt';
+const RES_FILE = __DIR__ . '/master_result.txt';
 file_put_contents(RES_FILE, "");
 register_shutdown_function(function () {
     @unlink(RES_FILE);

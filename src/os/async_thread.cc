@@ -299,7 +299,7 @@ void ThreadPool::create_thread(const bool is_core_worker) {
                                     continue;
                                 }
                                 /* notifies the main thread to release this thread */
-                                event = new AsyncEvent;
+                                event = new AsyncEvent();
                                 event->object = new std::thread::id(std::this_thread::get_id());
                                 event->callback = release_callback;
                                 event->pipe_socket = OpenSwooleG.aio_default_socket;
@@ -356,6 +356,8 @@ int AsyncThreads::callback(Reactor *reactor, Event *event) {
         AsyncEvent *event = events[i];
         if (!event->canceled) {
             event->callback(event);
+        } else if (event->destroy) {
+            event->destroy(event);
         }
         OpenSwooleTG.async_threads->task_num--;
         delete event;

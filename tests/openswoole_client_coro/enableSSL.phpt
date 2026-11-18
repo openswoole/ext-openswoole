@@ -8,12 +8,14 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use OpenSwoole\Coroutine\Client;
 
-co::run(function () {
-    $client = new Client(SWOOLE_SOCK_TCP);
-    $client->connect('www.google.com', 443);
-    $client->enableSSL();
+$server = SwooleTest\LocalServer::start();
 
-    $http = "GET / HTTP/1.0\r\nAccept: */*User-Agent: Lowell-Agent\r\nHost: www.google.com\r\nConnection: Close\r\n\r\n";
+co::run(function () use ($server) {
+    $client = new Client(SWOOLE_SOCK_TCP);
+    Assert::true($client->connect($server->host, $server->httpsPort));
+    Assert::true($client->enableSSL());
+
+    $http = "GET / HTTP/1.0\r\nAccept: */*\r\nUser-Agent: Lowell-Agent\r\nHost: {$server->host}\r\nConnection: Close\r\n\r\n";
     if (!$client->send($http)) {
         echo "ERROR\n";
     }
@@ -27,7 +29,7 @@ co::run(function () {
         $content .= $read;
     }
     $client->close();
-    Assert::assert(strpos($content, 'google.com') !== false);
+    Assert::assert(strpos($content, 'OpenSwoole test page') !== false);
 });
 ?>
 --EXPECT--

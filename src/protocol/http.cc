@@ -53,6 +53,8 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
     SendData response;
     response.info.fd = conn->session_id;
     response.info.type = OSW_SERVER_EVENT_RECV_DATA;
+    // a HEAD response has the GET headers, Content-Length included, but no body
+    bool is_head = request->method == OSW_HTTP_HEAD;
 
     if (handler.status_code == OSW_HTTP_NOT_FOUND) {
         response.info.len = osw_snprintf(header_buffer,
@@ -63,7 +65,7 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
                                         "\r\n%s",
                                         http_server::get_status_message(OSW_HTTP_NOT_FOUND),
                                         sizeof(OSW_HTTP_PAGE_404) - 1,
-                                        OSW_HTTP_PAGE_404);
+                                        is_head ? "" : OSW_HTTP_PAGE_404);
         response.data = header_buffer;
         send_to_connection(&response);
 
@@ -118,7 +120,8 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
         if (dir_files.empty()) {
             handler.get_dir_files(dir_files);
         }
-        size_t body_length = handler.get_index_page(dir_files, osw_tg_buffer()->str, osw_tg_buffer()->size);
+        std::string body = handler.get_index_page(dir_files);
+        size_t body_length = body.length();
 
         response.info.len = osw_snprintf(header_buffer,
                                         sizeof(header_buffer),
@@ -137,9 +140,11 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
         response.data = header_buffer;
         send_to_connection(&response);
 
-        response.info.len = body_length;
-        response.data = osw_tg_buffer()->str;
-        send_to_connection(&response);
+        if (!is_head) {
+            response.info.len = body_length;
+            response.data = body.c_str();
+            send_to_connection(&response);
+        }
         return true;
     }
 
@@ -168,7 +173,7 @@ bool Server::select_static_handler(http_server::Request *request, Connection *co
     send_to_connection(&response);
 
     // Send HTTP body
-    if (task->length != 0) {
+    if (task->length != 0 && !is_head) {
         response.info.type = OSW_SERVER_EVENT_SEND_FILE;
         response.info.len = sizeof(*task) + task->length + 1;
         response.data = (char *) task;
@@ -507,6 +512,8 @@ int Request::get_protocol() {
             break;
         }
     }
+    // the data ends before the http version: wait for more, do not read past the end
+    return OSW_ERR;
 _end:
     p += sizeof("HTTP/1.x") - 1;
     request_line_length_ = buffer_->offset = p - buffer_->str;
@@ -521,6 +528,7 @@ void Request::parse_header_info() {
     char *p = buffer_->str + request_line_length_ + (sizeof("\r\n") - 1);
     // point-end: start + strlen(all-header) without strlen("\r\n\r\n")
     char *pe = buffer_->str + header_length_ - (sizeof("\r\n\r\n") - 1);
+    bool has_transfer_encoding = false;
 
     for (; p < pe; p++) {
         if (*(p - 1) == '\n' && *(p - 2) == '\r') {
@@ -533,6 +541,10 @@ void Request::parse_header_info() {
                     p++;
                 }
                 content_length = strtoull(p, nullptr, 10);
+                // two different lengths: the worker may frame the request differently
+                if (known_length && content_length_ != OSW_MIN(content_length, UINT32_MAX)) {
+                    excepted = 1;
+                }
                 content_length_ = OSW_MIN(content_length, UINT32_MAX);
                 known_length = 1;
             } else if (OSW_STRCASECT(p, pe - p, "Connection:")) {
@@ -552,11 +564,32 @@ void Request::parse_header_info() {
                 while (*p == ' ') {
                     p++;
                 }
-                if (OSW_STRCASECT(p, pe - p, "chunked")) {
-                    chunked = 1;
+                // the last transfer coding decides the framing: "gzip, chunked" is chunked
+                char *eol = (char *) memchr(p, '\r', pe - p);
+                char *end = eol ? eol : pe;
+                while (end > p && (end[-1] == ' ' || end[-1] == '\t')) {
+                    end--;
                 }
+                char *last = end;
+                while (last > p && last[-1] != ',') {
+                    last--;
+                }
+                while (last < end && (*last == ' ' || *last == '\t')) {
+                    last++;
+                }
+                if (OSW_STRCASEEQ(last, end - last, "chunked")) {
+                    chunked = 1;
+                } else {
+                    // a request body is framed by chunked or not at all
+                    excepted = 1;
+                }
+                has_transfer_encoding = true;
             }
         }
+    }
+    // Transfer-Encoding with a Content-Length is ambiguous, "Content-Length: 0" is allowed for nobody_chunked
+    if (has_transfer_encoding && known_length && content_length_ != 0) {
+        excepted = 1;
     }
 
     header_parsed = 1;
@@ -620,21 +653,33 @@ int Request::get_chunked_body_length() {
             return OSW_ERR;
         }
         char *head = p;
-        size_t n_parsed;
-        size_t chunk_length = openswoole_hex2dec(head, &n_parsed);
-        head += n_parsed;
-        if (*head != '\r') {
+        size_t n_parsed = 0;
+        size_t chunk_length = 0;
+        // parse the hex size within the received data, hex2dec would read past the end
+        while (head < pe && isxdigit((unsigned char) *head) && n_parsed < 16) {
+            chunk_length = chunk_length * 16 + (isdigit((unsigned char) *head) ? *head - '0' : (tolower(*head) - 'a' + 10));
+            head++;
+            n_parsed++;
+        }
+        if (head >= pe) {
+            /* need the rest of the chunk size line */
+            return OSW_ERR;
+        }
+        // a chunk size above UINT32_MAX can not fit in content_length_
+        if (*head != '\r' || n_parsed == 0 || chunk_length > UINT32_MAX) {
             excepted = 1;
             return OSW_ERR;
         }
-        p = head + (sizeof("\r\n") - 1) + chunk_length + (sizeof("\r\n") - 1);
+        // compute the end as an offset, a pointer would wrap around with a huge chunk size
+        size_t chunk_end = (head - buffer_->str) + (sizeof("\r\n") - 1) + chunk_length + (sizeof("\r\n") - 1);
         /* used to check package_max_length */
-        content_length_ = p - (buffer_->str + header_length_);
-        if (p > pe) {
+        content_length_ = OSW_MIN(chunk_end - header_length_, (size_t) UINT32_MAX);
+        if (chunk_end > buffer_->length) {
             /* need recv chunk body again */
             return OSW_ERR;
         }
-        buffer_->offset = p - buffer_->str;
+        p = buffer_->str + chunk_end;
+        buffer_->offset = chunk_end;
         if (chunk_length == 0) {
             break;
         }

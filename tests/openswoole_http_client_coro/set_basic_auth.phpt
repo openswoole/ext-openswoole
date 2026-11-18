@@ -5,11 +5,12 @@ openswoole_http_client_coro: http client set basic auth
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
-go(function () {
-    $cli = new OpenSwoole\Coroutine\Http\Client(HTTPBIN_SERVER_HOST, HTTPBIN_SERVER_PORT);
+$server = SwooleTest\LocalServer::start();
+go(function () use ($server) {
+    $cli = new OpenSwoole\Coroutine\Http\Client($server->host, $server->httpPort);
     $cli->set(['timeout' => 10]);
     $cli->setHeaders([
-        'host' => 'httpbun.com',
+        'host' => $server->host,
         'User-Agent' => 'Chrome/49.0.2587.3',
         'Accept' => 'text/html,application/xhtml+xml,application/xml',
         'Accept-Encoding' => 'gzip',

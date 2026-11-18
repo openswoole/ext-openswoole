@@ -89,6 +89,10 @@ bool Timer::init_reactor(Reactor *reactor) {
 }
 
 void Timer::reinit(Reactor *reactor) {
+    // stop the setitimer() system timer, or its SIGALRM keeps firing after the switch to the reactor
+    if (!reactor_ && close) {
+        close(this);
+    }
     init_reactor(reactor);
     reactor->timeout_msec = next_msec_;
 }

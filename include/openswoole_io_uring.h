@@ -31,7 +31,6 @@ struct IoUringRequest {
     Coroutine *coroutine;
     int result;
     int error;
-    bool abandoned;
     struct statx statx_buf;
 };
 

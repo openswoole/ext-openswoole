@@ -121,6 +121,8 @@ struct Response {
 
 struct Context {
     SessionId fd;
+    // max_request_execution_time, deleted with the context
+    openswoole::TimerNode *timeout_timer = nullptr;
     uchar completed : 1;
     uchar end_ : 1;
     uchar send_header_ : 1;
@@ -215,11 +217,14 @@ class Stream {
     uint32_t remote_window_size;
     uint32_t local_window_size;
     Coroutine *waiting_coroutine = nullptr;
+    // RST_STREAM or connection closed while a coroutine waits for the window
+    bool canceled = false;
+    bool session_closed = false;
 
     Stream(Session *client, uint32_t _id);
     ~Stream();
 
-    bool send_header(size_t body_length, bool end_stream);
+    bool send_header(size_t body_length, bool end_stream, bool is_head = false);
     bool send_body(String *body, bool end_stream, size_t max_frame_size, off_t offset = 0, size_t length = 0);
     bool send_trailer();
 
@@ -236,6 +241,11 @@ class Session {
 
     http2::Settings local_settings = {};
     http2::Settings remote_settings = {};
+
+    // a header block split over HEADERS and CONTINUATION frames
+    uint32_t header_block_stream_id = 0;
+    int header_block_flags = 0;
+    std::string header_block;
 
     uint32_t last_stream_id;
     bool shutting_down;

@@ -134,7 +134,7 @@ struct Connection {
 
 #ifdef OSW_USE_OPENSSL
     String *ssl_client_cert;
-    uint16_t ssl_client_cert_pid;
+    pid_t ssl_client_cert_pid;
 #endif
     osw_atomic_t lock;
 };
@@ -231,7 +231,7 @@ struct ListenPort {
 
     int tcp_user_timeout = 0;
 
-    uint16_t max_idle_time = 0;
+    double max_idle_time = 0;
 
     int socket_buffer_size = network::Socket::default_buffer_size;
     uint32_t buffer_high_watermark = 0;

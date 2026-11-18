@@ -11,8 +11,10 @@ require __DIR__ . '/../../include/bootstrap.php';
 use OpenSwoole\Coroutine;
 use OpenSwoole\Coroutine\System;
 
-Co::run(function () {
-    $fp = stream_socket_client('tcp://www.baidu.com:80/', $errno, $errmsg, 1);
+$server = SwooleTest\LocalServer::start();
+
+Co::run(function () use ($server) {
+    $fp = stream_socket_client("tcp://{$server->host}:{$server->httpPort}", $errno, $errmsg, 1);
     Assert::assert($fp);
 
     $cid = Coroutine::getCid();

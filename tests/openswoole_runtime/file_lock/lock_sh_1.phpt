@@ -7,7 +7,7 @@ die("skip not support");
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../../include/bootstrap.php';
-const FILE = __DIR__ . '/test.data';
+const FILE = __DIR__ . '/lock_sh_1_test.data';
 \OpenSwoole\Runtime::enableCoroutine();
 $startTime = microtime(true);
 go(function () {

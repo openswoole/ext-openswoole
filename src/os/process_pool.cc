@@ -114,6 +114,7 @@ int ProcessPool::create(uint32_t _worker_num, key_t _msgqueue_key, swIPCMode _ip
     }
 
     map_ = new std::unordered_map<pid_t, Worker *>;
+    detached_pids_ = new std::unordered_set<pid_t>;
 
     ipc_mode = _ipc_mode;
     if (_ipc_mode > OSW_IPC_NONE) {
@@ -317,16 +318,17 @@ void ProcessPool::shutdown() {
     running = 0;
 
     // concurrent kill
+    // a worker may have exited (and been reaped) already: not an error
     for (i = 0; i < worker_num; i++) {
         worker = &workers[i];
-        if (openswoole_kill(worker->pid, SIGTERM) < 0) {
+        if (openswoole_kill(worker->pid, SIGTERM) < 0 && errno != ESRCH) {
             openswoole_sys_warning("swKill(%d) failed", worker->pid);
             continue;
         }
     }
     for (i = 0; i < worker_num; i++) {
         worker = &workers[i];
-        if (openswoole_waitpid(worker->pid, &status, 0) < 0) {
+        if (openswoole_waitpid(worker->pid, &status, 0) < 0 && errno != ECHILD) {
             openswoole_sys_warning("waitpid(%d) failed", worker->pid);
         }
     }
@@ -468,6 +470,11 @@ static int ProcessPool_worker_loop(ProcessPool *pool, Worker *worker) {
             openswoole_warning("bad task packet, The received data-length[%ld] is inconsistent with the packet-length[%ld]",
                            n,
                            out.buf.info.len + sizeof(out.buf.info));
+            // the next accept() replaces last_connection
+            if (pool->use_socket && pool->stream_info_->last_connection) {
+                pool->stream_info_->last_connection->free();
+                pool->stream_info_->last_connection = nullptr;
+            }
             continue;
         }
 
@@ -663,6 +670,7 @@ int ProcessPool::wait() {
                     return OSW_ERR;
                 }
                 map_->erase(msg.pid);
+                detached_pids_->insert(msg.pid);
             }
             read_message = false;
         }
@@ -691,6 +699,9 @@ int ProcessPool::wait() {
         if (running) {
             Worker *exit_worker = get_worker_by_pid(exit_status.get_pid());
             if (exit_worker == nullptr) {
+                if (detached_pids_->erase(exit_status.get_pid())) {
+                    continue;
+                }
                 if (onWorkerNotFound) {
                     onWorkerNotFound(this, exit_status);
                 } else {
@@ -729,7 +740,7 @@ int ProcessPool::wait() {
             reload_worker_pid = reload_workers[reload_worker_i].pid;
             ret = openswoole_kill(reload_worker_pid, SIGTERM);
             if (ret < 0) {
-                if (errno == ECHILD) {
+                if (errno == ECHILD || errno == ESRCH) {
                     reload_worker_i++;
                     goto _kill_worker;
                 }
@@ -773,6 +784,7 @@ void ProcessPool::destroy() {
 
     if (map_) {
         delete map_;
+        delete detached_pids_;
     }
 
     if (message_box) {

@@ -107,8 +107,13 @@ bool StaticHandler::hit() {
 
     l_filename = http_server::url_decode(task.filename, p - task.filename);
     task.filename[l_filename] = '\0';
+    // a decoded NUL would cut the file name short
+    if (memchr(task.filename, '\0', l_filename)) {
+        return false;
+    }
 
-    if (openswoole_strnpos(url, n, OSW_STRL("..")) == -1) {
+    // check the decoded path against document_root
+    if (openswoole_strnpos(task.filename, l_filename, OSW_STRL("..")) == -1) {
         goto _detect_mime_type;
     }
 
@@ -122,11 +127,8 @@ bool StaticHandler::hit() {
         }
     }
 
-    if (real_path[document_root.length()] != '/') {
-        return false;
-    }
-
-    if (openswoole_streq(real_path, strlen(real_path), document_root.c_str(), document_root.length()) != 0) {
+    if (strncmp(real_path, document_root.c_str(), document_root.length()) != 0 ||
+        real_path[document_root.length()] != '/') {
         return false;
     }
 
@@ -174,45 +176,52 @@ check_stat:
     return true;
 }
 
-size_t StaticHandler::get_index_page(std::set<std::string> &files, char *buffer, size_t size) {
-    int ret = 0;
-    char *p = buffer;
+static std::string html_escape(const std::string &str) {
+    std::string out;
+    out.reserve(str.length());
+    for (char c : str) {
+        switch (c) {
+        case '&':
+            out.append("&amp;");
+            break;
+        case '<':
+            out.append("&lt;");
+            break;
+        case '>':
+            out.append("&gt;");
+            break;
+        case '"':
+            out.append("&quot;");
+            break;
+        case '\'':
+            out.append("&#39;");
+            break;
+        default:
+            out.push_back(c);
+        }
+    }
+    return out;
+}
 
+// file names come from the disk and the path from the request, both are escaped
+std::string StaticHandler::get_index_page(std::set<std::string> &files) {
     if (dir_path.back() != '/') {
         dir_path.append("/");
     }
-
-    ret = osw_snprintf(p,
-                      size - ret,
-                      "<html>\n"
-                      "<head>\n"
-                      "\t<meta charset='UTF-8'>\n<title>Index of %s</title>"
-                      "</head>\n"
-                      "<body>\n<h1>Index of %s</h1><hr/>"
-                      "\t<ul>\n",
-                      dir_path.c_str(),
-                      dir_path.c_str());
-
-    p += ret;
-
+    std::string dir = html_escape(dir_path);
+    std::string page = "<html>\n"
+                       "<head>\n"
+                       "\t<meta charset='UTF-8'>\n<title>Index of " +
+                       dir + "</title></head>\n<body>\n<h1>Index of " + dir + "</h1><hr/>\t<ul>\n";
     for (auto iter = files.begin(); iter != files.end(); iter++) {
         if (*iter == "." || (dir_path == "/" && *iter == "..")) {
             continue;
         }
-        ret = osw_snprintf(
-            p, size - ret, "\t\t<li><a href=%s%s>%s</a></li>\n", dir_path.c_str(), (*iter).c_str(), (*iter).c_str());
-        p += ret;
+        std::string name = html_escape(*iter);
+        page += "\t\t<li><a href=\"" + dir + name + "\">" + name + "</a></li>\n";
     }
-
-    ret = osw_snprintf(p,
-                      size - ret,
-                      "\t</ul>\n"
-                      "<hr><i>Powered by OpenSwoole</i></body>\n"
-                      "</html>\n");
-
-    p += ret;
-
-    return p - buffer;
+    page += "\t</ul>\n<hr><i>Powered by OpenSwoole</i></body>\n</html>\n";
+    return page;
 }
 
 bool StaticHandler::get_dir_files(std::set<std::string> &index_files) {

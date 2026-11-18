@@ -1,15 +1,15 @@
 --TEST--
 openswoole_event: openswoole_event_del
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-$fp = stream_socket_client("tcp://www.qq.com:80", $errno, $errstr, 30);
-fwrite($fp, "GET / HTTP/1.1\r\nHost: www.qq.com\r\n\r\n");
+$server = SwooleTest\LocalServer::start();
+
+$fp = stream_socket_client("tcp://{$server->host}:{$server->httpPort}", $errno, $errstr, 30);
+fwrite($fp, "GET / HTTP/1.1\r\nHost: {$server->host}\r\n\r\n");
 
 openswoole_event_add($fp, function($fp) {
     $resp = fread($fp, 8192);

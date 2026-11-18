@@ -487,7 +487,27 @@ _parse:
 #ifdef OSW_USE_HTTP2
         }
         conn->http2_stream = 1;
-        http2::send_setting_frame(protocol, _socket);
+        {
+            // the same settings Http2Session::apply_setting() uses for the connection
+            http2::Settings settings;
+            http2::init_settings(&settings);
+            if (serv->http2_header_table_size > 0) {
+                settings.header_table_size = serv->http2_header_table_size;
+            }
+            if (serv->http2_initial_window_size > 0) {
+                settings.window_size = serv->http2_initial_window_size;
+            }
+            if (serv->http2_max_concurrent_streams > 0) {
+                settings.max_concurrent_streams = serv->http2_max_concurrent_streams;
+            }
+            if (serv->http2_max_frame_size > 0) {
+                settings.max_frame_size = serv->http2_max_frame_size;
+            }
+            if (serv->http2_max_header_list_size > 0) {
+                settings.max_header_list_size = serv->http2_max_header_list_size;
+            }
+            http2::send_setting_frame(protocol, _socket, &settings, serv->http2_max_header_list_size > 0);
+        }
         if (buffer->length == sizeof(OSW_HTTP2_PRI_STRING) - 1) {
             serv->destroy_http_request(conn);
             buffer->clear();
@@ -522,6 +542,13 @@ _parse:
                          request->content_length_,
                          request->keep_alive,
                          request->chunked);
+        if (request->excepted) {
+            openswoole_error_log(OSW_LOG_TRACE,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "Bad Request: ambiguous Content-Length or Transfer-Encoding" CLIENT_INFO_FMT,
+                             CLIENT_INFO_ARGS);
+            goto _bad_request;
+        }
     }
 
     // content length (equal to 0) or (field not found but not chunked)

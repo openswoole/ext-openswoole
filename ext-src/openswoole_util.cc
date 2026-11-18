@@ -380,10 +380,10 @@ static PHP_METHOD(openswoole_util, setAio) {
     php_openswoole_set_aio_option(vht);
 
     if (php_openswoole_array_get_value(vht, "enable_signalfd", ztmp)) {
-        OpenSwooleG.enable_signalfd = zval_is_true(ztmp);
+        OpenSwooleG.enable_signalfd = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "wait_signal", ztmp)) {
-        OpenSwooleG.wait_signal = zval_is_true(ztmp);
+        OpenSwooleG.wait_signal = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "dns_cache_refresh_time", ztmp)) {
         OpenSwooleG.dns_cache_refresh_time = zval_get_double(ztmp);
@@ -400,16 +400,16 @@ static PHP_METHOD(openswoole_util, setAio) {
         OpenSwooleG.aio_worker_num = v;
     }
     if (php_openswoole_array_get_value(vht, "socket_dontwait", ztmp)) {
-        OpenSwooleG.socket_dontwait = zval_is_true(ztmp);
+        OpenSwooleG.socket_dontwait = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "dns_lookup_random", ztmp)) {
-        OpenSwooleG.dns_lookup_random = zval_is_true(ztmp);
+        OpenSwooleG.dns_lookup_random = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "use_async_resolver", ztmp)) {
-        OpenSwooleG.use_async_resolver = zval_is_true(ztmp);
+        OpenSwooleG.use_async_resolver = zend_is_true(ztmp);
     }
     if (php_openswoole_array_get_value(vht, "enable_coroutine", ztmp)) {
-        OPENSWOOLE_G(enable_coroutine) = zval_is_true(ztmp);
+        OPENSWOOLE_G(enable_coroutine) = zend_is_true(ztmp);
     }
     RETURN_TRUE;
 }

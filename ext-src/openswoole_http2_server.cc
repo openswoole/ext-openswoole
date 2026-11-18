@@ -99,6 +99,14 @@ void Http2Session::apply_setting(Server *serv) {
 }
 
 Http2Session::~Session() {
+    // a coroutine waiting for the window would never be resumed
+    for (auto iter = streams.begin(); iter != streams.end(); iter++) {
+        Http2Stream *stream = iter->second;
+        if (stream && stream->waiting_coroutine) {
+            stream->session_closed = true;
+            stream->waiting_coroutine->resume();
+        }
+    }
     for (auto iter = streams.begin(); iter != streams.end(); iter++) {
         delete iter->second;
     }
@@ -134,7 +142,7 @@ static ssize_t http2_build_trailer(HttpContext *ctx, uchar *buffer) {
         zval *zvalue;
 
         ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(ztrailer), key, zvalue) {
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             zend::String str_value(zvalue);
@@ -299,7 +307,7 @@ static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_l
 
         auto add_header =
             [](Http2::HeaderSet &headers, const char *key, size_t l_key, zval *value, uint32_t &header_flags) {
-                if (ZVAL_IS_NULL(value)) {
+                if (Z_ISNULL_P(value)) {
                     return;
                 }
                 zend::String str_value(value);
@@ -320,7 +328,7 @@ static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_l
             };
 
         OSW_HASHTABLE_FOREACH_START2(Z_ARRVAL_P(zheader), key, keylen, type, zvalue) {
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             if (ZVAL_IS_ARRAY(zvalue)) {
@@ -385,7 +393,8 @@ static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_l
     Http2Session *client = http2_sessions[ctx->fd];
     nghttp2_hd_deflater *deflater = client->deflater;
     if (!deflater) {
-        ret = nghttp2_hd_deflate_new2(&deflater, client->local_settings.header_table_size, php_nghttp2_mem());
+        // HPACK: the encoder follows the table size of the peer's decoder, not ours
+        ret = nghttp2_hd_deflate_new2(&deflater, client->remote_settings.header_table_size, php_nghttp2_mem());
         if (ret != 0) {
             openswoole_warning("nghttp2_hd_deflate_new2() failed with error: %s", nghttp2_strerror(ret));
             return -1;
@@ -435,7 +444,7 @@ int openswoole_http2_server_goaway(HttpContext *ctx, zend_long error_code, const
     return ret;
 }
 
-bool Http2Stream::send_header(size_t body_length, bool end_stream) {
+bool Http2Stream::send_header(size_t body_length, bool end_stream, bool is_head) {
     char header_buffer[OSW_BUFFER_SIZE_STD];
     ssize_t bytes = http2_build_header(ctx, (uchar *) header_buffer, body_length);
     if (bytes < 0) {
@@ -459,7 +468,9 @@ bool Http2Stream::send_header(size_t body_length, bool end_stream) {
      */
     char frame_header[OSW_HTTP2_FRAME_HEADER_SIZE];
 
-    if (end_stream && body_length == 0) {
+    // A HEAD response must not include content: end the stream on the HEADERS frame, no DATA.
+    // See: https://www.rfc-editor.org/rfc/rfc9110#section-9.3.2
+    if (end_stream && (is_head || body_length == 0)) {
         http2::set_frame_header(
             frame_header, OSW_HTTP2_TYPE_HEADERS, bytes, OSW_HTTP2_FLAG_END_HEADERS | OSW_HTTP2_FLAG_END_STREAM, id);
     } else {
@@ -577,9 +588,19 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
         ztrailer = nullptr;
     }
 
-    bool end_stream = (ztrailer == nullptr);
+    // A HEAD response carries GET's header fields but no content; suppress the body below.
+    bool is_head = false;
+    zval *zrequest_method = zend_hash_str_find(Z_ARR_P(ctx->request.zserver), ZEND_STRL("request_method"));
+    if (zrequest_method && Z_TYPE_P(zrequest_method) == IS_STRING &&
+        OSW_STRCASEEQ(Z_STRVAL_P(zrequest_method), Z_STRLEN_P(zrequest_method), "HEAD")) {
+        is_head = true;
+    }
+
+    // HEAD ends the stream on the HEADERS frame even when a trailer was set; there is no content for it to follow.
+    bool end_stream = (ztrailer == nullptr) || is_head;
+
     if (!ctx->send_header_) {
-        if (!stream->send_header(body->length, end_stream)) {
+        if (!stream->send_header(body->length, end_stream, is_head)) {
             return false;
         }
     }
@@ -589,8 +610,9 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
 
     bool error = false;
 
-    // If send_yield is not supported, ignore flow control
-    if (ctx->co_socket || !((Server *) ctx->private_data)->send_yield || !openswoole_coroutine_is_in()) {
+    if (is_head) {
+        // HEAD: no body
+    } else if (ctx->co_socket || !((Server *) ctx->private_data)->send_yield || !openswoole_coroutine_is_in()) {
         if (body->length > client->remote_settings.window_size) {
             openswoole_warning("The data sent exceeded remote_window_size");
         }
@@ -609,6 +631,16 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
                 stream->waiting_coroutine = Coroutine::get_current();
                 stream->waiting_coroutine->yield();
                 stream->waiting_coroutine = nullptr;
+                if (stream->session_closed) {
+                    // the session deletes the stream
+                    return false;
+                }
+                if (stream->canceled) {
+                    // the client canceled the stream, drop the rest of the body
+                    client->streams.erase(stream->id);
+                    delete stream;
+                    return false;
+                }
                 continue;
             }
 
@@ -639,7 +671,7 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
         }
     }
 
-    if (!error && ztrailer && !stream->send_trailer()) {
+    if (!error && !is_head && ztrailer && !stream->send_trailer()) {
         error = true;
     }
 
@@ -729,6 +761,28 @@ static bool http2_context_sendfile(HttpContext *ctx, const char *file, uint32_t 
     return true;
 }
 
+// RFC 7540 6.2: [pad length] [priority] header block fragment [padding]
+static bool http2_header_fragment(int flags, const char **in, size_t *inlen) {
+    if (flags & OSW_HTTP2_FLAG_PADDED) {
+        if (*inlen < 1 || (uint8_t) (*in)[0] > *inlen - 1) {
+            openswoole_warning("http2 HEADERS frame with invalid padding");
+            return false;
+        }
+        size_t pad_length = (uint8_t) (*in)[0];
+        *in += 1;
+        *inlen -= 1 + pad_length;
+    }
+    if (flags & OSW_HTTP2_FLAG_PRIORITY) {
+        if (*inlen < 5) {
+            openswoole_warning("http2 HEADERS frame is too short for the priority fields");
+            return false;
+        }
+        *in += 5;
+        *inlen -= 5;
+    }
+    return true;
+}
+
 static int http2_parse_header(Http2Session *client, HttpContext *ctx, int flags, const char *in, size_t inlen) {
     nghttp2_hd_inflater *inflater = client->inflater;
 
@@ -738,14 +792,18 @@ static int http2_parse_header(Http2Session *client, HttpContext *ctx, int flags,
             openswoole_warning("nghttp2_hd_inflate_new2() failed, Error: %s[%d]", nghttp2_strerror(ret), ret);
             return OSW_ERR;
         }
+        // the peer's encoder may use the table size we advertised in SETTINGS
+        ret = nghttp2_hd_inflate_change_table_size(inflater, client->local_settings.header_table_size);
+        if (ret != 0) {
+            openswoole_warning("nghttp2_hd_inflate_change_table_size() failed, Error: %s[%d]", nghttp2_strerror(ret), ret);
+            nghttp2_hd_inflate_del(inflater);
+            return OSW_ERR;
+        }
         client->inflater = inflater;
     }
 
-    if (flags & OSW_HTTP2_FLAG_PRIORITY) {
-        // int stream_deps = ntohl(*(int *) (in));
-        // uint8_t weight = in[4];
-        in += 5;
-        inlen -= 5;
+    if (!http2_header_fragment(flags, &in, &inlen)) {
+        return OSW_ERR;
     }
 
     zval *zheader = ctx->request.zheader;
@@ -872,6 +930,46 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
     uint16_t id = 0;
     uint32_t value = 0;
 
+    // RFC 7540: control frames have a fixed size, a wrong size is a FRAME_SIZE_ERROR
+    bool bad_length = false;
+    switch (type) {
+    case OSW_HTTP2_TYPE_SETTINGS:
+        bad_length = length % 6 != 0 || ((flags & OSW_HTTP2_FLAG_ACK) && length != 0);
+        break;
+    case OSW_HTTP2_TYPE_PING:
+        bad_length = length != OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE;
+        break;
+    case OSW_HTTP2_TYPE_WINDOW_UPDATE:
+    case OSW_HTTP2_TYPE_RST_STREAM:
+        bad_length = length != 4;
+        break;
+    case OSW_HTTP2_TYPE_GOAWAY:
+        bad_length = length < OSW_HTTP2_GOAWAY_SIZE;
+        break;
+    default:
+        break;
+    }
+    if (bad_length) {
+        openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "http2 frame type=%d has an invalid length %zd",
+                             type,
+                             length);
+        return OSW_ERR;
+    }
+
+    // RFC 7540 6.10: a header block is only continued by CONTINUATION frames of the same stream
+    bool pending_block = client->header_block_stream_id != 0;
+    if (pending_block != (type == OSW_HTTP2_TYPE_CONTINUATION) ||
+        (pending_block && stream_id != client->header_block_stream_id)) {
+        openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "http2 frame type=%d on stream#%d breaks a header block",
+                             type,
+                             stream_id);
+        return OSW_ERR;
+    }
+
     switch (type) {
     case OSW_HTTP2_TYPE_SETTINGS: {
         if (flags & OSW_HTTP2_FLAG_ACK) {
@@ -931,10 +1029,20 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         break;
     }
     case OSW_HTTP2_TYPE_HEADERS: {
-        stream = client->streams[stream_id];
+        auto stream_iterator = client->streams.find(stream_id);
+        stream = stream_iterator == client->streams.end() ? nullptr : stream_iterator->second;
         swHttp2FrameTraceLog(recv, "%s", (stream ? "exist stream" : "new stream"));
         HttpContext *ctx;
         if (!stream) {
+            // the limit we advertised in SETTINGS_MAX_CONCURRENT_STREAMS
+            if (client->streams.size() >= client->local_settings.max_concurrent_streams) {
+                openswoole_error_log(OSW_LOG_WARNING,
+                                     OSW_ERROR_HTTP2_STREAM_IGNORE,
+                                     "http2 stream#%d exceeds max_concurrent_streams(%u)",
+                                     stream_id,
+                                     client->local_settings.max_concurrent_streams);
+                return OSW_ERR;
+            }
             stream = new Http2Stream(client, stream_id);
             if (osw_unlikely(!stream->ctx)) {
                 openswoole_error_log(
@@ -948,14 +1056,55 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         } else {
             ctx = stream->ctx;
         }
+        if (!(flags & OSW_HTTP2_FLAG_END_HEADERS)) {
+            // the header block continues in CONTINUATION frames
+            const char *in = buf;
+            size_t inlen = length;
+            if (!http2_header_fragment(flags, &in, &inlen)) {
+                return OSW_ERR;
+            }
+            client->header_block_stream_id = stream_id;
+            client->header_block_flags = flags & ~(OSW_HTTP2_FLAG_PADDED | OSW_HTTP2_FLAG_PRIORITY);
+            client->header_block.assign(in, inlen);
+            break;
+        }
         if (http2_parse_header(client, ctx, flags, buf, length) < 0) {
             return OSW_ERR;
         }
 
         if (flags & OSW_HTTP2_FLAG_END_STREAM) {
             client->handle(client, stream);
-        } else {
-            // need continue frame
+        }
+        break;
+    }
+    case OSW_HTTP2_TYPE_CONTINUATION: {
+        if (client->header_block.size() + length > OSW_HTTP2_MAX_HEADER_BLOCK_SIZE) {
+            openswoole_error_log(OSW_LOG_WARNING,
+                                 OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                 "http2 stream#%d header block is too large",
+                                 stream_id);
+            return OSW_ERR;
+        }
+        client->header_block.append(buf, length);
+        if (!(flags & OSW_HTTP2_FLAG_END_HEADERS)) {
+            break;
+        }
+        int block_flags = client->header_block_flags;
+        std::string block;
+        block.swap(client->header_block);
+        client->header_block_stream_id = 0;
+
+        auto stream_iterator = client->streams.find(stream_id);
+        if (stream_iterator == client->streams.end()) {
+            openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_HTTP2_STREAM_NOT_FOUND, "http2 stream#%d not found", stream_id);
+            return OSW_ERR;
+        }
+        stream = stream_iterator->second;
+        if (http2_parse_header(client, stream->ctx, block_flags, block.data(), block.size()) < 0) {
+            return OSW_ERR;
+        }
+        if (block_flags & OSW_HTTP2_FLAG_END_STREAM) {
+            client->handle(client, stream);
         }
         break;
     }
@@ -976,6 +1125,19 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         if (!buffer) {
             buffer = new String(OSW_HTTP2_DATA_BUFFER_SIZE);
             ctx->request.h2_data_buffer = buffer;
+        }
+        // flow control does not bound the body, the window is refilled below
+        if (!ctx->co_socket) {
+            Server *serv = (Server *) ctx->private_data;
+            ListenPort *port = serv->get_port_by_session_id(ctx->fd);
+            if (port && buffer->length + length > port->protocol.package_max_length) {
+                openswoole_error_log(OSW_LOG_WARNING,
+                                     OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                     "http2 stream#%d body is greater than the package_max_length(%u)",
+                                     stream_id,
+                                     port->protocol.package_max_length);
+                return OSW_ERR;
+            }
         }
         buffer->append(buf, length);
 
@@ -1054,8 +1216,14 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
             // TODO: i onRequest and use request->recv
             // stream exist
             stream = client->streams[stream_id];
-            client->streams.erase(stream_id);
-            delete stream;
+            if (stream->waiting_coroutine) {
+                // the waiting coroutine deletes the stream
+                stream->canceled = true;
+                stream->waiting_coroutine->resume();
+            } else {
+                client->streams.erase(stream_id);
+                delete stream;
+            }
         }
         break;
     }

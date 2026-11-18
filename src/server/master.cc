@@ -36,9 +36,12 @@ TimerCallback Server::get_timeout_callback(ListenPort *port, Reactor *reactor, C
         if (conn->protect) {
             return;
         }
+        // the timestamps are in milliseconds, max_idle_time is in seconds;
+        // the connection is idle only when nothing was received or sent
         long ms = time<std::chrono::milliseconds>(true);
-        if (ms - conn->socket->last_received_time < port->max_idle_time &&
-            ms - conn->socket->last_sent_time < port->max_idle_time) {
+        long max_idle_ms = (long) (port->max_idle_time * 1000);
+        if (ms - conn->socket->last_received_time < max_idle_ms ||
+            ms - conn->socket->last_sent_time < max_idle_ms) {
             return;
         }
         if (disable_notify || conn->closed || conn->close_force) {
@@ -172,7 +175,7 @@ int Server::connection_incoming(Reactor *reactor, Connection *conn) {
     if (port->max_idle_time > 0) {
         auto timeout_callback = get_timeout_callback(port, reactor, conn);
         conn->socket->recv_timeout_ = port->max_idle_time;
-        conn->socket->recv_timer = openswoole_timer_add(port->max_idle_time * 1000, true, timeout_callback);
+        conn->socket->recv_timer = openswoole_timer_add((long) (port->max_idle_time * 1000), true, timeout_callback);
     }
 #ifdef OSW_USE_OPENSSL
     if (conn->socket->ssl) {
@@ -1154,7 +1157,7 @@ int Server::send_to_connection(SendData *_send) {
     else if (_send->info.type == OSW_SERVER_EVENT_SEND_FILE) {
         SendfileTask *task = (SendfileTask *) _send_data;
         if (conn->socket->sendfile(task->filename, task->offset, task->length) < 0) {
-            return false;
+            return OSW_ERR;
         }
     }
     // send data
@@ -1163,7 +1166,7 @@ int Server::send_to_connection(SendData *_send) {
         if (conn->peer_closed) {
             openswoole_error_log(
                 OSW_LOG_NOTICE, OSW_ERROR_SESSION_CLOSED_BY_CLIENT, "Server::send(): socket#%d is closed by client", fd);
-            return false;
+            return OSW_ERR;
         }
         // connection output buffer overflow
         if (_socket->out_buffer->length() >= _socket->buffer_size) {
@@ -1195,7 +1198,7 @@ int Server::send_to_connection(SendData *_send) {
         auto timeout_callback = get_timeout_callback(port, reactor, conn);
         _socket->send_timeout_ = port->max_idle_time;
         _socket->last_sent_time = time<std::chrono::milliseconds>(true);
-        _socket->send_timer = openswoole_timer_add(port->max_idle_time * 1000, true, timeout_callback);
+        _socket->send_timer = openswoole_timer_add((long) (port->max_idle_time * 1000), true, timeout_callback);
     }
 
     if (!_socket->isset_writable_event()) {
@@ -1318,7 +1321,7 @@ bool Server::close(SessionId session_id, bool reset) {
 }
 
 void Server::init_signal_handler() {
-    openswoole_signal_set(SIGPIPE, nullptr);
+    openswoole_signal_set(SIGPIPE, SIG_IGN);
     openswoole_signal_set(SIGHUP, nullptr);
     if (is_process_mode()) {
         openswoole_signal_set(SIGCHLD, Server_signal_handler);

@@ -472,7 +472,14 @@ bool Client::connect() {
         close();
         return false;
     }
-    ret = nghttp2_hd_deflate_new2(&deflater, local_settings.header_table_size, php_nghttp2_mem());
+    // HPACK: our decoder accepts the table size we advertise, our encoder follows the server's
+    ret = nghttp2_hd_inflate_change_table_size(inflater, local_settings.header_table_size);
+    if (ret != 0) {
+        nghttp2_error(ret, "nghttp2_hd_inflate_change_table_size() failed");
+        close();
+        return false;
+    }
+    ret = nghttp2_hd_deflate_new2(&deflater, remote_settings.header_table_size, php_nghttp2_mem());
     if (ret != 0) {
         nghttp2_error(ret, "nghttp2_hd_deflate_new2() failed");
         close();
@@ -531,6 +538,37 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
     buf += OSW_HTTP2_FRAME_HEADER_SIZE;
 
     char frame[OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE];
+
+    // RFC 7540: control frames have a fixed size, a wrong size is a FRAME_SIZE_ERROR
+    bool bad_length = false;
+    switch (type) {
+    case OSW_HTTP2_TYPE_SETTINGS:
+        bad_length = length % 6 != 0 || ((flags & OSW_HTTP2_FLAG_ACK) && length != 0);
+        break;
+    case OSW_HTTP2_TYPE_PING:
+        bad_length = length != OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE;
+        break;
+    case OSW_HTTP2_TYPE_WINDOW_UPDATE:
+    case OSW_HTTP2_TYPE_RST_STREAM:
+        bad_length = length != 4;
+        break;
+    case OSW_HTTP2_TYPE_GOAWAY:
+        bad_length = length < OSW_HTTP2_GOAWAY_SIZE;
+        break;
+    case OSW_HTTP2_TYPE_PUSH_PROMISE:
+        bad_length = length < 4;
+        break;
+    default:
+        break;
+    }
+    if (bad_length) {
+        openswoole_error_log(OSW_LOG_WARNING,
+                             OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                             "http2 frame type=%d has an invalid length %zd",
+                             type,
+                             length);
+        return OSW_ERROR;
+    }
 
     if (stream_id > last_stream_id) {
         last_stream_id = stream_id;
@@ -621,8 +659,7 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
         if (!(flags & OSW_HTTP2_FLAG_ACK)) {
             Http2::set_frame_header(
                 frame, OSW_HTTP2_TYPE_PING, OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE, OSW_HTTP2_FLAG_ACK, stream_id);
-            memcpy(
-                frame + OSW_HTTP2_FRAME_HEADER_SIZE, buf + OSW_HTTP2_FRAME_HEADER_SIZE, OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE);
+            memcpy(frame + OSW_HTTP2_FRAME_HEADER_SIZE, buf, OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE);
             if (!send(frame, OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_FRAME_PING_PAYLOAD_SIZE)) {
                 return OSW_ERROR;
             }
@@ -683,6 +720,23 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
         openswoole_notice("http2 stream#%d belongs to an unknown type or it never registered", stream_id);
         return OSW_CONTINUE;
     }
+    // padding counts for flow control (RFC 7540 6.1), but is not content
+    ssize_t flow_length = length;
+    if ((type == OSW_HTTP2_TYPE_HEADERS || type == OSW_HTTP2_TYPE_DATA) && (flags & OSW_HTTP2_FLAG_PADDED)) {
+        if (length < 1 || (uint8_t) buf[0] >= length) {
+            openswoole_error_log(
+                OSW_LOG_WARNING, OSW_ERROR_HTTP_INVALID_PROTOCOL, "http2 frame type=%d has invalid padding", type);
+            return OSW_ERROR;
+        }
+        uint8_t pad_length = buf[0];
+        buf += 1;
+        length -= 1 + pad_length;
+    }
+    if (type == OSW_HTTP2_TYPE_HEADERS && (flags & OSW_HTTP2_FLAG_PRIORITY) && length < 5) {
+        openswoole_error_log(
+            OSW_LOG_WARNING, OSW_ERROR_HTTP_INVALID_PROTOCOL, "http2 HEADERS frame is too short for its priority");
+        return OSW_ERROR;
+    }
     if (type == OSW_HTTP2_TYPE_HEADERS) {
         parse_header(stream, flags, buf, length);
     } else if (type == OSW_HTTP2_TYPE_DATA) {
@@ -708,8 +762,8 @@ enum swReturnCode Client::parse_frame(zval *return_value, bool pipeline_read) {
 
             // now we control the connection flow only (not stream)
             // our window size is unlimited, so we don't worry about subtraction overflow
-            local_settings.window_size -= length;
-            stream->local_window_size -= length;
+            local_settings.window_size -= flow_length;
+            stream->local_window_size -= flow_length;
             if (local_settings.window_size < (OSW_HTTP2_MAX_WINDOW_SIZE / 4)) {
                 if (!send_window_update(0, OSW_HTTP2_MAX_WINDOW_SIZE - local_settings.window_size)) {
                     return OSW_ERROR;
@@ -819,7 +873,7 @@ static PHP_METHOD(openswoole_http2_client_coro, __construct) {
     zend_long port = 80;
     zend_bool ssl = false;
 
-    ZEND_PARSE_PARAMETERS_START_EX(ZEND_PARSE_PARAMS_THROW, 1, 3)
+    ZEND_PARSE_PARAMETERS_START(1, 3)
     Z_PARAM_STRING(host, host_len)
     Z_PARAM_OPTIONAL
     Z_PARAM_LONG(port)
@@ -1041,7 +1095,7 @@ ssize_t Client::build_header(zval *zobject, zval *zrequest, char *buffer) {
         zval *zvalue;
 
         ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zheaders), key, zvalue) {
-            if (UNEXPECTED(!key || *ZSTR_VAL(key) == ':' || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || *ZSTR_VAL(key) == ':' || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             zend::String str_value(zvalue);
@@ -1079,14 +1133,14 @@ ssize_t Client::build_header(zval *zobject, zval *zrequest, char *buffer) {
         String *buffer = osw_tg_buffer();
 
         ZEND_HASH_FOREACH_STR_KEY_VAL(Z_ARRVAL_P(zcookies), key, zvalue) {
-            if (UNEXPECTED(!key || ZVAL_IS_NULL(zvalue))) {
+            if (UNEXPECTED(!key || Z_ISNULL_P(zvalue))) {
                 continue;
             }
             zend::String str_value(zvalue);
             buffer->clear();
             buffer->append(ZSTR_VAL(key), ZSTR_LEN(key));
             buffer->append("=", 1);
-            encoded_value = php_openswoole_url_encode(str_value.val(), str_value.len(), &encoded_value_len);
+            encoded_value = php_openswoole_cookie_value_encode(str_value.val(), str_value.len(), &encoded_value_len);
             if (encoded_value) {
                 buffer->append(encoded_value, encoded_value_len);
                 efree(encoded_value);
@@ -1182,7 +1236,7 @@ uint32_t Client::send_request(zval *zrequest) {
         osw_zend_read_property_ex(openswoole_http2_request_ce, zrequest, OSW_ZSTR_KNOWN(OSW_ZEND_STR_PIPELINE), 0);
     zval ztmp, *zuse_pipeline_read = zend_read_property_ex(
                    Z_OBJCE_P(zrequest), OSW_Z8_OBJ_P(zrequest), OSW_ZSTR_KNOWN(OSW_ZEND_STR_USE_PIPELINE_READ), 1, &ztmp);
-    bool is_data_empty = Z_TYPE_P(zdata) == IS_STRING ? Z_STRLEN_P(zdata) == 0 : !zval_is_true(zdata);
+    bool is_data_empty = Z_TYPE_P(zdata) == IS_STRING ? Z_STRLEN_P(zdata) == 0 : !zend_is_true(zdata);
 
     if (ZVAL_IS_ARRAY(zdata)) {
         add_assoc_stringl_ex(
@@ -1200,10 +1254,10 @@ uint32_t Client::send_request(zval *zrequest) {
     }
 
     uint8_t flags = 0;
-    if (zval_is_true(zpipeline)) {
+    if (zend_is_true(zpipeline)) {
         flags |= OSW_HTTP2_STREAM_PIPELINE_REQUEST;
     }
-    if (zval_is_true(zuse_pipeline_read)) {
+    if (zend_is_true(zuse_pipeline_read)) {
         flags |= OSW_HTTP2_STREAM_USE_PIPELINE_READ;
     }
 

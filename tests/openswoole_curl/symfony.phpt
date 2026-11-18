@@ -19,15 +19,16 @@ use Http\Discovery\Psr17FactoryDiscovery;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
+co::run(function () use ($server) {
     $httpClient = new SymfonyHttplugClient(
-        SymfonyHttpClient::create(['max_duration' => 5])
+        SymfonyHttpClient::create(['max_duration' => 5, 'verify_peer' => false, 'verify_host' => false])
     );
     $uid = uniqid();
     $req = Psr17FactoryDiscovery::findRequestFactory()
-        ->createRequest('POST', 'http://httpbun.com/post')
+        ->createRequest('POST', $server->url('/post', true))
         ->withHeader('Content-Type', 'application/json')
         ->withBody(Psr17FactoryDiscovery::findStreamFactory()->createStream(json_encode(['key' => $uid])));
 

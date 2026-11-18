@@ -39,8 +39,8 @@ typedef uint64_t (*HashFunc)(const char *key, size_t len);
 struct TableColumn;
 
 struct TableRow {
+    // 0 when free, otherwise the pid of the process holding it
     osw_atomic_t lock_;
-    pid_t lock_pid;
     /**
      * 1:used, 0:empty
      */
@@ -63,7 +63,7 @@ struct TableRow {
     }
 
     void clear() {
-        osw_memset_zero((char *) &lock_pid, sizeof(TableRow) - offsetof(TableRow, lock_pid));
+        osw_memset_zero((char *) &active, sizeof(TableRow) - offsetof(TableRow, active));
     }
 
     void set_value(TableColumn *col, void *value, size_t vlen);

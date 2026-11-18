@@ -16,13 +16,14 @@ use GuzzleHttp\Psr7\Request;
 
 
 
+$server = SwooleTest\LocalServer::start();
 Runtime::enableCoroutine(SWOOLE_HOOK_NATIVE_CURL);
 
-co::run(function () {
+co::run(function () use ($server) {
     $handler = new CurlMultiHandler();
     $responses = [];
     for ($i = 0; $i < 10; $i++) {
-        $response = $handler(new Request('GET', 'http://httpbun.com/get'), []);
+        $response = $handler(new Request('GET', $server->url('/get')), []);
         $response->cancel();
         $responses[] = $response;
     }

@@ -132,13 +132,13 @@ void php_openswoole_set_coroutine_option(zend_array *vht) {
         PHPCoroutine::set_max_num(max_num <= 0 ? OSW_DEFAULT_MAX_CORO_NUM : max_num);
     }
     if (php_openswoole_array_get_value(vht, "enable_deadlock_check", ztmp)) {
-        PHPCoroutine::set_deadlock_check(zval_is_true(ztmp));
+        PHPCoroutine::set_deadlock_check(zend_is_true(ztmp));
     }
     if (php_openswoole_array_get_value(vht, "hook_flags", ztmp)) {
         PHPCoroutine::set_hook_flags(zval_get_long(ztmp));
     }
     if (php_openswoole_array_get_value(vht, "enable_preemptive_scheduler", ztmp)) {
-        PHPCoroutine::enable_preemptive_scheduler(zval_is_true(ztmp));
+        PHPCoroutine::enable_preemptive_scheduler(zend_is_true(ztmp));
     }
     if (php_openswoole_array_get_value(vht, "c_stack_size", ztmp) || php_openswoole_array_get_value(vht, "stack_size", ztmp)) {
         Coroutine::set_stack_size(zval_get_long(ztmp));
@@ -147,7 +147,7 @@ void php_openswoole_set_coroutine_option(zend_array *vht) {
         if (Coroutine::count() > 0) {
             php_openswoole_fatal_error(E_WARNING, "use_fiber_context cannot be changed while coroutines are running");
         } else {
-            Coroutine::set_use_fiber_context(zval_is_true(ztmp));
+            Coroutine::set_use_fiber_context(zend_is_true(ztmp));
         }
     }
     if (PHPCoroutine::options) {
@@ -183,7 +183,7 @@ PHP_METHOD(openswoole_coroutine_scheduler, set) {
             osw_zend_fci_cache_discard(&exit_condition_fci_cache);
             exit_condition_fci_cache.function_handler = nullptr;
         }
-        if (!ZVAL_IS_NULL(ztmp)) {
+        if (!Z_ISNULL_P(ztmp)) {
             if (!osw_zend_is_callable_ex(ztmp, nullptr, 0, &func_name, nullptr, &exit_condition_fci_cache, nullptr)) {
                 php_openswoole_fatal_error(E_ERROR, "exit_condition '%s' is not callable", func_name);
             } else {

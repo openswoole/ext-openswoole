@@ -1,9 +1,7 @@
 --TEST--
 openswoole_event: del after close
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip_if_offline();
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
@@ -12,9 +10,11 @@ use OpenSwoole\Event;
 
 Co::set(['log_level' => SWOOLE_LOG_ERROR]);
 
+$server = SwooleTest\LocalServer::start();
+
 $cli = new OpenSwoole\Client(SWOOLE_SOCK_TCP);
 
-$cli->connect("www.qq.com", 80);
+$cli->connect($server->host, $server->httpPort);
 
 $fd = $cli->sock;
 
@@ -24,7 +24,7 @@ Event::add($fd, function($fd) use($cli) {
     fclose($fp);
 });
 
-Event::write($fd, "GET / HTTP/1.1\r\nHost: www.qq.com\r\n\r\n");
+Event::write($fd, "GET / HTTP/1.1\r\nHost: {$server->host}\r\n\r\n");
 
 $cli->close();
 

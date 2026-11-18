@@ -10,7 +10,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use OpenSwoole\Timer;
 
-const RES_FILE = __DIR__ . '/result.txt';
+const RES_FILE = __DIR__ . '/reinit_2_result.txt';
 file_put_contents(RES_FILE, "");
 
 $pm = new ProcessManager;

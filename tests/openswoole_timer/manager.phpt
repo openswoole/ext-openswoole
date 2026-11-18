@@ -8,7 +8,7 @@ all
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 $pm = new ProcessManager;
-const RES_FILE = __DIR__.'/result.txt';
+const RES_FILE = __DIR__.'/manager_result.txt';
 file_put_contents(RES_FILE, "");
 
 //设置等待10秒

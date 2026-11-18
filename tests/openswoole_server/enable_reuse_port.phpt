@@ -8,7 +8,7 @@ require __DIR__ . '/../include/bootstrap.php';
 
 use OpenSwoole\Server;
 
-const N = 32;
+const N = 128;
 const W = 4;
 
 $pm = new SwooleTest\ProcessManager;
@@ -43,6 +43,7 @@ $pm->parentFunc = function ($pid) use ($pm) {
     $c->start();
     $pm->kill();
 
+    Assert::same(count($workerCounter), W);
     foreach ($workerCounter as $c) {
         Assert::greaterThan($c, N / W / 3);
     }

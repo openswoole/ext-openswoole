@@ -95,6 +95,9 @@ typedef struct {
 	php_curl_fnsshhostkey  *sshhostkey;
 #endif
 #else
+#if PHP_VERSION_ID >= 80600
+	zend_fcall_info_cache seek;
+#endif
 	zend_fcall_info_cache progress;
 	zend_fcall_info_cache xferinfo;
 	zend_fcall_info_cache fnmatch;
@@ -205,13 +208,13 @@ static inline php_curl_handlers *curl_handlers(php_curl *ch) {
 }
 
 static inline php_curl *curl_from_obj(zend_object *obj) {
-	return (php_curl *)((char *)(obj) - XtOffsetOf(php_curl, std));
+	return (php_curl *)((char *)(obj) - offsetof(php_curl, std));
 }
 
 #define Z_CURL_P(zv) curl_from_obj(Z_OBJ_P(zv))
 
 static inline php_curlsh *curl_share_from_obj(zend_object *obj) {
-	return (php_curlsh *)((char *)(obj) - XtOffsetOf(php_curlsh, std));
+	return (php_curlsh *)((char *)(obj) - offsetof(php_curlsh, std));
 }
 
 #define Z_CURL_SHARE_P(zv) curl_share_from_obj(Z_OBJ_P(zv))

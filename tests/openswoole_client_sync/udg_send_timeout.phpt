@@ -6,7 +6,7 @@ openswoole_client_sync: udg send timeout
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 const N = 65507;
-define("SOCKET_FILE", __DIR__.'/server.sock');
+define("SOCKET_FILE", __DIR__.'/udg_send_timeout_server.sock');
 $socket = stream_socket_server("udg://".SOCKET_FILE, $errno, $errstr, STREAM_SERVER_BIND);
 
 $client = new openswoole_client(SWOOLE_SOCK_UNIX_DGRAM);

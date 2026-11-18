@@ -16,13 +16,21 @@ $pool = new Pool(2, SWOOLE_IPC_UNIXSOCK);
 
 $pool->on('workerStart', function (OpenSwoole\Process\Pool $pool, int $workerId) {
     if ($workerId == 0) {
-        usleep(1000);
+        // worker 1 may not be started yet: its pid is 0 then, and kill(0) would kill the whole
+        // process group, including the test runner
+        for ($i = 0; $i < 500 && $pool->getProcess(1)->pid <= 0; $i++) {
+            usleep(10000);
+        }
         $process1 = $pool->getProcess(1);
         phpt_var_dump($process1);
         $pid1 = $process1->pid;
-        $success = Process::kill($process1->pid, SIGKILL);
+        Assert::greaterThan($pid1, 0);
+        $success = Process::kill($pid1, SIGKILL);
         Assert::true($success);
-        usleep(20000);
+        // wait for the manager to restart worker 1
+        for ($i = 0; $i < 500 && in_array($pool->getProcess(1)->pid, [0, $pid1], true); $i++) {
+            usleep(10000);
+        }
         $process2 = $pool->getProcess(1);
         phpt_var_dump($process2);
         $pid2 = $process2->pid;

@@ -18,6 +18,8 @@
 
 #include "php_openswoole_cxx.h"
 
+#include <unordered_set>
+
 #ifdef OSW_USE_CURL
 #include "openswoole_util.h"
 
@@ -58,6 +60,16 @@ class Multi {
     int last_sockfd;
     int event_count_ = 0;
     bool defer_callback = false;
+    // sockets created by this multi and not removed yet: curl moves a connection between
+    // easy handles, so a Handle's socket pointer is only used while the socket is still here
+    std::unordered_set<Socket *> sockets_;
+
+    Socket *socket_of(Handle *handle) {
+        if (handle && handle->socket && sockets_.find(handle->socket) == sockets_.end()) {
+            handle->socket = nullptr;
+        }
+        return handle ? handle->socket : nullptr;
+    }
     std::unique_ptr<Selector> selector;
 
     CURLcode read_info();
@@ -110,6 +122,8 @@ class Multi {
 
     ~Multi() {
         curl_multi_cleanup(multi_handle_);
+        // a pending timer would keep the event loop alive and then call back into a freed Multi
+        del_timer();
     }
 
     CURLM *get_multi_handle() {
@@ -127,8 +141,12 @@ class Multi {
     CURLMcode add_handle(CURL *cp);
     CURLMcode remove_handle(CURL *cp);
 
+    // the timer only wakes a coroutine waiting in select() or exec(), both set it again before
+    // they wait; left behind it would keep the event loop, and so co::run(), alive
     CURLMcode perform() {
-        return curl_multi_perform(multi_handle_, &running_handles_);
+        CURLMcode retval = curl_multi_perform(multi_handle_, &running_handles_);
+        del_timer();
+        return retval;
     }
 
     int get_event(int action) {

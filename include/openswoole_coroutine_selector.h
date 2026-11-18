@@ -66,6 +66,11 @@ class Selector {
         }
     }
 
+    // a pull channel is ready when it has data, a push channel when it has room
+    bool is_push_ready(Channel *chan) {
+        return chan->get_error() > 0 || chan->is_closed() || !chan->is_full();
+    }
+
     bool is_ready(Channel *chan) {
         bool ready = false;
         if (chan->get_error() > 0) {
@@ -90,7 +95,7 @@ class Selector {
             }
         }
         for (auto &chan : push_chans) {
-            if (is_ready(chan)) {
+            if (is_push_ready(chan)) {
                 return false;
             }
         }

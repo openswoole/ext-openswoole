@@ -9,12 +9,12 @@ require __DIR__ . '/../include/bootstrap.php';
 use OpenSwoole\Server;
 
 $pm = new SwooleTest\ProcessManager;
+// the server stops itself after a second, the parent only waits for it
 $pm->parentFunc = function ($pid) use ($pm) {
-    $pm->kill();
 };
 
 $pm->childFunc = function () use ($pm) {
-    $server = new Server('0.0.0.0', 9501, SWOOLE_BASE, SWOOLE_SOCK_TCP);
+    $server = new Server('127.0.0.1', $pm->getFreePort(), SWOOLE_BASE, SWOOLE_SOCK_TCP);
     $server->set([
         'worker_num' => MAX_PROCESS_NUM,
         'log_file' => '/dev/null',
@@ -30,7 +30,8 @@ $pm->childFunc = function () use ($pm) {
             Assert::same($ret, 'bar');
         });
     });
-    $server->on('workerStart', function ($server) {
+    $server->on('workerStart', function ($server) use ($pm) {
+        $pm->wakeup();
         $server->after(1000, function () use ($server) {
             $server->stop();
         });

@@ -28,8 +28,10 @@ define('TRAVIS_DIR_PATH', __DIR__ . '/../../travis/');
 define('TEST_IMAGE', __DIR__ . '/../assets/test.jpg');
 define('TEST_LINK_IMAGE', __DIR__ . '/../assets/test_link.jpg');
 define('TEST_IMAGE2', __DIR__ . '/../assets/test.svg');
-define('TEST_LOG_FILE', '/tmp/swoole.log');
-define('TEST_PID_FILE', '/tmp/swoole.pid');
+// one file per test, tests run in parallel; the parent and child process of a test share the name
+define('TEST_FILE_ID', substr(md5((string) realpath($_SERVER['SCRIPT_FILENAME'] ?? __FILE__)), 0, 12));
+define('TEST_LOG_FILE', '/tmp/swoole_' . TEST_FILE_ID . '.log');
+define('TEST_PID_FILE', '/tmp/swoole_' . TEST_FILE_ID . '.pid');
 define('SSL_FILE_DIR', __DIR__ . '/ssl_certs/');
 define('SSL_FILE_DIR2', __DIR__ . '/../include/api/ssl-ca');
 define('DOCUMENT_ROOT', __DIR__ . '/../assets/www');

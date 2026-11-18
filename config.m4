@@ -152,6 +152,7 @@ AC_DEFUN([AC_OPENSWOOLE_HAVE_REUSEPORT],
 [
     AC_MSG_CHECKING([for socket REUSEPORT])
     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+        #define _GNU_SOURCE
         #include <sys/socket.h>
     ]], [[
         int val = 1;
@@ -585,7 +586,7 @@ if test "$PHP_OPENSWOOLE" != "no"; then
                 fi
               done
 
-              for j in lib $PHP_LIBDIR/pgsql $PHP_LIBDIR/postgres $PHP_LIBDIR/postgresql ""; do
+              for j in lib lib64 $PHP_LIBDIR $PHP_LIBDIR/pgsql $PHP_LIBDIR/postgres $PHP_LIBDIR/postgresql ""; do
                 if test -f "$i/$j/libpq.so" || test -f "$i/$j/libpq.a"; then
                   PGSQL_LIBDIR=$i/$j
                 fi
@@ -734,7 +735,8 @@ if test "$PHP_OPENSWOOLE" != "no"; then
         thirdparty/llhttp/llhttp.c \
         thirdparty/multipart_parser.c"
 
-    openswoole_source_file="$openswoole_source_file \
+    # hiredis is compiled separately below with hidden visibility (issue #394)
+    openswoole_hiredis_source_file="\
         thirdparty/hiredis/hiredis.c \
         thirdparty/hiredis/alloc.c \
         thirdparty/hiredis/net.c \
@@ -850,6 +852,15 @@ if test "$PHP_OPENSWOOLE" != "no"; then
     fi
 
     PHP_NEW_EXTENSION(openswoole, $openswoole_source_file, $ext_shared,, "$EXTRA_CFLAGS -DENABLE_PHP_OPENSWOOLE", cxx)
+
+    # Hide bundled hiredis symbols so they are not exported from openswoole.so
+    # and cannot collide with other extensions' hiredis (issue #394).
+    osw_hiredis_cflags="$EXTRA_CFLAGS -DENABLE_PHP_OPENSWOOLE -fvisibility=hidden"
+    if test "$ext_shared" = "shared" || test "$ext_shared" = "yes"; then
+        PHP_ADD_SOURCES_X($ext_dir, $openswoole_hiredis_source_file, $osw_hiredis_cflags -DZEND_COMPILE_DL_EXT=1, shared_objects_openswoole, yes)
+    else
+        PHP_ADD_SOURCES($ext_dir, $openswoole_hiredis_source_file, $osw_hiredis_cflags,)
+    fi
 
     PHP_ADD_INCLUDE([$ext_srcdir])
     PHP_ADD_INCLUDE([$ext_srcdir/include])

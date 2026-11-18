@@ -13,6 +13,8 @@ if [ "${CI_BRANCH}" = "alpine" ]; then
     export PHP_VERSION="${PHP_VERSION}-alpine"
 fi
 
+export DOCKER_IMAGE=${DOCKER_IMAGE:-"openswoole/php:${PHP_VERSION}"}
+
 echo "\n🗻 With PHP version ${PHP_VERSION} on ${CI_BRANCH} branch"
 
 check_docker_dependency(){

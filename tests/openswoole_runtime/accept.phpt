@@ -9,16 +9,19 @@ skip_if_no_ssl();
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
+$port = 0;
+
 swoole\runtime::enableCoroutine();
 
-go(function () {
+go(function () use (&$port) {
     $opts = array(
         'socket' => array(
             'so_reuseaddr' => true,
         ),
     );
     $ctx = stream_context_create($opts);
-    $socket = stream_socket_server("tcp://0.0.0.0:8000", $errno, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, $ctx);
+    $socket = stream_socket_server("tcp://127.0.0.1:0", $errno, $errstr, STREAM_SERVER_BIND | STREAM_SERVER_LISTEN, $ctx);
+    $port = $socket ? (int) explode(':', stream_socket_get_name($socket, false))[1] : 0;
     if (!$socket) {
         echo "$errstr ($errno)<br />\n";
     } else {
@@ -29,8 +32,8 @@ go(function () {
     }
 });
 
-go(function () {
-    $fp = stream_socket_client("tcp://127.0.0.1:8000", $errno, $errstr, 30);
+go(function () use (&$port) {
+    $fp = stream_socket_client("tcp://127.0.0.1:{$port}", $errno, $errstr, 30);
     if (!$fp) {
         echo "$errstr ($errno)<br />\n";
     } else {

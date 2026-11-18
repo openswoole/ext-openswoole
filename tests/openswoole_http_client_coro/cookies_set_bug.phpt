@@ -3,8 +3,6 @@ openswoole_http_client_coro: cookies set bug
 --SKIPIF--
 <?php
 require __DIR__ . '/../include/skipif.inc';
-skip_if_in_travis('travis network');
-skip_if_offline();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -17,11 +15,10 @@ function getCookies()
     return $result;
 }
 
-co::run(function () {
-    $url_info = parse_url('http://httpbun.com/cookies/set/a/1');
-    $domain = $url_info['host'];
-    $path = $url_info['path'];
-    $cli = new OpenSwoole\Coroutine\Http\Client($domain);
+$server = SwooleTest\LocalServer::start();
+co::run(function () use ($server) {
+    $domain = $server->host;
+    $cli = new OpenSwoole\Coroutine\Http\Client($domain, $server->httpPort);
     $cli->set(['timeout' => 5]);
     $cli->setHeaders([
         'Host' => $domain,
@@ -34,7 +31,7 @@ co::run(function () {
     $cookies = getCookies();
     $cli->setCookies($cookies);
 
-    Assert::assert($cli->get($path));
+    Assert::assert($cli->get('/cookies/set?a=1'));
 
     // second request
     $cookies = getCookies();

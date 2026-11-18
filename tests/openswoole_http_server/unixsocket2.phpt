@@ -9,7 +9,7 @@ require __DIR__ . '/../include/bootstrap.php';
 use OpenSwoole\Http\Server;
 use OpenSwoole\Http\Response;
 
-const SOCKET = __DIR__ . '/server.sock';
+const SOCKET = __DIR__ . '/unixsocket2_server.sock';
 
 $pm = new SwooleTest\ProcessManager;
 
