@@ -73,15 +73,30 @@ static int http_parser_on_message_complete(llhttp_t *parser);
 static const llhttp_settings_t http_parser_settings =
 {
     nullptr,                          // on_message_begin
+    nullptr,                          // on_protocol
     nullptr,                          // on_url
     nullptr,                          // on_status
-    http_parser_on_header_field,     // on_header_field
-    http_parser_on_header_value,     // on_header_value
-    http_parser_on_headers_complete, // on_headers_complete
-    http_parser_on_body,             // on_body
-    http_parser_on_message_complete, // on_message_complete
+    nullptr,                          // on_method
+    nullptr,                          // on_version
+    http_parser_on_header_field,      // on_header_field
+    http_parser_on_header_value,      // on_header_value
+    nullptr,                          // on_chunk_extension_name
+    nullptr,                          // on_chunk_extension_value
+    http_parser_on_headers_complete,  // on_headers_complete
+    http_parser_on_body,              // on_body
+    http_parser_on_message_complete,  // on_message_complete
+    nullptr,                          // on_protocol_complete
+    nullptr,                          // on_url_complete
+    nullptr,                          // on_status_complete
+    nullptr,                          // on_method_complete
+    nullptr,                          // on_version_complete
+    nullptr,                          // on_header_field_complete
+    nullptr,                          // on_header_value_complete
+    nullptr,                          // on_chunk_extension_name_complete
+    nullptr,                          // on_chunk_extension_value_complete
     nullptr,                          // on_chunk_header
     nullptr,                          // on_chunk_complete
+    nullptr,                          // on_reset
 };
 // clang-format on
 
