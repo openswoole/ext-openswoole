@@ -34,7 +34,7 @@ using openswoole::network::Socket;
 static const char *method_strings[] = {
     "DELETE", "GET", "HEAD", "POST", "PUT", "PATCH", "CONNECT", "OPTIONS", "TRACE", "COPY", "LOCK", "MKCOL", "MOVE",
     "PROPFIND", "PROPPATCH", "UNLOCK", "REPORT", "MKACTIVITY", "CHECKOUT", "MERGE", "M-SEARCH", "NOTIFY",
-    "SUBSCRIBE", "UNSUBSCRIBE", "PURGE", "PRI",
+    "SUBSCRIBE", "UNSUBSCRIBE", "PURGE", "QUERY", "PRI",
 };
 // clang-format on
 
@@ -454,6 +454,9 @@ int Request::get_protocol() {
         p += 6;
     } else if (memcmp(p, OSW_STRL("PURGE")) == 0) {
         method = OSW_HTTP_PURGE;
+        p += 5;
+    } else if (memcmp(p, OSW_STRL("QUERY")) == 0) {
+        method = OSW_HTTP_QUERY;
         p += 5;
     }
 #ifdef OSW_USE_HTTP2
