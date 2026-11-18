@@ -76,6 +76,7 @@ OSW_EXTERN_C_BEGIN
 #include "zend_smart_str.h"
 #include "ext/standard/info.h"
 #include "ext/standard/file.h"
+#include "ext/standard/php_string.h"
 #include "ext/standard/url.h"
 #include "curl_private.h"
 
@@ -2179,8 +2180,22 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
     case CURLOPT_PROXY_TLS13_CIPHERS:
     case CURLOPT_TLS13_CIPHERS:
 #endif
+#if LIBCURL_VERSION_NUM >= 0x075500 /* Available since 7.85.0 */
+    case CURLOPT_PROTOCOLS_STR:
+    case CURLOPT_REDIR_PROTOCOLS_STR:
+#endif
     {
         zend_string *str = zval_get_string(zvalue);
+#if LIBCURL_VERSION_NUM >= 0x075500 /* Available since 7.85.0 */
+        if ((option == CURLOPT_PROTOCOLS_STR || option == CURLOPT_REDIR_PROTOCOLS_STR) &&
+            (PG(open_basedir) && *PG(open_basedir)) &&
+            (php_memnistr(ZSTR_VAL(str), "file", sizeof("file") - 1, ZSTR_VAL(str) + ZSTR_LEN(str)) != NULL ||
+             php_memnistr(ZSTR_VAL(str), "all", sizeof("all") - 1, ZSTR_VAL(str) + ZSTR_LEN(str)) != NULL)) {
+            zend_string_release(str);
+            php_error_docref(NULL, E_WARNING, "The FILE protocol cannot be activated when an open_basedir is set");
+            return 1;
+        }
+#endif
         int ret = php_curl_option_str(ch, option, ZSTR_VAL(str), ZSTR_LEN(str), 0);
         zend_string_release(str);
         return ret;
