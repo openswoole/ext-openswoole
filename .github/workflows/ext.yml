@@ -77,7 +77,7 @@ jobs:
             alpine-version: '3.21'
           - php-version: '8.5.0'
             alpine-version: '3.23'
-          - php-version: '8.6-rc'
+          - php-version: '8.6'
             alpine-version: '3.24'
             image-php: 1
       max-parallel: 8
