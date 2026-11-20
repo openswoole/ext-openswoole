@@ -1155,6 +1155,7 @@
             <file role="test" name="tests/openswoole_http_server/redirect.phpt" />
             <file role="test" name="tests/openswoole_http_server/request_create_multipart.phpt" />
             <file role="test" name="tests/openswoole_http_server/response_create.phpt" />
+            <file role="test" name="tests/openswoole_http_server/response_create_co_socket.phpt" />
             <file role="test" name="tests/openswoole_http_server/send_empty_file.phpt" />
             <file role="test" name="tests/openswoole_http_server/send_yield.phpt" />
             <file role="test" name="tests/openswoole_http_server/sendfile.phpt" />
