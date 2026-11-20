@@ -1649,6 +1649,7 @@
             <file role="test" name="tests/openswoole_table/conflict_proportion.phpt" />
             <file role="test" name="tests/openswoole_table/bug_2263.phpt" />
             <file role="test" name="tests/openswoole_table/bug_2290.phpt" />
+            <file role="test" name="tests/openswoole_table/child_exit.phpt" />
             <file role="test" name="tests/openswoole_table/create_10k_object.phpt" />
             <file role="test" name="tests/openswoole_table/del.phpt" />
             <file role="test" name="tests/openswoole_table/empty_key_iterate.phpt" />
