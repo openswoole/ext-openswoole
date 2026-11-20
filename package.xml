@@ -821,9 +821,6 @@
             <file role="test" name="tests/openswoole_coroutine_util/list_coroutine.phpt" />
             <file role="test" name="tests/openswoole_coroutine_util/task_worker.phpt" />
             <file role="test" name="tests/openswoole_coroutine_util/tmp" />
-            <file role="test" name="tests/openswoole_coroutine_wait_group/base.phpt" />
-            <file role="test" name="tests/openswoole_coroutine_wait_group/empty.phpt" />
-            <file role="test" name="tests/openswoole_coroutine_wait_group/logic.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/1.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/10.phpt" />
             <file role="test" name="tests/openswoole_curl/header_function_leak.phpt" />
