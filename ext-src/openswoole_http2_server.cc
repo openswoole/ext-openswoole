@@ -155,6 +155,15 @@ static void http2_server_send_window_update(HttpContext *ctx, uint32_t stream_id
     ctx->send(ctx, frame, OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_WINDOW_UPDATE_SIZE);
 }
 
+static void http2_server_consume_connection_window(Http2Session *client, uint32_t length) {
+    client->local_settings.window_size -= length;
+    if (length > 0 && client->local_settings.window_size < (OSW_HTTP2_MAX_WINDOW_SIZE / 4)) {
+        http2_server_send_window_update(
+            client->default_ctx, 0, OSW_HTTP2_MAX_WINDOW_SIZE - client->local_settings.window_size);
+        client->local_settings.window_size = OSW_HTTP2_MAX_WINDOW_SIZE;
+    }
+}
+
 static ssize_t http2_build_trailer(HttpContext *ctx, uchar *buffer, size_t buffer_size) {
     zval *ztrailer =
         osw_zend_read_property_ex(openswoole_http_response_ce, ctx->response.zobject, OSW_ZSTR_KNOWN(OSW_ZEND_STR_TRAILER), 0);
@@ -1153,12 +1162,14 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         if (stream_iterator == client->streams.end()) {
             openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_HTTP2_STREAM_NOT_FOUND, "http2 stream#%d not found", stream_id);
             http2_server_send_rst_stream(client, stream_id, OSW_HTTP2_ERROR_STREAM_CLOSED);
+            http2_server_consume_connection_window(client, length);
             break;
         }
         stream = stream_iterator->second;
         HttpContext *ctx = stream->ctx;
         if (stream->remote_closed || !ctx->request.zobject) {
             http2_server_reject_closed_stream(client, stream);
+            http2_server_consume_connection_window(client, length);
             break;
         }
 
@@ -1202,13 +1213,9 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         buffer->append(data, data_length);
 
         // flow control
-        client->local_settings.window_size -= length;
+        http2_server_consume_connection_window(client, length);
         stream->local_window_size -= length;
         if (length > 0) {
-            if (client->local_settings.window_size < (OSW_HTTP2_MAX_WINDOW_SIZE / 4)) {
-                http2_server_send_window_update(ctx, 0, OSW_HTTP2_MAX_WINDOW_SIZE - client->local_settings.window_size);
-                client->local_settings.window_size = OSW_HTTP2_MAX_WINDOW_SIZE;
-            }
             if (stream->local_window_size < (OSW_HTTP2_MAX_WINDOW_SIZE / 4)) {
                 http2_server_send_window_update(ctx, stream_id, OSW_HTTP2_MAX_WINDOW_SIZE - stream->local_window_size);
                 stream->local_window_size = OSW_HTTP2_MAX_WINDOW_SIZE;
