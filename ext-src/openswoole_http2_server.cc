@@ -685,14 +685,15 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
 
             error =
                 !stream->send_body(body, _end_stream, client->local_settings.max_frame_size, body->offset, send_len);
-            if (!error) {
-                openswoole_trace_log(OSW_TRACE_HTTP2,
-                                 "body: send length=%zu, stream->remote_window_size=%u",
-                                 send_len,
-                                 stream->remote_window_size);
-
-                body->offset += send_len;
+            if (error) {
+                break;
             }
+            openswoole_trace_log(OSW_TRACE_HTTP2,
+                             "body: send length=%zu, stream->remote_window_size=%u",
+                             send_len,
+                             stream->remote_window_size);
+
+            body->offset += send_len;
         }
     }
 
