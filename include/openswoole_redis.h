@@ -46,17 +46,30 @@ enum ReplyType {
     REPLY_MAP,
 };
 
-static osw_inline const char *get_number(const char *p, int *_ret) {
-    char *endptr;
+// parse "<type><number>\r\n" within [p, pe), returns the position after the CRLF
+static osw_inline const char *get_number(const char *p, const char *pe, int *_ret) {
     p++;
-    int ret = strtol(p, &endptr, 10);
-    if (strncmp(OSW_CRLF, endptr, OSW_CRLF_LEN) == 0) {
-        p += (endptr - p) + OSW_CRLF_LEN;
-        *_ret = ret;
-        return p;
-    } else {
+    bool negative = false;
+    if (p < pe && *p == '-') {
+        negative = true;
+        p++;
+    }
+    if (p >= pe || !isdigit((unsigned char) *p)) {
         return nullptr;
     }
+    long ret = 0;
+    while (p < pe && isdigit((unsigned char) *p)) {
+        ret = ret * 10 + (*p - '0');
+        if (ret > INT_MAX) {
+            return nullptr;
+        }
+        p++;
+    }
+    if (pe - p < OSW_CRLF_LEN || memcmp(p, OSW_CRLF, OSW_CRLF_LEN) != 0) {
+        return nullptr;
+    }
+    *_ret = (int) (negative ? -ret : ret);
+    return p + OSW_CRLF_LEN;
 }
 
 int recv_packet(Protocol *protocol, Connection *conn, String *buffer);

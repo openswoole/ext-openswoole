@@ -1479,6 +1479,7 @@
             <file role="test" name="tests/openswoole_server/pid_file.phpt" />
             <file role="test" name="tests/openswoole_server/protect.phpt" />
             <file role="test" name="tests/openswoole_server/protect_false.phpt" />
+            <file role="test" name="tests/openswoole_server/redis_protocol_null_bulk.phpt" />
             <file role="test" name="tests/openswoole_server/redis_protocol_split.phpt" />
             <file role="test" name="tests/openswoole_server/reload.phpt" />
             <file role="test" name="tests/openswoole_server/reload_async.phpt" />
