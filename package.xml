@@ -1438,6 +1438,7 @@
             <file role="test" name="tests/openswoole_server/length/02.phpt" />
             <file role="test" name="tests/openswoole_server/length/03.phpt" />
             <file role="test" name="tests/openswoole_server/length/length_func.phpt" />
+            <file role="test" name="tests/openswoole_server/length/length_func_wait.phpt" />
             <file role="test" name="tests/openswoole_server/listen_fail.phpt" />
             <file role="test" name="tests/openswoole_server/max_concurrency.phpt" />
             <file role="test" name="tests/openswoole_server/max_idle_time_1.phpt" />
@@ -1688,6 +1689,9 @@
             <file role="test" name="tests/openswoole_websocket_server/send_encode.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/send_encode_async.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/set_cookie_on_hanshake.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/upgrade_with_partial_request.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/upgrade_with_partial_request_pool.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/upgrade_with_pipelined_frame.phpt" />
             <file role="test" name="tests/run-tests" />
             <file role="test" name="tests/start.sh" />
             <file role="test" name="tests/template" />
