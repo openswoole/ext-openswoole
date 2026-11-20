@@ -617,6 +617,7 @@
             <file role="test" name="tests/openswoole_client_coro/send_big.phpt" />
             <file role="test" name="tests/openswoole_client_coro/sendfile.phpt" />
             <file role="test" name="tests/openswoole_client_coro/sendto.phpt" />
+            <file role="test" name="tests/openswoole_client_coro/socks5_local_proxy.phpt" />
             <file role="test" name="tests/openswoole_client_coro/ssl.phpt" />
             <file role="test" name="tests/openswoole_client_coro/ssl_verify.phpt" />
             <file role="test" name="tests/openswoole_client_coro/tcp_client.phpt" />
@@ -649,6 +650,7 @@
             <file role="test" name="tests/openswoole_client_sync/send_recv.phpt" />
             <file role="test" name="tests/openswoole_client_sync/sendfile.phpt" />
             <file role="test" name="tests/openswoole_client_sync/sendto.phpt" />
+            <file role="test" name="tests/openswoole_client_sync/socks5_local_proxy.phpt" />
             <file role="test" name="tests/openswoole_client_sync/ssl_recv_timeout.phpt" />
             <file role="test" name="tests/openswoole_client_sync/sync_send_recv.phpt" />
             <file role="test" name="tests/openswoole_client_sync/udg_send_timeout.phpt" />

@@ -69,6 +69,11 @@ struct Socks5Proxy {
 
     static const char *strerror(int code);
 
+    // length fields in the SOCKS5 requests are one byte
+    bool check_length() const {
+        return target_host.length() <= 255 && username.length() <= 255 && password.length() <= 255;
+    }
+
     static void pack(char *buf, int method) {
         buf[0] = OSW_SOCKS5_VERSION_CODE;
         buf[1] = 0x01;

@@ -168,6 +168,11 @@ int Client::socks5_handshake(const char *recv_data, size_t length) {
     char *buf = ctx->buf;
     uchar version, status, result, method;
 
+    if (length < 2) {
+        openswoole_error_log(OSW_LOG_NOTICE, OSW_ERROR_SOCKS5_HANDSHAKE_FAILED, "SOCKS response is too short");
+        return OSW_ERR;
+    }
+
     if (ctx->state == OSW_SOCKS5_STATE_HANDSHAKE) {
         version = recv_data[0];
         method = recv_data[1];
@@ -215,10 +220,14 @@ int Client::socks5_handshake(const char *recv_data, size_t length) {
             } else {
                 buf[3] = 0x01;
                 buf += 4;
-                *(uint32_t *) buf = htons(ctx->target_host.length());
+                if (inet_pton(AF_INET, ctx->target_host.c_str(), buf) != 1) {
+                    openswoole_error_log(
+                        OSW_LOG_NOTICE, OSW_ERROR_SOCKS5_HANDSHAKE_FAILED, "SOCKS target must be an IPv4 address");
+                    return OSW_ERR;
+                }
                 buf += 4;
                 *(uint16_t *) buf = htons(ctx->target_port);
-                return send(this, ctx->buf, ctx->target_host.length() + 7, 0);
+                return send(this, ctx->buf, 10, 0);
             }
         }
     } else if (ctx->state == OSW_SOCKS5_STATE_AUTH) {
@@ -254,8 +263,9 @@ int Client::socks5_handshake(const char *recv_data, size_t length) {
                              OSW_ERROR_SOCKS5_SERVER_ERROR,
                              "Socks5 server error, reason :%s",
                              Socks5Proxy::strerror(result));
+            return OSW_ERR;
         }
-        return result;
+        return OSW_OK;
     }
     return OSW_OK;
 }
@@ -341,6 +351,12 @@ static int Client_inet_addr(Client *cli, const char *host, int port) {
     if (cli->socks5_proxy) {
         cli->socks5_proxy->target_host = host;
         cli->socks5_proxy->target_port = port;
+        if (!cli->socks5_proxy->check_length()) {
+            openswoole_error_log(OSW_LOG_NOTICE,
+                                 OSW_ERROR_SOCKS5_HANDSHAKE_FAILED,
+                                 "SOCKS target host, username or password is longer than 255 bytes");
+            return OSW_ERR;
+        }
 
         host = cli->socks5_proxy->host.c_str();
         port = cli->socks5_proxy->port;
@@ -987,7 +1003,7 @@ static int Client_onStreamRead(Reactor *reactor, Event *event) {
         if (n <= 0) {
             goto __close;
         }
-        if (cli->socks5_handshake(buf, buf_size) < 0) {
+        if (cli->socks5_handshake(buf, n) < 0) {
             goto __close;
         }
         if (cli->socks5_proxy->state != OSW_SOCKS5_STATE_READY) {
