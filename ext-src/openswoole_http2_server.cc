@@ -48,11 +48,7 @@ Http2Stream::Stream(Http2Session *client, uint32_t _id) {
     ctx->keepalive = true;
     id = _id;
     local_window_size = OSW_HTTP2_DEFAULT_WINDOW_SIZE;
-    if (client->remote_settings.window_size > 0) {
-        remote_window_size = client->remote_settings.window_size;
-    } else {
-        remote_window_size = OSW_HTTP2_DEFAULT_WINDOW_SIZE;
-    }
+    remote_window_size = client->remote_init_window_size;
 }
 
 Http2Stream::~Stream() {
@@ -543,6 +539,12 @@ bool Http2Stream::send_body(String *body, bool end_stream, size_t max_frame_size
         } else {
             l -= send_n;
             p += send_n;
+            // flow control windows
+            remote_window_size = send_n > remote_window_size ? 0 : remote_window_size - send_n;
+            auto session_iterator = http2_sessions.find(ctx->fd);
+            if (session_iterator != http2_sessions.end()) {
+                session_iterator->second->remote_window_size -= send_n;
+            }
         }
     }
 
@@ -690,11 +692,6 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
                                  stream->remote_window_size);
 
                 body->offset += send_len;
-                if (send_len > stream->remote_window_size) {
-                    stream->remote_window_size = 0;
-                } else {
-                    stream->remote_window_size -= send_len;
-                }
             }
         }
     }
@@ -1031,6 +1028,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
                 break;
             case OSW_HTTP2_SETTINGS_INIT_WINDOW_SIZE:
                 client->remote_settings.window_size = value;
+                client->remote_init_window_size = value;
                 openswoole_trace_log(OSW_TRACE_HTTP2, "setting: init_window_size=%u", value);
                 break;
             case OSW_HTTP2_SETTINGS_MAX_FRAME_SIZE:
@@ -1255,11 +1253,36 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         break;
     }
     case OSW_HTTP2_TYPE_WINDOW_UPDATE: {
-        value = ntohl(*(uint32_t *) buf);
+        value = ntohl(*(uint32_t *) buf) & 0x7fffffff;
+        // RFC 7540 6.9: a zero increment or a window above 2^31-1 is an error
         if (stream_id == 0) {
+            if (value == 0 || client->remote_window_size + value > OSW_HTTP2_MAX_WINDOW_SIZE) {
+                openswoole_error_log(OSW_LOG_WARNING,
+                                     OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                     "http2 WINDOW_UPDATE with an invalid increment %u",
+                                     value);
+                openswoole_http2_server_goaway(client->default_ctx,
+                                               value == 0 ? OSW_HTTP2_ERROR_PROTOCOL_ERROR
+                                                          : OSW_HTTP2_ERROR_FLOW_CONTROL_ERROR,
+                                               nullptr,
+                                               0);
+                return OSW_ERR;
+            }
+            client->remote_window_size += value;
             client->remote_settings.window_size += value;
         } else if (client->streams.find(stream_id) != client->streams.end()) {
             stream = client->streams[stream_id];
+            if (value == 0 || (uint64_t) stream->remote_window_size + value > OSW_HTTP2_MAX_WINDOW_SIZE) {
+                openswoole_error_log(OSW_LOG_WARNING,
+                                     OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                     "http2 stream#%d WINDOW_UPDATE with an invalid increment %u",
+                                     stream_id,
+                                     value);
+                http2_server_send_rst_stream(
+                    client, stream_id, value == 0 ? OSW_HTTP2_ERROR_PROTOCOL_ERROR : OSW_HTTP2_ERROR_FLOW_CONTROL_ERROR);
+                http2_server_cancel_stream(client, stream);
+                break;
+            }
             stream->remote_window_size += value;
 
             if (!client->is_coro) {

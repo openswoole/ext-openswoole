@@ -1001,6 +1001,7 @@
             <file role="test" name="tests/openswoole_http2_server/sendfile.phpt" />
             <file role="test" name="tests/openswoole_http2_server/static_handler.phpt" />
             <file role="test" name="tests/openswoole_http2_server/trailer.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/window_update.phpt" />
             <file role="test" name="tests/openswoole_http_client_coro/204.phpt" />
             <file role="test" name="tests/openswoole_http_client_coro/addData.phpt" />
             <file role="test" name="tests/openswoole_http_client_coro/alias.phpt" />

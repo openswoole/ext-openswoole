@@ -250,6 +250,10 @@ class Session {
     int header_block_flags = 0;
     std::string header_block;
 
+    // the connection send window and the initial window of new streams
+    int64_t remote_window_size = OSW_HTTP2_DEFAULT_WINDOW_SIZE;
+    uint32_t remote_init_window_size = OSW_HTTP2_DEFAULT_WINDOW_SIZE;
+
     uint32_t last_stream_id;
     bool shutting_down;
     bool is_coro;
