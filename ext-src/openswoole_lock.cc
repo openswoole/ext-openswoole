@@ -34,6 +34,8 @@ static zend_object_handlers openswoole_lock_handlers;
 
 struct LockObject {
     Lock *lock;
+    // the lock lives in shared memory: only the process that created it destroys it
+    pid_t owner_pid;
     zend_object std;
 };
 
@@ -59,7 +61,7 @@ void php_openswoole_lock_set_ptr(zval *zobject, Lock *ptr) {
 
 static void php_openswoole_lock_free_object(zend_object *object) {
     LockObject *o = php_openswoole_lock_fetch_object(object);
-    if (o->lock) {
+    if (o->lock && o->owner_pid == getpid()) {
         delete o->lock;
     }
     zend_object_std_dtor(object);
@@ -170,6 +172,7 @@ static PHP_METHOD(openswoole_lock, __construct) {
         break;
     }
     php_openswoole_lock_set_ptr(ZEND_THIS, lock);
+    php_openswoole_lock_fetch_object(Z_OBJ_P(ZEND_THIS))->owner_pid = getpid();
     RETURN_TRUE;
 }
 

@@ -1211,6 +1211,7 @@
             <file role="test" name="tests/openswoole_io_uring/reactor_type_validation.phpt" />
             <file role="test" name="tests/openswoole_io_uring/set_in_handler.phpt" />
             <file role="test" name="tests/openswoole_io_uring/timer.phpt" />
+            <file role="test" name="tests/openswoole_lock/child_exit.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_fraction.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_twice.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex.phpt" />
