@@ -1657,12 +1657,15 @@
             <file role="test" name="tests/openswoole_table/empty_key_iterate.phpt" />
             <file role="test" name="tests/openswoole_table/force_unlock.phpt" />
             <file role="test" name="tests/openswoole_table/foreach.phpt" />
+            <file role="test" name="tests/openswoole_table/full.phpt" />
             <file role="test" name="tests/openswoole_table/get_after_destroy.phpt" />
             <file role="test" name="tests/openswoole_table/get_before_create.phpt" />
+            <file role="test" name="tests/openswoole_table/get_size.phpt" />
             <file role="test" name="tests/openswoole_table/incr_after_del.phpt" />
             <file role="test" name="tests/openswoole_table/incr_bad_column.phpt" />
             <file role="test" name="tests/openswoole_table/incr_concurrent.phpt" />
             <file role="test" name="tests/openswoole_table/int.phpt" />
+            <file role="test" name="tests/openswoole_table/key_size.phpt" />
             <file role="test" name="tests/openswoole_table/key_value.phpt" />
             <file role="test" name="tests/openswoole_table/long_key.phpt" />
             <file role="test" name="tests/openswoole_table/negative.phpt" />
