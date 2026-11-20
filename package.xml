@@ -1212,11 +1212,15 @@
             <file role="test" name="tests/openswoole_io_uring/set_in_handler.phpt" />
             <file role="test" name="tests/openswoole_io_uring/timer.phpt" />
             <file role="test" name="tests/openswoole_lock/child_exit.phpt" />
+            <file role="test" name="tests/openswoole_lock/destroy.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_default.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_fraction.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_twice.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex_robust.phpt" />
+            <file role="test" name="tests/openswoole_lock/mutex_trylock.phpt" />
+            <file role="test" name="tests/openswoole_lock/rwlock.phpt" />
+            <file role="test" name="tests/openswoole_lock/spinlock.phpt" />
             <file role="test" name="tests/openswoole_postgres_coro/fetch_row.phpt" />
             <file role="test" name="tests/openswoole_postgres_coro/issue227.phpt" />
             <file role="test" name="tests/openswoole_postgres_coro/query.phpt" />
