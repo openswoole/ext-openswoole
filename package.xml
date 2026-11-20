@@ -1145,6 +1145,7 @@
             <file role="test" name="tests/openswoole_http_server/rawContent.phpt" />
             <file role="test" name="tests/openswoole_http_server/rawCookie.phpt" />
             <file role="test" name="tests/openswoole_http_server/redirect.phpt" />
+            <file role="test" name="tests/openswoole_http_server/request_create_multipart.phpt" />
             <file role="test" name="tests/openswoole_http_server/response_create.phpt" />
             <file role="test" name="tests/openswoole_http_server/send_empty_file.phpt" />
             <file role="test" name="tests/openswoole_http_server/send_yield.phpt" />

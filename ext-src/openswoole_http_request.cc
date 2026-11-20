@@ -1019,6 +1019,10 @@ static PHP_METHOD(openswoole_http_request, create) {
     Z_PARAM_ARRAY(zoptions)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
 
+    if (osw_unlikely(openswoole_http_form_data_buffer == nullptr)) {
+        php_openswoole_http_server_init_global_variant();
+    }
+
     HttpContext *ctx = new HttpContext();
     object_init_ex(return_value, openswoole_http_request_ce);
     zval *zrequest_object = &ctx->request._zobject;
