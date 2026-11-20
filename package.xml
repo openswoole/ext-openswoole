@@ -897,6 +897,8 @@
             <file role="test" name="tests/openswoole_curl/setopt/header_out.phpt" />
             <file role="test" name="tests/openswoole_curl/setopt/infile.phpt" />
             <file role="test" name="tests/openswoole_curl/setopt/nobody.phpt" />
+            <file role="test" name="tests/openswoole_curl/setopt/protocols_str.phpt" />
+            <file role="test" name="tests/openswoole_curl/setopt/protocols_str_open_basedir.phpt" />
             <file role="test" name="tests/openswoole_curl/sleep.phpt" />
             <file role="test" name="tests/openswoole_curl/ssl/version.phpt" />
             <file role="test" name="tests/openswoole_curl/symfony.phpt" />
@@ -1137,6 +1139,7 @@
             <file role="test" name="tests/openswoole_http_server/pipeline.phpt" />
             <file role="test" name="tests/openswoole_http_server/post.phpt" />
             <file role="test" name="tests/openswoole_http_server/purge_method.phpt" />
+            <file role="test" name="tests/openswoole_http_server/query_method.phpt" />
             <file role="test" name="tests/openswoole_http_server/rawContent.phpt" />
             <file role="test" name="tests/openswoole_http_server/rawCookie.phpt" />
             <file role="test" name="tests/openswoole_http_server/redirect.phpt" />
