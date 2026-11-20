@@ -329,7 +329,9 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
                                conn->info.get_port());
                 return OSW_ERR;
             }
-            conn->websocket_buffer = new openswoole::String(data + offset, length - offset);
+            // never zero sized, the first append would reallocate it and reset the offset
+            conn->websocket_buffer = new openswoole::String(length - offset + 1);
+            conn->websocket_buffer->append(data + offset, length - offset);
             conn->websocket_buffer->offset = ext_flags;
         } else {
             dispatch_with_flags(proto, _socket, data + offset, length - offset, ext_flags);
