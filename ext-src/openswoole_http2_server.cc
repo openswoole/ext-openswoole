@@ -1163,6 +1163,22 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
             break;
         }
 
+        // RFC 7540 6.1: [pad length] data [padding], flow control counts the whole frame
+        const char *data = buf;
+        size_t data_length = length;
+        if (flags & OSW_HTTP2_FLAG_PADDED) {
+            if (length < 1 || (uint8_t) buf[0] >= length) {
+                openswoole_error_log(OSW_LOG_WARNING,
+                                     OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                     "http2 stream#%d DATA frame with invalid padding",
+                                     stream_id);
+                openswoole_http2_server_goaway(client->default_ctx, OSW_HTTP2_ERROR_PROTOCOL_ERROR, nullptr, 0);
+                return OSW_ERR;
+            }
+            data = buf + 1;
+            data_length = length - 1 - (uint8_t) buf[0];
+        }
+
         zend_update_property_long(
             openswoole_http_request_ce, OSW_Z8_OBJ_P(ctx->request.zobject), ZEND_STRL("streamId"), stream_id);
 
@@ -1175,7 +1191,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         if (!ctx->co_socket) {
             Server *serv = (Server *) ctx->private_data;
             ListenPort *port = serv->get_port_by_session_id(ctx->fd);
-            if (port && buffer->length + length > port->protocol.package_max_length) {
+            if (port && buffer->length + data_length > port->protocol.package_max_length) {
                 openswoole_error_log(OSW_LOG_WARNING,
                                      OSW_ERROR_HTTP_INVALID_PROTOCOL,
                                      "http2 stream#%d body is greater than the package_max_length(%u)",
@@ -1184,7 +1200,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
                 return OSW_ERR;
             }
         }
-        buffer->append(buf, length);
+        buffer->append(data, data_length);
 
         // flow control
         client->local_settings.window_size -= length;

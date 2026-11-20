@@ -983,6 +983,7 @@
             <file role="test" name="tests/openswoole_http2_server/closed_stream.phpt" />
             <file role="test" name="tests/openswoole_http2_server/compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/control_frames.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/data_padding.phpt" />
             <file role="test" name="tests/openswoole_http2_server/head_response.phpt" />
             <file role="test" name="tests/openswoole_http2_server/header_block.phpt" />
             <file role="test" name="tests/openswoole_http2_server/settings_frame.phpt" />
