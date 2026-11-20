@@ -158,6 +158,8 @@ class Table {
 
     std::unordered_map<std::string, TableColumn *> *column_map;
     Mutex *mutex;
+    // the mutex is shared by all processes, only the process that made the table destroys it
+    pid_t owner_pid;
     size_t size;
     size_t mask;
     size_t item_size;

@@ -55,6 +55,7 @@ enum swHttpMethod {
     OSW_HTTP_UNSUBSCRIBE,
     /* proxy */
     OSW_HTTP_PURGE,
+    OSW_HTTP_QUERY,
     /* Http2 */
     OSW_HTTP_PRI,
 };

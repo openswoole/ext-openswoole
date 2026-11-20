@@ -241,6 +241,10 @@ int Server::close_connection(Reactor *reactor, Socket *socket) {
         delete socket->recv_buffer;
         socket->recv_buffer = nullptr;
     }
+    if (conn->websocket_buffer) {
+        delete conn->websocket_buffer;
+        conn->websocket_buffer = nullptr;
+    }
 
     osw_atomic_fetch_sub(port->connection_num, 1);
 
@@ -1017,7 +1021,6 @@ int Server::dispatch_task(Protocol *proto, Socket *_socket, const char *data, ui
     task.info.server_fd = conn->server_fd;
     task.info.reactor_id = conn->reactor_id;
     task.info.ext_flags = proto->ext_flags;
-    proto->ext_flags = 0;
     task.info.type = OSW_SERVER_EVENT_RECV_DATA;
     task.info.time = conn->last_recv_time;
 

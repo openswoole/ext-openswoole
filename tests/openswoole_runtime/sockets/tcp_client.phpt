@@ -3,7 +3,8 @@ openswoole_runtime/sockets: tcp client
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
-skip('TODOv22');
+skip_if_extension_not_exist('sockets');
+skip_if_no_core_library();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -13,7 +14,7 @@ use OpenSwoole\Runtime;
 
 const N = 8;
 
-Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
+Runtime::enableCoroutine(Runtime::HOOK_ALL | Runtime::HOOK_SOCKETS);
 
 $GLOBALS['time'] = [];
 $s = microtime(true);
@@ -28,7 +29,7 @@ co::run(function () {
             Assert::assert($conn);
             go(function () use ($conn) {
                 fread($conn, 8192);
-                Co::sleep(0.2);
+                Co::usleep(200000);
                 $body = str_repeat('<p>OpenSwoole test page</p>', 500);
                 fwrite($conn, "HTTP/1.0 200 OK\r\nContent-Length: " . strlen($body) . "\r\nConnection: close\r\n\r\n" . $body);
                 fclose($conn);

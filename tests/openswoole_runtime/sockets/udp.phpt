@@ -3,7 +3,8 @@ openswoole_runtime/sockets: udp
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
-skip('TODOv22');
+skip_if_extension_not_exist('sockets');
+skip_if_no_core_library();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -17,7 +18,7 @@ const GREETINGS = 'hello world';
 
 $GLOBALS['port'] = get_one_free_port();
 
-Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
+Runtime::enableCoroutine(Runtime::HOOK_ALL | Runtime::HOOK_SOCKETS);
 
 co::run(function () {
     go(function () {

@@ -12,10 +12,10 @@
         <email>doubaokun@php.net</email>
         <active>yes</active>
     </lead>
-    <date>2026-11-18</date>
+    <date>2026-11-20</date>
     <time>17:00:00</time>
     <version>
-        <release>26.11.0</release>
+        <release>26.11.1</release>
         <api>26.0</api>
     </version>
     <stability>
@@ -24,62 +24,44 @@
     </stability>
     <license uri="http://www.apache.org/licenses/LICENSE-2.0.html">Apache 2.0</license>
     <notes>
-         . PHP 8.6 support
-         . CURLOPT_SEEKFUNCTION support in the native curl hook on PHP 8.6
-         . CURLOPT_PREREQFUNCTION support in the native curl hook on PHP 8.4+ (Guzzle 7.12+)
-         . PIE (PHP Installer for Extensions) support
-         . Response::cookie() also sends Max-Age when an expiry time is set, like setcookie() (#310)
-         . Hooked ssl:// and tls:// client streams use the same peer verification defaults as native PHP; set verify_peer to false to connect to servers with a self-signed certificate
-         . Cookie values are encoded and decoded like PHP does: a "+" is kept and a space is %20, in the server and the HTTP clients; cookies with spaces set by earlier versions read back with "+" until they are set again; for a cookie name sent twice, the first value is used (#311)
-         . OpenSwoole 27.2 will require PHP 8.4 or later; 26.11 is the last release series to support PHP 8.3
-         . Fix stream_socket_enable_crypto with tls (#401)
-         . Fix io_uring build on Alpine Linux (#400)
-         . Fix SSL client certificate lost in getClientInfo() when the worker pid is greater than 65535
-         . Fix curl_copy_handle() not keeping the CURLOPT_STDERR stream and callback data in the native curl hook
-         . Fix preemptive scheduler crash on ZTS builds
-         . Fix crash in the native curl hook when a curl multi handle is released after the event loop is destroyed
-         . Fix enable_reuse_port having no effect on Linux because SO_REUSEPORT was not detected at configure time
-         . Fix the http2_* server settings being ignored and not sent to clients in the SETTINGS frame
-         . Fix max_idle_time closing active connections and ignoring fractions of a second
-         . Fix a crash when a coroutine is canceled during file I/O
-         . Fix stream_select() closing regular files
-         . Fix closing a unix datagram socket removing the peer's socket file
-         . Fix process pipes never being closed
-         . Fix Lock::lockwait() truncating the timeout
-         . Fix process pool reload stalling, getProcess() ids and a connection leak
-         . Fix process pool warnings about workers that already exited or detached
-         . Fix the signal listener count with wait_signal
-         . Fix a second Coroutine\System::waitSignal() on the same signal leaving the first waiting forever
-         . Fix Coroutine::select() with push channels and array keys
-         . Fix Table keys longer than 63 bytes, iteration with an empty key, and incr()/decr() on a bad column
-         . Fix the Table row lock being taken over from a live holder
-         . Fix an HTTP/2 RST_STREAM leaving a send_yield coroutine waiting forever
-         . Fix the open_redis_protocol parser failing on commands split across reads and on pipelined commands
-         . Fix hooked time_nanosleep() accepting nanoseconds out of range
-         . Fix a crash in the native curl hook with curl_copy_handle() or connection reuse in curl_multi
-         . Fix curl_reset() losing the coroutine state of a native curl handle
-         . Fix co::run() not returning for minutes after curl_multi requests in the native curl hook
-         . Fix io_uring warnings logged on every file operation when io_uring is not available, for example in Docker containers with the default seccomp profile
-         . Fix the server master process being killed by SIGALRM when a timer was created before Server::start()
-         . Fix the static handler sending the file body for HEAD requests
-         . Fix the HTTP/2 client reply to PING frames and its handling of GOAWAY and padded frames
-         . Fix CurlHandle objects never being freed with CURLOPT_HEADERFUNCTION in the native curl hook on PHP 8.4+ (#391)
-         . Fix HTTP/2 server responses to HEAD requests sending a body
-         . Fix bundled hiredis symbols colliding with other extensions that link hiredis (#394)
-         . Fix the build on FreeBSD 14 and 15 (#389)
-         . Fix OpenSwoole\Table ignoring a conflictProportion below 1 (#362)
-         . Fix the io_uring reactor failing to start when io_uring is not available; it now falls back to epoll, and reactor_type is accepted by Server::set() (#408)
-         . Fix HTTP/2 requests with headers split into CONTINUATION frames, and HPACK errors when http2_header_table_size is set (#388)
-         . Fix heap corruption when closing a mysqli connection opened with mysqli_init() and real_connect() in a coroutine (#409, #378)
-         . Fix max_request_execution_time ending later requests early and crashing workers (#315, #358)
-         . Fix coroutines crashing when opcache.preload is enabled (#343)
-         . Fix the deprecation warning for on('handshake') (#303)
-         . Fix configure not finding libpq in lib64 without pg_config (#245)
-         . Fix task workers logging a warning for SIGPIPE
-         . Fix Xdebug not seeing the request callback with use_fiber_context, which crashed the worker when variables were inspected (#404)
-         . Fix the io_uring reactor not answering requests in SWOOLE_PROCESS mode (#405)
-         . Fix the io_uring reactor on kernels before 5.13, where multishot poll is not available
-         . Various stability fixes
+         . HTTP QUERY method (RFC 10008); form bodies are parsed into $request->post like POST, PUT, PATCH and DELETE (#414)
+         . CURLOPT_PROTOCOLS_STR and CURLOPT_REDIR_PROTOCOLS_STR in the native curl hook; with open_basedir set, values with "file" or "all" are refused (#412)
+         . Bundled llhttp upgraded to 9.4.4 (#413)
+         . Bundled nghttp2 HPACK code upgraded to 1.71.0
+         . Bundled hiredis upgraded to 1.5.1
+         . The HTTP parser is stricter: a space before a header colon, folded header lines and raw bytes above 0x7F in the request target get 400 Bad Request, in the server and the Coroutine HTTP client
+         . The WebSocket server follows RFC 6455: unmasked client frames, unknown opcodes and a new message sent before a fragmented one is finished close the connection; ping, pong and close frames accept payloads up to 125 bytes
+         . A Coroutine\Http\Client with websocket_mask set to false can no longer send to an OpenSwoole WebSocket server, which now requires masked client frames
+         . The HTTP/2 server rejects frames on a stream the client has closed, removes the padding of DATA frames, checks WINDOW_UPDATE increments, and with send_yield waits for the stream window
+         . The HTTP/2 server and client reject header blocks with invalid Huffman padding, as RFC 7541 requires
+         . SOCKS5 proxy target hosts, usernames and passwords longer than 255 bytes are refused, and a refused CONNECT reply fails the connection
+         . Fix WebSocket frames losing their opcode and FIN flag with several reactor threads in SWOOLE_PROCESS mode
+         . Fix WebSocket connections when the upgrade request is followed by more data in the same packet
+         . Fix a fragmented WebSocket message with an empty first frame losing its opcode
+         . Fix the payload of WebSocket ping and pong frames sent with the 16 bit length form
+         . Fix multipart form data of an unfinished part being kept for the next request, and its temporary file and memory not being released
+         . Fix Request::create()->parse() with a multipart body
+         . Fix Response::create() with a Coroutine\Socket
+         . Fix chunked requests with Content-Length: 0 that do not end with a zero length chunk
+         . Fix client certificates larger than the read buffer with ssl_client_cert_file
+         . Fix DTLS connections above max_connection
+         . Fix HTTP/2 GOAWAY frames carrying the error code in the flags
+         . Fix buffer_high_watermark and buffer_low_watermark being reset when the server starts
+         . Fix the $row argument of the PostgreSQL statement fetch methods being ignored
+         . Fix a Lock becoming unusable in other processes after a child process exits
+         . Fix a Table losing rows with concurrent writers after a child process exits
+         . Fix Lock::lockwait() requiring an argument
+         . Fix the open_redis_protocol parser with null bulk strings, integer elements and empty arrays
+         . Fix the length protocol with unsigned 32 bit lengths of 2^31 and more
+         . Fix the SOCKS5 handshake with short replies and IPv4 targets
+         . Fix Coroutine\Client::peek() with a length of 0 or less
+         . Fix curl_setopt_array() not stopping at a refused option in the native curl hook
+         . Fix HTTP/2 response header blocks larger than the header buffer
+         . Fix HTTP/2 send_yield responses not ending when a send fails or the client resets the stream or closes the connection
+         . Fix discarded HTTP/2 DATA frames not counting against the connection window
+         . Fix the WebSocket fragment buffer not being released when a connection closes during a fragmented message
+         . Fix Lock::destroy() in another process making the lock unusable for the process that created it
+         . Fix the open_redis_protocol parser accepting bulk lengths below -1
     </notes>
     <contents>
         <dir name="/">
@@ -605,6 +587,7 @@
             <file role="test" name="tests/openswoole_client_coro/length_04.phpt" />
             <file role="test" name="tests/openswoole_client_coro/length_protocol_func.phpt" />
             <file role="test" name="tests/openswoole_client_coro/length_types.phpt" />
+            <file role="test" name="tests/openswoole_client_coro/peek_invalid_length.phpt" />
             <file role="test" name="tests/openswoole_client_coro/read_and_write.phpt" />
             <file role="test" name="tests/openswoole_client_coro/reconnect.phpt" />
             <file role="test" name="tests/openswoole_client_coro/recv_after_close.phpt" />
@@ -617,6 +600,7 @@
             <file role="test" name="tests/openswoole_client_coro/send_big.phpt" />
             <file role="test" name="tests/openswoole_client_coro/sendfile.phpt" />
             <file role="test" name="tests/openswoole_client_coro/sendto.phpt" />
+            <file role="test" name="tests/openswoole_client_coro/socks5_local_proxy.phpt" />
             <file role="test" name="tests/openswoole_client_coro/ssl.phpt" />
             <file role="test" name="tests/openswoole_client_coro/ssl_verify.phpt" />
             <file role="test" name="tests/openswoole_client_coro/tcp_client.phpt" />
@@ -649,6 +633,7 @@
             <file role="test" name="tests/openswoole_client_sync/send_recv.phpt" />
             <file role="test" name="tests/openswoole_client_sync/sendfile.phpt" />
             <file role="test" name="tests/openswoole_client_sync/sendto.phpt" />
+            <file role="test" name="tests/openswoole_client_sync/socks5_local_proxy.phpt" />
             <file role="test" name="tests/openswoole_client_sync/ssl_recv_timeout.phpt" />
             <file role="test" name="tests/openswoole_client_sync/sync_send_recv.phpt" />
             <file role="test" name="tests/openswoole_client_sync/udg_send_timeout.phpt" />
@@ -818,9 +803,6 @@
             <file role="test" name="tests/openswoole_coroutine_util/list_coroutine.phpt" />
             <file role="test" name="tests/openswoole_coroutine_util/task_worker.phpt" />
             <file role="test" name="tests/openswoole_coroutine_util/tmp" />
-            <file role="test" name="tests/openswoole_coroutine_wait_group/base.phpt" />
-            <file role="test" name="tests/openswoole_coroutine_wait_group/empty.phpt" />
-            <file role="test" name="tests/openswoole_coroutine_wait_group/logic.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/1.phpt" />
             <file role="test" name="tests/openswoole_curl/basic/10.phpt" />
             <file role="test" name="tests/openswoole_curl/header_function_leak.phpt" />
@@ -897,6 +879,8 @@
             <file role="test" name="tests/openswoole_curl/setopt/header_out.phpt" />
             <file role="test" name="tests/openswoole_curl/setopt/infile.phpt" />
             <file role="test" name="tests/openswoole_curl/setopt/nobody.phpt" />
+            <file role="test" name="tests/openswoole_curl/setopt/protocols_str.phpt" />
+            <file role="test" name="tests/openswoole_curl/setopt/protocols_str_open_basedir.phpt" />
             <file role="test" name="tests/openswoole_curl/sleep.phpt" />
             <file role="test" name="tests/openswoole_curl/ssl/version.phpt" />
             <file role="test" name="tests/openswoole_curl/symfony.phpt" />
@@ -978,8 +962,10 @@
             <file role="test" name="tests/openswoole_http2_client_coro/sock_type_unix.phpt" />
             <file role="test" name="tests/openswoole_http2_client_coro/wrong_headers.phpt" />
             <file role="test" name="tests/openswoole_http2_server/big_data.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/closed_stream.phpt" />
             <file role="test" name="tests/openswoole_http2_server/compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/control_frames.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/data_padding.phpt" />
             <file role="test" name="tests/openswoole_http2_server/head_response.phpt" />
             <file role="test" name="tests/openswoole_http2_server/header_block.phpt" />
             <file role="test" name="tests/openswoole_http2_server/settings_frame.phpt" />
@@ -989,14 +975,19 @@
             <file role="test" name="tests/openswoole_http2_server/http2_headers.phpt" />
             <file role="test" name="tests/openswoole_http2_server/index_file.phpt" />
             <file role="test" name="tests/openswoole_http2_server/issue_4365.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/large_response_header.phpt" />
             <file role="test" name="tests/openswoole_http2_server/limits.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/multipart_body.phpt" />
             <file role="test" name="tests/openswoole_http2_server/nghttp2_big_data.phpt" />
             <file role="test" name="tests/openswoole_http2_server/no_compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/ping.phpt" />
             <file role="test" name="tests/openswoole_http2_server/rst_stream_send_yield.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/send_yield_cancel.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/send_yield_disconnect.phpt" />
             <file role="test" name="tests/openswoole_http2_server/sendfile.phpt" />
             <file role="test" name="tests/openswoole_http2_server/static_handler.phpt" />
             <file role="test" name="tests/openswoole_http2_server/trailer.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/window_update.phpt" />
             <file role="test" name="tests/openswoole_http_client_coro/204.phpt" />
             <file role="test" name="tests/openswoole_http_client_coro/addData.phpt" />
             <file role="test" name="tests/openswoole_http_client_coro/alias.phpt" />
@@ -1086,6 +1077,7 @@
             <file role="test" name="tests/openswoole_http_server/callback_with_private.phpt" />
             <file role="test" name="tests/openswoole_http_server/callback_with_protected.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunk.phpt" />
+            <file role="test" name="tests/openswoole_http_server/chunked_content_length_zero.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunked_pipeline_request.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunked_size.phpt" />
             <file role="test" name="tests/openswoole_http_server/co_switching.phpt" />
@@ -1133,14 +1125,19 @@
             <file role="test" name="tests/openswoole_http_server/max_coro_num.phpt" />
             <file role="test" name="tests/openswoole_http_server/max_request_execution_time.phpt" />
             <file role="test" name="tests/openswoole_http_server/mixed_server.phpt" />
+            <file role="test" name="tests/openswoole_http_server/multipart_truncated_field.phpt" />
+            <file role="test" name="tests/openswoole_http_server/multipart_truncated_upload.phpt" />
             <file role="test" name="tests/openswoole_http_server/no_compression.phpt" />
             <file role="test" name="tests/openswoole_http_server/pipeline.phpt" />
             <file role="test" name="tests/openswoole_http_server/post.phpt" />
             <file role="test" name="tests/openswoole_http_server/purge_method.phpt" />
+            <file role="test" name="tests/openswoole_http_server/query_method.phpt" />
             <file role="test" name="tests/openswoole_http_server/rawContent.phpt" />
             <file role="test" name="tests/openswoole_http_server/rawCookie.phpt" />
             <file role="test" name="tests/openswoole_http_server/redirect.phpt" />
+            <file role="test" name="tests/openswoole_http_server/request_create_multipart.phpt" />
             <file role="test" name="tests/openswoole_http_server/response_create.phpt" />
+            <file role="test" name="tests/openswoole_http_server/response_create_co_socket.phpt" />
             <file role="test" name="tests/openswoole_http_server/send_empty_file.phpt" />
             <file role="test" name="tests/openswoole_http_server/send_yield.phpt" />
             <file role="test" name="tests/openswoole_http_server/sendfile.phpt" />
@@ -1196,10 +1193,18 @@
             <file role="test" name="tests/openswoole_io_uring/reactor_type_validation.phpt" />
             <file role="test" name="tests/openswoole_io_uring/set_in_handler.phpt" />
             <file role="test" name="tests/openswoole_io_uring/timer.phpt" />
+            <file role="test" name="tests/openswoole_lock/child_exit.phpt" />
+            <file role="test" name="tests/openswoole_lock/destroy.phpt" />
+            <file role="test" name="tests/openswoole_lock/destroy_in_child.phpt" />
+            <file role="test" name="tests/openswoole_lock/lockwait_default.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_fraction.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_twice.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex_robust.phpt" />
+            <file role="test" name="tests/openswoole_lock/mutex_trylock.phpt" />
+            <file role="test" name="tests/openswoole_lock/rwlock.phpt" />
+            <file role="test" name="tests/openswoole_lock/spinlock.phpt" />
+            <file role="test" name="tests/openswoole_postgres_coro/fetch_row.phpt" />
             <file role="test" name="tests/openswoole_postgres_coro/issue227.phpt" />
             <file role="test" name="tests/openswoole_postgres_coro/query.phpt" />
             <file role="test" name="tests/openswoole_process/alarm.phpt" />
@@ -1367,6 +1372,7 @@
             <file role="test" name="tests/openswoole_server/big_session_id.phpt" />
             <file role="test" name="tests/openswoole_server/big_udp_packet.phpt" />
             <file role="test" name="tests/openswoole_server/bind.phpt" />
+            <file role="test" name="tests/openswoole_server/buffer_watermark.phpt" />
             <file role="test" name="tests/openswoole_server/bug_11000_01.phpt" />
             <file role="test" name="tests/openswoole_server/bug_1864.phpt" />
             <file role="test" name="tests/openswoole_server/bug_2308.phpt" />
@@ -1393,6 +1399,8 @@
             <file role="test" name="tests/openswoole_server/dispatch_func_memory_leak.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_1.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_3.phpt" />
+            <file role="test" name="tests/openswoole_server/dispatch_mode_4.phpt" />
+            <file role="test" name="tests/openswoole_server/dispatch_mode_5.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_7.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_8.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_9.phpt" />
@@ -1400,8 +1408,10 @@
             <file role="test" name="tests/openswoole_server/enable_coroutine.phpt" />
             <file role="test" name="tests/openswoole_server/enable_delay_receive.phpt" />
             <file role="test" name="tests/openswoole_server/enable_reuse_port.phpt" />
+            <file role="test" name="tests/openswoole_server/eof_max_length.phpt" />
             <file role="test" name="tests/openswoole_server/eof_protocol.phpt" />
             <file role="test" name="tests/openswoole_server/eof_server.phpt" />
+            <file role="test" name="tests/openswoole_server/eof_split_write.phpt" />
             <file role="test" name="tests/openswoole_server/event/manager_start.phpt" />
             <file role="test" name="tests/openswoole_server/event/manager_stop.phpt" />
             <file role="test" name="tests/openswoole_server/event/shutdown.phpt" />
@@ -1438,6 +1448,10 @@
             <file role="test" name="tests/openswoole_server/length/02.phpt" />
             <file role="test" name="tests/openswoole_server/length/03.phpt" />
             <file role="test" name="tests/openswoole_server/length/length_func.phpt" />
+            <file role="test" name="tests/openswoole_server/length/length_func_wait.phpt" />
+            <file role="test" name="tests/openswoole_server/length/no_length_found.phpt" />
+            <file role="test" name="tests/openswoole_server/length/rejects.phpt" />
+            <file role="test" name="tests/openswoole_server/length/types.phpt" />
             <file role="test" name="tests/openswoole_server/listen_fail.phpt" />
             <file role="test" name="tests/openswoole_server/max_concurrency.phpt" />
             <file role="test" name="tests/openswoole_server/max_idle_time_1.phpt" />
@@ -1467,6 +1481,7 @@
             <file role="test" name="tests/openswoole_server/pid_file.phpt" />
             <file role="test" name="tests/openswoole_server/protect.phpt" />
             <file role="test" name="tests/openswoole_server/protect_false.phpt" />
+            <file role="test" name="tests/openswoole_server/redis_protocol_null_bulk.phpt" />
             <file role="test" name="tests/openswoole_server/redis_protocol_split.phpt" />
             <file role="test" name="tests/openswoole_server/reload.phpt" />
             <file role="test" name="tests/openswoole_server/reload_async.phpt" />
@@ -1507,6 +1522,7 @@
             <file role="test" name="tests/openswoole_server/ssl/golang.phpt" />
             <file role="test" name="tests/openswoole_server/ssl/heartbeat_1.phpt" />
             <file role="test" name="tests/openswoole_server/ssl/heartbeat_2.phpt" />
+            <file role="test" name="tests/openswoole_server/ssl/large_client_cert.phpt" />
             <file role="test" name="tests/openswoole_server/ssl/nodejs.phpt" />
             <file role="test" name="tests/openswoole_server/ssl/ssl_send_wait.phpt" />
             <file role="test" name="tests/openswoole_server/ssl/verify_01.phpt" />
@@ -1619,17 +1635,21 @@
             <file role="test" name="tests/openswoole_table/conflict_proportion.phpt" />
             <file role="test" name="tests/openswoole_table/bug_2263.phpt" />
             <file role="test" name="tests/openswoole_table/bug_2290.phpt" />
+            <file role="test" name="tests/openswoole_table/child_exit.phpt" />
             <file role="test" name="tests/openswoole_table/create_10k_object.phpt" />
             <file role="test" name="tests/openswoole_table/del.phpt" />
             <file role="test" name="tests/openswoole_table/empty_key_iterate.phpt" />
             <file role="test" name="tests/openswoole_table/force_unlock.phpt" />
             <file role="test" name="tests/openswoole_table/foreach.phpt" />
+            <file role="test" name="tests/openswoole_table/full.phpt" />
             <file role="test" name="tests/openswoole_table/get_after_destroy.phpt" />
             <file role="test" name="tests/openswoole_table/get_before_create.phpt" />
+            <file role="test" name="tests/openswoole_table/get_size.phpt" />
             <file role="test" name="tests/openswoole_table/incr_after_del.phpt" />
             <file role="test" name="tests/openswoole_table/incr_bad_column.phpt" />
             <file role="test" name="tests/openswoole_table/incr_concurrent.phpt" />
             <file role="test" name="tests/openswoole_table/int.phpt" />
+            <file role="test" name="tests/openswoole_table/key_size.phpt" />
             <file role="test" name="tests/openswoole_table/key_value.phpt" />
             <file role="test" name="tests/openswoole_table/long_key.phpt" />
             <file role="test" name="tests/openswoole_table/negative.phpt" />
@@ -1659,11 +1679,13 @@
             <file role="test" name="tests/openswoole_timer/task_worker.phpt" />
             <file role="test" name="tests/openswoole_timer/task_worker_tick_1k.phpt" />
             <file role="test" name="tests/openswoole_timer/verify.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/close_during_fragmented_message.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/frame_sizes.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/close_frame_flag.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/close_frame_full.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/compression.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/compression_large.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/concurrent_frame_flags.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/on_handshake.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/disconnect.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/disconnect_with_code.phpt" />
@@ -1671,6 +1693,7 @@
             <file role="test" name="tests/openswoole_websocket_server/exists_and_isEstablished.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/fin.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/fin2.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/fragments.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/get_large_requests.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/get_small_requests.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/greeter.phpt" />
@@ -1679,15 +1702,22 @@
             <file role="test" name="tests/openswoole_websocket_server/message_size.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/onDisconnct.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pack.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/ping_extended_length.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingloop.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingloop_open_ping_pong_frame.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingpong.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingpong_open_ping_pong_frame.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/protocol_errors.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/query.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/recv_decode.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/send_encode.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/send_encode_async.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/set_cookie_on_hanshake.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/upgrade_with_partial_request.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/upgrade_with_partial_request_pool.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/upgrade_with_pipelined_frame.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/wss.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/wss_pool.phpt" />
             <file role="test" name="tests/run-tests" />
             <file role="test" name="tests/start.sh" />
             <file role="test" name="tests/template" />
@@ -1798,6 +1828,7 @@
             <file role="doc" name="thirdparty/hiredis/README.md" />
             <file role="src" name="thirdparty/hiredis/alloc.c" />
             <file role="src" name="thirdparty/hiredis/alloc.h" />
+            <file role="src" name="thirdparty/hiredis/ffc.h" />
             <file role="src" name="thirdparty/hiredis/fmacros.h" />
             <file role="src" name="thirdparty/hiredis/hiredis.c" />
             <file role="src" name="thirdparty/hiredis/hiredis.h" />
@@ -1809,6 +1840,7 @@
             <file role="src" name="thirdparty/hiredis/sds.h" />
             <file role="src" name="thirdparty/hiredis/sdsalloc.h" />
             <file role="doc" name="thirdparty/llhttp/LICENSE" />
+            <file role="doc" name="thirdparty/llhttp/README.md" />
             <file role="src" name="thirdparty/llhttp/api.c" />
             <file role="src" name="thirdparty/llhttp/http.c" />
             <file role="src" name="thirdparty/llhttp/llhttp.c" />
@@ -1819,16 +1851,21 @@
             <file role="src" name="thirdparty/nghttp2/nghttp2.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_buf.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_buf.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_debug.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd_huffman.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd_huffman.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd_huffman_data.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_helper.c" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_helper.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_int.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_mem.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_mem.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_net.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_rcbuf.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_rcbuf.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2ver.h" />
             <file role="src" name="thirdparty/php/curl/curl_arginfo.h" />
             <file role="src" name="thirdparty/php/curl/curl_interface.h" />
             <file role="src" name="thirdparty/php/curl/curl_private.h" />

@@ -208,13 +208,18 @@ bool Socket::socks5_handshake() {
     ssize_t n;
     uchar version, method, result;
 
+    if (!ctx->check_length()) {
+        set_err(OSW_ERROR_SOCKS5_HANDSHAKE_FAILED, "SOCKS target host, username or password is longer than 255 bytes");
+        return false;
+    }
+
     Socks5Proxy::pack(ctx->buf, !socks5_proxy->username.empty() ? 0x02 : 0x00);
     socks5_proxy->state = OSW_SOCKS5_STATE_HANDSHAKE;
     if (send(ctx->buf, 3) != 3) {
         return false;
     }
     n = recv(ctx->buf, sizeof(ctx->buf));
-    if (n <= 0) {
+    if (n < 2) {
         return false;
     }
     version = ctx->buf[0];
@@ -253,7 +258,7 @@ bool Socket::socks5_handshake() {
         }
         // auth response
         n = recv(ctx->buf, sizeof(ctx->buf));
-        if (n <= 0) {
+        if (n < 2) {
             return false;
         }
         uchar version = ctx->buf[0];
@@ -290,7 +295,10 @@ bool Socket::socks5_handshake() {
     } else {
         p[0] = 0x01;
         p += 1;
-        *(uint32_t *) p = htons(ctx->target_host.length());
+        if (inet_pton(AF_INET, ctx->target_host.c_str(), p) != 1) {
+            set_err(OSW_ERROR_SOCKS5_HANDSHAKE_FAILED, "SOCKS target must be an IPv4 address");
+            return false;
+        }
         p += 4;
         *(uint16_t *) p = htons(ctx->target_port);
         p += 2;
@@ -300,7 +308,7 @@ bool Socket::socks5_handshake() {
     }
     // recv response
     n = recv(ctx->buf, sizeof(ctx->buf));
-    if (n <= 0) {
+    if (n < 2) {
         return false;
     }
     version = ctx->buf[0];

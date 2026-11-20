@@ -129,16 +129,31 @@ static osw_inline const char *http_get_method_name(uint8_t method) {
 // clang-format off
 static const llhttp_settings_t http_parser_settings =
 {
-    nullptr,                          // on_message_begin
-    http_request_on_url,             // on_url
-    nullptr,                          // on_status
-    http_request_on_header_field,    // on_header_field
-    http_request_on_header_value,    // on_header_value
-    http_request_on_headers_complete,// on_headers_complete
-    http_request_on_body,            // on_body
-    http_request_message_complete,   // on_message_complete
-    nullptr,                          // on_chunk_header
-    nullptr,                          // on_chunk_complete
+    nullptr,                           // on_message_begin
+    nullptr,                           // on_protocol
+    http_request_on_url,               // on_url
+    nullptr,                           // on_status
+    nullptr,                           // on_method
+    nullptr,                           // on_version
+    http_request_on_header_field,      // on_header_field
+    http_request_on_header_value,      // on_header_value
+    nullptr,                           // on_chunk_extension_name
+    nullptr,                           // on_chunk_extension_value
+    http_request_on_headers_complete,  // on_headers_complete
+    http_request_on_body,              // on_body
+    http_request_message_complete,     // on_message_complete
+    nullptr,                           // on_protocol_complete
+    nullptr,                           // on_url_complete
+    nullptr,                           // on_status_complete
+    nullptr,                           // on_method_complete
+    nullptr,                           // on_version_complete
+    nullptr,                           // on_header_field_complete
+    nullptr,                           // on_header_value_complete
+    nullptr,                           // on_chunk_extension_name_complete
+    nullptr,                           // on_chunk_extension_value_complete
+    nullptr,                           // on_chunk_header
+    nullptr,                           // on_chunk_complete
+    nullptr,                           // on_reset
 };
 
 static const multipart_parser_settings mt_parser_settings =
@@ -298,6 +313,43 @@ bool HttpContext::parse_form_data(const char *boundary_str, int boundary_len) {
     return true;
 }
 
+// drop multipart state left over when the body ends before the closing boundary
+void HttpContext::reset_multipart() {
+    if (current_form_data_name) {
+        efree(current_form_data_name);
+        current_form_data_name = nullptr;
+        current_form_data_name_len = 0;
+        if (openswoole_http_form_data_buffer) {
+            openswoole_http_form_data_buffer->clear();
+        }
+    }
+    if (mt_parser) {
+        if (mt_parser->fp) {
+            fclose((FILE *) mt_parser->fp);
+            mt_parser->fp = nullptr;
+            // the part is incomplete, remove its temp file
+            if (current_multipart_header) {
+                zval *ztmp_name = zend_hash_str_find(Z_ARRVAL_P(current_multipart_header), ZEND_STRL("tmp_name"));
+                if (ztmp_name && Z_TYPE_P(ztmp_name) == IS_STRING && Z_STRLEN_P(ztmp_name) > 0) {
+                    unlink(Z_STRVAL_P(ztmp_name));
+                }
+            }
+        }
+        multipart_parser_free(mt_parser);
+        mt_parser = nullptr;
+    }
+    if (current_input_name) {
+        efree(current_input_name);
+        current_input_name = nullptr;
+        current_input_name_len = 0;
+    }
+    if (current_multipart_header) {
+        zval_ptr_dtor(current_multipart_header);
+        efree(current_multipart_header);
+        current_multipart_header = nullptr;
+    }
+}
+
 // like PHP: the first cookie of a name wins, browsers send the one with the more specific path first
 static inline void http_cookie_add(zval *zarray, const char *key, size_t key_len, const char *value, size_t value_len) {
     if (!zend_symtable_str_exists(Z_ARRVAL_P(zarray), key, key_len)) {
@@ -449,7 +501,8 @@ static int http_request_on_header_value(llhttp_t *parser, const char *at, size_t
             conn->websocket_status = openswoole::websocket::STATUS_CONNECTION;
         }
     } else if ((parser->method == HTTP_POST || parser->method == HTTP_PUT ||
-                parser->method == HTTP_DELETE || parser->method == HTTP_PATCH) &&
+                parser->method == HTTP_DELETE || parser->method == HTTP_PATCH ||
+                parser->method == HTTP_QUERY) &&
                OSW_STREQ(header_name, header_len, "content-type")) {
         if (OSW_STRCASECT(at, length, "application/x-www-form-urlencoded")) {
             ctx->request.post_form_urlencoded = 1;
@@ -546,6 +599,8 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
     char value_buf[OSW_HTTP_FORM_KEYLEN];
     int value_len;
     int ret = 0;
+    zval tmp_array;
+    ZVAL_UNDEF(&tmp_array);
 
     HttpContext *ctx = (HttpContext *) p->data;
     /**
@@ -570,7 +625,6 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
             goto _end;
         }
 
-        zval tmp_array;
         array_init(&tmp_array);
         openswoole_http_parse_cookie(&tmp_array, at + sizeof("form-data;") - 1, length - sizeof("form-data;") + 1, false);
 
@@ -588,6 +642,23 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
         openswoole_strlcpy(value_buf, Z_STRVAL_P(zform_name), sizeof(value_buf));
         value_len = Z_STRLEN_P(zform_name);
         char *tmp = http_trim_double_quote(value_buf, &value_len);
+
+        // a repeated Content-Disposition header replaces the previous one
+        if (ctx->current_form_data_name) {
+            efree(ctx->current_form_data_name);
+            ctx->current_form_data_name = nullptr;
+            ctx->current_form_data_name_len = 0;
+        }
+        if (ctx->current_input_name) {
+            efree(ctx->current_input_name);
+            ctx->current_input_name = nullptr;
+            ctx->current_input_name_len = 0;
+        }
+        if (ctx->current_multipart_header) {
+            zval_ptr_dtor(ctx->current_multipart_header);
+            efree(ctx->current_multipart_header);
+            ctx->current_multipart_header = nullptr;
+        }
 
         zval *zfilename;
         // POST form data
@@ -625,7 +696,6 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
 
             ctx->current_multipart_header = z_multipart_header;
         }
-        zval_ptr_dtor(&tmp_array);
     } else if (OSW_STRCASEEQ(header_name, header_len, "content-type") && ctx->current_multipart_header) {
         zval *z_multipart_header = ctx->current_multipart_header;
         zval *zerr = zend_hash_str_find(Z_ARRVAL_P(z_multipart_header), ZEND_STRL("error"));
@@ -635,6 +705,7 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
     }
 
 _end:
+    zval_ptr_dtor(&tmp_array);
     efree(header_name);
 
     return ret;
@@ -853,10 +924,7 @@ static int http_request_message_complete(llhttp_t *parser) {
             openswoole_http_init_and_read_property(
                 openswoole_http_request_ce, ctx->request.zobject, &ctx->request.zpost, ZEND_STRL("post")));
     }
-    if (ctx->mt_parser) {
-        multipart_parser_free(ctx->mt_parser);
-        ctx->mt_parser = nullptr;
-    }
+    ctx->reset_multipart();
     ctx->completed = 1;
 
     openswoole_trace_log(OSW_TRACE_HTTP, "request body length=%ld", content_length);
@@ -950,6 +1018,10 @@ static PHP_METHOD(openswoole_http_request, create) {
     Z_PARAM_OPTIONAL
     Z_PARAM_ARRAY(zoptions)
     ZEND_PARSE_PARAMETERS_END_EX(RETURN_FALSE);
+
+    if (osw_unlikely(openswoole_http_form_data_buffer == nullptr)) {
+        php_openswoole_http_server_init_global_variant();
+    }
 
     HttpContext *ctx = new HttpContext();
     object_init_ex(return_value, openswoole_http_request_ce);

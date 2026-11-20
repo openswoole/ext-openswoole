@@ -38,6 +38,9 @@ zend_object_handlers openswoole_http_server_handlers;
 static bool http_context_send_data(HttpContext *ctx, const char *data, size_t length);
 static bool http_context_sendfile(HttpContext *ctx, const char *file, uint32_t l_file, off_t offset, size_t length);
 static bool http_context_disconnect(HttpContext *ctx);
+static bool http_context_co_send(HttpContext *ctx, const char *data, size_t length);
+static bool http_context_co_sendfile(HttpContext *ctx, const char *file, uint32_t l_file, off_t offset, size_t length);
+static bool http_context_co_close(HttpContext *ctx);
 
 void php_openswoole_http_request_onTimeout(Timer *timer, TimerNode *tnode) {
     HttpContext *ctx = (HttpContext *) tnode->data;
@@ -237,9 +240,9 @@ void HttpContext::init(Socket *sock) {
 void HttpContext::bind(Socket *sock) {
     private_data = sock;
     co_socket = 1;
-    send = http_context_send_data;
-    sendfile = http_context_sendfile;
-    close = http_context_disconnect;
+    send = http_context_co_send;
+    sendfile = http_context_co_sendfile;
+    close = http_context_co_close;
 }
 
 void HttpContext::copy(HttpContext *ctx) {
@@ -274,6 +277,8 @@ void HttpContext::free() {
         openswoole_timer_del(timeout_timer);
         timeout_timer = nullptr;
     }
+
+    reset_multipart();
 
     HttpRequest *req = &request;
     HttpResponse *res = &response;
@@ -345,4 +350,20 @@ static bool http_context_sendfile(HttpContext *ctx, const char *file, uint32_t l
 static bool http_context_disconnect(HttpContext *ctx) {
     Server *serv = (Server *) ctx->private_data;
     return serv->close(ctx->fd, 0);
+}
+
+static bool http_context_co_send(HttpContext *ctx, const char *data, size_t length) {
+    Socket *sock = (Socket *) ctx->private_data;
+    return sock->send_all(data, length) == (ssize_t) length;
+}
+
+static bool http_context_co_sendfile(HttpContext *ctx, const char *file, uint32_t l_file, off_t offset, size_t length) {
+    Socket *sock = (Socket *) ctx->private_data;
+    return sock->sendfile(file, offset, length);
+}
+
+// the Coroutine\Socket object still owns the socket, so only shut it down here
+static bool http_context_co_close(HttpContext *ctx) {
+    Socket *sock = (Socket *) ctx->private_data;
+    return sock->shutdown();
 }

@@ -730,6 +730,13 @@ static PHP_METHOD(openswoole_client_coro, peek) {
         RETURN_FALSE;
     }
 
+    if (buf_len <= 0) {
+        zend_update_property_long(openswoole_client_coro_ce, OSW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("errCode"), EINVAL);
+        zend_update_property_string(
+            openswoole_client_coro_ce, OSW_Z8_OBJ_P(ZEND_THIS), ZEND_STRL("errMsg"), "length must be greater than 0");
+        RETURN_FALSE;
+    }
+
     buf = (char *) emalloc((size_t) buf_len + 1);
     ret = cli->peek(buf, buf_len);
     if (ret < 0) {

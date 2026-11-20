@@ -1012,7 +1012,7 @@ static int _ssl_read_x509_file(X509 *cert, char *buffer, size_t length) {
     }
 
     len = BIO_pending(bio);
-    if (len < 0 && len > (long) length) {
+    if (len <= 0 || len > (long) length) {
         openswoole_warning("certificate length[%ld] is too big", len);
         return -1;
     }

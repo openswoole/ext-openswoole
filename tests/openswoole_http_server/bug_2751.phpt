@@ -23,7 +23,7 @@ $pm->childFunc = function () use ($pm) {
         $pm->wakeup();
     });
     $http->on(Constant::EVENT_REQUEST, function (OpenSwoole\Http\Request $request, OpenSwoole\Http\Response $response) {
-        $response->status(200);
+        var_dump('never here');
         $response->end('OK');
     });
     $http->start();
@@ -33,4 +33,4 @@ $pm->run();
 
 ?>
 --EXPECT--
-200
+400

@@ -29,7 +29,7 @@ ssize_t Protocol::default_length_func(Protocol *protocol, network::Socket *socke
     uint16_t length_offset = protocol->package_length_offset;
     uint8_t package_length_size =
         protocol->get_package_length_size ? protocol->get_package_length_size(socket) : protocol->package_length_size;
-    int32_t body_length;
+    int64_t body_length;
 
     if (package_length_size == 0) {
         // protocol error
@@ -53,7 +53,7 @@ ssize_t Protocol::default_length_func(Protocol *protocol, network::Socket *socke
                        socket->info.get_port());
         return OSW_ERR;
     }
-    openswoole_debug("length=%d", protocol->package_body_offset + body_length);
+    openswoole_debug("length=%ld", (long) (protocol->package_body_offset + body_length));
 
     // total package length
     return protocol->package_body_offset + body_length;
@@ -110,6 +110,7 @@ int Protocol::recv_split_by_eof(network::Socket *socket, String *buffer) {
 int Protocol::recv_with_length_protocol(network::Socket *socket, String *buffer) {
     ssize_t package_length;
     uint8_t _package_length_size = get_package_length_size ? get_package_length_size(socket) : package_length_size;
+    uint32_t header_size = package_length_offset + _package_length_size;
     uint32_t recv_size;
     ssize_t recv_n = 0;
 
@@ -118,7 +119,14 @@ int Protocol::recv_with_length_protocol(network::Socket *socket, String *buffer)
         return OSW_ERR;
     }
 
-    if (socket->skip_recv) {
+    // buffer->offset only holds a packet length while recv_wait is set, otherwise it can be left over
+    // from the previous parser of this connection
+    if (!socket->recv_wait) {
+        buffer->offset = 0;
+    }
+
+    // parse what is already buffered first, a full header may be waiting from the previous parser
+    if (socket->skip_recv || (!socket->recv_wait && buffer->length >= header_size)) {
         socket->skip_recv = 0;
         goto _do_get_length;
     }
@@ -127,10 +135,14 @@ _do_recv:
     if (socket->removed) {
         return OSW_OK;
     }
-    if (buffer->offset > 0) {
+    if (socket->recv_wait) {
         recv_size = buffer->offset - buffer->length;
     } else {
-        recv_size = package_length_offset + _package_length_size;
+        // read only the missing header bytes
+        if (buffer->size < header_size && !buffer->extend(header_size)) {
+            return OSW_ERR;
+        }
+        recv_size = header_size - buffer->length;
     }
 
     recv_n = socket->recv(buffer->str + buffer->length, recv_size, 0);
@@ -182,7 +194,7 @@ _do_recv:
             }
             // no length
             else if (package_length == 0) {
-                if (buffer->length == package_length_offset + package_length_size) {
+                if (buffer->length >= header_size) {
                     openswoole_error_log(OSW_LOG_WARNING,
                                      OSW_ERROR_PACKAGE_LENGTH_NOT_FOUND,
                                      "bad request, no length found in %ld bytes",

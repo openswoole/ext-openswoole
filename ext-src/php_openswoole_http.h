@@ -184,6 +184,7 @@ struct Context {
     void bind(coroutine::Socket *socket);
     void copy(Context *ctx);
     bool parse_form_data(const char *boundary_str, int boundary_len);
+    void reset_multipart();
     size_t parse(const char *data, size_t length);
     bool set_header(const char *, size_t, zval *, bool);
     bool set_header(const char *, size_t, const char *, size_t, bool);
@@ -217,9 +218,13 @@ class Stream {
     uint32_t remote_window_size;
     uint32_t local_window_size;
     Coroutine *waiting_coroutine = nullptr;
-    // RST_STREAM or connection closed while a coroutine waits for the window
+    // coroutines sending on the stream, ctx->send can yield in send_yield mode
+    uint32_t busy = 0;
+    // RST_STREAM or connection closed while the stream is busy, the last sender deletes it
     bool canceled = false;
     bool session_closed = false;
+    // END_STREAM received from the client
+    bool remote_closed = false;
 
     Stream(Session *client, uint32_t _id);
     ~Stream();
@@ -246,6 +251,10 @@ class Session {
     uint32_t header_block_stream_id = 0;
     int header_block_flags = 0;
     std::string header_block;
+
+    // the connection send window and the initial window of new streams
+    int64_t remote_window_size = OSW_HTTP2_DEFAULT_WINDOW_SIZE;
+    uint32_t remote_init_window_size = OSW_HTTP2_DEFAULT_WINDOW_SIZE;
 
     uint32_t last_stream_id;
     bool shutting_down;

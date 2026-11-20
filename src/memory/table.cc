@@ -40,6 +40,7 @@ Table *Table::make(uint32_t rows_size, float conflict_proportion) {
         return nullptr;
     }
     table->mutex = new Mutex(Mutex::PROCESS_SHARED);
+    table->owner_pid = getpid();
     table->iterator = nullptr;
     table->column_map = new std::unordered_map<std::string, TableColumn *>;
     table->column_list = new std::vector<TableColumn *>;
@@ -56,7 +57,9 @@ Table *Table::make(uint32_t rows_size, float conflict_proportion) {
 }
 
 void Table::free() {
-    delete mutex;
+    if (owner_pid == getpid()) {
+        delete mutex;
+    }
     if (iterator) {
         delete iterator;
     }

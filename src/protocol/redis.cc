@@ -79,7 +79,8 @@ _recv_data:
     } else {
         buffer->length += n;
 
-        if (strncmp(buffer->str + buffer->length - OSW_CRLF_LEN, OSW_CRLF, OSW_CRLF_LEN) != 0) {
+        if (buffer->length < OSW_CRLF_LEN ||
+            strncmp(buffer->str + buffer->length - OSW_CRLF_LEN, OSW_CRLF, OSW_CRLF_LEN) != 0) {
             if (buffer->size < protocol->package_max_length) {
                 uint32_t extend_size = openswoole_size_align(buffer->size * 2, OpenSwooleG.pagesize);
                 if (extend_size > protocol->package_max_length) {
@@ -110,20 +111,28 @@ _recv_data:
             }
             switch (request->state) {
             case STATE_RECEIVE_TOTAL_LINE:
-                if (*p != '*' || !(p = get_number(p, &ret))) {
+                if (*p != '*' || !(p = get_number(p, pe, &ret)) || ret < 0) {
                     goto _failed;
                 }
                 request->n_lines_total = ret;
                 request->state = STATE_RECEIVE_LENGTH;
+                // an empty array is a complete command
+                if (ret == 0) {
+                    goto _dispatch;
+                }
                 break;
 
             case STATE_RECEIVE_LENGTH:
                 if (*p == '$') {
-                    if (!(p = get_number(p, &ret))) {
+                    if (!(p = get_number(p, pe, &ret))) {
                         goto _failed;
                     }
+                    if (ret == -1) {
+                        // null bulk string
+                        goto _element_done;
+                    }
                     if (ret < 0) {
-                        break;
+                        goto _failed;
                     }
                     if (ret + (p - buffer->str) > protocol->package_max_length) {
                         goto _package_too_big;
@@ -134,10 +143,10 @@ _recv_data:
                 }
                 // integer
                 if (*p == ':') {
-                    if (!(p = get_number(p, &ret))) {
+                    if (!(p = get_number(p, pe, &ret))) {
                         goto _failed;
                     }
-                    break;
+                    goto _element_done;
                 }
                 goto _failed;
 
@@ -147,10 +156,12 @@ _recv_data:
                 }
                 p += request->n_bytes_total + OSW_CRLF_LEN;
                 request->n_bytes_total = 0;
-                request->n_lines_received++;
                 request->state = STATE_RECEIVE_LENGTH;
 
+            _element_done:
+                request->n_lines_received++;
                 if (request->n_lines_received == request->n_lines_total) {
+                _dispatch:
                     // only this command, the next pipelined one stays in the buffer
                     size_t length = p - buffer->str;
                     if (protocol->onPackage(protocol, socket, buffer->str, length) < 0) {
@@ -241,14 +252,14 @@ std::vector<std::string> parse(const char *data, size_t len) {
     do {
         switch (state) {
         case STATE_RECEIVE_TOTAL_LINE:
-            if (*p == '*' && (p = get_number(p, &ret))) {
+            if (*p == '*' && (p = get_number(p, pe, &ret))) {
                 state = STATE_RECEIVE_LENGTH;
                 break;
             }
             /* no break */
 
         case STATE_RECEIVE_LENGTH:
-            if (*p == '$' && (p = get_number(p, &ret))) {
+            if (*p == '$' && (p = get_number(p, pe, &ret))) {
                 if (ret == -1) {
                     break;
                 }
@@ -257,7 +268,7 @@ std::vector<std::string> parse(const char *data, size_t len) {
                 break;
             }
             // integer
-            else if (*p == ':' && (p = get_number(p, &ret))) {
+            else if (*p == ':' && (p = get_number(p, pe, &ret))) {
                 result.push_back(std::to_string(ret));
                 break;
             }

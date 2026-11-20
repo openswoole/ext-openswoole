@@ -120,41 +120,6 @@ PHP_METHOD(openswoole_coroutine_system, usleep) {
     RETURN_BOOL(System::usleep(microseconds) == 0);
 }
 
-static void co_socket_read(int fd, zend_long length, INTERNAL_FUNCTION_PARAMETERS) {
-    php_openswoole_check_reactor();
-    Socket _socket(fd, OSW_SOCK_RAW);
-
-    zend_string *buf = zend_string_alloc(length + 1, 0);
-    size_t nbytes = length <= 0 ? OSW_BUFFER_SIZE_STD : length;
-    ssize_t n = _socket.read(ZSTR_VAL(buf), nbytes);
-    if (n < 0) {
-        ZVAL_FALSE(return_value);
-        zend_string_free(buf);
-    } else if (n == 0) {
-        ZVAL_EMPTY_STRING(return_value);
-        zend_string_free(buf);
-    } else {
-        ZSTR_VAL(buf)[n] = 0;
-        ZSTR_LEN(buf) = n;
-        ZVAL_STR(return_value, buf);
-    }
-    _socket.move_fd();
-}
-
-static void co_socket_write(int fd, char *str, size_t l_str, INTERNAL_FUNCTION_PARAMETERS) {
-    php_openswoole_check_reactor();
-    Socket _socket(fd, OSW_SOCK_RAW);
-
-    ssize_t n = _socket.write(str, l_str);
-    if (n < 0) {
-        openswoole_set_last_error(errno);
-        ZVAL_FALSE(return_value);
-    } else {
-        ZVAL_LONG(return_value, n);
-    }
-    _socket.move_fd();
-}
-
 PHP_METHOD(openswoole_coroutine_system, readFile) {
     char *filename;
     size_t l_filename;

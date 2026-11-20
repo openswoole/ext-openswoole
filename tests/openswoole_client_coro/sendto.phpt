@@ -1,37 +1,40 @@
 --TEST--
 openswoole_client_coro: sendto
 --SKIPIF--
-<?php require __DIR__ . '/../include/skipif.inc';
-skip('TODOv22');
-?>
+<?php require __DIR__ . '/../include/skipif.inc'; ?>
 --FILE--
 <?php declare(strict_types = 1);
 require __DIR__ . '/../include/bootstrap.php';
 
-co::run(function () {
-    $port = get_one_free_port();
+use OpenSwoole\Constant;
+use OpenSwoole\Coroutine;
+use OpenSwoole\Coroutine\Client;
+use OpenSwoole\Coroutine\Socket;
 
-    go(function () use ($port) {
-        $socket = new OpenSwoole\Coroutine\Socket(AF_INET, SOCK_DGRAM, 0);
-        $socket->bind('127.0.0.1', $port);
-        $peer = null;
-        $ret = $socket->recvfrom($peer);
-        Assert::assert($ret, 'hello');
-        $ret = $socket->recvfrom($peer);
-        Assert::assert($ret, 'hello');
+Coroutine::run(function () {
+    $port = get_one_free_port();
+    $socket = new Socket(AF_INET, SOCK_DGRAM, 0);
+    Assert::true($socket->bind('127.0.0.1', $port));
+
+    go(function () use ($socket) {
+        foreach (['packet-1', 'packet-2', 'packet-3'] as $expected) {
+            $peer = null;
+            Assert::same($socket->recvfrom($peer, 5), $expected);
+            Assert::same($peer['address'], '127.0.0.1');
+        }
         echo "DONE\n";
     });
 
-    go(function () use ($port) {
-        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_UDP);
-        $cli->sendto('127.0.0.1', $port, "hello\n");
-        $cli->sendto('localhost', $port, "hello\n");
-        Assert::false($cli->sendto('error_domain', $port, "hello\n"));
-        Assert::assert($cli->errCode, 704);
-        Assert::assert($cli->errMsg, 'DNS Lookup resolve failed');
-    });
+    $cli = new Client(Constant::SOCK_UDP);
+    Assert::true($cli->sendto('127.0.0.1', $port, 'packet-1'));
+    Assert::true($cli->sendto('localhost', $port, 'packet-2'));
+    Assert::false($cli->sendto('127.0.0.1', $port, ''));
+    Assert::false($cli->sendto('error_domain', $port, 'hello'));
+    Assert::same($cli->errCode, Constant::ERROR_DNSLOOKUP_RESOLVE_FAILED);
+    Assert::same($cli->errMsg, 'DNS Lookup resolve failed');
+    // the client is still usable after a failed lookup
+    Assert::true($cli->sendto('127.0.0.1', $port, 'packet-3'));
 });
-
 ?>
 --EXPECT--
 DONE

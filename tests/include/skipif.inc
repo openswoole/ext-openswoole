@@ -87,6 +87,13 @@ function skip_if_class_not_exist(string $class_name)
     skip("{$class_name} not exist", !class_exists($class_name, false));
 }
 
+// HOOK_SOCKETS calls the socket functions of the openswoole/core library
+function skip_if_no_core_library()
+{
+    require_once __DIR__ . '/lib/vendor/autoload.php';
+    skip('the openswoole/core library is not installed', !class_exists('OpenSwoole\Core\Helper'));
+}
+
 function skip_if_extension_not_exist(string $extension_name)
 {
     skip("{$extension_name} not exist", !extension_loaded($extension_name));
