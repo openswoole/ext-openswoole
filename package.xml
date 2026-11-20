@@ -1382,6 +1382,7 @@
             <file role="test" name="tests/openswoole_server/big_session_id.phpt" />
             <file role="test" name="tests/openswoole_server/big_udp_packet.phpt" />
             <file role="test" name="tests/openswoole_server/bind.phpt" />
+            <file role="test" name="tests/openswoole_server/buffer_watermark.phpt" />
             <file role="test" name="tests/openswoole_server/bug_11000_01.phpt" />
             <file role="test" name="tests/openswoole_server/bug_1864.phpt" />
             <file role="test" name="tests/openswoole_server/bug_2308.phpt" />

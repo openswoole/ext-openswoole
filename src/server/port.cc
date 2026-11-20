@@ -209,8 +209,10 @@ int ListenPort::listen() {
     }
 #endif
 
-    buffer_high_watermark = socket_buffer_size * 0.8;
-    buffer_low_watermark = 0;
+    // keep the watermarks set by the application
+    if (buffer_high_watermark == 0) {
+        buffer_high_watermark = socket_buffer_size * 0.8;
+    }
 
     return OSW_OK;
 }
