@@ -1417,8 +1417,10 @@
             <file role="test" name="tests/openswoole_server/enable_coroutine.phpt" />
             <file role="test" name="tests/openswoole_server/enable_delay_receive.phpt" />
             <file role="test" name="tests/openswoole_server/enable_reuse_port.phpt" />
+            <file role="test" name="tests/openswoole_server/eof_max_length.phpt" />
             <file role="test" name="tests/openswoole_server/eof_protocol.phpt" />
             <file role="test" name="tests/openswoole_server/eof_server.phpt" />
+            <file role="test" name="tests/openswoole_server/eof_split_write.phpt" />
             <file role="test" name="tests/openswoole_server/event/manager_start.phpt" />
             <file role="test" name="tests/openswoole_server/event/manager_stop.phpt" />
             <file role="test" name="tests/openswoole_server/event/shutdown.phpt" />
