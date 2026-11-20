@@ -275,6 +275,8 @@ void HttpContext::free() {
         timeout_timer = nullptr;
     }
 
+    reset_multipart();
+
     HttpRequest *req = &request;
     HttpResponse *res = &response;
     if (req->path) {

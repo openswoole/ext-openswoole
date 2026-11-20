@@ -1169,6 +1169,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
                     openswoole_error_log(
                         OSW_LOG_WARNING, OSW_ERROR_SERVER_INVALID_REQUEST, "parse multipart body failed, n=%zu", n);
                 }
+                ctx->reset_multipart();
             }
 
             if (!client->is_coro) {

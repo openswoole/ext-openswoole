@@ -313,6 +313,43 @@ bool HttpContext::parse_form_data(const char *boundary_str, int boundary_len) {
     return true;
 }
 
+// drop multipart state left over when the body ends before the closing boundary
+void HttpContext::reset_multipart() {
+    if (current_form_data_name) {
+        efree(current_form_data_name);
+        current_form_data_name = nullptr;
+        current_form_data_name_len = 0;
+        if (openswoole_http_form_data_buffer) {
+            openswoole_http_form_data_buffer->clear();
+        }
+    }
+    if (mt_parser) {
+        if (mt_parser->fp) {
+            fclose((FILE *) mt_parser->fp);
+            mt_parser->fp = nullptr;
+            // the part is incomplete, remove its temp file
+            if (current_multipart_header) {
+                zval *ztmp_name = zend_hash_str_find(Z_ARRVAL_P(current_multipart_header), ZEND_STRL("tmp_name"));
+                if (ztmp_name && Z_TYPE_P(ztmp_name) == IS_STRING && Z_STRLEN_P(ztmp_name) > 0) {
+                    unlink(Z_STRVAL_P(ztmp_name));
+                }
+            }
+        }
+        multipart_parser_free(mt_parser);
+        mt_parser = nullptr;
+    }
+    if (current_input_name) {
+        efree(current_input_name);
+        current_input_name = nullptr;
+        current_input_name_len = 0;
+    }
+    if (current_multipart_header) {
+        zval_ptr_dtor(current_multipart_header);
+        efree(current_multipart_header);
+        current_multipart_header = nullptr;
+    }
+}
+
 // like PHP: the first cookie of a name wins, browsers send the one with the more specific path first
 static inline void http_cookie_add(zval *zarray, const char *key, size_t key_len, const char *value, size_t value_len) {
     if (!zend_symtable_str_exists(Z_ARRVAL_P(zarray), key, key_len)) {
@@ -869,10 +906,7 @@ static int http_request_message_complete(llhttp_t *parser) {
             openswoole_http_init_and_read_property(
                 openswoole_http_request_ce, ctx->request.zobject, &ctx->request.zpost, ZEND_STRL("post")));
     }
-    if (ctx->mt_parser) {
-        multipart_parser_free(ctx->mt_parser);
-        ctx->mt_parser = nullptr;
-    }
+    ctx->reset_multipart();
     ctx->completed = 1;
 
     openswoole_trace_log(OSW_TRACE_HTTP, "request body length=%ld", content_length);
