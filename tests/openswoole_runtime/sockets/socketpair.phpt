@@ -3,7 +3,7 @@ openswoole_runtime/sockets: tcp server
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
-skip('TODOv22');
+skip_if_no_core_library();
 ?>
 --FILE--
 <?php declare(strict_types = 1);
@@ -13,7 +13,7 @@ use OpenSwoole\Runtime;
 
 
 
-Runtime::enableCoroutine(SWOOLE_HOOK_ALL);
+Runtime::enableCoroutine(Runtime::HOOK_ALL | Runtime::HOOK_SOCKETS);
 
 const N = 4;
 
