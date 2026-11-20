@@ -558,7 +558,7 @@ static inline struct timespec openswoole_time_until(int milliseconds) {
     t.tv_sec += sec;
     t.tv_nsec += msec * 1000 * 1000;
 
-    if (t.tv_nsec > OSW_NUM_BILLION) {
+    if (t.tv_nsec >= OSW_NUM_BILLION) {
         int _sec = t.tv_nsec / OSW_NUM_BILLION;
         t.tv_sec += _sec;
         t.tv_nsec -= _sec * OSW_NUM_BILLION;
