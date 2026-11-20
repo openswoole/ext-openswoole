@@ -1092,6 +1092,7 @@
             <file role="test" name="tests/openswoole_http_server/callback_with_private.phpt" />
             <file role="test" name="tests/openswoole_http_server/callback_with_protected.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunk.phpt" />
+            <file role="test" name="tests/openswoole_http_server/chunked_content_length_zero.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunked_pipeline_request.phpt" />
             <file role="test" name="tests/openswoole_http_server/chunked_size.phpt" />
             <file role="test" name="tests/openswoole_http_server/co_switching.phpt" />

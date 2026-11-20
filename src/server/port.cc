@@ -555,10 +555,21 @@ _parse:
     if (!request->tried_to_dispatch) {
         // recv nobody_chunked eof
         if (request->nobody_chunked) {
-            if (buffer->length < request->header_length_ + (sizeof("0\r\n\r\n") - 1)) {
+            size_t eof_length = request->header_length_ + (sizeof("0\r\n\r\n") - 1);
+            if (buffer->length < eof_length) {
+                if (eof_length > buffer->size && !buffer->extend_align(eof_length)) {
+                    goto _unavailable;
+                }
                 goto _recv_data;
             }
-            request->header_length_ += (sizeof("0\r\n\r\n") - 1);
+            if (memcmp(buffer->str + request->header_length_, OSW_STRL("0\r\n\r\n")) != 0) {
+                openswoole_error_log(OSW_LOG_TRACE,
+                                 OSW_ERROR_HTTP_INVALID_PROTOCOL,
+                                 "Bad Request: invalid chunked body with Content-Length: 0" CLIENT_INFO_FMT,
+                                 CLIENT_INFO_ARGS);
+                goto _bad_request;
+            }
+            request->header_length_ = eof_length;
         }
         request->tried_to_dispatch = 1;
         // (know content-length is equal to 0) or (no content-length field and no chunked)
