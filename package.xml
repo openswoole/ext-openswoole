@@ -605,6 +605,7 @@
             <file role="test" name="tests/openswoole_client_coro/length_04.phpt" />
             <file role="test" name="tests/openswoole_client_coro/length_protocol_func.phpt" />
             <file role="test" name="tests/openswoole_client_coro/length_types.phpt" />
+            <file role="test" name="tests/openswoole_client_coro/peek_invalid_length.phpt" />
             <file role="test" name="tests/openswoole_client_coro/read_and_write.phpt" />
             <file role="test" name="tests/openswoole_client_coro/reconnect.phpt" />
             <file role="test" name="tests/openswoole_client_coro/recv_after_close.phpt" />
