@@ -460,7 +460,7 @@ int openswoole_http2_server_goaway(HttpContext *ctx, zend_long error_code, const
     bool ret;
     Http2Session *client = http2_sessions[ctx->fd];
     uint32_t last_stream_id = client->last_stream_id;
-    Http2::set_frame_header(frame, OSW_HTTP2_TYPE_GOAWAY, OSW_HTTP2_GOAWAY_SIZE + debug_data_len, error_code, 0);
+    Http2::set_frame_header(frame, OSW_HTTP2_TYPE_GOAWAY, OSW_HTTP2_GOAWAY_SIZE + debug_data_len, 0, 0);
     *(uint32_t *) (frame + OSW_HTTP2_FRAME_HEADER_SIZE) = htonl(last_stream_id);
     *(uint32_t *) (frame + OSW_HTTP2_FRAME_HEADER_SIZE + 4) = htonl(error_code);
     if (debug_data_len > 0) {
