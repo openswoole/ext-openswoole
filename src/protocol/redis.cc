@@ -79,7 +79,8 @@ _recv_data:
     } else {
         buffer->length += n;
 
-        if (strncmp(buffer->str + buffer->length - OSW_CRLF_LEN, OSW_CRLF, OSW_CRLF_LEN) != 0) {
+        if (buffer->length < OSW_CRLF_LEN ||
+            strncmp(buffer->str + buffer->length - OSW_CRLF_LEN, OSW_CRLF, OSW_CRLF_LEN) != 0) {
             if (buffer->size < protocol->package_max_length) {
                 uint32_t extend_size = openswoole_size_align(buffer->size * 2, OpenSwooleG.pagesize);
                 if (extend_size > protocol->package_max_length) {
