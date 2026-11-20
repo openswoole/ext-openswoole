@@ -1068,7 +1068,10 @@ int Server::send_to_connection(SendData *_send) {
     }
 
     if (is_base_mode() && conn->overflow) {
-        if (send_yield) {
+        // the output buffer of a closing connection never drains, a coroutine waiting on it would not finish
+        if (conn->closing || conn->closed) {
+            openswoole_set_last_error(OSW_ERROR_SESSION_CLOSED);
+        } else if (send_yield) {
             openswoole_set_last_error(OSW_ERROR_OUTPUT_SEND_YIELD);
         } else {
             openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_OUTPUT_BUFFER_OVERFLOW, "socket#%d output buffer overflow", fd);
