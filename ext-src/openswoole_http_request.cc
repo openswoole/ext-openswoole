@@ -599,6 +599,8 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
     char value_buf[OSW_HTTP_FORM_KEYLEN];
     int value_len;
     int ret = 0;
+    zval tmp_array;
+    ZVAL_UNDEF(&tmp_array);
 
     HttpContext *ctx = (HttpContext *) p->data;
     /**
@@ -623,7 +625,6 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
             goto _end;
         }
 
-        zval tmp_array;
         array_init(&tmp_array);
         openswoole_http_parse_cookie(&tmp_array, at + sizeof("form-data;") - 1, length - sizeof("form-data;") + 1, false);
 
@@ -641,6 +642,23 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
         openswoole_strlcpy(value_buf, Z_STRVAL_P(zform_name), sizeof(value_buf));
         value_len = Z_STRLEN_P(zform_name);
         char *tmp = http_trim_double_quote(value_buf, &value_len);
+
+        // a repeated Content-Disposition header replaces the previous one
+        if (ctx->current_form_data_name) {
+            efree(ctx->current_form_data_name);
+            ctx->current_form_data_name = nullptr;
+            ctx->current_form_data_name_len = 0;
+        }
+        if (ctx->current_input_name) {
+            efree(ctx->current_input_name);
+            ctx->current_input_name = nullptr;
+            ctx->current_input_name_len = 0;
+        }
+        if (ctx->current_multipart_header) {
+            zval_ptr_dtor(ctx->current_multipart_header);
+            efree(ctx->current_multipart_header);
+            ctx->current_multipart_header = nullptr;
+        }
 
         zval *zfilename;
         // POST form data
@@ -678,7 +696,6 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
 
             ctx->current_multipart_header = z_multipart_header;
         }
-        zval_ptr_dtor(&tmp_array);
     } else if (OSW_STRCASEEQ(header_name, header_len, "content-type") && ctx->current_multipart_header) {
         zval *z_multipart_header = ctx->current_multipart_header;
         zval *zerr = zend_hash_str_find(Z_ARRVAL_P(z_multipart_header), ZEND_STRL("error"));
@@ -688,6 +705,7 @@ static int multipart_body_on_header_value(multipart_parser *p, const char *at, s
     }
 
 _end:
+    zval_ptr_dtor(&tmp_array);
     efree(header_name);
 
     return ret;
