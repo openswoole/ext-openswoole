@@ -6,6 +6,7 @@
  . CURLOPT_PROTOCOLS_STR and CURLOPT_REDIR_PROTOCOLS_STR in the native curl hook; with open_basedir set, values with "file" or "all" are refused (#412)
  . Bundled llhttp upgraded to 9.4.4 (#413)
  . Bundled nghttp2 HPACK code upgraded to 1.71.0
+ . Bundled hiredis upgraded to 1.5.1
 
 ## Changes
 

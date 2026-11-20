@@ -46,6 +46,27 @@
 #include "read.h"
 #include "sds.h"
 
+#ifndef HIREDIS_FLOAT_STRTOD
+/* RESP3 doubles are parsed with ffc (pure-C99 single header) by default: it is
+ * several times faster than strtod() and locale-independent (strtod honours
+ * LC_NUMERIC, which misparses the always-'.'-separated RESP3 doubles in a
+ * non-'.' locale). Define HIREDIS_FLOAT_STRTOD to fall back to strtod(). */
+#define FFC_IMPL   /* emit ffc's implementation in this (sole) translation unit */
+/* ffc.h is a vendored third-party single header. Its public entry points are
+ * `extern inline` and call file-local `static` helpers; that is well-defined for
+ * our single-TU include but trips Clang's (default-on) -Wstatic-in-inline, which
+ * hiredis's -Werror turns into a build failure on Apple Clang. Silence it just
+ * for this header. GCC has no such warning. */
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wstatic-in-inline"
+#endif
+#include "ffc.h"
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
+#endif
+
 /* Initial size of our nested reply stack and how much we grow it when needd */
 #define REDIS_READER_STACK_SIZE 9
 
@@ -249,6 +270,7 @@ static void moveToNextTask(redisReader *r) {
         prv = r->task[r->ridx-1];
         assert(prv->type == REDIS_REPLY_ARRAY ||
                prv->type == REDIS_REPLY_MAP ||
+               prv->type == REDIS_REPLY_ATTR ||
                prv->type == REDIS_REPLY_SET ||
                prv->type == REDIS_REPLY_PUSH);
         if (cur->idx == prv->elements-1) {
@@ -286,7 +308,7 @@ static int processLineItem(redisReader *r) {
                 obj = (void*)REDIS_REPLY_INTEGER;
             }
         } else if (cur->type == REDIS_REPLY_DOUBLE) {
-            char buf[326], *eptr;
+            char buf[326];
             double d;
 
             if ((size_t)len >= sizeof(buf)) {
@@ -295,18 +317,56 @@ static int processLineItem(redisReader *r) {
                 return REDIS_ERR;
             }
 
+            /* Copy + NUL-terminate (as the strtod path does) so the string
+             * handed to createDouble keeps its terminator; some custom
+             * createDouble callbacks rely on it. ffc itself parses a
+             * [start,end) range and needs no terminator. */
             memcpy(buf,p,len);
             buf[len] = '\0';
+
+#ifndef HIREDIS_FLOAT_STRTOD
+            if (len == 3 && strcasecmp(buf,"inf") == 0) {
+                d = INFINITY; /* Positive infinite. */
+            } else if (len == 4 && strcasecmp(buf,"-inf") == 0) {
+                d = -INFINITY; /* Negative infinite. */
+            } else if ((len == 3 && strcasecmp(buf,"nan") == 0) ||
+                       (len == 4 && strcasecmp(buf, "-nan") == 0)) {
+                d = NAN; /* nan. */
+            } else {
+                /* RESP3 allows only finite values besides the inf/nan tokens
+                 * handled above, so run ffc with NO_INFNAN; the full-consume +
+                 * isfinite checks then mirror the strtod path's eptr/isfinite. */
+                ffc_parse_options o = ffc_parse_options_default();
+                o.format |= FFC_FORMAT_FLAG_NO_INFNAN;
+                ffc_result res = ffc_from_chars_double_options(buf, buf + len, &d, o);
+                if (res.outcome != FFC_OUTCOME_OK || res.ptr != buf + len ||
+                    !isfinite(d)) {
+                    __redisReaderSetError(r,REDIS_ERR_PROTOCOL,
+                            "Bad double value");
+                    return REDIS_ERR;
+                }
+            }
+
+            if (r->fn && r->fn->createDouble) {
+                obj = r->fn->createDouble(cur,d,buf,len);
+            } else {
+                obj = (void*)REDIS_REPLY_DOUBLE;
+            }
+#else
+            char *eptr;
 
             if (len == 3 && strcasecmp(buf,"inf") == 0) {
                 d = INFINITY; /* Positive infinite. */
             } else if (len == 4 && strcasecmp(buf,"-inf") == 0) {
                 d = -INFINITY; /* Negative infinite. */
+            } else if ((len == 3 && strcasecmp(buf,"nan") == 0) ||
+                       (len == 4 && strcasecmp(buf, "-nan") == 0)) {
+                d = NAN; /* nan. */
             } else {
                 d = strtod((char*)buf,&eptr);
                 /* RESP3 only allows "inf", "-inf", and finite values, while
-                 * strtod() allows other variations on infinity, NaN,
-                 * etc. We explicity handle our two allowed infinite cases
+                 * strtod() allows other variations on infinity,
+                 * etc. We explicity handle our two allowed infinite cases and NaN
                  * above, so strtod() should only result in finite values. */
                 if (buf[0] == '\0' || eptr != &buf[len] || !isfinite(d)) {
                     __redisReaderSetError(r,REDIS_ERR_PROTOCOL,
@@ -320,6 +380,7 @@ static int processLineItem(redisReader *r) {
             } else {
                 obj = (void*)REDIS_REPLY_DOUBLE;
             }
+#endif
         } else if (cur->type == REDIS_REPLY_NIL) {
             if (len != 0) {
                 __redisReaderSetError(r,REDIS_ERR_PROTOCOL,
@@ -348,8 +409,7 @@ static int processLineItem(redisReader *r) {
         } else if (cur->type == REDIS_REPLY_BIGNUM) {
             /* Ensure all characters are decimal digits (with possible leading
              * minus sign). */
-            int i;
-            for (i = 0; i < len; i++) {
+            for (int i = 0; i < len; i++) {
                 /* XXX Consider: Allow leading '+'? Error on leading '0's? */
                 if (i == 0 && p[0] == '-') continue;
                 if (p[i] < '0' || p[i] > '9') {
@@ -364,8 +424,7 @@ static int processLineItem(redisReader *r) {
                 obj = (void*)REDIS_REPLY_BIGNUM;
         } else {
             /* Type will be error or status. */
-            int i;
-            for (i = 0; i < len; i++) {
+            for (int i = 0; i < len; i++) {
                 if (p[i] == '\r' || p[i] == '\n') {
                     __redisReaderSetError(r,REDIS_ERR_PROTOCOL,
                             "Bad simple string value");
@@ -375,7 +434,7 @@ static int processLineItem(redisReader *r) {
             if (r->fn && r->fn->createString)
                 obj = r->fn->createString(cur,p,len);
             else
-                obj = (void*)(size_t)(cur->type);
+                obj = (void*)(uintptr_t)(cur->type);
         }
 
         if (obj == NULL) {
@@ -440,7 +499,7 @@ static int processBulkItem(redisReader *r) {
                 if (r->fn && r->fn->createString)
                     obj = r->fn->createString(cur,s+2,len);
                 else
-                    obj = (void*)(long)cur->type;
+                    obj = (void*)(uintptr_t)cur->type;
                 success = 1;
             }
         }
@@ -497,6 +556,12 @@ static int processAggregateItem(redisReader *r) {
     long long elements;
     int root = 0, len;
 
+    if (r->maxdepth > 0 && r->ridx >= r->maxdepth) {
+        __redisReaderSetError(r,REDIS_ERR_PROTOCOL,
+                "Max nesting depth exceeded");
+        return REDIS_ERR;
+    }
+
     if (r->ridx == r->tasks - 1) {
         if (redisReaderGrow(r) == REDIS_ERR)
             return REDIS_ERR;
@@ -532,12 +597,26 @@ static int processAggregateItem(redisReader *r) {
 
             moveToNextTask(r);
         } else {
-            if (cur->type == REDIS_REPLY_MAP) elements *= 2;
+            if (cur->type == REDIS_REPLY_MAP || cur->type == REDIS_REPLY_ATTR) {
+                long long maxelements = LLONG_MAX / 2;
+                if (LLONG_MAX > SIZE_MAX &&
+                    maxelements > (long long)(SIZE_MAX / 2)) {
+                    maxelements = (long long)(SIZE_MAX / 2);
+                }
+
+                if (elements > maxelements) {
+                    __redisReaderSetError(r,REDIS_ERR_PROTOCOL,
+                            "Multi-bulk length out of range");
+                    return REDIS_ERR;
+                }
+
+                elements *= 2;
+            }
 
             if (r->fn && r->fn->createArray)
                 obj = r->fn->createArray(cur,elements);
             else
-                obj = (void*)(long)cur->type;
+                obj = (void*)(uintptr_t)cur->type;
 
             if (obj == NULL) {
                 __redisReaderSetErrorOOM(r);
@@ -600,6 +679,9 @@ static int processItem(redisReader *r) {
             case '%':
                 cur->type = REDIS_REPLY_MAP;
                 break;
+            case '|':
+                cur->type = REDIS_REPLY_ATTR;
+                break;
             case '~':
                 cur->type = REDIS_REPLY_SET;
                 break;
@@ -640,6 +722,7 @@ static int processItem(redisReader *r) {
         return processBulkItem(r);
     case REDIS_REPLY_ARRAY:
     case REDIS_REPLY_MAP:
+    case REDIS_REPLY_ATTR:
     case REDIS_REPLY_SET:
     case REDIS_REPLY_PUSH:
         return processAggregateItem(r);
@@ -673,6 +756,7 @@ redisReader *redisReaderCreateWithFunctions(redisReplyObjectFunctions *fn) {
     r->fn = fn;
     r->maxbuf = REDIS_READER_MAX_BUF;
     r->maxelements = REDIS_READER_MAX_ARRAY_ELEMENTS;
+    r->maxdepth = REDIS_READER_MAX_REPLY_DEPTH;
     r->ridx = -1;
 
     return r;

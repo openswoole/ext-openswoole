@@ -50,6 +50,7 @@
 #include <poll.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "net.h"
 #include "sds.h"
@@ -58,6 +59,30 @@
 
 /* Defined in hiredis.c */
 void __redisSetError(redisContext *c, int type, const char *str);
+
+int redisContextUpdateCommandTimeout(redisContext *c, const struct timeval *timeout);
+
+#ifdef __linux__
+static void redisDrainSocketErrorQueue(redisFD fd) {
+    int saved_errno = errno;
+
+    for (;;) {
+        char buf[1];
+        struct iovec iov = {.iov_base = buf, .iov_len = sizeof(buf)};
+        struct msghdr msg = {.msg_iov = &iov, .msg_iovlen = 1};
+
+        /* Call the libc recvmsg(), the coroutine hook would wait for
+         * readability instead of returning EAGAIN. */
+        if ((recvmsg)(fd, &msg, MSG_ERRQUEUE | MSG_DONTWAIT) >= 0)
+            continue;
+        if (errno == EINTR)
+            continue;
+        break;
+    }
+
+    errno = saved_errno;
+}
+#endif
 
 void redisNetClose(redisContext *c) {
     if (c && c->fd != REDIS_INVALID_FD) {
@@ -81,7 +106,7 @@ ssize_t redisNetRead(redisContext *c, char *buf, size_t bufcap) {
         }
 #endif
         else {
-            __redisSetError(c, REDIS_ERR_IO, NULL);
+            __redisSetError(c, REDIS_ERR_IO, strerror(errno));
             return -1;
         }
     } else if (nread == 0) {
@@ -93,15 +118,19 @@ ssize_t redisNetRead(redisContext *c, char *buf, size_t bufcap) {
 }
 
 ssize_t redisNetWrite(redisContext *c) {
-    ssize_t nwritten = send(c->fd, c->obuf, sdslen(c->obuf), 0);
+    ssize_t nwritten;
+
+    nwritten = send(c->fd, c->obuf, sdslen(c->obuf), 0);
     if (nwritten < 0) {
         if ((errno == EWOULDBLOCK && !(c->flags & REDIS_BLOCK)) || (errno == EINTR)) {
-            /* Try again later */
+            /* Try again */
+            return 0;
         } else {
-            __redisSetError(c, REDIS_ERR_IO, NULL);
+            __redisSetError(c, REDIS_ERR_IO, strerror(errno));
             return -1;
         }
     }
+
     return nwritten;
 }
 
@@ -128,11 +157,20 @@ static int redisSetReuseAddr(redisContext *c) {
 
 static int redisCreateSocket(redisContext *c, int type) {
     redisFD s;
-    if ((s = socket(type, SOCK_STREAM, 0)) == REDIS_INVALID_FD) {
-        __redisSetErrorFromErrno(c,REDIS_ERR_IO,NULL);
+    int flags = SOCK_STREAM;
+
+#ifdef SOCK_CLOEXEC
+    if (c->flags & REDIS_OPT_SET_SOCK_CLOEXEC) {
+        flags |= SOCK_CLOEXEC;
+    }
+#endif
+
+    if ((s = socket(type, flags, 0)) == REDIS_INVALID_FD) {
+        __redisSetErrorFromErrno(c, REDIS_ERR_IO, NULL);
         return REDIS_ERR;
     }
     c->fd = s;
+
     if (type == AF_INET) {
         if (redisSetReuseAddr(c) == REDIS_ERR) {
             return REDIS_ERR;
@@ -181,6 +219,11 @@ int redisKeepAlive(redisContext *c, int interval) {
     int val = 1;
     redisFD fd = c->fd;
 
+    /* TCP_KEEPALIVE makes no sense with AF_UNIX connections */
+    if (c->connection_type == REDIS_CONN_UNIX)
+        return REDIS_ERR;
+
+#ifndef _WIN32
     if (setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &val, sizeof(val)) == -1){
         __redisSetError(c,REDIS_ERR_OTHER,strerror(errno));
         return REDIS_ERR;
@@ -214,7 +257,15 @@ int redisKeepAlive(redisContext *c, int interval) {
     }
 #endif
 #endif
+#else
+    int res;
 
+    res = win32_redisKeepAlive(fd, interval * 1000);
+    if (res != 0) {
+        __redisSetError(c, REDIS_ERR_OTHER, strerror(res));
+        return REDIS_ERR;
+    }
+#endif
     return REDIS_OK;
 }
 
@@ -222,6 +273,23 @@ int redisSetTcpNoDelay(redisContext *c) {
     int yes = 1;
     if (setsockopt(c->fd, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes)) == -1) {
         __redisSetErrorFromErrno(c,REDIS_ERR_IO,"setsockopt(TCP_NODELAY)");
+        redisNetClose(c);
+        return REDIS_ERR;
+    }
+    return REDIS_OK;
+}
+
+int redisContextSetTcpUserTimeout(redisContext *c, unsigned int timeout) {
+    int res;
+#ifdef TCP_USER_TIMEOUT
+    res = setsockopt(c->fd, IPPROTO_TCP, TCP_USER_TIMEOUT, &timeout, sizeof(timeout));
+#else
+    res = -1;
+    errno = ENOTSUP;
+    (void)timeout;
+#endif
+    if (res == -1) {
+        __redisSetErrorFromErrno(c,REDIS_ERR_IO,"setsockopt(TCP_USER_TIMEOUT)");
         redisNetClose(c);
         return REDIS_ERR;
     }
@@ -238,6 +306,7 @@ static int redisContextTimeoutMsec(redisContext *c, long *result)
     /* Only use timeout when not NULL. */
     if (timeout != NULL) {
         if (timeout->tv_usec > 1000000 || timeout->tv_sec > __MAX_MSEC) {
+            __redisSetError(c, REDIS_ERR_IO, "Invalid timeout specified");
             *result = msec;
             return REDIS_ERR;
         }
@@ -253,57 +322,129 @@ static int redisContextTimeoutMsec(redisContext *c, long *result)
     return REDIS_OK;
 }
 
+static long redisPollMillis(void) {
+#ifndef _MSC_VER
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    return (now.tv_sec * 1000) + now.tv_nsec / 1000000;
+#else
+    FILETIME ft;
+    GetSystemTimeAsFileTime(&ft);
+    return (((long long)ft.dwHighDateTime << 32) | ft.dwLowDateTime) / 10;
+#endif
+}
+
 static int redisContextWaitReady(redisContext *c, long msec) {
-    struct pollfd   wfd[1];
+    struct pollfd wfd;
+    long end;
+    int res;
 
-    wfd[0].fd     = c->fd;
-    wfd[0].events = POLLOUT;
+    if (errno != EINPROGRESS) {
+        __redisSetErrorFromErrno(c,REDIS_ERR_IO,NULL);
+        redisNetClose(c);
+        return REDIS_ERR;
+    }
 
-    if (errno == EINPROGRESS) {
-        int res;
+    wfd.fd = c->fd;
+    wfd.events = POLLOUT;
+    end = msec >= 0 ? redisPollMillis() + msec : 0;
 
-        if ((res = poll(wfd, 1, msec)) == -1) {
+    for (;;) {
+        int completed = 0;
+
+        res = poll(&wfd, 1, msec);
+        if (res < 0 && errno != EINTR) {
             __redisSetErrorFromErrno(c, REDIS_ERR_IO, "poll(2)");
             redisNetClose(c);
             return REDIS_ERR;
-        } else if (res == 0) {
+        }
+
+        if (res > 0) {
+            if (redisCheckConnectDone(c, &completed) != REDIS_OK) {
+                redisCheckSocketError(c);
+                return REDIS_ERR;
+            }
+            if (completed)
+                return REDIS_OK;
+        }
+
+        if (res == 0) {
             errno = ETIMEDOUT;
-            __redisSetErrorFromErrno(c,REDIS_ERR_IO,NULL);
+            __redisSetErrorFromErrno(c, REDIS_ERR_IO, NULL);
             redisNetClose(c);
             return REDIS_ERR;
         }
 
-        if (redisCheckConnectDone(c, &res) != REDIS_OK || res == 0) {
-            redisCheckSocketError(c);
-            return REDIS_ERR;
+        if (msec >= 0) {
+            long now = redisPollMillis();
+
+            if (now >= end) {
+                errno = ETIMEDOUT;
+                __redisSetErrorFromErrno(c, REDIS_ERR_IO, NULL);
+                redisNetClose(c);
+                return REDIS_ERR;
+            }
+            msec = end - now;
         }
-
-        return REDIS_OK;
     }
-
-    __redisSetErrorFromErrno(c,REDIS_ERR_IO,NULL);
-    redisNetClose(c);
-    return REDIS_ERR;
 }
 
 int redisCheckConnectDone(redisContext *c, int *completed) {
     int rc = connect(c->fd, (const struct sockaddr *)c->saddr, c->addrlen);
-    if (rc == 0) {
-        *completed = 1;
-        return REDIS_OK;
+    if (rc == 0)
+        goto connected;
+    int error = errno;
+    if (error == EINPROGRESS) {
+        /* must check error to see if connect failed.  Get the socket error */
+        int fail, so_error;
+        socklen_t optlen = sizeof(so_error);
+        fail = getsockopt(c->fd, SOL_SOCKET, SO_ERROR, &so_error, &optlen);
+        if (fail == 0) {
+            if (so_error == 0) {
+                /* Socket is connected! */
+                goto connected;
+            }
+            /* connection error; */
+            errno = so_error;
+            error = so_error;
+        }
     }
-    switch (errno) {
+    switch (error) {
     case EISCONN:
-        *completed = 1;
-        return REDIS_OK;
+#ifdef __APPLE__
+        {
+            /* Since macOS 26.7 / 15.8.1 (and on macOS 27), retrying connect()
+             * on a socket whose connect was refused answers EISCONN, with the
+             * refusal still pending in SO_ERROR. */
+            int so_error = 0;
+            socklen_t optlen = sizeof(so_error);
+            if (getsockopt(c->fd, SOL_SOCKET, SO_ERROR, &so_error, &optlen) == 0 &&
+                so_error != 0) {
+                errno = so_error;
+                return REDIS_ERR;
+            }
+        }
+#endif
+        goto connected;
     case EALREADY:
-    case EINPROGRESS:
     case EWOULDBLOCK:
+#ifdef __linux__
+        if (c->connection_type == REDIS_CONN_TCP)
+            redisDrainSocketErrorQueue(c->fd);
+#endif
         *completed = 0;
         return REDIS_OK;
     default:
         return REDIS_ERR;
     }
+
+connected:
+    *completed = 1;
+#ifdef __linux__
+    if (c->connection_type == REDIS_CONN_TCP)
+        redisDrainSocketErrorQueue(c->fd);
+#endif
+    return REDIS_OK;
 }
 
 int redisCheckSocketError(redisContext *c) {
@@ -329,6 +470,10 @@ int redisCheckSocketError(redisContext *c) {
 }
 
 int redisContextSetTimeout(redisContext *c, const struct timeval tv) {
+    if (redisContextUpdateCommandTimeout(c, &tv) != REDIS_OK) {
+        __redisSetError(c, REDIS_ERR_OOM, "Out of memory");
+        return REDIS_ERR;
+    }
 #if 0
     const void *to_ptr = &tv;
     size_t to_sz = sizeof(tv);
@@ -428,7 +573,6 @@ static int _redisContextConnectTcp(redisContext *c, const char *addr, int port,
     }
 
     if (redisContextTimeoutMsec(c, &timeout_msec) != REDIS_OK) {
-        __redisSetError(c, REDIS_ERR_IO, "Invalid timeout specified");
         goto error;
     }
 
@@ -445,24 +589,42 @@ static int _redisContextConnectTcp(redisContext *c, const char *addr, int port,
     hints.ai_family = AF_INET;
     hints.ai_socktype = SOCK_STREAM;
 
-    /* Try with IPv6 if no IPv4 address was found. We do it in this order since
-     * in a Redis client you can't afford to test if you have IPv6 connectivity
-     * as this would add latency to every connect. Otherwise a more sensible
-     * route could be: Use IPv6 if both addresses are available and there is IPv6
-     * connectivity. */
-    if ((rv = getaddrinfo(c->tcp.host,_port,&hints,&servinfo)) != 0) {
-         hints.ai_family = AF_INET6;
-         if ((rv = getaddrinfo(addr,_port,&hints,&servinfo)) != 0) {
-            __redisSetError(c,REDIS_ERR_OTHER,gai_strerror(rv));
-            return REDIS_ERR;
-        }
+    /* DNS lookup. To use dual stack, set both flags to prefer both IPv4 and
+     * IPv6. By default, for historical reasons, we try IPv4 first and then we
+     * try IPv6 only if no IPv4 address was found. */
+    if (c->flags & REDIS_PREFER_IPV6 && c->flags & REDIS_PREFER_IPV4)
+        hints.ai_family = AF_UNSPEC;
+    else if (c->flags & REDIS_PREFER_IPV6)
+        hints.ai_family = AF_INET6;
+    else
+        hints.ai_family = AF_INET;
+
+    rv = getaddrinfo(c->tcp.host, _port, &hints, &servinfo);
+    if (rv != 0 && hints.ai_family != AF_UNSPEC) {
+        /* Try again with the other IP version. */
+        hints.ai_family = (hints.ai_family == AF_INET) ? AF_INET6 : AF_INET;
+        rv = getaddrinfo(c->tcp.host, _port, &hints, &servinfo);
+    }
+    if (rv != 0) {
+        __redisSetError(c, REDIS_ERR_OTHER, gai_strerror(rv));
+        return REDIS_ERR;
     }
     for (p = servinfo; p != NULL; p = p->ai_next) {
-addrretry:
-        if ((s = socket(p->ai_family,p->ai_socktype,p->ai_protocol)) == REDIS_INVALID_FD)
+addrretry: {
+        int sock_type = p->ai_socktype;
+
+#ifdef SOCK_CLOEXEC
+        if (c->flags & REDIS_OPT_SET_SOCK_CLOEXEC) {
+            sock_type |= SOCK_CLOEXEC;
+        }
+#endif
+
+        if ((s = socket(p->ai_family, sock_type, p->ai_protocol)) == REDIS_INVALID_FD)
             continue;
+}
 
         c->fd = s;
+
         if (redisSetBlocking(c,0) != REDIS_OK)
             goto error;
         if (c->tcp.source_addr) {
@@ -620,7 +782,7 @@ int redisContextConnectUnix(redisContext *c, const char *path, const struct time
     sa->sun_family = AF_UNIX;
     strncpy(sa->sun_path, path, sizeof(sa->sun_path) - 1);
     if (connect(c->fd, (struct sockaddr*)sa, sizeof(*sa)) == -1) {
-        if (errno == EINPROGRESS && !blocking) {
+        if ((errno == EAGAIN || errno == EINPROGRESS) && !blocking) {
             /* This is ok. */
         } else {
             if (redisContextWaitReady(c,timeout_msec) != REDIS_OK)

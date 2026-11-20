@@ -35,14 +35,20 @@
 
 #define SDS_MAX_PREALLOC (1024*1024)
 #ifdef _MSC_VER
+typedef intptr_t ssize_t;
+#define SSIZE_MAX INTPTR_MAX
+#ifndef __clang__
 #define __attribute__(x)
-typedef long long ssize_t;
-#define SSIZE_MAX (LLONG_MAX >> 1)
+#endif
 #endif
 
 #include <sys/types.h>
 #include <stdarg.h>
 #include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 typedef char *sds;
 
@@ -275,4 +281,7 @@ void sds_free(void *ptr);
 int sdsTest(int argc, char *argv[]);
 #endif
 
+#ifdef __cplusplus
+}
+#endif
 #endif
