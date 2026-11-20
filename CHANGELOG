@@ -4,7 +4,7 @@
 
  . HTTP QUERY method (RFC 10008); form bodies are parsed into $request->post like POST, PUT, PATCH and DELETE (#414)
  . CURLOPT_PROTOCOLS_STR and CURLOPT_REDIR_PROTOCOLS_STR in the native curl hook; with open_basedir set, values with "file" or "all" are refused (#412)
- . Bundled llhttp upgraded to 9.3.0 (#413)
+ . Bundled llhttp upgraded to 9.4.4 (#413)
 
 ## Changes
 

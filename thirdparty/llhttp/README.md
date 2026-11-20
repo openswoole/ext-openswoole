@@ -1,6 +1,6 @@
 # llhttp
 
-Bundled llhttp 9.3.0 (https://github.com/nodejs/llhttp), MIT licensed, see LICENSE.
+Bundled llhttp 9.4.4 (https://github.com/nodejs/llhttp), MIT licensed, see LICENSE.
 
 Local change, keep it when updating:
 
