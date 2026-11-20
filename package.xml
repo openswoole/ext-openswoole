@@ -1692,6 +1692,7 @@
             <file role="test" name="tests/openswoole_websocket_server/message_size.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/onDisconnct.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pack.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/ping_extended_length.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingloop.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingloop_open_ping_pong_frame.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingpong.phpt" />

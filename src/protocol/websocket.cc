@@ -337,11 +337,11 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
                            conn->info.get_ip(),
                            conn->info.get_port());
             return OSW_ERR;
-        } else if (length == OSW_WEBSOCKET_HEADER_LEN) {
+        } else if (ws.payload_length == 0) {
             data = nullptr;
             length = 0;
         } else {
-            offset = ws.header.MASK ? OSW_WEBSOCKET_HEADER_LEN + OSW_WEBSOCKET_MASK_LEN : OSW_WEBSOCKET_HEADER_LEN;
+            offset = length - ws.payload_length;
             data += offset;
             length -= offset;
         }
