@@ -968,6 +968,7 @@
             <file role="test" name="tests/openswoole_http2_server/http2_headers.phpt" />
             <file role="test" name="tests/openswoole_http2_server/index_file.phpt" />
             <file role="test" name="tests/openswoole_http2_server/issue_4365.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/large_response_header.phpt" />
             <file role="test" name="tests/openswoole_http2_server/limits.phpt" />
             <file role="test" name="tests/openswoole_http2_server/multipart_body.phpt" />
             <file role="test" name="tests/openswoole_http2_server/nghttp2_big_data.phpt" />

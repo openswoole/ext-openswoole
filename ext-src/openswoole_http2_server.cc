@@ -155,7 +155,7 @@ static void http2_server_send_window_update(HttpContext *ctx, uint32_t stream_id
     ctx->send(ctx, frame, OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_WINDOW_UPDATE_SIZE);
 }
 
-static ssize_t http2_build_trailer(HttpContext *ctx, uchar *buffer) {
+static ssize_t http2_build_trailer(HttpContext *ctx, uchar *buffer, size_t buffer_size) {
     zval *ztrailer =
         osw_zend_read_property_ex(openswoole_http_response_ce, ctx->response.zobject, OSW_ZSTR_KNOWN(OSW_ZEND_STR_TRAILER), 0);
     uint32_t size = php_openswoole_array_length_safe(ztrailer);
@@ -188,7 +188,7 @@ static ssize_t http2_build_trailer(HttpContext *ctx, uchar *buffer) {
             client->deflater = deflater;
         }
 
-        buflen = nghttp2_hd_deflate_bound(deflater, trailer.get(), trailer.len());
+        buflen = OSW_MIN(nghttp2_hd_deflate_bound(deflater, trailer.get(), trailer.len()), buffer_size);
         /*
         if (buflen > OSW_HTTP2_DEFAULT_MAX_HEADER_LIST_SIZE)
         {
@@ -301,7 +301,7 @@ static void openswoole_http2_onRequest(Http2Session *client, Http2Stream *stream
     zval_ptr_dtor(&args[1]);
 }
 
-static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_length) {
+static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t buffer_size, size_t body_length) {
     zval *zheader =
         osw_zend_read_property_ex(openswoole_http_response_ce, ctx->response.zobject, OSW_ZSTR_KNOWN(OSW_ZEND_STR_HEADER), 0);
     zval *zcookie =
@@ -426,7 +426,7 @@ static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_l
         client->deflater = deflater;
     }
 
-    size_t buflen = nghttp2_hd_deflate_bound(deflater, headers.get(), headers.len());
+    size_t buflen = OSW_MIN(nghttp2_hd_deflate_bound(deflater, headers.get(), headers.len()), buffer_size);
     /*
     if (buflen > OSW_HTTP2_DEFAULT_MAX_HEADER_LIST_SIZE)
     {
@@ -470,7 +470,7 @@ int openswoole_http2_server_goaway(HttpContext *ctx, zend_long error_code, const
 
 bool Http2Stream::send_header(size_t body_length, bool end_stream, bool is_head) {
     char header_buffer[OSW_BUFFER_SIZE_STD];
-    ssize_t bytes = http2_build_header(ctx, (uchar *) header_buffer, body_length);
+    ssize_t bytes = http2_build_header(ctx, (uchar *) header_buffer, sizeof(header_buffer), body_length);
     if (bytes < 0) {
         return false;
     }
@@ -556,7 +556,7 @@ bool Http2Stream::send_trailer() {
     char frame_header[OSW_HTTP2_FRAME_HEADER_SIZE];
 
     openswoole_http_buffer->clear();
-    ssize_t bytes = http2_build_trailer(ctx, (uchar *) header_buffer);
+    ssize_t bytes = http2_build_trailer(ctx, (uchar *) header_buffer, sizeof(header_buffer));
     if (bytes > 0) {
         http2::set_frame_header(
             frame_header, OSW_HTTP2_TYPE_HEADERS, bytes, OSW_HTTP2_FLAG_END_HEADERS | OSW_HTTP2_FLAG_END_STREAM, id);
