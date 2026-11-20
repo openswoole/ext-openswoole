@@ -68,7 +68,7 @@ static osw_inline uint32_t openswoole_swap_endian32(uint32_t x) {
     return (((x & 0xff) << 24) | ((x & 0xff00) << 8) | ((x & 0xff0000) >> 8) | ((x & 0xff000000) >> 24));
 }
 
-static osw_inline int32_t openswoole_unpack(char type, const void *data) {
+static osw_inline int64_t openswoole_unpack(char type, const void *data) {
     switch (type) {
     /*-------------------------16bit-----------------------------*/
     case 'c':

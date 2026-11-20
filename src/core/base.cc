@@ -400,7 +400,7 @@ void openswoole_dump_bin(const char *data, char type, size_t size) {
     int n = size / type_size;
 
     for (i = 0; i < n; i++) {
-        printf("%d,", openswoole_unpack(type, data + type_size * i));
+        printf("%ld,", (long) openswoole_unpack(type, data + type_size * i));
     }
     printf("\n");
 }

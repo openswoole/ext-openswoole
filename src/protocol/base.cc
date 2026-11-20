@@ -29,7 +29,7 @@ ssize_t Protocol::default_length_func(Protocol *protocol, network::Socket *socke
     uint16_t length_offset = protocol->package_length_offset;
     uint8_t package_length_size =
         protocol->get_package_length_size ? protocol->get_package_length_size(socket) : protocol->package_length_size;
-    int32_t body_length;
+    int64_t body_length;
 
     if (package_length_size == 0) {
         // protocol error
@@ -53,7 +53,7 @@ ssize_t Protocol::default_length_func(Protocol *protocol, network::Socket *socke
                        socket->info.get_port());
         return OSW_ERR;
     }
-    openswoole_debug("length=%d", protocol->package_body_offset + body_length);
+    openswoole_debug("length=%ld", (long) (protocol->package_body_offset + body_length));
 
     // total package length
     return protocol->package_body_offset + body_length;
