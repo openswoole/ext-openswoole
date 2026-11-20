@@ -1410,6 +1410,8 @@
             <file role="test" name="tests/openswoole_server/dispatch_func_memory_leak.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_1.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_3.phpt" />
+            <file role="test" name="tests/openswoole_server/dispatch_mode_4.phpt" />
+            <file role="test" name="tests/openswoole_server/dispatch_mode_5.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_7.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_8.phpt" />
             <file role="test" name="tests/openswoole_server/dispatch_mode_9.phpt" />
