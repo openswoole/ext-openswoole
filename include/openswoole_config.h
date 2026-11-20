@@ -71,8 +71,9 @@
 #define OSW_CLIENT_MAX_PORT 65535
 
 // !!!Don't modify.----------------------------------------------------------
-#ifdef __MACH__
-#define OSW_IPC_MAX_SIZE 2048  // MacOS
+#if defined(__MACH__) || defined(__FreeBSD__)
+// FreeBSD 14 limits unix datagrams to net.local.dgram.maxdgram, 2048 bytes by default
+#define OSW_IPC_MAX_SIZE 2048
 #else
 #define OSW_IPC_MAX_SIZE 8192  // for IPC, dgram and message-queue max size
 #endif
