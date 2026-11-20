@@ -975,6 +975,7 @@
             <file role="test" name="tests/openswoole_http2_server/no_compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/ping.phpt" />
             <file role="test" name="tests/openswoole_http2_server/rst_stream_send_yield.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/send_yield_cancel.phpt" />
             <file role="test" name="tests/openswoole_http2_server/send_yield_disconnect.phpt" />
             <file role="test" name="tests/openswoole_http2_server/sendfile.phpt" />
             <file role="test" name="tests/openswoole_http2_server/static_handler.phpt" />

@@ -218,7 +218,9 @@ class Stream {
     uint32_t remote_window_size;
     uint32_t local_window_size;
     Coroutine *waiting_coroutine = nullptr;
-    // RST_STREAM or connection closed while a coroutine waits for the window
+    // coroutines sending on the stream, ctx->send can yield in send_yield mode
+    uint32_t busy = 0;
+    // RST_STREAM or connection closed while the stream is busy, the last sender deletes it
     bool canceled = false;
     bool session_closed = false;
     // END_STREAM received from the client

@@ -95,16 +95,22 @@ void Http2Session::apply_setting(Server *serv) {
 }
 
 Http2Session::~Session() {
-    // a coroutine waiting for the window would never be resumed
+    std::vector<Coroutine *> waiting;
     for (auto iter = streams.begin(); iter != streams.end(); iter++) {
         Http2Stream *stream = iter->second;
-        if (stream && stream->waiting_coroutine) {
+        if (stream->busy) {
             stream->session_closed = true;
-            stream->waiting_coroutine->resume();
+            // a coroutine waiting for the window would never be resumed
+            if (stream->waiting_coroutine) {
+                waiting.push_back(stream->waiting_coroutine);
+            }
+        } else {
+            delete stream;
         }
     }
-    for (auto iter = streams.begin(); iter != streams.end(); iter++) {
-        delete iter->second;
+    streams.clear();
+    for (Coroutine *co : waiting) {
+        co->resume();
     }
     if (inflater) {
         nghttp2_hd_inflate_del(inflater);
@@ -127,12 +133,34 @@ static void http2_server_send_rst_stream(Http2Session *client, uint32_t stream_i
     client->default_ctx->send(client->default_ctx, frame, OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_RST_STREAM_SIZE);
 }
 
-// the stream is gone for the client, a waiting coroutine deletes it
+// the stream is gone for the client, a coroutine still sending on it deletes it
 static void http2_server_cancel_stream(Http2Session *client, Http2Stream *stream) {
-    if (stream->waiting_coroutine) {
+    if (stream->busy) {
         stream->canceled = true;
-        stream->waiting_coroutine->resume();
+        if (stream->waiting_coroutine) {
+            stream->waiting_coroutine->resume();
+        }
     } else {
+        client->streams.erase(stream->id);
+        delete stream;
+    }
+}
+
+static inline bool http2_server_stream_gone(Http2Stream *stream) {
+    return stream->canceled || stream->session_closed;
+}
+
+// finished: the response is complete and the stream is removed once nobody sends on it
+static void http2_server_release_stream(Http2Session *client, Http2Stream *stream, bool finished) {
+    if (finished) {
+        stream->canceled = true;
+    }
+    if (--stream->busy > 0) {
+        return;
+    }
+    if (stream->session_closed) {
+        delete stream;
+    } else if (stream->canceled) {
         client->streams.erase(stream->id);
         delete stream;
     }
@@ -528,6 +556,10 @@ bool Http2Stream::send_body(String *body, bool end_stream, size_t max_frame_size
 
     int flag = end_stream ? OSW_HTTP2_FLAG_END_STREAM : OSW_HTTP2_FLAG_NONE;
 
+    if (canceled || session_closed) {
+        return false;
+    }
+
     while (l > 0) {
         size_t send_n;
         int _send_flag;
@@ -544,6 +576,8 @@ bool Http2Stream::send_body(String *body, bool end_stream, size_t max_frame_size
         openswoole_http_buffer->append(p, send_n);
 
         if (!ctx->send(ctx, openswoole_http_buffer->str, openswoole_http_buffer->length)) {
+            return false;
+        } else if (canceled || session_closed) {
             return false;
         } else {
             l -= send_n;
@@ -563,6 +597,10 @@ bool Http2Stream::send_body(String *body, bool end_stream, size_t max_frame_size
 bool Http2Stream::send_trailer() {
     char header_buffer[OSW_BUFFER_SIZE_STD] = {};
     char frame_header[OSW_HTTP2_FRAME_HEADER_SIZE];
+
+    if (canceled || session_closed) {
+        return false;
+    }
 
     openswoole_http_buffer->clear();
     ssize_t bytes = http2_build_trailer(ctx, (uchar *) header_buffer, sizeof(header_buffer));
@@ -597,12 +635,15 @@ int openswoole_http2_server_send(HttpContext *ctx, String *body) {
     }
 #endif
 
+    stream->busy++;
     if (!ctx->send_header_) {
         stream->send_header(0, 0);
     }
 
     stream->send_body(body, 0, client->local_settings.max_frame_size);
-    return 1;
+    bool gone = http2_server_stream_gone(stream);
+    http2_server_release_stream(client, stream, false);
+    return !gone;
 }
 
 static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
@@ -638,8 +679,10 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
     // HEAD ends the stream on the HEADERS frame even when a trailer was set; there is no content for it to follow.
     bool end_stream = (ztrailer == nullptr) || is_head;
 
+    stream->busy++;
     if (!ctx->send_header_) {
-        if (!stream->send_header(body->length, end_stream, is_head)) {
+        if (!stream->send_header(body->length, end_stream, is_head) || http2_server_stream_gone(stream)) {
+            http2_server_release_stream(client, stream, false);
             return false;
         }
     }
@@ -670,15 +713,8 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
                 stream->waiting_coroutine = Coroutine::get_current();
                 stream->waiting_coroutine->yield();
                 stream->waiting_coroutine = nullptr;
-                if (stream->session_closed) {
-                    // the session deletes the stream
-                    return false;
-                }
-                if (stream->canceled) {
-                    // the client canceled the stream, drop the rest of the body
-                    client->streams.erase(stream->id);
-                    delete stream;
-                    return false;
+                if (http2_server_stream_gone(stream)) {
+                    break;
                 }
                 continue;
             }
@@ -710,11 +746,22 @@ static bool openswoole_http2_server_respond(HttpContext *ctx, String *body) {
         error = true;
     }
 
+    // the client reset the stream or the connection is gone, drop the rest of the response
+    if (http2_server_stream_gone(stream)) {
+        http2_server_release_stream(client, stream, false);
+        return false;
+    }
+
     if (error) {
+        // in base mode the session can be freed inside close()
         ctx->close(ctx);
+        bool session_closed = stream->session_closed;
+        http2_server_release_stream(client, stream, false);
+        if (session_closed) {
+            return false;
+        }
     } else {
-        client->streams.erase(stream->id);
-        delete stream;
+        http2_server_release_stream(client, stream, true);
     }
 
     if (client->shutting_down && client->streams.size() == 0) {
@@ -733,12 +780,11 @@ static bool http2_context_sendfile(HttpContext *ctx, const char *file, uint32_t 
     ctx->accept_compression = 0;
 #endif
     if (openswoole_coroutine_is_in()) {
+        stream->busy++;
         body = System::read_file(file, false);
-        if (!body) {
-            return false;
-        }
-        if (!ctx->stream) {
-            /* closed */
+        bool gone = http2_server_stream_gone(stream);
+        http2_server_release_stream(client, stream, false);
+        if (!body || gone) {
             return false;
         }
     } else {
@@ -763,7 +809,9 @@ static bool http2_context_sendfile(HttpContext *ctx, const char *file, uint32_t 
     ctx->set_header(ZEND_STRL("content-type"), mimetype, strlen(mimetype), 0);
 
     bool end_stream = (ztrailer == nullptr);
-    if (!stream->send_header(length, end_stream)) {
+    stream->busy++;
+    if (!stream->send_header(length, end_stream) || http2_server_stream_gone(stream)) {
+        http2_server_release_stream(client, stream, false);
         return false;
     }
 
@@ -786,11 +834,13 @@ static bool http2_context_sendfile(HttpContext *ctx, const char *file, uint32_t 
         }
     }
 
-    if (error) {
+    if (http2_server_stream_gone(stream)) {
+        http2_server_release_stream(client, stream, false);
+    } else if (error) {
         ctx->close(ctx);
+        http2_server_release_stream(client, stream, false);
     } else {
-        client->streams.erase(stream->id);
-        delete stream;
+        http2_server_release_stream(client, stream, true);
     }
 
     return true;
