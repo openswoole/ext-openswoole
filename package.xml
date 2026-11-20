@@ -1706,6 +1706,7 @@
             <file role="test" name="tests/openswoole_websocket_server/exists_and_isEstablished.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/fin.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/fin2.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/fragments.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/get_large_requests.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/get_small_requests.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/greeter.phpt" />
@@ -1719,6 +1720,7 @@
             <file role="test" name="tests/openswoole_websocket_server/pingloop_open_ping_pong_frame.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingpong.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/pingpong_open_ping_pong_frame.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/protocol_errors.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/query.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/recv_decode.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/send_encode.phpt" />
@@ -1727,6 +1729,8 @@
             <file role="test" name="tests/openswoole_websocket_server/upgrade_with_partial_request.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/upgrade_with_partial_request_pool.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/upgrade_with_pipelined_frame.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/wss.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/wss_pool.phpt" />
             <file role="test" name="tests/run-tests" />
             <file role="test" name="tests/start.sh" />
             <file role="test" name="tests/template" />
