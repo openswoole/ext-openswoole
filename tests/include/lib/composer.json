@@ -18,7 +18,8 @@
     "psr/http-factory": "^1.0",
     "symfony/http-client": "^7.2.0",
     "nyholm/psr7": "^1.8",
-    "php-http/message-factory": "^1.1"
+    "php-http/message-factory": "^1.1",
+    "openswoole/core": "^26.11.1"
   },
   "config": {
       "allow-plugins": false

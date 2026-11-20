@@ -3,6 +3,7 @@ openswoole_runtime/sockets: tcp server
 --SKIPIF--
 <?php
 require __DIR__ . '/../../include/skipif.inc';
+skip_if_extension_not_exist('sockets');
 skip_if_no_core_library();
 ?>
 --FILE--
