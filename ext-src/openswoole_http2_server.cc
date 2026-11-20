@@ -1224,7 +1224,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
             } else if (ctx->mt_parser != nullptr) {
                 multipart_parser *multipart_parser = ctx->mt_parser;
                 size_t n = multipart_parser_execute(multipart_parser, buffer->str, buffer->length);
-                if (n != (size_t) length) {
+                if (n != buffer->length) {
                     openswoole_error_log(
                         OSW_LOG_WARNING, OSW_ERROR_SERVER_INVALID_REQUEST, "parse multipart body failed, n=%zu", n);
                 }
