@@ -5,6 +5,11 @@ on:
   pull_request:
   # Allow to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      freebsd:
+        description: Also build and test on FreeBSD
+        type: boolean
+        default: false
 
 jobs:
   build-ubuntu-latest:
@@ -64,6 +69,31 @@ jobs:
         export LDFLAGS="-L$(brew --prefix openssl)/lib -L$(brew --prefix c-ares)/lib $LDFLAGS"
         ./configure --enable-sockets --enable-mysqlnd --enable-http2 --enable-hook-curl --enable-openssl --with-openssl-dir=/opt/homebrew/opt/openssl@3 --enable-cares --enable-debug-log
         make clean && make -j$(sysctl -n hw.ncpu)
+
+  build-freebsd:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' && inputs.freebsd
+    timeout-minutes: 60
+    steps:
+    - uses: actions/checkout@v6
+    - name: build and test on FreeBSD
+      uses: vmactions/freebsd-vm@v1
+      with:
+        release: "14.3"
+        usesh: true
+        prepare: pkg install -y php84 php84-extensions php84-pcntl php84-posix php84-sockets php84-composer autoconf pkgconf
+        run: |
+          set -e
+          phpize
+          ./configure --enable-sockets --enable-http2
+          make -j$(sysctl -n hw.ncpu)
+          make install
+          echo "extension=openswoole.so" > /usr/local/etc/php/ext-30-openswoole.ini
+          php --ri openswoole | grep Version
+          (cd tests/include/lib && composer install --no-interaction --no-progress --ignore-platform-reqs)
+          # the FreeBSD 14.0 default, smaller than the 8192 of later releases
+          sysctl net.local.dgram.maxdgram=2048
+          TEST_PHP_EXECUTABLE=$(which php) PHPT=1 php tests/run-tests --show-diff tests/openswoole_server/process_mode_large_ipc.phpt
 
   build-alpine-latest:
     runs-on: ubuntu-latest
