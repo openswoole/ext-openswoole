@@ -1456,6 +1456,9 @@
             <file role="test" name="tests/openswoole_server/length/03.phpt" />
             <file role="test" name="tests/openswoole_server/length/length_func.phpt" />
             <file role="test" name="tests/openswoole_server/length/length_func_wait.phpt" />
+            <file role="test" name="tests/openswoole_server/length/no_length_found.phpt" />
+            <file role="test" name="tests/openswoole_server/length/rejects.phpt" />
+            <file role="test" name="tests/openswoole_server/length/types.phpt" />
             <file role="test" name="tests/openswoole_server/listen_fail.phpt" />
             <file role="test" name="tests/openswoole_server/max_concurrency.phpt" />
             <file role="test" name="tests/openswoole_server/max_idle_time_1.phpt" />
