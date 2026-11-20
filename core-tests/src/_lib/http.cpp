@@ -26,14 +26,10 @@ bool Client::Push(const char *data, size_t length, int opcode) {
         return false;
     }
     return process_socket(socket_, [&](Stream &strm) {
-        swString buffer = {};
-        char buf[32];
-        buffer.size = sizeof(buf);
-        buffer.str = buf;
-
-        websocket::encode(&buffer, data, length, opcode, websocket::FLAG_FIN | websocket::FLAG_ENCODE_HEADER_ONLY);
+        // a client must mask the frames it sends (RFC 6455 5.1)
+        swString buffer(length + OSW_WEBSOCKET_HEADER_LEN + sizeof(uint64_t) + OSW_WEBSOCKET_MASK_LEN);
+        websocket::encode(&buffer, data, length, opcode, websocket::FLAG_FIN | websocket::FLAG_MASK);
         strm.write(buffer.str, buffer.length);
-        strm.write(data, length);
         return true;
     });
 }
