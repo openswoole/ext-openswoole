@@ -1669,6 +1669,7 @@
             <file role="test" name="tests/openswoole_timer/task_worker.phpt" />
             <file role="test" name="tests/openswoole_timer/task_worker_tick_1k.phpt" />
             <file role="test" name="tests/openswoole_timer/verify.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/close_during_fragmented_message.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/frame_sizes.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/close_frame_flag.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/close_frame_full.phpt" />

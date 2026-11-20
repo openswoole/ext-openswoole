@@ -241,6 +241,10 @@ int Server::close_connection(Reactor *reactor, Socket *socket) {
         delete socket->recv_buffer;
         socket->recv_buffer = nullptr;
     }
+    if (conn->websocket_buffer) {
+        delete conn->websocket_buffer;
+        conn->websocket_buffer = nullptr;
+    }
 
     osw_atomic_fetch_sub(port->connection_num, 1);
 
