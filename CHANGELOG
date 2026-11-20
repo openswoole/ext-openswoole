@@ -5,12 +5,14 @@
  . HTTP QUERY method (RFC 10008); form bodies are parsed into $request->post like POST, PUT, PATCH and DELETE (#414)
  . CURLOPT_PROTOCOLS_STR and CURLOPT_REDIR_PROTOCOLS_STR in the native curl hook; with open_basedir set, values with "file" or "all" are refused (#412)
  . Bundled llhttp upgraded to 9.4.4 (#413)
+ . Bundled nghttp2 HPACK code upgraded to 1.71.0
 
 ## Changes
 
  . The HTTP parser is stricter: a space before a header colon, folded header lines and raw bytes above 0x7F in the request target get 400 Bad Request, in the server and the Coroutine HTTP client
  . The WebSocket server follows RFC 6455: unmasked client frames, unknown opcodes and a new message sent before a fragmented one is finished close the connection; ping, pong and close frames accept payloads up to 125 bytes
  . The HTTP/2 server rejects frames on a stream the client has closed, removes the padding of DATA frames, checks WINDOW_UPDATE increments, and with send_yield waits for the stream window
+ . The HTTP/2 server and client reject header blocks with invalid Huffman padding, as RFC 7541 requires
  . SOCKS5 proxy target hosts, usernames and passwords longer than 255 bytes are refused, and a refused CONNECT reply fails the connection
 
 ## Bug Fixes

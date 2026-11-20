@@ -28,6 +28,7 @@
 #include <assert.h>
 
 #include "nghttp2_mem.h"
+#include "nghttp2_helper.h"
 
 int nghttp2_rcbuf_new(nghttp2_rcbuf **rcbuf_ptr, size_t size,
                       nghttp2_mem *mem) {
@@ -40,11 +41,13 @@ int nghttp2_rcbuf_new(nghttp2_rcbuf **rcbuf_ptr, size_t size,
 
   *rcbuf_ptr = (void *)p;
 
-  (*rcbuf_ptr)->mem_user_data = mem->mem_user_data;
-  (*rcbuf_ptr)->free = mem->free;
-  (*rcbuf_ptr)->base = p + sizeof(nghttp2_rcbuf);
-  (*rcbuf_ptr)->len = size;
-  (*rcbuf_ptr)->ref = 1;
+  **rcbuf_ptr = (nghttp2_rcbuf){
+    .mem_user_data = mem->mem_user_data,
+    .free = mem->free,
+    .base = p + sizeof(nghttp2_rcbuf),
+    .len = size,
+    .ref = 1,
+  };
 
   return 0;
 }
@@ -94,4 +97,8 @@ void nghttp2_rcbuf_decref(nghttp2_rcbuf *rcbuf) {
 nghttp2_vec nghttp2_rcbuf_get_buf(nghttp2_rcbuf *rcbuf) {
   nghttp2_vec res = {rcbuf->base, rcbuf->len};
   return res;
+}
+
+int nghttp2_rcbuf_is_static(const nghttp2_rcbuf *rcbuf) {
+  return rcbuf->ref == -1;
 }

@@ -73,4 +73,4 @@ int nghttp2_rcbuf_new2(nghttp2_rcbuf **rcbuf_ptr, const uint8_t *src,
  */
 void nghttp2_rcbuf_del(nghttp2_rcbuf *rcbuf);
 
-#endif /* NGHTTP2_RCBUF_H */
+#endif /* !defined(NGHTTP2_RCBUF_H) */

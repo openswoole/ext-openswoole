@@ -27,9 +27,11 @@
          . HTTP QUERY method (RFC 10008); form bodies are parsed into $request->post like POST, PUT, PATCH and DELETE (#414)
          . CURLOPT_PROTOCOLS_STR and CURLOPT_REDIR_PROTOCOLS_STR in the native curl hook; with open_basedir set, values with "file" or "all" are refused (#412)
          . Bundled llhttp upgraded to 9.4.4 (#413)
+         . Bundled nghttp2 HPACK code upgraded to 1.71.0
          . The HTTP parser is stricter: a space before a header colon, folded header lines and raw bytes above 0x7F in the request target get 400 Bad Request, in the server and the Coroutine HTTP client
          . The WebSocket server follows RFC 6455: unmasked client frames, unknown opcodes and a new message sent before a fragmented one is finished close the connection; ping, pong and close frames accept payloads up to 125 bytes
          . The HTTP/2 server rejects frames on a stream the client has closed, removes the padding of DATA frames, checks WINDOW_UPDATE increments, and with send_yield waits for the stream window
+         . The HTTP/2 server and client reject header blocks with invalid Huffman padding, as RFC 7541 requires
          . SOCKS5 proxy target hosts, usernames and passwords longer than 255 bytes are refused, and a refused CONNECT reply fails the connection
          . Fix WebSocket frames losing their opcode and FIN flag with several reactor threads in SWOOLE_PROCESS mode
          . Fix WebSocket connections when the upgrade request is followed by more data in the same packet
@@ -1835,16 +1837,21 @@
             <file role="src" name="thirdparty/nghttp2/nghttp2.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_buf.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_buf.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_debug.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd_huffman.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd_huffman.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_hd_huffman_data.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_helper.c" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_helper.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_int.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_mem.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_mem.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2_net.h" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_rcbuf.c" />
             <file role="src" name="thirdparty/nghttp2/nghttp2_rcbuf.h" />
+            <file role="src" name="thirdparty/nghttp2/nghttp2ver.h" />
             <file role="src" name="thirdparty/php/curl/curl_arginfo.h" />
             <file role="src" name="thirdparty/php/curl/curl_interface.h" />
             <file role="src" name="thirdparty/php/curl/curl_private.h" />
