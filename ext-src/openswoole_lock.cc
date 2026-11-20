@@ -186,7 +186,7 @@ static PHP_METHOD(openswoole_lock, lock) {
 static PHP_METHOD(openswoole_lock, lockwait) {
     double timeout = 1.0;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS(), "d", &timeout) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS(), "|d", &timeout) == FAILURE) {
         RETURN_FALSE;
     }
     Lock *lock = php_openswoole_lock_get_and_check_ptr(ZEND_THIS);
