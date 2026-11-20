@@ -1186,6 +1186,7 @@
             <file role="test" name="tests/openswoole_io_uring/timer.phpt" />
             <file role="test" name="tests/openswoole_lock/child_exit.phpt" />
             <file role="test" name="tests/openswoole_lock/destroy.phpt" />
+            <file role="test" name="tests/openswoole_lock/destroy_in_child.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_default.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_fraction.phpt" />
             <file role="test" name="tests/openswoole_lock/lockwait_twice.phpt" />

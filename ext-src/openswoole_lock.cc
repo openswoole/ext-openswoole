@@ -224,6 +224,8 @@ static PHP_METHOD(openswoole_lock, lock_read) {
 
 static PHP_METHOD(openswoole_lock, destroy) {
     Lock *lock = php_openswoole_lock_get_and_check_ptr(ZEND_THIS);
-    delete lock;
+    if (php_openswoole_lock_fetch_object(Z_OBJ_P(ZEND_THIS))->owner_pid == getpid()) {
+        delete lock;
+    }
     php_openswoole_lock_set_ptr(ZEND_THIS, nullptr);
 }
