@@ -33,6 +33,14 @@ static inline uint16_t get_ext_flags(uchar opcode, uchar flags) {
     return ext_flags;
 }
 
+// the port protocol is shared by reactor threads, pass the flags on a copy
+static int dispatch_with_flags(
+    Protocol *proto, Socket *_socket, const char *data, uint32_t length, uint16_t ext_flags) {
+    Protocol frame_proto = *proto;
+    frame_proto.ext_flags = ext_flags;
+    return Server::dispatch_task(&frame_proto, _socket, data, length);
+}
+
 /*  The following is websocket data frame:
  +-+-+-+-+-------+-+-------------+-------------------------------+
  0                   1                   2                   3   |
@@ -302,9 +310,8 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
         frame_buffer->append(data + offset, frame_length);
         // frame is finished, do dispatch
         if (ws.header.FIN) {
-            proto->ext_flags = conn->websocket_buffer->offset;
-            proto->ext_flags |= FLAG_FIN;
-            Server::dispatch_task(proto, _socket, frame_buffer->str, frame_buffer->length);
+            dispatch_with_flags(
+                proto, _socket, frame_buffer->str, frame_buffer->length, (uint16_t)(frame_buffer->offset | FLAG_FIN));
             delete frame_buffer;
             conn->websocket_buffer = nullptr;
         }
@@ -313,7 +320,7 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
     case OPCODE_TEXT:
     case OPCODE_BINARY: {
         offset = length - ws.payload_length;
-        proto->ext_flags = get_ext_flags(ws.header.OPCODE, get_flags(&ws));
+        uint16_t ext_flags = get_ext_flags(ws.header.OPCODE, get_flags(&ws));
 
         if (!ws.header.FIN) {
             if (conn->websocket_buffer) {
@@ -323,9 +330,9 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
                 return OSW_ERR;
             }
             conn->websocket_buffer = new openswoole::String(data + offset, length - offset);
-            conn->websocket_buffer->offset = proto->ext_flags;
+            conn->websocket_buffer->offset = ext_flags;
         } else {
-            Server::dispatch_task(proto, _socket, data + offset, length - offset);
+            dispatch_with_flags(proto, _socket, data + offset, length - offset, ext_flags);
         }
         break;
     }
@@ -345,8 +352,7 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
             data += offset;
             length -= offset;
         }
-        proto->ext_flags = get_ext_flags(ws.header.OPCODE, get_flags(&ws));
-        Server::dispatch_task(proto, _socket, data, length);
+        dispatch_with_flags(proto, _socket, data, length, get_ext_flags(ws.header.OPCODE, get_flags(&ws)));
         break;
 
     case OPCODE_CLOSE:
@@ -357,9 +363,8 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
         if (conn->websocket_status != STATUS_CLOSING) {
             // Dispatch the frame with the same format of message frame
             offset = length - ws.payload_length;
-            proto->ext_flags = get_ext_flags(ws.header.OPCODE, get_flags(&ws));
-
-            Server::dispatch_task(proto, _socket, data + offset, length - offset);
+            dispatch_with_flags(
+                proto, _socket, data + offset, length - offset, get_ext_flags(ws.header.OPCODE, get_flags(&ws)));
 
             // Client attempt to close
             send_frame.str[0] = 0x88;  // FIN | OPCODE: WEBSOCKET_OPCODE_CLOSE

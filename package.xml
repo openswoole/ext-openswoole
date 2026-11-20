@@ -1684,6 +1684,7 @@
             <file role="test" name="tests/openswoole_websocket_server/close_frame_full.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/compression.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/compression_large.phpt" />
+            <file role="test" name="tests/openswoole_websocket_server/concurrent_frame_flags.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/on_handshake.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/disconnect.phpt" />
             <file role="test" name="tests/openswoole_websocket_server/disconnect_with_code.phpt" />
