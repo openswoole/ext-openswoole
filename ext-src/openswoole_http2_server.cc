@@ -174,7 +174,7 @@ static ssize_t http2_build_trailer(HttpContext *ctx, uchar *buffer) {
         }
         ZEND_HASH_FOREACH_END();
 
-        ssize_t rv;
+        nghttp2_ssize rv;
         size_t buflen;
         Http2Session *client = http2_sessions[ctx->fd];
         nghttp2_hd_deflater *deflater = client->deflater;
@@ -196,9 +196,9 @@ static ssize_t http2_build_trailer(HttpContext *ctx, uchar *buffer) {
         OSW_HTTP2_DEFAULT_MAX_HEADER_LIST_SIZE); return -1;
         }
         */
-        rv = nghttp2_hd_deflate_hd(deflater, (uchar *) buffer, buflen, trailer.get(), trailer.len());
+        rv = nghttp2_hd_deflate_hd2(deflater, (uchar *) buffer, buflen, trailer.get(), trailer.len());
         if (rv < 0) {
-            openswoole_warning("nghttp2_hd_deflate_hd() failed with error: %s", nghttp2_strerror((int) rv));
+            openswoole_warning("nghttp2_hd_deflate_hd2() failed with error: %s", nghttp2_strerror((int) rv));
             return -1;
         }
         return rv;
@@ -434,9 +434,9 @@ static ssize_t http2_build_header(HttpContext *ctx, uchar *buffer, size_t body_l
     OSW_HTTP2_DEFAULT_MAX_HEADER_LIST_SIZE); return -1;
     }
     */
-    ssize_t rv = nghttp2_hd_deflate_hd(deflater, (uchar *) buffer, buflen, headers.get(), headers.len());
+    nghttp2_ssize rv = nghttp2_hd_deflate_hd2(deflater, (uchar *) buffer, buflen, headers.get(), headers.len());
     if (rv < 0) {
-        openswoole_warning("nghttp2_hd_deflate_hd() failed with error: %s", nghttp2_strerror((int) rv));
+        openswoole_warning("nghttp2_hd_deflate_hd2() failed with error: %s", nghttp2_strerror((int) rv));
         return -1;
     }
 
@@ -834,15 +834,15 @@ static int http2_parse_header(Http2Session *client, HttpContext *ctx, int flags,
     zval *zheader = ctx->request.zheader;
     zval *zserver = ctx->request.zserver;
 
-    ssize_t rv;
+    nghttp2_ssize rv;
     for (;;) {
         nghttp2_nv nv;
         int inflate_flags = 0;
         size_t proclen;
 
-        rv = nghttp2_hd_inflate_hd(inflater, &nv, &inflate_flags, (uchar *) in, inlen, 1);
+        rv = nghttp2_hd_inflate_hd3(inflater, &nv, &inflate_flags, (const uint8_t *) in, inlen, 1);
         if (rv < 0) {
-            openswoole_warning("inflate failed, Error: %s[%zd]", nghttp2_strerror(rv), rv);
+            openswoole_warning("inflate failed, Error: %s[%td]", nghttp2_strerror((int) rv), rv);
             return OSW_ERR;
         }
 

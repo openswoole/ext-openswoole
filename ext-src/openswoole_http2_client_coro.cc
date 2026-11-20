@@ -993,14 +993,14 @@ int Client::parse_header(Stream *stream, int flags, char *in, size_t inlen) {
         openswoole_http2_response_ce, zresponse, ZEND_STRL("set_cookie_headers"), 0);
 
     int inflate_flags = 0;
-    ssize_t rv;
+    nghttp2_ssize rv;
 
     do {
         nghttp2_nv nv;
 
-        rv = nghttp2_hd_inflate_hd(inflater, &nv, &inflate_flags, (uchar *) in, inlen, 1);
+        rv = nghttp2_hd_inflate_hd3(inflater, &nv, &inflate_flags, (const uint8_t *) in, inlen, 1);
         if (rv < 0) {
-            nghttp2_error(rv, "nghttp2_hd_inflate_hd failed");
+            nghttp2_error(rv, "nghttp2_hd_inflate_hd3() failed");
             return OSW_ERR;
         }
 
@@ -1158,9 +1158,9 @@ ssize_t Client::build_header(zval *zobject, zval *zrequest, char *buffer) {
     h2c->remote_settings.max_header_list_size); return -1;
     }
     */
-    ssize_t rv = nghttp2_hd_deflate_hd(h2c->deflater, (uchar *) buffer, buflen, headers.get(), headers.len());
+    nghttp2_ssize rv = nghttp2_hd_deflate_hd2(h2c->deflater, (uchar *) buffer, buflen, headers.get(), headers.len());
     if (rv < 0) {
-        h2c->nghttp2_error(rv, "nghttp2_hd_deflate_hd() failed");
+        h2c->nghttp2_error(rv, "nghttp2_hd_deflate_hd2() failed");
         return -1;
     }
     return rv;
