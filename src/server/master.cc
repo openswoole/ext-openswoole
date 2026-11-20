@@ -208,6 +208,12 @@ dtls::Session *Server::accept_dtls_connection(ListenPort *port, Address *sa) {
     }
 
     int fd = sock->fd;
+    if (fd >= (int) max_connection) {
+        openswoole_error_log(
+            OSW_LOG_WARNING, OSW_ERROR_SERVER_TOO_MANY_SOCKET, "Too many connections [now: %d]", fd);
+        sock->free();
+        return nullptr;
+    }
     sock->set_reuse_addr();
 #ifdef HAVE_KQUEUE
     sock->set_reuse_port();
@@ -237,23 +243,23 @@ dtls::Session *Server::accept_dtls_connection(ListenPort *port, Address *sa) {
     memcpy(&sock->info, sa, sizeof(*sa));
     sock->chunk_size = OSW_SSL_BUFFER_SIZE;
 
+    session = new dtls::Session(sock, port->ssl_context);
+    if (!session->init()) {
+        goto _cleanup;
+    }
+
     conn = add_connection(port, sock, port->socket->fd);
     if (conn == nullptr) {
         goto _cleanup;
     }
 
-    session = new dtls::Session(sock, port->ssl_context);
     port->dtls_sessions->emplace(fd, session);
-
-    if (!session->init()) {
-        goto _cleanup;
-    }
-
     return session;
 
 _cleanup:
-    if (conn) {
-        *conn = {};
+    if (sock->ssl) {
+        SSL_free(sock->ssl);
+        sock->ssl = nullptr;
     }
     if (session) {
         delete session;
@@ -1645,6 +1651,10 @@ Connection *Server::add_connection(ListenPort *ls, Socket *_socket, int server_f
         }
     }
     osw_spinlock_release(&gs->spinlock);
+    *connection = {};
+    gs->accept_count--;
+    osw_atomic_fetch_sub(&gs->connection_num, 1);
+    osw_atomic_fetch_sub(ls->connection_num, 1);
     openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_SERVER_TOO_MANY_SOCKET, "no available session slot, fd=%d", fd);
     return nullptr;
 
