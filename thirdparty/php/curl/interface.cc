@@ -2068,7 +2068,7 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
         if ((option == CURLOPT_PROTOCOLS || option == CURLOPT_REDIR_PROTOCOLS) &&
             (PG(open_basedir) && *PG(open_basedir)) && (lval & CURLPROTO_FILE)) {
             php_error_docref(NULL, E_WARNING, "CURLPROTO_FILE cannot be activated when an open_basedir is set");
-            return 1;
+            return FAILURE;
         }
 #endif
 #if defined(ZTS)
@@ -2193,7 +2193,7 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
              php_memnistr(ZSTR_VAL(str), "all", sizeof("all") - 1, ZSTR_VAL(str) + ZSTR_LEN(str)) != NULL)) {
             zend_string_release(str);
             php_error_docref(NULL, E_WARNING, "The FILE protocol cannot be activated when an open_basedir is set");
-            return 1;
+            return FAILURE;
         }
 #endif
         int ret = php_curl_option_str(ch, option, ZSTR_VAL(str), ZSTR_LEN(str), 0);

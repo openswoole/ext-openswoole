@@ -19,6 +19,8 @@ co::run(function () {
     var_dump(curl_setopt($ch, CURLOPT_PROTOCOLS_STR, 'FILE,http'));
     var_dump(curl_setopt($ch, CURLOPT_REDIR_PROTOCOLS_STR, 'all'));
     var_dump(curl_setopt($ch, CURLOPT_PROTOCOLS_STR, 'http,https'));
+    var_dump(curl_setopt_array($ch, [CURLOPT_PROTOCOLS_STR => 'file']));
+    var_dump(curl_setopt_array($ch, [CURLOPT_PROTOCOLS => CURLPROTO_FILE]));
 });
 echo "Done\n";
 ?>
@@ -29,4 +31,10 @@ bool(false)
 Warning: curl_setopt(): The FILE protocol cannot be activated when an open_basedir is set in %s on line %d
 bool(false)
 bool(true)
+
+Warning: curl_setopt_array(): The FILE protocol cannot be activated when an open_basedir is set in %s on line %d
+bool(false)
+
+Warning: curl_setopt_array(): CURLPROTO_FILE cannot be activated when an open_basedir is set in %s on line %d
+bool(false)
 Done
