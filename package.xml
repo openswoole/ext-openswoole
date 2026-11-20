@@ -1215,6 +1215,7 @@
             <file role="test" name="tests/openswoole_lock/lockwait_twice.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex.phpt" />
             <file role="test" name="tests/openswoole_lock/mutex_robust.phpt" />
+            <file role="test" name="tests/openswoole_postgres_coro/fetch_row.phpt" />
             <file role="test" name="tests/openswoole_postgres_coro/issue227.phpt" />
             <file role="test" name="tests/openswoole_postgres_coro/query.phpt" />
             <file role="test" name="tests/openswoole_process/alarm.phpt" />

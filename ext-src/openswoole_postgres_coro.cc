@@ -1767,7 +1767,8 @@ static void php_pgsql_fetch_hash(INTERNAL_FUNCTION_PARAMETERS, zend_long result_
             RETURN_FALSE;
         }
     }
-    use_row = ZEND_NUM_ARGS() > 1 && row != -1;
+    // the row is the first argument of the statement methods
+    use_row = zrow != nullptr;
 
     if (!(result_type & PGSQL_BOTH)) {
         php_openswoole_fatal_error(E_WARNING, "Invalid result type");
