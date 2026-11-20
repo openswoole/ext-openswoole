@@ -2075,7 +2075,7 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
         if (option == CURLOPT_DNS_USE_GLOBAL_CACHE && lval) {
             php_error_docref(
                 NULL, E_WARNING, "CURLOPT_DNS_USE_GLOBAL_CACHE cannot be activated when thread safety is enabled");
-            return 1;
+            return FAILURE;
         }
 #endif
         error = curl_easy_setopt(ch->cp, (CURLoption) option, lval);
@@ -2431,7 +2431,7 @@ static int _php_curl_setopt(php_curl *ch, zend_long option, zval *zvalue, bool i
             zend_string_release(val);
             if (!slist) {
                 php_error_docref(NULL, E_WARNING, "Could not build curl_slist");
-                return 1;
+                return FAILURE;
             }
         }
         ZEND_HASH_FOREACH_END();
