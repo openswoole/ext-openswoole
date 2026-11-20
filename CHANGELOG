@@ -12,6 +12,7 @@
 
  . The HTTP parser is stricter: a space before a header colon, folded header lines and raw bytes above 0x7F in the request target get 400 Bad Request, in the server and the Coroutine HTTP client
  . The WebSocket server follows RFC 6455: unmasked client frames, unknown opcodes and a new message sent before a fragmented one is finished close the connection; ping, pong and close frames accept payloads up to 125 bytes
+ . A Coroutine\Http\Client with websocket_mask set to false can no longer send to an OpenSwoole WebSocket server, which now requires masked client frames
  . The HTTP/2 server rejects frames on a stream the client has closed, removes the padding of DATA frames, checks WINDOW_UPDATE increments, and with send_yield waits for the stream window
  . The HTTP/2 server and client reject header blocks with invalid Huffman padding, as RFC 7541 requires
  . SOCKS5 proxy target hosts, usernames and passwords longer than 255 bytes are refused, and a refused CONNECT reply fails the connection
@@ -39,6 +40,12 @@
  . Fix the SOCKS5 handshake with short replies and IPv4 targets
  . Fix Coroutine\Client::peek() with a length of 0 or less
  . Fix curl_setopt_array() not stopping at a refused option in the native curl hook
+ . Fix HTTP/2 response header blocks larger than the header buffer
+ . Fix HTTP/2 send_yield responses not ending when a send fails or the client resets the stream or closes the connection
+ . Fix discarded HTTP/2 DATA frames not counting against the connection window
+ . Fix the WebSocket fragment buffer not being released when a connection closes during a fragmented message
+ . Fix Lock::destroy() in another process making the lock unusable for the process that created it
+ . Fix the open_redis_protocol parser accepting bulk lengths below -1
 
 # 26.11.0
 
