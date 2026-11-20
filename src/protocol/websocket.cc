@@ -285,6 +285,11 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
         openswoole_warning("bad frame. remote_addr=%s:%d", conn->info.get_ip(), conn->info.get_port());
         return OSW_ERR;
     }
+    // RFC 6455 5.1: a server must close the connection on a frame that is not masked
+    if (!ws.header.MASK) {
+        openswoole_warning("unmasked frame. remote_addr=%s:%d", conn->info.get_ip(), conn->info.get_port());
+        return OSW_ERR;
+    }
 
     String *frame_buffer;
     int frame_length;
@@ -322,13 +327,14 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
         offset = length - ws.payload_length;
         uint16_t ext_flags = get_ext_flags(ws.header.OPCODE, get_flags(&ws));
 
+        // a new message cannot start before the fragmented one is finished
+        if (conn->websocket_buffer) {
+            openswoole_warning("merging incomplete frame, bad request. remote_addr=%s:%d",
+                           conn->info.get_ip(),
+                           conn->info.get_port());
+            return OSW_ERR;
+        }
         if (!ws.header.FIN) {
-            if (conn->websocket_buffer) {
-                openswoole_warning("merging incomplete frame, bad request. remote_addr=%s:%d",
-                               conn->info.get_ip(),
-                               conn->info.get_port());
-                return OSW_ERR;
-            }
             // never zero sized, the first append would reallocate it and reset the offset
             conn->websocket_buffer = new openswoole::String(length - offset + 1);
             conn->websocket_buffer->append(data + offset, length - offset);
@@ -340,7 +346,7 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
     }
     case OPCODE_PING:
     case OPCODE_PONG:
-        if (length >= (sizeof(buf) - OSW_WEBSOCKET_HEADER_LEN)) {
+        if (ws.payload_length > OSW_WEBSOCKET_CLOSE_REASON_MAX_LEN) {
             openswoole_warning("%s frame application data is too big. remote_addr=%s:%d",
                            ws.header.OPCODE == OPCODE_PING ? "ping" : "pong",
                            conn->info.get_ip(),
@@ -358,7 +364,7 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
         break;
 
     case OPCODE_CLOSE:
-        if ((length - OSW_WEBSOCKET_HEADER_LEN) > OSW_WEBSOCKET_CLOSE_REASON_MAX_LEN) {
+        if (ws.payload_length > OSW_WEBSOCKET_CLOSE_REASON_MAX_LEN) {
             return OSW_ERR;
         }
 
@@ -384,7 +390,7 @@ int dispatch_frame(Protocol *proto, Socket *_socket, const char *data, uint32_t 
 
     default:
         openswoole_warning("unknown opcode [%d]", ws.header.OPCODE);
-        break;
+        return OSW_ERR;
     }
     return OSW_OK;
 }
