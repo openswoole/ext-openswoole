@@ -127,9 +127,12 @@ _recv_data:
                     if (!(p = get_number(p, pe, &ret))) {
                         goto _failed;
                     }
-                    if (ret < 0) {
+                    if (ret == -1) {
                         // null bulk string
                         goto _element_done;
+                    }
+                    if (ret < 0) {
+                        goto _failed;
                     }
                     if (ret + (p - buffer->str) > protocol->package_max_length) {
                         goto _package_too_big;

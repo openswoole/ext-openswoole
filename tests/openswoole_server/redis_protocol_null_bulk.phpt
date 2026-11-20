@@ -31,6 +31,11 @@ $pm->parentFunc = function () use ($pm) {
         Assert::true($cli->connect('127.0.0.1', $pm->getFreePort()));
         $cli->send("*1\r\n\$\r\n4\r\nPING\r\n");
         var_dump($cli->recv(3));
+        // only -1 is a null bulk length
+        $cli = new OpenSwoole\Coroutine\Client(SWOOLE_SOCK_TCP);
+        Assert::true($cli->connect('127.0.0.1', $pm->getFreePort()));
+        $cli->send("*1\r\n\$-5\r\n");
+        var_dump($cli->recv(3));
     });
     $pm->kill();
 };
@@ -54,4 +59,5 @@ $pm->run();
 *0
 *3 $3 SET :5 $-1
 *1 $4 PING
+string(0) ""
 string(0) ""
