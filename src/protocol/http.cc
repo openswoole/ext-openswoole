@@ -741,7 +741,7 @@ int get_method(const char *method_str, size_t method_len) {
 }
 
 const char *get_method_string(int method) {
-    if (method < 0 || method > OSW_HTTP_PRI) {
+    if (method <= 0 || method > OSW_HTTP_PRI) {
         return nullptr;
     }
     return method_strings[method - 1];
