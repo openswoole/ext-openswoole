@@ -56,7 +56,7 @@ Download the source packages from [Releases](https://github.com/openswoole/ext-o
 ```shell
 git clone https://github.com/openswoole/ext-openswoole.git && \
 cd ext-openswoole
-git checkout v26.11.0
+git checkout v26.11.1
 phpize && \
 ./configure && \
 make && sudo make install

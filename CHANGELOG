@@ -1,3 +1,42 @@
+# 26.11.1
+
+## New Features
+
+ . HTTP QUERY method (RFC 10008); form bodies are parsed into $request->post like POST, PUT, PATCH and DELETE (#414)
+ . CURLOPT_PROTOCOLS_STR and CURLOPT_REDIR_PROTOCOLS_STR in the native curl hook; with open_basedir set, values with "file" or "all" are refused (#412)
+ . Bundled llhttp upgraded to 9.3.0 (#413)
+
+## Changes
+
+ . The HTTP parser is stricter: a space before a header colon, folded header lines and raw bytes above 0x7F in the request target get 400 Bad Request, in the server and the Coroutine HTTP client
+ . The WebSocket server follows RFC 6455: unmasked client frames, unknown opcodes and a new message sent before a fragmented one is finished close the connection; ping, pong and close frames accept payloads up to 125 bytes
+ . The HTTP/2 server rejects frames on a stream the client has closed, removes the padding of DATA frames, checks WINDOW_UPDATE increments, and with send_yield waits for the stream window
+ . SOCKS5 proxy target hosts, usernames and passwords longer than 255 bytes are refused, and a refused CONNECT reply fails the connection
+
+## Bug Fixes
+
+ . Fix WebSocket frames losing their opcode and FIN flag with several reactor threads in SWOOLE_PROCESS mode
+ . Fix WebSocket connections when the upgrade request is followed by more data in the same packet
+ . Fix a fragmented WebSocket message with an empty first frame losing its opcode
+ . Fix the payload of WebSocket ping and pong frames sent with the 16 bit length form
+ . Fix multipart form data of an unfinished part being kept for the next request, and its temporary file and memory not being released
+ . Fix Request::create()->parse() with a multipart body
+ . Fix Response::create() with a Coroutine\Socket
+ . Fix chunked requests with Content-Length: 0 that do not end with a zero length chunk
+ . Fix client certificates larger than the read buffer with ssl_client_cert_file
+ . Fix DTLS connections above max_connection
+ . Fix HTTP/2 GOAWAY frames carrying the error code in the flags
+ . Fix buffer_high_watermark and buffer_low_watermark being reset when the server starts
+ . Fix the $row argument of the PostgreSQL statement fetch methods being ignored
+ . Fix a Lock becoming unusable in other processes after a child process exits
+ . Fix a Table losing rows with concurrent writers after a child process exits
+ . Fix Lock::lockwait() requiring an argument
+ . Fix the open_redis_protocol parser with null bulk strings, integer elements and empty arrays
+ . Fix the length protocol with unsigned 32 bit lengths of 2^31 and more
+ . Fix the SOCKS5 handshake with short replies and IPv4 targets
+ . Fix Coroutine\Client::peek() with a length of 0 or less
+ . Fix curl_setopt_array() not stopping at a refused option in the native curl hook
+
 # 26.11.0
 
 ## New Features
