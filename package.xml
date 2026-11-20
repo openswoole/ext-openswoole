@@ -980,6 +980,7 @@
             <file role="test" name="tests/openswoole_http2_client_coro/sock_type_unix.phpt" />
             <file role="test" name="tests/openswoole_http2_client_coro/wrong_headers.phpt" />
             <file role="test" name="tests/openswoole_http2_server/big_data.phpt" />
+            <file role="test" name="tests/openswoole_http2_server/closed_stream.phpt" />
             <file role="test" name="tests/openswoole_http2_server/compression.phpt" />
             <file role="test" name="tests/openswoole_http2_server/control_frames.phpt" />
             <file role="test" name="tests/openswoole_http2_server/head_response.phpt" />

@@ -122,6 +122,34 @@ Http2Session::~Session() {
     http2_sessions.erase(fd);
 }
 
+static void http2_server_send_rst_stream(Http2Session *client, uint32_t stream_id, uint32_t error_code) {
+    char frame[OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_RST_STREAM_SIZE];
+    openswoole_trace_log(
+        OSW_TRACE_HTTP2, "send [" OSW_ECHO_YELLOW "] stream_id=%u, error_code=%u", "RST_STREAM", stream_id, error_code);
+    *(uint32_t *) ((char *) frame + OSW_HTTP2_FRAME_HEADER_SIZE) = htonl(error_code);
+    http2::set_frame_header(frame, OSW_HTTP2_TYPE_RST_STREAM, OSW_HTTP2_RST_STREAM_SIZE, 0, stream_id);
+    client->default_ctx->send(client->default_ctx, frame, OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_RST_STREAM_SIZE);
+}
+
+// the stream is gone for the client, a waiting coroutine deletes it
+static void http2_server_cancel_stream(Http2Session *client, Http2Stream *stream) {
+    if (stream->waiting_coroutine) {
+        stream->canceled = true;
+        stream->waiting_coroutine->resume();
+    } else {
+        client->streams.erase(stream->id);
+        delete stream;
+    }
+}
+
+// RFC 7540 5.1: frames other than WINDOW_UPDATE, PRIORITY and RST_STREAM on a half-closed (remote) stream
+static void http2_server_reject_closed_stream(Http2Session *client, Http2Stream *stream) {
+    openswoole_error_log(
+        OSW_LOG_WARNING, OSW_ERROR_HTTP2_STREAM_IGNORE, "http2 stream#%d is closed by the client", stream->id);
+    http2_server_send_rst_stream(client, stream->id, OSW_HTTP2_ERROR_STREAM_CLOSED);
+    http2_server_cancel_stream(client, stream);
+}
+
 static void http2_server_send_window_update(HttpContext *ctx, uint32_t stream_id, uint32_t size) {
     char frame[OSW_HTTP2_FRAME_HEADER_SIZE + OSW_HTTP2_WINDOW_UPDATE_SIZE];
     openswoole_trace_log(
@@ -1054,6 +1082,12 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
             zend_update_property_long(
                 openswoole_http_request_ce, OSW_Z8_OBJ_P(ctx->request.zobject), ZEND_STRL("streamId"), stream_id);
         } else {
+            // the header block is not decoded, so the HPACK state is lost: a connection error
+            if (stream->remote_closed || !stream->ctx->request.zobject) {
+                openswoole_error_log(
+                    OSW_LOG_WARNING, OSW_ERROR_HTTP2_STREAM_IGNORE, "http2 stream#%d is closed by the client", stream_id);
+                return OSW_ERR;
+            }
             ctx = stream->ctx;
         }
         if (!(flags & OSW_HTTP2_FLAG_END_HEADERS)) {
@@ -1073,6 +1107,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         }
 
         if (flags & OSW_HTTP2_FLAG_END_STREAM) {
+            stream->remote_closed = true;
             client->handle(client, stream);
         }
         break;
@@ -1104,19 +1139,29 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
             return OSW_ERR;
         }
         if (block_flags & OSW_HTTP2_FLAG_END_STREAM) {
+            stream->remote_closed = true;
             client->handle(client, stream);
         }
         break;
     }
     case OSW_HTTP2_TYPE_DATA: {
         swHttp2FrameTraceLog(recv, "data");
+        if (stream_id == 0) {
+            openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_HTTP_INVALID_PROTOCOL, "http2 DATA frame on stream#0");
+            return OSW_ERR;
+        }
         auto stream_iterator = client->streams.find(stream_id);
         if (stream_iterator == client->streams.end()) {
             openswoole_error_log(OSW_LOG_WARNING, OSW_ERROR_HTTP2_STREAM_NOT_FOUND, "http2 stream#%d not found", stream_id);
-            return OSW_ERR;
+            http2_server_send_rst_stream(client, stream_id, OSW_HTTP2_ERROR_STREAM_CLOSED);
+            break;
         }
         stream = stream_iterator->second;
         HttpContext *ctx = stream->ctx;
+        if (stream->remote_closed || !ctx->request.zobject) {
+            http2_server_reject_closed_stream(client, stream);
+            break;
+        }
 
         zend_update_property_long(
             openswoole_http_request_ce, OSW_Z8_OBJ_P(ctx->request.zobject), ZEND_STRL("streamId"), stream_id);
@@ -1176,6 +1221,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
                 retval = OSW_OK;
             }
 
+            stream->remote_closed = true;
             client->handle(client, stream);
         }
         break;
@@ -1216,15 +1262,7 @@ int openswoole_http2_server_parse(Http2Session *client, const char *buf) {
         if (client->streams.find(stream_id) != client->streams.end()) {
             // TODO: i onRequest and use request->recv
             // stream exist
-            stream = client->streams[stream_id];
-            if (stream->waiting_coroutine) {
-                // the waiting coroutine deletes the stream
-                stream->canceled = true;
-                stream->waiting_coroutine->resume();
-            } else {
-                client->streams.erase(stream_id);
-                delete stream;
-            }
+            http2_server_cancel_stream(client, client->streams[stream_id]);
         }
         break;
     }

@@ -221,6 +221,8 @@ class Stream {
     // RST_STREAM or connection closed while a coroutine waits for the window
     bool canceled = false;
     bool session_closed = false;
+    // END_STREAM received from the client
+    bool remote_closed = false;
 
     Stream(Session *client, uint32_t _id);
     ~Stream();
