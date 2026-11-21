@@ -884,6 +884,13 @@ static int fn_prereqfunction(void *clientp, char *conn_primary_ip, char *conn_lo
     php_curl *ch = (php_curl *)clientp;
     int rval = CURL_PREREQFUNC_OK;
 
+    // when CURLOPT_PREREQFUNCTION is set to null, curl_prereqfunction still
+    // gets called. Return CURL_PREREQFUNC_OK immediately in this case to avoid
+    // zend_call_known_fcc() with an uninitialized FCC.
+    if (!ZEND_FCC_INITIALIZED(ch->handlers.prereq)) {
+        return rval;
+    }
+
     zval args[5];
     zval retval;
 
