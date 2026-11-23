@@ -1251,6 +1251,8 @@ function system_with_timeout($commandline, $env = null, $stdin = null, $captureS
     }
 
     $timeout = $valgrind ? 300 : ($env['TEST_TIMEOUT'] ?? 60);
+    $deadline = microtime(true) + $timeout;
+    $stat = null;
 
     while (true) {
         /* hide errors from interrupted syscalls */
@@ -1258,11 +1260,22 @@ function system_with_timeout($commandline, $env = null, $stdin = null, $captureS
         $w = null;
         $e = null;
 
-        $n = @stream_select($r, $w, $e, $timeout);
+        // some shells close stderr as soon as a 2>&1 test starts, after that poll so
+        // the exit of the test is seen even when a process it left keeps stdout open
+        $stderrClosed = $captureStdErr && !isset($pipes[2]);
+        $n = $stderrClosed ? @stream_select($r, $w, $e, 0, 100000) : @stream_select($r, $w, $e, $timeout);
 
         if ($n === false) {
             break;
         } else if ($n === 0) {
+            if ($stderrClosed && !($stat = proc_get_status($proc))['running']) {
+                $data .= drain_pipe($pipes[1] ?? null);
+                break;
+            }
+            $stat = null;
+            if ($stderrClosed && microtime(true) < $deadline) {
+                continue;
+            }
             /* timed out */
             $data .= "\n ** ERROR: process timed out **\n";
             proc_terminate($proc, 9);
@@ -1278,13 +1291,26 @@ function system_with_timeout($commandline, $env = null, $stdin = null, $captureS
                     $line = '';
                 }
             } else {
-                $line = '';
-                if ($captureStdOut && in_array($pipes[1], $r)) {
-                    $line .= fread($pipes[1], 8192);
+                $stdoutClosed = false;
+                foreach ($r as $pipe) {
+                    $chunk = fread($pipe, 8192);
+                    if ($chunk === false || $chunk === '') {
+                        $stdoutClosed = $stdoutClosed || $pipe === ($pipes[1] ?? null);
+                        unset($pipes[array_search($pipe, $pipes, true)]);
+                    } else {
+                        $data .= $chunk;
+                    }
                 }
-                if ($captureStdErr && in_array($pipes[2], $r)) {
-                    $line .= fread($pipes[2], 8192);
+                if ($stdoutClosed || !$pipes) {
+                    break;
                 }
+                // stderr reached EOF: on most shells that means the test has exited
+                if ($captureStdErr && !isset($pipes[2]) && !($stat = proc_get_status($proc))['running']) {
+                    $data .= drain_pipe($pipes[1] ?? null);
+                    break;
+                }
+                $stat = null;
+                continue;
             }
             if (strlen($line) == 0) {
                 /* EOF */
@@ -1294,7 +1320,7 @@ function system_with_timeout($commandline, $env = null, $stdin = null, $captureS
         }
     }
 
-    $stat = proc_get_status($proc);
+    $stat = $stat ?? proc_get_status($proc);
 
     if ($stat['signaled']) {
         $data .= "\nTermsig=" . $stat['stopsig'] . "\n";
@@ -1304,6 +1330,19 @@ function system_with_timeout($commandline, $env = null, $stdin = null, $captureS
     }
 
     proc_close($proc);
+    return $data;
+}
+
+function drain_pipe($pipe): string
+{
+    if (!$pipe) {
+        return '';
+    }
+    stream_set_blocking($pipe, false);
+    $data = '';
+    while (($chunk = fread($pipe, 8192)) !== false && $chunk !== '') {
+        $data .= $chunk;
+    }
     return $data;
 }
 
